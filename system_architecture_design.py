@@ -3,8 +3,13 @@ from typing import List
 import numpy as np
 
 #Вопросы:
-#1. Нужна структура данных для хранения поисковой информации типа дерева
+#1. Нужна структура данных для хранения поисковой информации типа дерева 
+#   bintrees.FastAVLTree()
+#   sortedcontainers.SortedSet
+
 #2. Нужна сруктура данных для очереди интервалов
+#   queue.PriorityQueue()
+
 #3. Подумать о визуализации (параметры и методы представления)
 
 from enum import Enum
@@ -49,17 +54,19 @@ class TrialPoint(Point):
 
 class Problem(ABC):
     """Base class for optimization problems"""
-
     def __init__(self):
-        self.numberOfVariables: int = 0
+        self.numberOfFloatVariables: int = 0
+        self.numberOfDisreteVariables: int = 0
         self.numberOfObjectives: int = 0
         self.numberOfConstraints: int = 0
 
-        self.variableNames: np.ndarray(shape = (1), dtype = str) = []
+        self.floatVariableNames: np.ndarray(shape = (1), dtype = str) = []
+        self.discreteVariableNames: np.ndarray(shape = (1), dtype = str) = []
 
-        self.lowerBound: np.ndarray(shape = (1), dtype = np.double) = []
-        self.upperBound: np.ndarray(shape = (1), dtype = np.double) = []
-
+        self.lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
+        self.upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
+        self.discreteVariableValues: np.ndarray(shape = (1, 1), dtype = str) = []
+        
         self.knownOptimum: np.ndarray(shape = (1), dtype = TrialPoint) = []
 
     @abstractmethod
@@ -102,35 +109,21 @@ class SolverParameters:
 
 class Solution:
     def __init__(self,
-                 numberOfVariables: int,
-                 numberOfObjectives: int,
-                 numberOfConstraints: int,
-                 variableNames: List[str],
-
-                 lowerBound: np.ndarray(shape = (1), dtype = np.double),
-                 upperBound: np.ndarray(shape = (1), dtype = np.double),
-
+                 problem: Problem,
                  bestTrials: np.ndarray(shape = (1), dtype = TrialPoint),
 
                  numberOfGlobalTrials: int,
                  numberOfLocalTrials: int,
                  solvingTime: np.double,
-
                  solutionAccuracy: np.double
                 ):
-        self.numberOfVariables = numberOfVariables
-        self.numberOfObjectives = numberOfObjectives
-        self.numberOfConstraints = numberOfConstraints
-        self.lowerBound = lowerBound
-        self.upperBound = upperBound
-        self.variableNames = variableNames
-
+        self.problem = problem
         self.bestTrials = bestTrials
 
         self.numberOfGlobalTrials = numberOfGlobalTrials
         self.numberOfLocalTrials = numberOfLocalTrials
         self.solvingTime = solvingTime
-        self.solvingTime = solutionAccuracy
+        self.solutionAccuracy = solutionAccuracy
 
 class Solver:
     def __init__(self,
@@ -138,7 +131,6 @@ class Solver:
                  parameters: SolverParameters = SolverParameters()
                 ):
         """
-
         :param problem: Optimization problem
         :param parameters: Parameters for solving the problem
         """
@@ -153,18 +145,19 @@ class Solver:
 
     def performeGlobalIteration(self, number: int = 1):
         """
-        :param number: The number of iterations of the global search performed
+        :param number: The number of iterations of the global search
         """
 
-    def performeLocalIteration(self, number: int = 1):
+    def performeLocalRefinement(self, number: int = 1):
         """
-        :param number: The number of iterations of the local search performed
+        :param number: The number of iterations of the local search
         """
 
     def getResults(self) -> Solution:
         """
         :return: Return current solution for the optimization problem
         """
+
     def saveProgress(self, fileName: str):
         """
         :return:
