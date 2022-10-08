@@ -102,8 +102,26 @@ class Method:
         self.task = task
         self.evolvent = evolvent
 
+    def FirstIteration(self):
+        pass
 
+    def CheckStopCondition(self):
+        pass
 
+    def CalculateIterationPoints(self) -> MethodPoint:
+        pass
+
+    def CalculateFunctionals(self, point: MethodPoint) -> MethodPoint:
+        pass
+
+    def RenewSearchData(self):
+        pass
+
+    def UpdateOptimum(self, point: MethodPoint):
+        pass
+
+    def FinalizeIteration(self):
+        pass
 
 class Process:
     def __init__(self,
@@ -119,3 +137,23 @@ class Process:
         self.evolvent = evolvent
         self.method = method
 
+    def solve(self) -> sa.Solution:
+        """
+        Retrieve a solution with check of the stop conditions
+        :return: Solution for the optimization problem
+        """
+
+    def performeGlobalIteration(self, number: int = 1):
+        """
+        :param number: The number of iterations of the global search
+        """
+
+    def performeLocalRefinement(self, number: int = 1):
+        """
+        :param number: The number of iterations of the local search
+        """
+
+    def getResults(self) -> sa.Solution:
+        """
+        :return: Return current solution for the optimization problem
+        """
