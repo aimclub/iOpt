@@ -199,6 +199,7 @@ class SearchData:
 
 
 class Method:
+    stop:bool = False;
     def __init__(self,
                  problem: sa.Problem,
                  parameters: sa.SolverParameters,
