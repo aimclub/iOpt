@@ -110,12 +110,12 @@ class SolverParameters:
 class Solution:
     def __init__(self,
                  problem: Problem,
-                 bestTrials: np.ndarray(shape = (1), dtype = TrialPoint),
+                 bestTrials: np.ndarray(shape = (1), dtype = TrialPoint)=[],
 
-                 numberOfGlobalTrials: int,
-                 numberOfLocalTrials: int,
-                 solvingTime: np.double,
-                 solutionAccuracy: np.double
+                 numberOfGlobalTrials: int = 0,
+                 numberOfLocalTrials: int = 0,
+                 solvingTime: np.double = 0.0,
+                 solutionAccuracy: np.double = 0.0
                 ):
         self.problem = problem
         self.bestTrials = bestTrials
