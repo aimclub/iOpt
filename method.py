@@ -99,7 +99,7 @@ class calcDelta:
     def __init__(self,
                  dim: int = 1,
                  ):
-        self.dim
+        self.dim = dim
 
     def root(self, p1: MethodPoint, p2: MethodPoint) -> np.double:
         pass
@@ -131,7 +131,7 @@ class Evolvent:
 
 
 class CharacteristicsQueue:
-    Q: queue = queue.PriorityQueue()
+    __baseQueue: queue = queue.PriorityQueue()
     def __init__(self):
         pass
 
