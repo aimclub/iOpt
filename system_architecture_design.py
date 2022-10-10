@@ -2,72 +2,78 @@ from abc import ABC, abstractmethod
 from typing import List
 import numpy as np
 
-#Вопросы:
-#1. Нужна структура данных для хранения поисковой информации типа дерева 
+# Вопросы:
+# 1. Нужна структура данных для хранения поисковой информации типа дерева
 #   bintrees.FastAVLTree()
 #   sortedcontainers.SortedSet
 
-#2. Нужна сруктура данных для очереди интервалов
+# 2. Нужна сруктура данных для очереди интервалов
 #   queue.PriorityQueue()
 
-#3. Подумать о визуализации (параметры и методы представления)
+# 3. Подумать о визуализации (параметры и методы представления)
 
 from enum import Enum
+
 
 class FunctionType(Enum):
     OBJECTIV = 1
     CONSTRAINT = 2
 
+
 class Point:
     def __init__(self,
-                 floatVariables: np.ndarray(shape = (1), dtype = np.double),
-                 discreteVariables: np.ndarray(shape = (1), dtype = str),
-                ):
+                 floatVariables: np.ndarray(shape=(1), dtype=np.double),
+                 discreteVariables: np.ndarray(shape=(1), dtype=str),
+                 ):
         self.floatVariables = floatVariables
         self.discreteVariables = discreteVariables
+
 
 class FunctionValue:
     def __init__(self,
                  type: FunctionType = FunctionType.OBJECTIV,
                  functionID: str = ""
-                ):
+                 ):
         self.type = type
         self.functionID = functionID
         self.value: np.double = 0.0
+
 
 class SolutionValue(FunctionValue):
     def __init__(self,
                  calculationsNumber: int = -1,
                  holderConstantsEstimations: np.double = -1.0
-                ):
+                 ):
         self.calculationsNumber = calculationsNumber
         self.holderConstantsEstimations = holderConstantsEstimations
+
 
 class TrialPoint(Point):
     def __init__(self,
                  point: Point,
-                 functionValues: np.ndarray(shape = (1), dtype = FunctionValue)
-                ):
+                 functionValues: np.ndarray(shape=(1), dtype=FunctionValue)
+                 ):
         self.point = point
         self.functionValues = functionValues
 
 
 class Problem(ABC):
     """Base class for optimization problems"""
+
     def __init__(self):
         self.numberOfFloatVariables: int = 0
         self.numberOfDisreteVariables: int = 0
         self.numberOfObjectives: int = 0
         self.numberOfConstraints: int = 0
 
-        self.floatVariableNames: np.ndarray(shape = (1), dtype = str) = []
-        self.discreteVariableNames: np.ndarray(shape = (1), dtype = str) = []
+        self.floatVariableNames: np.ndarray(shape=(1), dtype=str) = []
+        self.discreteVariableNames: np.ndarray(shape=(1), dtype=str) = []
 
-        self.lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
-        self.upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
-        self.discreteVariableValues: np.ndarray(shape = (1, 1), dtype = str) = []
-        
-        self.knownOptimum: np.ndarray(shape = (1), dtype = TrialPoint) = []
+        self.lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
+        self.upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
+        self.discreteVariableValues: np.ndarray(shape=(1, 1), dtype=str) = []
+
+        self.knownOptimum: np.ndarray(shape=(1), dtype=TrialPoint) = []
 
     @abstractmethod
     def calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
@@ -87,7 +93,7 @@ class SolverParameters:
                  epsR: np.double = 0.001,
                  refineSolution: bool = False,
                  startPoint: Point = []
-                ):
+                 ):
         """
         :param eps:method tolerance. Less value -- better search precision, less probability of early stop.
         :param r: reliability parameter. Higher value of r -- slower convergence, higher chance to cache the global minima.
@@ -107,16 +113,17 @@ class SolverParameters:
         self.refineSolution = refineSolution
         self.startPoint = startPoint
 
+
 class Solution:
     def __init__(self,
                  problem: Problem,
-                 bestTrials: np.ndarray(shape = (1), dtype = TrialPoint)=[],
+                 bestTrials: np.ndarray(shape=(1), dtype=TrialPoint) = [],
 
                  numberOfGlobalTrials: int = 0,
                  numberOfLocalTrials: int = 0,
                  solvingTime: np.double = 0.0,
                  solutionAccuracy: np.double = 0.0
-                ):
+                 ):
         self.problem = problem
         self.bestTrials = bestTrials
 
@@ -125,11 +132,12 @@ class Solution:
         self.solvingTime = solvingTime
         self.solutionAccuracy = solutionAccuracy
 
+
 class Solver:
     def __init__(self,
                  problem: Problem,
                  parameters: SolverParameters = SolverParameters()
-                ):
+                 ):
         """
         :param problem: Optimization problem
         :param parameters: Parameters for solving the problem
@@ -137,34 +145,33 @@ class Solver:
         self.problem = problem
         self.parameters = parameters
 
-    def solve(self) -> Solution:
+    def Solve(self) -> Solution:
         """
         Retrieve a solution with check of the stop conditions
         :return: Solution for the optimization problem
         """
 
-    def performeGlobalIteration(self, number: int = 1):
+    def DoGlobalIteration(self, number: int = 1):
         """
         :param number: The number of iterations of the global search
         """
 
-    def performeLocalRefinement(self, number: int = 1):
+    def DoLocalRefinement(self, number: int = 1):
         """
         :param number: The number of iterations of the local search
         """
 
-    def getResults(self) -> Solution:
+    def GetResults(self) -> Solution:
         """
         :return: Return current solution for the optimization problem
         """
 
-    def saveProgress(self, fileName: str):
+    def SaveProgress(self, fileName: str):
         """
         :return:
         """
 
-    def loadProgress(self, fileName: str):
+    def LoadProgress(self, fileName: str):
         """
         :return:
         """
-

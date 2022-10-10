@@ -132,6 +132,7 @@ class Evolvent:
 
 class CharacteristicsQueue:
     __baseQueue: queue = queue.PriorityQueue()
+
     def __init__(self):
         pass
 
@@ -186,7 +187,6 @@ class SearchData:
     def GetCount(self) -> int:
         pass
 
-
     def saveProgress(self, fileName: str):
         """
         :return:
@@ -199,7 +199,8 @@ class SearchData:
 
 
 class Method:
-    stop:bool = False;
+    stop: bool = False;
+
     def __init__(self,
                  problem: sa.Problem,
                  parameters: sa.SolverParameters,
@@ -217,6 +218,9 @@ class Method:
         pass
 
     def CheckStopCondition(self):
+        pass
+
+    def RecalcAllCharacteristics(self):
         pass
 
     def CalculateIterationPoints(self) -> MethodPoint:
@@ -251,23 +255,23 @@ class Process:
         self.searchData = searchData
         self.method = method
 
-    def solve(self) -> sa.Solution:
+    def Solve(self) -> sa.Solution:
         """
         Retrieve a solution with check of the stop conditions
         :return: Solution for the optimization problem
         """
 
-    def performeGlobalIteration(self, number: int = 1):
+    def DoGlobalIteration(self, number: int = 1):
         """
         :param number: The number of iterations of the global search
         """
 
-    def performeLocalRefinement(self, number: int = 1):
+    def DoLocalRefinement(self, number: int = 1):
         """
         :param number: The number of iterations of the local search
         """
 
-    def getResults(self) -> sa.Solution:
+    def GetResults(self) -> sa.Solution:
         """
         :return: Return current solution for the optimization problem
         """
