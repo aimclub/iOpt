@@ -53,7 +53,7 @@ class TrialPoint(Point):
                  point: Point,
                  functionValues: np.ndarray(shape=(1), dtype=FunctionValue)
                  ):
-        self.point = point
+        super(point)
         self.functionValues = functionValues
 
 

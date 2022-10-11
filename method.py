@@ -10,33 +10,6 @@ from bintrees import AVLTree
 from enum import Enum
 
 
-class TypeOfCalculation(Enum):
-    FUNCTION = 1
-    CONVOLUTION = 2
-
-
-class BaseTaskForMethod:
-    def __init__(self,
-                 problem: sa.Problem,
-                 parameters: sa.SolverParameters,
-                 perm: np.ndarray(shape=(1), dtype=np.int)):
-        self.problem = problem
-        self.parameters = parameters
-        self.perm = perm
-
-    def calculate(self,
-                  functionValue: sa.TrialPoint,
-                  functionNumber: int,
-                  type: TypeOfCalculation = TypeOfCalculation.FUNCTION
-                  ) -> sa.TrialPoint:
-        self.problem.calculate(functionValue.point,
-                               functionValue.functionValues[self.perm[functionNumber]])
-        """
-        Compute selected function by number.
-        :return: Calculated function value.
-        """
-
-
 class MethodPoint(sa.TrialPoint):
     __index: int = -2
     __discreteValueIndex: int = 0
@@ -93,6 +66,33 @@ class MethodPoint(sa.TrialPoint):
 
     def setRigth(self, point: MethodPoint):
         self.__rigthPoint = point
+
+
+class TypeOfCalculation(Enum):
+    FUNCTION = 1
+    CONVOLUTION = 2
+
+
+class BaseTaskForMethod:
+    def __init__(self,
+                 problem: sa.Problem,
+                 parameters: sa.SolverParameters,
+                 perm: np.ndarray(shape=(1), dtype=np.int)):
+        self.problem = problem
+        self.parameters = parameters
+        self.perm = perm
+
+    def calculate(self,
+                  functionValue: MethodPoint,
+                  functionNumber: int,
+                  type: TypeOfCalculation = TypeOfCalculation.FUNCTION
+                  ) -> MethodPoint:
+        self.problem.calculate(functionValue.point,
+                               functionValue.functionValues[self.perm[functionNumber]])
+        """
+        Compute selected function by number.
+        :return: Calculated function value.
+        """
 
 
 class calcDelta:
@@ -167,6 +167,7 @@ class SearchData:
         pass
 
     # вставка точки если знает правую точку
+    # в качестве интервала используем [i-1, i]
     def InsertTrial(self, newTrial: MethodPoint, rigthTrial: MethodPoint):
         pass
 
