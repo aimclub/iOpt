@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List
 import numpy as np
 
+from method import Listener
+
 # Вопросы:
 # 1. Нужна структура данных для хранения поисковой информации типа дерева
 #   bintrees.FastAVLTree()
@@ -175,3 +177,10 @@ class Solver:
         """
         :return:
         """
+
+    def RefrashListener(self):
+        pass
+
+
+    def AddListener(self, listener: Listener):
+        self.__listeners.append(listener);

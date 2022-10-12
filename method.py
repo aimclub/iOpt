@@ -25,6 +25,11 @@ class MethodPoint(sa.TrialPoint):
 
     iterationNumber: int = -1
 
+    # итератор по испытаниям
+    def __next__(self):
+        if self.__rigthPoint != None:
+            yield self.__rigthPoint
+
     def __init__(self,
                  y: sa.Point,
                  x: np.double = -1,
@@ -198,6 +203,41 @@ class SearchData:
         :return:
         """
 
+    def __iter__(self):
+        # вернуть самую левую точку из дерева (ниже код проверить!)
+        return self.__allTrials.min_item()[1]
+
+
+class Listener:
+    def BeforeMethodStart(self, searchData: SearchData):
+        pass
+
+    def OnEndIteration(self, searchData: SearchData):
+        pass
+
+    def OnMethodStop(self, searchData: SearchData):
+        pass
+
+    def OnRefrash(self, searchData: SearchData):
+        pass
+
+
+class FunctionPaint:
+    def __init__(self, searchData: SearchData):
+        self.searchData = searchData
+
+    def Paint(self):
+        pass
+
+
+# пример слушателя
+class PaintListener(Listener):
+    # нарисовать все точки испытаний
+    def OnMethodStop(self, searchData: SearchData):
+        fp = FunctionPaint(searchData)
+        fp.Paint()
+        pass
+
 
 class Method:
     stop: bool = False;
@@ -241,6 +281,8 @@ class Method:
 
 
 class Process:
+    __listeners: List[Listener] = []
+
     def __init__(self,
                  problem: sa.Problem,
                  parameters: sa.SolverParameters,
@@ -276,3 +318,9 @@ class Process:
         """
         :return: Return current solution for the optimization problem
         """
+
+    def RefrashListener(self):
+        pass
+
+    def AddListener(self, listener: Listener):
+        self.__listeners.append(listener);
