@@ -100,17 +100,6 @@ class OptimizationTask:
         :return: Calculated function value.
         """
 
-
-class calcDelta:
-    def __init__(self,
-                 dim: int = 1,
-                ):
-        self.dim = dim
-
-    def root(self, p1: SearchDataItem, p2: SearchDataItem) -> np.double:
-        pass
-
-
 class Evolvent:
     def __init__(self,
                  lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
@@ -172,13 +161,10 @@ class SearchData:
     def ClearQueue(self):
         pass
 
-    # вставка точки без доп. инф.
-    def InsertDataItem(self, dataItem: SearchDataItem):
-        pass
-
     # вставка точки если знает правую точку
     # в качестве интервала используем [i-1, i]
-    def InsertDataItem(self, newDataItem: SearchDataItem, rigthDataItem: SearchDataItem):
+    # если rigthDataItem == None то его необходимо найти по дереву __allTrials
+    def InsertDataItem(self, newDataItem: SearchDataItem, rigthDataItem: SearchDataItem=None):
         pass
 
     def FindDataItemByOneDimensionalPoint(self, x: np.double) -> SearchDataItem:
