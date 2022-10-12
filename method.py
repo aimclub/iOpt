@@ -10,13 +10,13 @@ from bintrees import AVLTree
 from enum import Enum
 
 
-class MethodPoint(sa.TrialPoint):
+class SearchDataItem(sa.Trial):
     __index: int = -2
     __discreteValueIndex: int = 0
     __z: np.double = sys.float_info.max
 
-    __leftPoint: MethodPoint = None
-    __rigthPoint: MethodPoint = None
+    __leftPoint: SearchDataItem = None
+    __rigthPoint: SearchDataItem = None
 
     delta: np.double = -1
 
@@ -34,43 +34,43 @@ class MethodPoint(sa.TrialPoint):
                  y: sa.Point,
                  x: np.double = -1,
                  discreteValueIndex: int = 0
-                 ):
+                ):
         self.point = y
         self.__x = x
         self.__discreteValueIndex = discreteValueIndex
 
-    def getX(self) -> np.double:
+    def GetX(self) -> np.double:
         pass
 
-    def getY(self) -> sa.Point:
+    def GetY(self) -> sa.Point:
         pass
 
-    def setIndex(self, index: int):
+    def GetDiscreteValueIndex(self) -> int:
         pass
 
-    def getIndex(self) -> int:
+    def SetIndex(self, index: int):
         pass
 
-    def getDiscreteValueIndex(self) -> int:
+    def GetIndex(self) -> int:
         pass
 
-    def setZ(self, z: np.double):
+    def SetZ(self, z: np.double):
         pass
 
-    def getZ(self) -> np.double:
+    def GetZ(self) -> np.double:
         pass
 
-    def getLeft(self) -> MethodPoint:
-        return self.__leftPoint
-
-    def setLeft(self, point: MethodPoint):
+    def SetLeft(self, point: SearchDataItem):
         self.__leftPoint = point
 
-    def getRigth(self) -> MethodPoint:
-        return self.__rigthPoint
+    def GetLeft(self) -> SearchDataItem:
+        return self.__leftPoint
 
-    def setRigth(self, point: MethodPoint):
+    def SetRigth(self, point: SearchDataItem):
         self.__rigthPoint = point
+
+    def GetRigth(self) -> SearchDataItem:
+        return self.__rigthPoint
 
 
 class TypeOfCalculation(Enum):
@@ -78,22 +78,23 @@ class TypeOfCalculation(Enum):
     CONVOLUTION = 2
 
 
-class BaseTaskForMethod:
+class OptimizationTask:
     def __init__(self,
                  problem: sa.Problem,
-                 parameters: sa.SolverParameters,
-                 perm: np.ndarray(shape=(1), dtype=np.int)):
+                 #arameters: sa.SolverParameters,
+                 perm: np.ndarray(shape=(1), dtype=np.int)
+                ):
         self.problem = problem
-        self.parameters = parameters
+        #self.parameters = parameters
         self.perm = perm
 
-    def calculate(self,
-                  functionValue: MethodPoint,
-                  functionNumber: int,
+    def Calculate(self,
+                  dataItem: SearchDataItem,
+                  functionIndex: int,
                   type: TypeOfCalculation = TypeOfCalculation.FUNCTION
-                  ) -> MethodPoint:
-        self.problem.calculate(functionValue.point,
-                               functionValue.functionValues[self.perm[functionNumber]])
+                 ) -> SearchDataItem:
+        self.problem.Calculate(dataItem.point,
+                               dataItem.functionValues[self.perm[functionIndex]])
         """
         Compute selected function by number.
         :return: Calculated function value.
@@ -103,10 +104,10 @@ class BaseTaskForMethod:
 class calcDelta:
     def __init__(self,
                  dim: int = 1,
-                 ):
+                ):
         self.dim = dim
 
-    def root(self, p1: MethodPoint, p2: MethodPoint) -> np.double:
+    def root(self, p1: SearchDataItem, p2: SearchDataItem) -> np.double:
         pass
 
 
@@ -116,19 +117,23 @@ class Evolvent:
                  upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
                  numberOfFloatVariables: int = 1,
                  evolventDensity: int = 10
-                 ):
+                ):
         self.numberOfFloatVariables = numberOfFloatVariables
         self.lowerBoundOfFloatVariables = lowerBoundOfFloatVariables
         self.upperBoundOfFloatVariables = upperBoundOfFloatVariables
         self.evolventDensity = evolventDensity
 
-    def GetImage(x: np.double) -> np.ndarray(shape=(1), dtype=np.double):
+    def GetImage(self,
+                 x: np.double
+                ) -> np.ndarray(shape=(1), dtype=np.double):
         """
         x->y
         """
         pass
 
-    def GetInverseImage(y: np.ndarray(shape=(1), dtype=np.double)) -> np.double:
+    def GetInverseImage(self,
+                        y: np.ndarray(shape=(1), dtype=np.double)
+                       ) -> np.double:
         """
         y->x
         """
@@ -141,13 +146,13 @@ class CharacteristicsQueue:
     def __init__(self):
         pass
 
-    def ClearQueue(self):
+    def Clear(self):
         pass
 
-    def InsertTrial(self, trial: MethodPoint):
+    def Insert(self, dataItem: SearchDataItem):
         pass
 
-    def getBestTrial(self) -> MethodPoint:
+    def GetBestItem(self) -> SearchDataItem:
         pass
 
 
@@ -168,21 +173,21 @@ class SearchData:
         pass
 
     # вставка точки без доп. инф.
-    def InsertTrial(self, trial: MethodPoint):
+    def InsertDataItem(self, dataItem: SearchDataItem):
         pass
 
     # вставка точки если знает правую точку
     # в качестве интервала используем [i-1, i]
-    def InsertTrial(self, newTrial: MethodPoint, rigthTrial: MethodPoint):
+    def InsertDataItem(self, newDataItem: SearchDataItem, rigthDataItem: SearchDataItem):
         pass
 
-    def FindTrialByOneDimensionalPoint(self, x: np.double) -> MethodPoint:
+    def FindDataItemByOneDimensionalPoint(self, x: np.double) -> SearchDataItem:
         pass
 
-    def GetTrialWithMaxGlobalR(self) -> MethodPoint:
+    def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
         pass
 
-    def GetTrialWithMaxLocalR(self) -> MethodPoint:
+    def GetDataItemWithMaxLocalR(self) -> SearchDataItem:
         pass
 
     # Перезаполнение очереди (при ее опустошении или при смене оценки константы Липшица)
@@ -193,12 +198,12 @@ class SearchData:
     def GetCount(self) -> int:
         pass
 
-    def saveProgress(self, fileName: str):
+    def SaveProgress(self, fileName: str):
         """
         :return:
         """
 
-    def loadProgress(self, fileName: str):
+    def LoadProgress(self, fileName: str):
         """
         :return:
         """
@@ -222,7 +227,7 @@ class Listener:
         pass
 
 
-class FunctionPaint:
+class FunctionPainter:
     def __init__(self, searchData: SearchData):
         self.searchData = searchData
 
@@ -234,21 +239,21 @@ class FunctionPaint:
 class PaintListener(Listener):
     # нарисовать все точки испытаний
     def OnMethodStop(self, searchData: SearchData):
-        fp = FunctionPaint(searchData)
+        fp = FunctionPainter(searchData)
         fp.Paint()
         pass
 
 
 class Method:
-    stop: bool = False;
+    stop: bool = False
 
     def __init__(self,
                  problem: sa.Problem,
                  parameters: sa.SolverParameters,
-                 task: BaseTaskForMethod,
+                 task: OptimizationTask,
                  evolvent: Evolvent,
                  searchData: SearchData
-                 ):
+                ):
         self.problem = problem
         self.parameters = parameters
         self.task = task
@@ -264,16 +269,16 @@ class Method:
     def RecalcAllCharacteristics(self):
         pass
 
-    def CalculateIterationPoints(self) -> MethodPoint:
+    def CalculateIterationPoints(self) -> SearchDataItem:
         pass
 
-    def CalculateFunctionals(self, point: MethodPoint) -> MethodPoint:
+    def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
         pass
 
-    def RenewSearchData(self, point: MethodPoint):
+    def RenewSearchData(self, point: SearchDataItem):
         pass
 
-    def UpdateOptimum(self, point: MethodPoint):
+    def UpdateOptimum(self, point: SearchDataItem):
         pass
 
     def FinalizeIteration(self):
@@ -286,11 +291,11 @@ class Process:
     def __init__(self,
                  problem: sa.Problem,
                  parameters: sa.SolverParameters,
-                 task: BaseTaskForMethod,
+                 task: OptimizationTask,
                  evolvent: Evolvent,
                  searchData: SearchData,
                  method: Method
-                 ):
+                ):
         self.problem = problem
         self.parameters = parameters
         self.task = task
@@ -319,8 +324,8 @@ class Process:
         :return: Return current solution for the optimization problem
         """
 
-    def RefrashListener(self):
+    def RefreshListener(self):
         pass
 
     def AddListener(self, listener: Listener):
-        self.__listeners.append(listener);
+        self.__listeners.append(listener)
