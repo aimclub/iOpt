@@ -2,8 +2,10 @@ from abc import ABC, abstractmethod
 from typing import List
 import numpy as np
 
+from method import Listener
+
 #Вопросы:
-#1. Нужна структура данных для хранения поисковой информации типа дерева 
+#1. Нужна структура данных для хранения поисковой информации типа дерева
 #   bintrees.FastAVLTree()
 #   sortedcontainers.SortedSet
 
@@ -43,7 +45,7 @@ class SolutionValue(FunctionValue):
         self.calculationsNumber = calculationsNumber
         self.holderConstantsEstimations = holderConstantsEstimations
 
-class TrialPoint(Point):
+class Trial:
     def __init__(self,
                  point: Point,
                  functionValues: np.ndarray(shape = (1), dtype = FunctionValue)
@@ -67,10 +69,10 @@ class Problem(ABC):
         self.upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
         self.discreteVariableValues: np.ndarray(shape = (1, 1), dtype = str) = []
         
-        self.knownOptimum: np.ndarray(shape = (1), dtype = TrialPoint) = []
+        self.knownOptimum: np.ndarray(shape = (1), dtype = Trial) = []
 
     @abstractmethod
-    def calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
         Compute selected function at given point.
         For any new problem that inherits from :class:`Problem`, this method should be replaced.
@@ -110,12 +112,12 @@ class SolverParameters:
 class Solution:
     def __init__(self,
                  problem: Problem,
-                 bestTrials: np.ndarray(shape = (1), dtype = TrialPoint),
+                 bestTrials: np.ndarray(shape = (1), dtype = Trial) = [],
 
-                 numberOfGlobalTrials: int,
-                 numberOfLocalTrials: int,
-                 solvingTime: np.double,
-                 solutionAccuracy: np.double
+                 numberOfGlobalTrials: int = 0,
+                 numberOfLocalTrials: int = 0,
+                 solvingTime: np.double = 0.0,
+                 solutionAccuracy: np.double = 0.0
                 ):
         self.problem = problem
         self.bestTrials = bestTrials
@@ -126,6 +128,8 @@ class Solution:
         self.solutionAccuracy = solutionAccuracy
 
 class Solver:
+    __listeners: List[Listener] = []
+
     def __init__(self,
                  problem: Problem,
                  parameters: SolverParameters = SolverParameters()
@@ -137,34 +141,39 @@ class Solver:
         self.problem = problem
         self.parameters = parameters
 
-    def solve(self) -> Solution:
+    def Solve(self) -> Solution:
         """
         Retrieve a solution with check of the stop conditions
         :return: Solution for the optimization problem
         """
 
-    def performeGlobalIteration(self, number: int = 1):
+    def DoGlobalIteration(self, number: int = 1):
         """
         :param number: The number of iterations of the global search
         """
 
-    def performeLocalRefinement(self, number: int = 1):
+    def DoLocalRefinement(self, number: int = 1):
         """
         :param number: The number of iterations of the local search
         """
 
-    def getResults(self) -> Solution:
+    def GetResults(self) -> Solution:
         """
         :return: Return current solution for the optimization problem
         """
 
-    def saveProgress(self, fileName: str):
+    def SaveProgress(self, fileName: str):
         """
         :return:
         """
 
-    def loadProgress(self, fileName: str):
+    def LoadProgress(self, fileName: str):
         """
         :return:
         """
 
+    def RefreshListener(self):
+        pass
+
+    def AddListener(self, listener: Listener):
+        self.__listeners.append(listener)
