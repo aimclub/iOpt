@@ -1,91 +1,16 @@
-from abc import ABC, abstractmethod
 from typing import List
 import numpy as np
-
-from method import Listener
-
-#Вопросы:
-#1. Нужна структура данных для хранения поисковой информации типа дерева
-#   bintrees.FastAVLTree()
-#   sortedcontainers.SortedSet
-
-#2. Нужна сруктура данных для очереди интервалов
-#   queue.PriorityQueue()
-
-#3. Подумать о визуализации (параметры и методы представления)
-
-from enum import Enum
-
-class FunctionType(Enum):
-    OBJECTIV = 1
-    CONSTRAINT = 2
-
-class Point:
-    def __init__(self,
-                 floatVariables: np.ndarray(shape = (1), dtype = np.double),
-                 discreteVariables: np.ndarray(shape = (1), dtype = str),
-                ):
-        self.floatVariables = floatVariables
-        self.discreteVariables = discreteVariables
-
-class FunctionValue:
-    def __init__(self,
-                 type: FunctionType = FunctionType.OBJECTIV,
-                 functionID: str = ""
-                ):
-        self.type = type
-        self.functionID = functionID
-        self.value: np.double = 0.0
-
-class SolutionValue(FunctionValue):
-    def __init__(self,
-                 calculationsNumber: int = -1,
-                 holderConstantsEstimations: np.double = -1.0
-                ):
-        self.calculationsNumber = calculationsNumber
-        self.holderConstantsEstimations = holderConstantsEstimations
-
-class Trial:
-    def __init__(self,
-                 point: Point,
-                 functionValues: np.ndarray(shape = (1), dtype = FunctionValue)
-                ):
-        self.point = point
-        self.functionValues = functionValues
-
-
-class Problem(ABC):
-    """Base class for optimization problems"""
-    def __init__(self):
-        self.numberOfFloatVariables: int = 0
-        self.numberOfDisreteVariables: int = 0
-        self.numberOfObjectives: int = 0
-        self.numberOfConstraints: int = 0
-
-        self.floatVariableNames: np.ndarray(shape = (1), dtype = str) = []
-        self.discreteVariableNames: np.ndarray(shape = (1), dtype = str) = []
-
-        self.lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
-        self.upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
-        self.discreteVariableValues: np.ndarray(shape = (1, 1), dtype = str) = []
-        
-        self.knownOptimum: np.ndarray(shape = (1), dtype = Trial) = []
-
-    @abstractmethod
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
-        """
-        Compute selected function at given point.
-        For any new problem that inherits from :class:`Problem`, this method should be replaced.
-        :return: Calculated function value."""
-        pass
-
+from listener import Listener
+from trial import Point
+from trial import Trial
+from problem import Problem
 
 class SolverParameters:
     def __init__(self,
                  eps: np.double = 0.01,
                  r: np.double = 2.0,
                  itersLimit: int = 20000,
-                 evolventDensity: int = 12,
+                 evolventDensity: int = 10,
                  epsR: np.double = 0.001,
                  refineSolution: bool = False,
                  startPoint: Point = []
