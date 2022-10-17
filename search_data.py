@@ -9,7 +9,7 @@ import queue
 from trial import Point
 from trial import Trial
 from problem import Problem
-from solver import Solution
+from solution import Solution
 
 
 class SearchDataItem(Trial):

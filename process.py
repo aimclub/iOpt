@@ -7,7 +7,7 @@ from optim_task import OptimizationTask
 from method import Method
 from problem import Problem
 from solver import SolverParameters
-from solver import Solution
+from solution import Solution
 
 
 class Process:
