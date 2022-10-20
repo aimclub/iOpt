@@ -1,6 +1,6 @@
-from search_data import SearchData
+from iOpt.method.search_data import SearchData
 
-
+#интерфейс в методе
 class Listener:
     def BeforeMethodStart(self, searchData: SearchData):
         pass
@@ -15,6 +15,8 @@ class Listener:
         pass
 
 
+
+#реализацию вынести за метод!
 class FunctionPainter:
     def __init__(self, searchData: SearchData):
         self.searchData = searchData

@@ -1,9 +1,9 @@
 from typing import List
 import numpy as np
-from listener import Listener
-from trial import Point
-from problem import Problem
-from solution import Solution
+from iOpt.method.listener import Listener
+from iOpt.trial import Point
+from iOpt.problem import Problem
+from iOpt.solution import Solution
 
 class SolverParameters:
     def __init__(self,

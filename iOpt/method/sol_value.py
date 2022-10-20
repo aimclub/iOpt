@@ -1,5 +1,5 @@
 import numpy as np
-from trial import FunctionValue
+from iOpt.trial import FunctionValue
 
 
 class SolutionValue(FunctionValue):

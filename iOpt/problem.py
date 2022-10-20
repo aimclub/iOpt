@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from trial import Point
-from trial import FunctionValue
-from trial import Trial
+from iOpt.trial import Point
+from iOpt.trial import FunctionValue
+from iOpt.trial import Trial
 
 
 class Problem(ABC):

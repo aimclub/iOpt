@@ -1,5 +1,5 @@
-from trial import Trial
-from problem import Problem
+from iOpt.trial import Trial
+from iOpt.problem import Problem
 import numpy as np
 
 class Solution:
