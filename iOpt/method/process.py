@@ -1,13 +1,13 @@
 from typing import List
 
 from listener import Listener
-from evolvent import Evolvent
+from iOpt.evolvent.evolvent import Evolvent
 from search_data import SearchData
 from optim_task import OptimizationTask
 from method import Method
-from problem import Problem
-from solver import SolverParameters
-from solution import Solution
+from iOpt.problem import Problem
+from iOpt.solver import SolverParameters
+from iOpt.solution import Solution
 
 
 class Process:

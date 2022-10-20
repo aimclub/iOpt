@@ -1,10 +1,10 @@
 import unittest
 
-import search_data
-import trial
+import iOpt.method.search_data
+import iOpt.trial
 
-from search_data import SearchDataItem
-from trial import Point
+from iOpt.method.search_data import SearchDataItem
+from iOpt.trial import Point
 
 
 class TestSearchDataItem(unittest.TestCase):

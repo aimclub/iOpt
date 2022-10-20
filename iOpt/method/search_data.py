@@ -6,10 +6,10 @@ import queue
 
 # from bintrees import AVLTree
 
-from trial import Point
-from trial import Trial
-from problem import Problem
-from solution import Solution
+from iOpt.trial import Point
+from iOpt.trial import Trial
+from iOpt.problem import Problem
+from iOpt.solution import Solution
 
 
 class SearchDataItem(Trial):
@@ -30,7 +30,7 @@ class SearchDataItem(Trial):
 
     # итератор по испытаниям
     def __next__(self):
-        if self.__rigthPoint != None:
+        if self.__rigthPoint is not None:
             yield self.__rigthPoint
 
     def __init__(self,

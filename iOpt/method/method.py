@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from evolvent import Evolvent
+from iOpt.evolvent.evolvent import Evolvent
 from search_data import SearchData
 from search_data import SearchDataItem
 from optim_task import OptimizationTask
-from problem import Problem
-from solver import SolverParameters
+from iOpt.problem import Problem
+from iOpt.solver import SolverParameters
 
 
 class Method:

@@ -3,7 +3,7 @@ import numpy as np
 from enum import Enum
 
 from search_data import SearchDataItem
-from problem import Problem
+from iOpt.problem import Problem
 
 
 class TypeOfCalculation(Enum):
