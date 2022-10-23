@@ -169,6 +169,8 @@ class Method:
             point[1].SetLeft(point[0])
             point[1].delta = pow(point[1].GetX() - point[0].GetX(), 1.0 / dim)
             point[0].delta = pow(point[0].GetX() - point[0].GetLeft().GetX(), 1.0 / dim)
+            self.min_delta = min(point[0].delta, self.min_delta)
+            self.min_delta = min(point[1].delta, self.min_delta)
             self.searchData.InsertDataItem(point[0], point[1])
 
     def UpdateOptimum(self, point: SearchDataItem):
