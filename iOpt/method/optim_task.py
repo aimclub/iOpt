@@ -15,17 +15,24 @@ class OptimizationTask:
     def __init__(self,
                  problem: Problem,
                  perm: np.ndarray(shape = (1), dtype = np.int)
-                ):
+                ):		
         self.problem = problem
         self.perm = perm
+		
+		"""
+		perm.shape = ???
+		for i in ???
+			perm[i]=i
+		"""
 
     def Calculate(self,
                   dataItem: SearchDataItem,
                   functionIndex: int,
                   type: TypeOfCalculation = TypeOfCalculation.FUNCTION
                  ) -> SearchDataItem:
-        self.problem.Calculate(dataItem.point,
-                               dataItem.functionValues[self.perm[functionIndex]])
+		funcValue = self.problem.Calculate(dataItem.point,
+                               dataItem.functionValues[self.perm[functionIndex]])		 
+        return SearchDataItem(dataItem.point, funcValue)
         """
         Compute selected function by number.
         :return: Calculated function value.
