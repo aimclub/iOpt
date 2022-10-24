@@ -61,8 +61,13 @@ class Method:
         recalc = True
         self.RecalcAllCharacteristics()
 
+        self.searchData.InsertDataItem(right)
+        self.searchData.InsertDataItem(middle, right)
+        self.searchData.InsertDataItem(left, middle)
+
     def CheckStopCondition(self):
         self.stop = self.min_delta < self.parameters.eps
+        return self.stop
 
     def RecalcAllCharacteristics(self):
         if self.recalc is not True:
