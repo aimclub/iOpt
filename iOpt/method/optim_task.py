@@ -15,7 +15,7 @@ class OptimizationTask:
     def __init__(self,
                  problem: Problem,
                  perm: np.ndarray(shape = (1), dtype = np.int)
-                ):		
+                ):
         self.problem = problem
         self.perm = perm
 		
