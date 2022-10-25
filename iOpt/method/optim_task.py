@@ -19,11 +19,10 @@ class OptimizationTask:
         self.problem = problem
         self.perm = perm
 		
-		"""
-		perm.shape = ???
-		for i in ???
-			perm[i]=i
-		"""
+		self.perm[0]=0
+		#for i in ??? чему должен быть равен размер этого массива?
+		#	perm[i]=i
+		
 
     def Calculate(self,
                   dataItem: SearchDataItem,
