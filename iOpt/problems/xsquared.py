@@ -7,7 +7,7 @@ from iOpt.Problem import Problem
 import math
 
 
-class Rastrigin(Problem):
+class XSquared(Problem):
     """Base class for optimization problems"""
     def __init__(self,
 				 dimension: int):
@@ -17,11 +17,10 @@ class Rastrigin(Problem):
         self.floatVariableNames: np.ndarray(shape = (1), dtype = str) = [] #?
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape = (dimension), dtype = np.double) 
-		self.lowerBoundOfFloatVariables.fill(-2.2)
+		self.lowerBoundOfFloatVariables.fill(-1)
         self.upperBoundOfFloatVariables = np.ndarray(shape = (dimension), dtype = np.double)
-		self.upperBoundOfFloatVariables.fill(1.8)
+		self.upperBoundOfFloatVariables.fill(1)
 		
-        
         self.knownOptimum = np.ndarray(shape = (1), dtype = Trial)
 		self.knownOptimum[0].point.floatVariables =  np.ndarray(shape = (dimension), dtype = np.double)
 		self.knownOptimum[0].point.floatVariables.fill(0)
@@ -32,7 +31,7 @@ class Rastrigin(Problem):
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
 		sum: np.double = 0
 		for i in point.floatVariables.size
-			sum += point.floatVariables[i]*point.floatVariables[i]-10*math.cos(2*math.pi*point.floatVariables[i])+10
+			sum += point.floatVariables[i]*point.floatVariables[i]
 			
 		functionValue.value = sum
 		return functionValue
