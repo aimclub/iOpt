@@ -65,6 +65,8 @@ class Method:
         self.searchData.InsertDataItem(middle, right)
         self.searchData.InsertDataItem(left, middle)
 
+        self.best = middle
+
     def CheckStopCondition(self):
         self.stop = self.min_delta < self.parameters.eps
         return self.stop
@@ -100,30 +102,21 @@ class Method:
             x = 0.5 * (point.GetX() + left.GetX())
         return x
 
-    def CalculateIterationPoints(self, number: int = 1) -> \
-            List[(SearchDataItem, SearchDataItem)]:  # return list [(new, old)]
-        points = []
-        for i in range(number):
-            old = self.searchData.GetDataItemWithMaxGlobalR()
-            newx = self.CalculateNextPointCoordinate(old)
-            newy = self.evolvent.GetImage(newx)
-            new = SearchDataItem(newy, newx)
-            points.append((new, old))
-        return points
+    def CalculateIterationPoints(self) -> (SearchDataItem, SearchDataItem):  # return  [(new, old)]
+        old = self.searchData.GetDataItemWithMaxGlobalR()
+        newx = self.CalculateNextPointCoordinate(old)
+        newy = self.evolvent.GetImage(newx)
+        new = SearchDataItem(newy, newx)
+        return (new, old)
 
     def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
         # point.functionValues = np.array(shape=self.task.problem.numberOfObjectives, dtype=FunctionValue)
         # for func_id in range(self.task.problem.numberOfObjectives):  # make Calculate Objectives?
         #    point.functionValues[func_id] = self.task.Calculate(point, func_id)  # SetZ, BUT
-        # OR
-        # point.SetZ(self.task.Calculate(point, 0).GetZ())  # BS
 
         # Завернуть в цикл для индексной схемы
         point = self.task.Calculate(point, 0)
         point.SetZ(point.functionValues[0])
-        if point.GetZ() < self.best.GetZ():
-            self.best = point
-            self.Z[0] = point.GetZ()
         point.SetIndex(0)
         return point
 
@@ -169,9 +162,9 @@ class Method:
             return
         for point in points:
             self.CalculateGlobalR(point[0])
-            point[0].SetLeft(point[1].GetLeft())
-            point[1].SetRight(point[1])
-            point[1].SetLeft(point[0])
+            # point[0].SetLeft(point[1].GetLeft())
+            # point[1].SetRight(point[1])
+            # point[1].SetLeft(point[0])
             point[1].delta = pow(point[1].GetX() - point[0].GetX(), 1.0 / dim)
             point[0].delta = pow(point[0].GetX() - point[0].GetLeft().GetX(), 1.0 / dim)
             self.min_delta = min(point[0].delta, self.min_delta)
@@ -179,12 +172,9 @@ class Method:
             self.searchData.InsertDataItem(point[0], point[1])
 
     def UpdateOptimum(self, point: SearchDataItem):
-        if self.best is not None:  # only on first iteration
-            if self.best.GetIndex() < point.GetIndex():  # CHECK INDEX
-                self.best = point
-            elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
-                self.best = point
-        else:
+        if self.best.GetIndex() < point.GetIndex():  # CHECK INDEX
+            self.best = point
+        elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
             self.best = point
 
     def FinalizeIteration(self):
