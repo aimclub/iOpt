@@ -19,7 +19,7 @@ class SearchDataItem(Trial):
     __z: np.double = sys.float_info.max
 
     __leftPoint: SearchDataItem = None
-    __rigthPoint: SearchDataItem = None
+    __rightPoint: SearchDataItem = None
 
     delta: np.double = -1.0
 
@@ -27,11 +27,6 @@ class SearchDataItem(Trial):
     globalR: np.double = -1.0
 
     iterationNumber: int = -1
-
-    # итератор по испытаниям
-    def __next__(self):
-        if self.__rigthPoint is not None:
-            yield self.__rigthPoint
 
     def __init__(self,
                  y: Point,
@@ -69,10 +64,10 @@ class SearchDataItem(Trial):
     def GetLeft(self) -> SearchDataItem:
         return self.__leftPoint
 
-    def SetRigth(self, point: SearchDataItem):
+    def SetRight(self, point: SearchDataItem):
         self.__rightPoint = point
 
-    def GetRigth(self) -> SearchDataItem:
+    def GetRight(self) -> SearchDataItem:
         return self.__rightPoint
 
     def __lt__(self, other):
@@ -82,32 +77,22 @@ class SearchDataItem(Trial):
 class CharacteristicsQueue:
     # пока без вытеснений
     __baseQueue: queue = queue.PriorityQueue()
-    __typeR: int = 1
 
-    def __init__(self, typeR: int):
-        self.__typeR = typeR
+    def __init__(self):
         self.__baseQueue = queue.PriorityQueue()
 
     def Clear(self):
         self.__baseQueue.queue.clear()
 
-    def Insert(self, dataItem: SearchDataItem):
-        # typeR: 0 - localR, 1 - globalR
+    def Insert(self, key: np.double, dataItem: SearchDataItem):
         # приоритет - значение характеристики
         # чтобы возвращало значение по убыванию
         # -1*dataItem.globalR
-        if self.__typeR:
-            data = (-1 * dataItem.globalR, dataItem)
-        else:
-            data = (-1 * dataItem.localR, dataItem)
-        self.__baseQueue.put(data)
+        self.__baseQueue.put((key, dataItem))
 
     def GetBestItem(self) -> SearchDataItem:
         # размер очереди = числу интервалов
-        if self.IsEmpty():
-            return None
-        else:
-            return self.__baseQueue.get()
+        return self.__baseQueue.get()[1]
 
     def IsEmpty(self):
         return self.__baseQueue.empty()
@@ -115,19 +100,20 @@ class CharacteristicsQueue:
 
 class SearchData:
     # очереди характеристик
-    __RLocalQueue: CharacteristicsQueue = CharacteristicsQueue(typeR=0)
-    __RGlobalQueue: CharacteristicsQueue = CharacteristicsQueue(typeR=1)
+    __RLocalQueue: CharacteristicsQueue = CharacteristicsQueue()
+    __RGlobalQueue: CharacteristicsQueue = CharacteristicsQueue()
     # упорядоченное множество всех испытаний по X
     # __allTrials: AVLTree = AVLTree()
     __allTrials: List = []
+    __iterDataItem: SearchDataItem = None
 
     solution: Solution = None
 
     def __init__(self, problem: Problem):
         self.solution = Solution(problem)
         self.__allTrials = []
-        self.__RLocalQueue = CharacteristicsQueue(typeR=0)
-        self.__RGlobalQueue = CharacteristicsQueue(typeR=1)
+        self.__RLocalQueue = CharacteristicsQueue()
+        self.__RGlobalQueue = CharacteristicsQueue()
 
     def ClearQueue(self):
         self.__RGlobalQueue.Clear()
@@ -138,50 +124,35 @@ class SearchData:
     # если rigthDataItem == None то его необходимо найти по дереву __allTrials
     def InsertDataItem(self, newDataItem: SearchDataItem,
                        rigthDataItem: SearchDataItem = None):
-        dimention = len(newDataItem.point.floatVariables)
-        if self.GetCount() > 1:
-            if rigthDataItem is None:
-                rigthDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
+        if rigthDataItem is None:
+            rigthDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
 
-            newDataItem.SetLeft(rigthDataItem.GetLeft())
-            newDataItem.SetRigth(rigthDataItem)
+        newDataItem.SetLeft(rigthDataItem.GetLeft())
+        newDataItem.SetRight(rigthDataItem)
 
-            newDataItem.GetLeft().SetRigth(newDataItem)
-            newDataItem.GetRigth().SetLeft(newDataItem)
+        newDataItem.GetLeft().SetRight(newDataItem)
+        newDataItem.GetRight().SetLeft(newDataItem)
 
-            # пересчет длин полученных интервалов
-            newDataItem.delta = (newDataItem.GetX() -
-                                 newDataItem.GetLeft().GetX()) ** (1 / dimention)
-            newDataItem.GetRigth().delta = (newDataItem.GetRigth().GetX() -
-                                            newDataItem.GetX()) ** (1 / dimention)
-            # вставка в лист
-            posInList = self.__allTrials.index(rigthDataItem)
-            self.__allTrials.insert(posInList, newDataItem)
-        else:
-            if self.GetCount() == 1:
-                newDataItem.delta = (newDataItem.GetX() - newDataItem.GetLeft().GetX()) ** (1 / dimention)
-            self.__allTrials.append(newDataItem)
+        # вставка в лист
+        self.__allTrials.append(newDataItem)
+
+    def InsertFirstDataItem(self, leftDataItem : SearchDataItem,
+                            rightDataItem: SearchDataItem):
+        leftDataItem.SetRight(rightDataItem)
+        rightDataItem.SetLeft(leftDataItem)
+        self.__allTrials.append(leftDataItem)
+        self.__allTrials.append(rightDataItem)
+        self.__iterDataItem = leftDataItem
 
     # поиск покрывающего интервала
     # возвращает правую точку
     def FindDataItemByOneDimensionalPoint(self, x: np.double) -> SearchDataItem:
-        posInList = 1
-        count = len(self.__allTrials)
-        if count > 2:
-            left = 0
-            right = count - 1
-            while left <= right:
-                mid = int((left + right) / 2)
-                a = self.__allTrials[mid - 1].GetX()
-                b = self.__allTrials[mid].GetX()
-                if self.__allTrials[mid - 1].GetX() > x:
-                    right = mid - 1
-                elif self.__allTrials[mid].GetX() < x:
-                    left = mid + 1
-                else:
-                    posInList = mid
-                    break
-        rightDataItem = self.__allTrials[posInList]
+        # итерируемся по rightPoint от минимального элемента
+        for item in self:
+            # как только встретили интервал с большей точкой - останавливаемся
+            if item.GetX() > x:
+                rightDataItem = item
+                break
         return rightDataItem
 
     def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
@@ -199,9 +170,9 @@ class SearchData:
         self.__RGlobalQueue.Clear()
         self.__RLocalQueue.Clear()
 
-        for itr in self.__iter__():
-            self.__RGlobalQueue.Insert(itr)
-            self.__RLocalQueue.Insert(itr)
+        for itr in self:
+            self.__RGlobalQueue.Insert(-1 * itr.globalR, itr)
+            self.__RLocalQueue.Insert(-1 * itr.localR, itr)
 
     # Возвращает текущее число интервалов в дереве
     def GetCount(self) -> int:
@@ -220,5 +191,16 @@ class SearchData:
     def __iter__(self):
         # вернуть самую левую точку из дерева (ниже код проверить!)
         # return self.__allTrials.min_item()[1]
-        return self.__allTrials.__iter__()
+        self.curIter = self.__iterDataItem
+        if self.curIter is None:
+            raise StopIteration
+        else:
+            return self
 
+    def __next__(self):
+        if self.curIter is None:
+            raise StopIteration
+        else:
+            tmp = self.curIter
+            self.curIter = self.curIter.GetRight()
+            return tmp
