@@ -13,7 +13,7 @@ from iOpt.solution import Solution
 
 
 class SearchDataItem(Trial):
-    __x: np.double = -1.0
+    __x: np.double
     __index: int = -2
     __discreteValueIndex: int = 0
     __z: np.double = sys.float_info.max
@@ -30,7 +30,7 @@ class SearchDataItem(Trial):
 
     def __init__(self,
                  y: Point,
-                 x: np.double = -1,
+                 x: np.double,
                  discreteValueIndex: int = 0
                 ):
         self.point = y
@@ -88,7 +88,7 @@ class CharacteristicsQueue:
         # приоритет - значение характеристики
         # чтобы возвращало значение по убыванию
         # -1*dataItem.globalR
-        self.__baseQueue.put((key, dataItem))
+        self.__baseQueue.put((-1 * key, dataItem))
 
     def GetBestItem(self) -> SearchDataItem:
         # размер очереди = числу интервалов
@@ -105,7 +105,7 @@ class SearchData:
     # упорядоченное множество всех испытаний по X
     # __allTrials: AVLTree = AVLTree()
     __allTrials: List = []
-    __iterDataItem: SearchDataItem = None
+    __firstDataItem: SearchDataItem = None
 
     solution: Solution = None
 
@@ -128,21 +128,30 @@ class SearchData:
             rigthDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
 
         newDataItem.SetLeft(rigthDataItem.GetLeft())
+        rigthDataItem.SetLeft(newDataItem)
         newDataItem.SetRight(rigthDataItem)
-
         newDataItem.GetLeft().SetRight(newDataItem)
-        newDataItem.GetRight().SetLeft(newDataItem)
 
-        # вставка в лист
         self.__allTrials.append(newDataItem)
+
+        self.__RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
+        self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
 
     def InsertFirstDataItem(self, leftDataItem : SearchDataItem,
                             rightDataItem: SearchDataItem):
         leftDataItem.SetRight(rightDataItem)
         rightDataItem.SetLeft(leftDataItem)
+
         self.__allTrials.append(leftDataItem)
         self.__allTrials.append(rightDataItem)
-        self.__iterDataItem = leftDataItem
+
+        self.__RGlobalQueue.Insert(leftDataItem.globalR, leftDataItem)
+        self.__RLocalQueue.Insert(leftDataItem.localR, leftDataItem)
+
+        self.__RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
+        self.__RLocalQueue.Insert(rightDataItem.localR, rightDataItem)
+
+        self.__firstDataItem = leftDataItem
 
     # поиск покрывающего интервала
     # возвращает правую точку
@@ -171,8 +180,8 @@ class SearchData:
         self.__RLocalQueue.Clear()
 
         for itr in self:
-            self.__RGlobalQueue.Insert(-1 * itr.globalR, itr)
-            self.__RLocalQueue.Insert(-1 * itr.localR, itr)
+            self.__RGlobalQueue.Insert(itr.globalR, itr)
+            self.__RLocalQueue.Insert(itr.localR, itr)
 
     # Возвращает текущее число интервалов в дереве
     def GetCount(self) -> int:
@@ -191,7 +200,7 @@ class SearchData:
     def __iter__(self):
         # вернуть самую левую точку из дерева (ниже код проверить!)
         # return self.__allTrials.min_item()[1]
-        self.curIter = self.__iterDataItem
+        self.curIter = self.__firstDataItem
         if self.curIter is None:
             raise StopIteration
         else:

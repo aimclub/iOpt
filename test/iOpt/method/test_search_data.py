@@ -70,8 +70,8 @@ class TestCharacteristicsQueue(unittest.TestCase):
         dataItem.globalR = 2.56
         dataItem.localR = -0.2
         try:
-            self.characteristicsQueueLocalR.Insert(-1 * dataItem.localR, dataItem)
-            self.characteristicsQueueGlobalR.Insert(-1 * dataItem.globalR, dataItem)
+            self.characteristicsQueueLocalR.Insert(dataItem.localR, dataItem)
+            self.characteristicsQueueGlobalR.Insert(dataItem.globalR, dataItem)
         except Exception as exc:
             assert False, f"'self.characteristicsQueueLocalR.Insert'," \
                           f"'self.characteristicsQueueGlobalR.Insert' raised an exception{exc}"
@@ -88,8 +88,8 @@ class TestCharacteristicsQueue(unittest.TestCase):
         dataItem.globalR = 4.76
         dataItem.localR = 3.2
         try:
-            self.characteristicsQueueLocalR.Insert(-1 * dataItem.localR, dataItem)
-            self.characteristicsQueueGlobalR.Insert(-1 * dataItem.globalR, dataItem)
+            self.characteristicsQueueLocalR.Insert(dataItem.localR, dataItem)
+            self.characteristicsQueueGlobalR.Insert(dataItem.globalR, dataItem)
         except Exception as exc:
             assert False, f"'self.characteristicsQueueLocalR.Insert'," \
                           f"'self.characteristicsQueueGlobalR.Insert' raised an exception{exc}"
@@ -109,13 +109,13 @@ class TestCharacteristicsQueue(unittest.TestCase):
         dataItem1 = SearchDataItem(point1, 0.2, 1)
         dataItem1.globalR = 4.76
         dataItem1.localR = 3.2
-        self.characteristicsQueueGlobalR.Insert(-1 * dataItem1.globalR, dataItem1)
+        self.characteristicsQueueGlobalR.Insert(dataItem1.globalR, dataItem1)
 
         point2 = Point([-0.6, 0.7], ["e", "f"])
         dataItem2 = SearchDataItem(point2, 0.05, 2)
         dataItem2.globalR = 5.0
         dataItem2.localR = -3.8
-        self.characteristicsQueueGlobalR.Insert(-1 * dataItem2.globalR, dataItem2)
+        self.characteristicsQueueGlobalR.Insert(dataItem2.globalR, dataItem2)
 
         getDataItem = self.characteristicsQueueGlobalR.GetBestItem()
 
@@ -130,15 +130,15 @@ class TestCharacteristicsQueue(unittest.TestCase):
         dataItem1 = SearchDataItem(point1, 0.4, 1)
         dataItem1.globalR = 5.0
         dataItem1.localR = 1.2
-        self.characteristicsQueueGlobalR.Insert(-1 * dataItem1.globalR, dataItem1)
-        self.characteristicsQueueLocalR.Insert(-1 * dataItem1.localR, dataItem1)
+        self.characteristicsQueueGlobalR.Insert(dataItem1.globalR, dataItem1)
+        self.characteristicsQueueLocalR.Insert(dataItem1.localR, dataItem1)
 
         point2 = Point([-0.6, 0.7], ["a", "f"])
         dataItem2 = SearchDataItem(point2, 0.05, 2)
         dataItem2.globalR = 5.0
         dataItem2.localR = 0.56
-        self.characteristicsQueueGlobalR.Insert(-1 * dataItem2.globalR, dataItem2)
-        self.characteristicsQueueLocalR.Insert(-1 * dataItem2.localR, dataItem2)
+        self.characteristicsQueueGlobalR.Insert(dataItem2.globalR, dataItem2)
+        self.characteristicsQueueLocalR.Insert(dataItem2.localR, dataItem2)
 
         getDataItemG = self.characteristicsQueueGlobalR.GetBestItem()
         getDataItemL = self.characteristicsQueueLocalR.GetBestItem()
