@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
-from iOpt.trial import Point
+from iOpt.trial import Point, Trial
 from search_data import SearchData
 from search_data import SearchDataItem
 from optim_task import OptimizationTask
@@ -16,9 +16,7 @@ class Method:
     stop: bool = False
     recalc: bool = True
     iterationsCount: int = 0
-    best: SearchDataItem = None
-    min_delta: np.double = np.infty
-
+    best : SearchDataItem = None
     def __init__(self,
                  parameters: SolverParameters,
                  task: OptimizationTask,
@@ -33,6 +31,8 @@ class Method:
         self.M = [1.0 for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
         self.Z = [np.infty for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
         self.dimension = task.problem.numberOfFloatVariables  # А ДЛЯ ДИСКРЕТНЫХ?
+        #self.best: Trial = SearchData.solution.bestTrials[0]  # Это ведь ССЫЛКА, ДА?
+        self.min_delta = self.searchData.solution.solutionAccuracy
 
     def FirstIteration(self):
         self.iterationsCount = 1
@@ -45,26 +45,21 @@ class Method:
         right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0)
 
         left.delta = 0
-        middle.delta = 0.5  # / self.dimension ???
-        right.delta = 0.5  # / self.dimension ???
+        middle.delta = 0.5  # / self.dimension  # ???
+        right.delta = 0.5  # / self.dimension  # ???
 
         # Вычисление значения функции в 0.5
         self.CalculateFunctionals(middle)
         self.best = middle
 
-        # TODO: заменить на InsertFirstItem(s) и убрать SetLeft/SetRight
-        # вставить left  и right, потом middle
-        middle.SetLeft(left)
-        middle.SetRight(right)
-        left.SetRight(middle)
-        right.SetLeft(middle)
-        self.searchData.InsertDataItem(right)
-        self.searchData.InsertDataItem(middle, right)
-        self.searchData.InsertDataItem(left, middle)
-
         # Вычисление характеристик
-        recalc = True
-        self.RecalcAllCharacteristics()
+        self.CalculateGlobalR(left, None)
+        self.CalculateGlobalR(middle, left)
+        self.CalculateGlobalR(right, middle)
+
+        # вставить left  и right, потом middle
+        self.searchData.InsertFirstDataItem(left, right)
+        self.searchData.InsertDataItem(middle, right)
 
     def CheckStopCondition(self):
         self.stop = self.min_delta < self.parameters.eps
@@ -75,7 +70,7 @@ class Method:
             return
         self.searchData.ClearQueue()
         for item in self.searchData:  # Должно работать...
-            self.CalculateGlobalR(item)
+            self.CalculateGlobalR(item, item.GetLeft())
             # self.CalculateLocalR(item)
         self.searchData.RefillQueue()
         self.recalc = False
@@ -84,6 +79,10 @@ class Method:
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
         x = 0
         left = point.GetLeft()
+        if left is None:
+            raise "CalculateNextPointCoordinate: Left point is NONE"
+        xl = left.GetX()
+        xr = point.GetX()
         idl = left.GetIndex()
         idr = point.GetIndex()
         if idl == idr:
@@ -93,14 +92,20 @@ class Method:
             if dif > 0:
                 dg = 1.0
 
-            x = 0.5 * (left.GetX() + point.GetX())
+            x = 0.5 * (xl + xr)
             x -= 0.5 * dg * pow(abs(dif) / self.M[v], self.task.problem.numberOfFloatVariables) / self.parameters.r
 
         else:
-            x = 0.5 * (point.GetX() + left.GetX())
+            x = 0.5 * (xl + xr)
+        if x <= xl or x >= xr:
+            raise "CalculateNextPointCoordinate: x is outside of interval"
         return x
 
     def CalculateIterationPoints(self) -> (SearchDataItem, SearchDataItem):  # return  (new, old)
+        """
+        Calculate holder constant of curr_point in assumption that curr_point.left should be left_point
+        :return: a pair of SearchDataItem. pair[0] -> new point (left), pair[1] -> old point (right)
+        """
         if self.recalc is True:
             self.RecalcAllCharacteristics()
         old = self.searchData.GetDataItemWithMaxGlobalR()
@@ -118,54 +123,74 @@ class Method:
         point = self.task.Calculate(point, 0)
         point.SetZ(point.functionValues[0])
         point.SetIndex(0)
+
+        # Обновление числа испытаний
+        self.searchData.solution.numberOfGlobalTrials += 1
         return point
 
-    def CalculateM(self, point: SearchDataItem):
-        left = point.GetLeft()
-        if left is None:
+    def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem):
+        """
+        Calculate holder constant of curr_point in assumption that curr_point.left should be left_point
+        """
+        if left_point is None:
             return
-        index = point.GetIndex()
-        if left.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
-            m = abs(left.GetZ() - point.GetZ()) / point.delta
+        index = curr_point.GetIndex()
+        if left_point.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+            m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
             if m > self.M[index]:
                 self.M[index] = m
                 self.recalc = True
 
-    def CalculateGlobalR(self, point: SearchDataItem):
-        if point.GetIndex() < 0:
-            point.globalR = -np.infty
+    # def CalculateM(self, point: SearchDataItem):  # В python нет такой перегрузки функций, надо менять название
+    #     self.CalculateM(point, point.GetLeft())
+
+    def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem):
+        """
+        Calculate Global characteristic of curr_point in assumption that curr_point.left should be left_point
+        """
+        if curr_point.GetIndex() < 0:
+            curr_point.globalR = -np.infty
             return None
-        left = point.GetLeft()
-        zl = left.GetZ()
-        zr = point.GetZ()
+        zl = left_point.GetZ()
+        zr = curr_point.GetZ()
         r = self.parameters.r
-        deltax = point.delta
-        if left.GetIndex() == point.GetIndex():
-            v = point.GetIndex()
+        deltax = curr_point.delta
+        if left_point.GetIndex() == curr_point.GetIndex():
+            v = curr_point.GetIndex()
             globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
                       2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
-        elif left.GetIndex() < point.GetIndex():
-            v = point.GetIndex()
+        elif left_point.GetIndex() < curr_point.GetIndex():
+            v = curr_point.GetIndex()
             globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
         else:
-            v = left.GetIndex()
+            v = left_point.GetIndex()
             globalR = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
-        point.globalR = globalR
+        curr_point.globalR = globalR
 
-    def RenewSearchData(self, point: (SearchDataItem, SearchDataItem)):
-        # calc M, R(?), insert, Z.
+    # def CalculateGlobalR(self, curr_point: SearchDataItem):
+    #     self.CalculateGlobalR(curr_point, curr_point.GetLeft())
 
-        self.CalculateM(point[0])
+    def RenewSearchData(self, newoldpoints: (SearchDataItem, SearchDataItem)):
+        """
+        :params: point - pair of SearchDataItem. point[0] -> new point (left), point[1] -> old point (right)
+        Update delta, M, R and insert points to searchData.
+        """
 
-        self.CalculateGlobalR(point[0])
-        # point[0].SetLeft(point[1].GetLeft())
-        # point[1].SetRight(point[1])
-        # point[1].SetLeft(point[0])
-        point[1].delta = pow(point[1].GetX() - point[0].GetX(), 1.0 / self.dimension)
-        point[0].delta = pow(point[0].GetX() - point[0].GetLeft().GetX(), 1.0 / self.dimension)
-        self.min_delta = min(point[0].delta, self.min_delta)
-        self.min_delta = min(point[1].delta, self.min_delta)
-        self.searchData.InsertDataItem(point[0], point[1])
+        newpoint = newoldpoints[0]  # точка
+        oldpoint = newoldpoints[1]  # покрывающий интервал (точка справа)
+
+        oldpoint.delta = pow(oldpoint.GetX() - newpoint.GetX(), 1.0 / self.dimension)
+        newpoint.delta = pow(newpoint.GetX() - oldpoint.GetLeft().GetX(), 1.0 / self.dimension)
+        self.min_delta = min(oldpoint.delta, self.min_delta)
+        self.min_delta = min(newpoint.delta, self.min_delta)
+
+        self.CalculateM(newpoint, oldpoint.GetLeft())
+        self.CalculateM(oldpoint, newpoint)
+
+        self.CalculateGlobalR(newpoint, oldpoint.GetLeft())
+        self.CalculateGlobalR(oldpoint, newpoint)
+
+        self.searchData.InsertDataItem(newpoint, oldpoint)
 
     def UpdateOptimum(self, point: SearchDataItem):
         if self.best.GetIndex() < point.GetIndex():  # CHECK INDEX
