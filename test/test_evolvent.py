@@ -1,8 +1,6 @@
 import unittest
 import sys
 
-sys.path.insert(0,"..")
-
 from iOpt.evolvent.evolvent import Evolvent
 
 
