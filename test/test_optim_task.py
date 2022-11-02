@@ -42,13 +42,6 @@ class TestOptimizationTask(unittest.TestCase):
         self.assertEqual(sdi.functionValues[0].value, sum)
 
 
-
-    #def test_Init(self):
-        #self.assertEqual(self.searchDataItem.point.floatVariables, [0.1, 0.5])
-
-    #def test_GetX(self):
-        #self.assertEqual(self.searchDataItem.GetX(), 0.3)
-
 # Executing the tests in the above test case class
 if __name__ == "__main__":
  unittest.main()
