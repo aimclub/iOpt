@@ -2,12 +2,9 @@ from __future__ import annotations
 import numpy as np
 from enum import Enum
 
-from search_data import SearchDataItem
+from iOpt.method.search_data import SearchDataItem
 from iOpt.problem import Problem
 
-#УДАЛИТЬ!
-from iOpt.problems.rastrigin import Rastrigin
-from iOpt.trial import Point
 
 
 class TypeOfCalculation(Enum):
@@ -42,17 +39,5 @@ class OptimizationTask:
         Compute selected function by number.
         :return: Calculated function value.
         """
-if __name__ == "__main__":
-    ras = Rastrigin(3)
-    per = np.ndarray(shape=(1), dtype=np.int)
-    #per =[1, 0, 2]
-    #opT = OptimizationTask(ras, per)
-    opT = OptimizationTask(ras)
-    print(opT.perm[1])
 
-    point = Point([0.0, 0.0, 0.0], [])
-    sdi = SearchDataItem(point, -1, 0)
-   # sdi.functionValues = np.ndarray(shape=(1), dtype=FunctionValue)
-   # sdi[0] = FunctionValue()
-    sdi = opT.Calculate(sdi, 0)
 
