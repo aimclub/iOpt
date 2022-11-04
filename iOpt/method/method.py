@@ -4,9 +4,9 @@ import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.trial import Point, Trial
-from search_data import SearchData
-from search_data import SearchDataItem
-from optim_task import OptimizationTask
+from iOpt.method.search_data import SearchData
+from iOpt.method.search_data import SearchDataItem
+from iOpt.method.optim_task import OptimizationTask
 from iOpt.solver import SolverParameters
 
 
@@ -132,6 +132,8 @@ class Method:
         """
         Calculate holder constant of curr_point in assumption that curr_point.left should be left_point
         """
+        if curr_point is None:
+            raise RuntimeError("CalculateM: curr_point is None")
         if left_point is None:
             return
         index = curr_point.GetIndex()

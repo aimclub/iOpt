@@ -1,0 +1,110 @@
+import sys
+
+import unittest
+from unittest import mock
+
+import numpy as np
+
+from unittest.mock import Mock
+
+from iOpt.evolvent.evolvent import Evolvent
+
+from iOpt.method.search_data import SearchData, SearchDataItem
+from iOpt.solver import SolverParameters
+from iOpt.method.method import Method
+from iOpt.trial import Point
+
+
+class TestMethod(unittest.TestCase):
+    @staticmethod
+    def GetImage(x: np.double) -> np.double:
+        return x
+
+    @mock.patch('iOpt.evolvent.evolvent')
+    @mock.patch('iOpt.method.optim_task.OptimizationTask')
+    @mock.patch('iOpt.method.search_data.SearchData')
+    def setUp(self, mock_evolvent, mock_task, mock_searchData):
+        mock_evolvent.GetImage.return_value = Mock(side_effect=self.GetImage)
+
+        self.method = Method(evolvent=mock_evolvent, parameters=SolverParameters(),
+                             task=mock_task, searchData=mock_searchData)
+
+    def test_mockev(self):
+        self.method.evolvent.GetImage = Mock(side_effect=self.GetImage)
+        self.assertEqual(self.method.evolvent.GetImage(0.0), 0.0)
+        self.assertEqual(self.method.evolvent.GetImage(0.5), 0.5)
+        self.assertEqual(self.method.evolvent.GetImage(1.0), 1.0)
+
+    def test_CalculateM_easy(self):
+        left = SearchDataItem(x=0.0, y=Point(floatVariables=[5.0], discreteVariables=[]))
+        curr = SearchDataItem(x=1.0, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        curr.SetLeft(left)
+        self.method.M[0] = 1.0
+        assert (self.method.M[0] == 1.0)
+        curr.delta = 1.0
+        left.SetZ(0.0)
+        curr.SetZ(10.0)
+        left.SetIndex(0)
+        curr.SetIndex(0)
+        # test 1. NOT AAA, BUT INITIALIZATION IS TOO BIG, AND DIFFERENT FOR easy and hard
+        self.method.CalculateM(curr, left)
+        assert (self.method.M[0] == 10.0)
+        # test 2
+        curr.SetZ(-20.0)
+        self.method.CalculateM(curr, left)
+        assert (self.method.M[0] == 20.0)
+        # test 3
+        curr.SetZ(-5.0)
+        self.method.CalculateM(curr, left)
+        assert (self.method.M[0] == 20.0)
+
+    def test_CalculateM_hard(self):
+        left = SearchDataItem(x=0.1, y=Point(floatVariables=[6.0], discreteVariables=[]))
+        curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        right = SearchDataItem(x=1.0, y=Point(floatVariables=[15.0], discreteVariables=[]))
+        curr.SetLeft(left)
+        assert (self.method.M[0] == 1.0)
+        curr.delta = 0.4
+        right.delta = 0.5
+        left.SetZ(6.0)
+        curr.SetZ(16.0)
+        right.SetZ(2000.0)
+        left.SetIndex(0)
+        curr.SetIndex(0)
+        right.SetIndex(1)
+        # test 1
+        self.method.CalculateM(curr, left)
+        self.assertEqual(self.method.M[0], 25.0)
+        # test 2
+        self.method.CalculateM(right, curr)
+        self.assertEqual(self.method.M[0], 25.0)
+        # test 3
+        self.method.CalculateM(curr, right)
+        self.assertEqual(self.method.M[0], 25.0)
+
+    def test_CalculateM_dont_throws(self):
+        curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        try:
+            self.method.CalculateM(curr, None)
+        except:
+            self.fail("exception was raised!")
+
+    def test_CalculateM_throws(self):
+        curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        with self.assertRaises(Exception):
+            self.method.CalculateM(None, curr)
+
+
+
+    def test_Iteration_count(self):
+        itcount = self.method.GetIterationsCount()
+        self.method.FinalizeIteration()
+        self.assertEqual(self.method.GetIterationsCount(), itcount + 1)
+
+
+# def test_RecalcAll_mock(self):
+
+
+# Executing the tests in the above test case class
+if __name__ == "__main__":
+    unittest.main()
