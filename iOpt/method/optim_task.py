@@ -6,7 +6,6 @@ from iOpt.method.search_data import SearchDataItem
 from iOpt.problem import Problem
 
 
-
 class TypeOfCalculation(Enum):
     FUNCTION = 1
     CONVOLUTION = 2
@@ -19,8 +18,8 @@ class OptimizationTask:
                  ):
         self.problem = problem
 
-        if perm == []:
-            self.perm = np.ndarray(shape=(self.problem.numberOfFloatVariables+self.problem.numberOfDisreteVariables), dtype=np.int)
+        if perm == []: #
+            self.perm = np.ndarray(shape=(self.problem.numberOfObjectives+self.problem.numberOfConstraints), dtype=np.int)
             for i in range(self.perm.size):
                 self.perm[i]=i
         else:
@@ -31,13 +30,9 @@ class OptimizationTask:
                   functionIndex: int,
                   type: TypeOfCalculation = TypeOfCalculation.FUNCTION
                   ) -> SearchDataItem:
+        """Compute selected function by number."""
+        #???
         dataItem.functionValues[self.perm[functionIndex]] = self.problem.Calculate(dataItem.point,
                                                                                    dataItem.functionValues[
                                                                                        self.perm[functionIndex]])
         return dataItem
-        """
-        Compute selected function by number.
-        :return: Calculated function value.
-        """
-
-
