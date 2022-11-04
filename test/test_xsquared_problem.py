@@ -6,7 +6,7 @@ from iOpt.problems.xsquared import XSquared
 
 
 class TestXSquared(unittest.TestCase):
-    # setUp method is overridden from the parent class SearchDataItem
+    """setUp method is overridden from the parent class XSquared"""
     def setUp(self):
         self.xsquared = XSquared(3)
 
@@ -23,6 +23,6 @@ class TestXSquared(unittest.TestCase):
     def test_OptimumValue(self):
         self.assertEqual(self.xsquared.knownOptimum[0].functionValues[0].value, 0.0)
 
-# Executing the tests in the above test case class
+"""Executing the tests in the above test case class"""
 if __name__ == "__main__":
  unittest.main()
