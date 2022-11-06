@@ -94,12 +94,44 @@ class TestMethod(unittest.TestCase):
         with self.assertRaises(Exception):
             self.method.CalculateM(None, curr)
 
-
-
     def test_Iteration_count(self):
         itcount = self.method.GetIterationsCount()
         self.method.FinalizeIteration()
         self.assertEqual(self.method.GetIterationsCount(), itcount + 1)
+
+    def test_CalculateGlobalR(self):
+        left = SearchDataItem(x=0.0, y=Point(floatVariables=[5.0], discreteVariables=[]))
+        curr = SearchDataItem(x=1.0, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        curr.SetLeft(left)
+        curr.delta = 1.0
+        left.SetZ(5.0)
+        curr.SetZ(15.0)
+        self.method.M[0] = 10.0
+        left.SetIndex(0)
+        curr.SetIndex(0)
+        self.method.parameters.r = 2.0
+        self.method.Z[0] = 5.0
+
+        # test 1
+        self.method.CalculateGlobalR(curr, left)
+        self.assertEqual(curr.globalR, 0.25)
+        # test 2
+        curr.SetIndex(-2)
+        self.method.CalculateGlobalR(curr, left)
+        self.assertEqual(curr.globalR, -np.infty)
+        # test 3
+        curr.SetIndex(0)
+        left.SetIndex(-2)
+        self.method.CalculateGlobalR(curr, left)
+        self.assertEqual(curr.globalR, 0)
+        # test 4
+        self.method.parameters.r = 4.0
+        self.method.Z = [-7, -25.0]
+        self.method.M = [17.54, 40.0]
+        left.SetIndex(1)
+        curr.SetIndex(0)
+        self.method.CalculateGlobalR(curr, left)
+        self.assertEqual(curr.globalR, 1.25)
 
 
 # def test_RecalcAll_mock(self):

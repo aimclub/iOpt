@@ -16,7 +16,8 @@ class Method:
     stop: bool = False
     recalc: bool = True
     iterationsCount: int = 0
-    best : SearchDataItem = None
+    best: SearchDataItem = None
+
     def __init__(self,
                  parameters: SolverParameters,
                  task: OptimizationTask,
@@ -31,7 +32,7 @@ class Method:
         self.M = [1.0 for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
         self.Z = [np.infty for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
         self.dimension = task.problem.numberOfFloatVariables  # А ДЛЯ ДИСКРЕТНЫХ?
-        #self.best: Trial = SearchData.solution.bestTrials[0]  # Это ведь ССЫЛКА, ДА?
+        # self.best: Trial = SearchData.solution.bestTrials[0]  # Это ведь ССЫЛКА, ДА?
         self.min_delta = self.searchData.solution.solutionAccuracy
 
     def FirstIteration(self):
@@ -150,7 +151,9 @@ class Method:
         """
         Calculate Global characteristic of curr_point in assumption that curr_point.left should be left_point
         """
-        if curr_point.GetIndex() < 0:
+        if curr_point is None:
+            raise "CalculateGlobalR: Curr point is NONE"
+        if curr_point.GetIndex() < 0 or left_point is None:
             curr_point.globalR = -np.infty
             return None
         zl = left_point.GetZ()
