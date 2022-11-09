@@ -78,7 +78,6 @@ class Method:
 
     def CalculateNextPointCoordinate(self, point: SearchDataItem):
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
-        x = 0
         left = point.GetLeft()
         if left is None:
             raise "CalculateNextPointCoordinate: Left point is NONE"
@@ -102,14 +101,16 @@ class Method:
             raise "CalculateNextPointCoordinate: x is outside of interval"
         return x
 
-    def CalculateIterationPoints(self) -> (SearchDataItem, SearchDataItem):  # return  (new, old)
+    def CalculateIterationPoint(self) -> (SearchDataItem, SearchDataItem):  # return  (new, old)
         """
-        Calculate holder constant of curr_point in assumption that curr_point.left should be left_point
-        :return: a pair of SearchDataItem. pair[0] -> new point (left), pair[1] -> old point (right)
+        Calculate new iteration point.
+        :return: a pair (tuple) of SearchDataItem. pair[0] -> new point (left), pair[1] -> old point (right)
         """
         if self.recalc is True:
             self.RecalcAllCharacteristics()
+
         old = self.searchData.GetDataItemWithMaxGlobalR()
+        self.min_delta = min(old.delta, self.min_delta)
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx)
         new = SearchDataItem(newy, newx)
@@ -118,7 +119,7 @@ class Method:
     def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
         # point.functionValues = np.array(shape=self.task.problem.numberOfObjectives, dtype=FunctionValue)
         # for func_id in range(self.task.problem.numberOfObjectives):  # make Calculate Objectives?
-        #    point.functionValues[func_id] = self.task.Calculate(point, func_id)  # SetZ, BUT
+        #    self.task.Calculate(point, func_id)  # SetZ, BUT
 
         # Завернуть в цикл для индексной схемы
         point = self.task.Calculate(point, 0)
@@ -175,19 +176,14 @@ class Method:
     # def CalculateGlobalR(self, curr_point: SearchDataItem):
     #     self.CalculateGlobalR(curr_point, curr_point.GetLeft())
 
-    def RenewSearchData(self, newoldpoints: (SearchDataItem, SearchDataItem)):
+    def RenewSearchData(self, newpoint: SearchDataItem, oldpoint: SearchDataItem):
         """
-        :params: point - pair of SearchDataItem. point[0] -> new point (left), point[1] -> old point (right)
+        :params: pair of SearchDataItem. newpoint -> new point (left), oldpoint -> old point (right)
         Update delta, M, R and insert points to searchData.
         """
 
-        newpoint = newoldpoints[0]  # точка
-        oldpoint = newoldpoints[1]  # покрывающий интервал (точка справа)
-
         oldpoint.delta = pow(oldpoint.GetX() - newpoint.GetX(), 1.0 / self.dimension)
         newpoint.delta = pow(newpoint.GetX() - oldpoint.GetLeft().GetX(), 1.0 / self.dimension)
-        self.min_delta = min(oldpoint.delta, self.min_delta)
-        self.min_delta = min(newpoint.delta, self.min_delta)
 
         self.CalculateM(newpoint, oldpoint.GetLeft())
         self.CalculateM(oldpoint, newpoint)
