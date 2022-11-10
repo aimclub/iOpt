@@ -37,6 +37,71 @@ class TestEvolvent(unittest.TestCase):
         np.testing.assert_array_almost_equal(y1, y2, decimal=3)
         #self.assertAlmostEqual(y1.tolist(), y2.tolist())
 
+    def test_fileGetInverseImage(self):
+        
+        with open('test/evolventTestData/evolventGetInverseImage.txt') as file: 
+            for line in file:
+                # читаем строку N = ; m = 
+                (Nstr, mstr) = line.split(';')
+                # извлекаем N и m
+                N = int(Nstr.split('=')[1])
+                m = int(mstr.split('=')[1])
+                # извлекаем значения y
+                yValues = []
+                for y in range(N):
+                   yValues.append(file.readline())
+                # извлекаем x
+                xValue = file.readline()
+
+                # создаем subtest для каждого набора x,y
+                with self.subTest(yValues=yValues, xValue=xValue, N=N, m=m):
+                    x = np.double(xValue.split('=')[1])
+                    y =[]
+                    for yValue in yValues:
+                        y.append(np.double(yValue.split('=')[1]))
+
+                    # [-0.5, 0.5]
+                    lower = - np.ones(N, dtype=np.int) / 2
+                    upper = np.ones(N, dtype=np.int) / 2
+
+                    evolvent = Evolvent(lower, upper, N, m) 
+                    xx = evolvent.GetInverseImage(y)
+
+                    self.assertAlmostEqual(x, xx, 5)
+
+    def test_fileGetImage(self):
+
+        with open('test/evolventTestData/evolventGetImage.txt') as file: 
+            for line in file:
+                # читаем строку N = ; m = 
+                (Nstr, mstr) = line.split(';')
+                # извлекаем N и m
+                N = int(Nstr.split('=')[1])
+                m = int(mstr.split('=')[1])
+                # извлекаем значения y
+                yValues = []
+                for y in range(N):
+                   yValues.append(file.readline())
+                # извлекаем x
+                xValue = file.readline()
+
+                # создаем subtest для каждого набора x,y
+                with self.subTest(yValues=yValues, xValue=xValue, N=N, m=m):
+                    x = np.double(xValue.split('=')[1])
+                    y =[]
+                    for yValue in yValues:
+                        y.append(np.double(yValue.split('=')[1]))
+
+                    # [-0.5, 0.5]
+                    lower = - np.ones(N, dtype=np.int) / 2
+                    upper = np.ones(N, dtype=np.int) / 2
+
+                    evolvent = Evolvent(lower, upper, N, m) 
+                    yy = evolvent.GetImage(x)
+
+                    np.testing.assert_array_almost_equal(y, yy, decimal=10)
+
+
 # Executing the tests in the above test case class
 if __name__ == "__main__":
  unittest.main()
