@@ -37,6 +37,8 @@ class Process:
         #     self.__first_iteration = True
         while self.method.CheckStopCondition() is False:
             self.DoGlobalIteration()
+        for listener in self.__listeners:
+            listener.OnMethodStop(self.searchData)
         return self.GetResults()
 
     def DoGlobalIteration(self, number: int = 1):
@@ -45,14 +47,18 @@ class Process:
         """
         for _ in range(number):
             if self.__first_iteration is False:
+                for listener in self.__listeners:
+                    listener.BeforeMethodStart(self.searchData)
                 self.method.FirstIteration()
                 self.__first_iteration = True
             else:
-                newoldpont = self.method.CalculateIterationPoint()
-                self.method.CalculateFunctionals(newoldpont[0])
-                self.method.UpdateOptimum(newoldpont[0])
-                self.method.RenewSearchData(newoldpont[0], newoldpont[1])
+                newpoint, oldpoint = self.method.CalculateIterationPoint()
+                self.method.CalculateFunctionals(newpoint)
+                self.method.UpdateOptimum(newpoint)
+                self.method.RenewSearchData(newpoint, oldpoint)
                 self.method.FinalizeIteration()
+        for listener in self.__listeners:
+            listener.OnEndIteration(self.searchData)
 
     def DoLocalRefinement(self, number: int = 1):
         """
