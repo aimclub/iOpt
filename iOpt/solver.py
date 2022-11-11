@@ -60,7 +60,7 @@ class Solver:
                                  problem.numberOfFloatVariables)
         self.task = OptimizationTask(problem)
         self.method = Method(parameters, self.task, self.evolvent, self.searchData)
-        self.process = Process(problem=problem, parameters=parameters, task=self.task, evolvent=self.evolvent,
+        self.process = Process(parameters=parameters, task=self.task, evolvent=self.evolvent,
                                searchData=self.searchData, method=self.method)
 
     def Solve(self) -> Solution:
