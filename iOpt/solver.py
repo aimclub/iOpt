@@ -98,7 +98,7 @@ class Solver:
         """
         :return:
         """
-        self.LoadProgress(fileName=fileName)
+        self.searchData.LoadProgress(fileName=fileName)
 
     def RefreshListener(self):
         pass
