@@ -20,7 +20,7 @@ class SolverParameters:
                  evolventDensity: int = 10,
                  epsR: np.double = 0.001,
                  refineSolution: bool = False,
-                 startPoint=[]
+                 startPoint: Point = []
                  ):
         """
         :param eps:method tolerance. Less value -- better search precision, less probability of early stop.
@@ -80,7 +80,7 @@ class Solver:
         """
         :param number: The number of iterations of the local search
         """
-        self.process.DoLocalRefinement()
+        self.process.DoLocalRefinement(number)
 
     def GetResults(self) -> Solution:
         """
