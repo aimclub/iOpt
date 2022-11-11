@@ -20,7 +20,7 @@ class SolverParameters:
                  evolventDensity: int = 10,
                  epsR: np.double = 0.001,
                  refineSolution: bool = False,
-                 startPoint=None
+                 startPoint=[]
                  ):
         """
         :param eps:method tolerance. Less value -- better search precision, less probability of early stop.
@@ -33,8 +33,6 @@ class SolverParameters:
                this parameter speed up convergence, but global minima can be lost.
         :param refineSolution: if true, the final solution will be refined with the HookJeves method.
         """
-        if startPoint is None:
-            startPoint = []
         self.eps = eps
         self.r = r
         self.itersLimit = itersLimit
@@ -82,7 +80,7 @@ class Solver:
         """
         :param number: The number of iterations of the local search
         """
-        self.process.DoGlobalIteration()
+        self.process.DoLocalRefinement()
 
     def GetResults(self) -> Solution:
         """
