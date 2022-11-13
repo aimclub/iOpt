@@ -35,8 +35,14 @@ class Process:
         # if self.__first_iteration is False:
         #     self.method.FirstIteration()
         #     self.__first_iteration = True
-        while self.method.CheckStopCondition() is False:
-            self.DoGlobalIteration()
+        try:
+            while self.method.CheckStopCondition() is not True:
+                self.DoGlobalIteration()
+                # print(self.method.min_delta, self.method.parameters.eps)
+            # print(self.method.min_delta, self.method.parameters.eps)
+            print(self.method.CheckStopCondition())
+        except:
+            print('WTF')
         for listener in self.__listeners:
             listener.OnMethodStop(self.searchData)
         return self.GetResults()

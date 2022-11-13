@@ -168,9 +168,8 @@ class SearchData:
         # итерируемся по rightPoint от минимального элемента
         for item in self:
             if item.GetX() > x:
-                rightDataItem = item
-                break
-        return rightDataItem
+                return item
+        return None
 
     def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
         if self.__RGlobalQueue.IsEmpty():
