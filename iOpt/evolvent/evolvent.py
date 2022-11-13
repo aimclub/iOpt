@@ -48,7 +48,7 @@ class Evolvent:
 
         self.__GetYonX(x)
         self.__TransformP2D()
-        return self.yValues
+        return np.copy(self.yValues)
 
     # Получить (y->x)
     # ----------------
