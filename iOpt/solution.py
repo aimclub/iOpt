@@ -5,7 +5,7 @@ import numpy as np
 class Solution:
     def __init__(self,
                  problem: Problem,
-                 bestTrials: np.ndarray(shape = (1), dtype = Trial) = [],
+                 bestTrials: np.ndarray(shape = (1), dtype = Trial) = [Trial([],[])],
 
                  numberOfGlobalTrials: int = 0,
                  numberOfLocalTrials: int = 0,

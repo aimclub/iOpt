@@ -14,12 +14,12 @@ class TypeOfCalculation(Enum):
 class OptimizationTask:
     def __init__(self,
                  problem: Problem,
-                 perm: np.ndarray(shape=(1), dtype=np.int) = []
+                 perm: np.ndarray(shape=(1), dtype=int) = [0]
                  ):
         self.problem = problem
 
         if perm == []: #
-            self.perm = np.ndarray(shape=(self.problem.numberOfObjectives+self.problem.numberOfConstraints), dtype=np.int)
+            self.perm = np.ndarray(shape=(self.problem.numberOfObjectives+self.problem.numberOfConstraints), dtype=int)
             for i in range(self.perm.size):
                 self.perm[i]=i
         else:

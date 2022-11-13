@@ -8,7 +8,7 @@ from depq import DEPQ
 
 # from bintrees import AVLTree
 
-from iOpt.trial import Point
+from iOpt.trial import Point, FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
 from iOpt.solution import Solution
@@ -31,11 +31,9 @@ class SearchDataItem(Trial):
 
     iterationNumber: int = -1
 
-    def __init__(self,
-                 y: Point,
-                 x: np.double,
-                 discreteValueIndex: int = 0
-                ):
+    def __init__(self, y: Point, x: np.double, functionValues: np.ndarray(shape=(1), dtype=FunctionValue) =[FunctionValue()],
+                 discreteValueIndex: int = 0):
+        super().__init__(point=y, functionValues=functionValues)
         self.point = y
         self.__x = x
         self.__discreteValueIndex = discreteValueIndex
