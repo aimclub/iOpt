@@ -36,7 +36,7 @@ class Process:
         #     self.method.FirstIteration()
         #     self.__first_iteration = True
         try:
-            while self.method.CheckStopCondition() is not True:
+            while not self.method.CheckStopCondition():
                 self.DoGlobalIteration()
                 # print(self.method.min_delta, self.method.parameters.eps)
             # print(self.method.min_delta, self.method.parameters.eps)

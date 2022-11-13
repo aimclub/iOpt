@@ -71,7 +71,10 @@ class Method:
         self.searchData.InsertDataItem(middle, right)
 
     def CheckStopCondition(self):
-        self.stop = self.min_delta < self.parameters.eps
+        if self.min_delta < self.parameters.eps:
+            self.stop = True
+        else:
+            self.stop = False
         return self.stop
 
     def RecalcAllCharacteristics(self):
@@ -88,6 +91,7 @@ class Method:
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
         left = point.GetLeft()
         if left is None:
+            print("CalculateNextPointCoordinate: Left point is NONE")
             raise "CalculateNextPointCoordinate: Left point is NONE"
         xl = left.GetX()
         xr = point.GetX()
@@ -106,6 +110,7 @@ class Method:
         else:
             x = 0.5 * (xl + xr)
         if x <= xl or x >= xr:
+            print(f"CalculateNextPointCoordinate: x is outside of interval {x} {xl} {xr}")
             raise "CalculateNextPointCoordinate: x is outside of interval"
         return x
 
@@ -143,6 +148,7 @@ class Method:
         Calculate holder constant of curr_point in assumption that curr_point.left should be left_point
         """
         if curr_point is None:
+            print("CalculateM: curr_point is None")
             raise RuntimeError("CalculateM: curr_point is None")
         if left_point is None:
             return
@@ -161,6 +167,7 @@ class Method:
         Calculate Global characteristic of curr_point in assumption that curr_point.left should be left_point
         """
         if curr_point is None:
+            print("CalculateGlobalR: Curr point is NONE")
             raise "CalculateGlobalR: Curr point is NONE"
         if left_point is None:
             curr_point.globalR = -np.infty
