@@ -141,7 +141,9 @@ class SearchData:
         self.__allTrials.append(newDataItem)
 
         self.__RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
+        self.__RGlobalQueue.Insert(rigthDataItem.globalR, rigthDataItem)
         self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
+        self.__RLocalQueue.Insert(rigthDataItem.localR, rigthDataItem)
 
     def InsertFirstDataItem(self, leftDataItem : SearchDataItem,
                             rightDataItem: SearchDataItem):
