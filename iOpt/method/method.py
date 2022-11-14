@@ -35,14 +35,6 @@ class Method:
         # self.best: Trial = SearchData.solution.bestTrials[0]  # Это ведь ССЫЛКА, ДА?
         self.searchData.solution.solutionAccuracy = np.infty
 
-    @property
-    def min_delta(self):
-        return self.searchData.solution.solutionAccuracy
-
-    @min_delta.setter
-    def min_delta(self, val):
-        self.searchData.solution.solutionAccuracy = val
-
     def FirstIteration(self):
         self.iterationsCount = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
@@ -71,7 +63,7 @@ class Method:
         self.searchData.InsertDataItem(middle, right)
 
     def CheckStopCondition(self):
-        if self.min_delta < self.parameters.eps:
+        if self.searchData.solution.solutionAccuracy < self.parameters.eps:
             self.stop = True
         else:
             self.stop = False
@@ -123,7 +115,7 @@ class Method:
             self.RecalcAllCharacteristics()
 
         old = self.searchData.GetDataItemWithMaxGlobalR()
-        self.min_delta = min(old.delta, self.min_delta)
+        self.self.searchData.solution.solutionAccuracy = min(old.delta, self.searchData.solution.solutionAccuracy)
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx)
         new = SearchDataItem(Point(newy, []), newx)
