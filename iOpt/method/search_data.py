@@ -31,7 +31,8 @@ class SearchDataItem(Trial):
 
     iterationNumber: int = -1
 
-    def __init__(self, y: Point, x: np.double, functionValues: np.ndarray(shape=(1), dtype=FunctionValue) =[FunctionValue()],
+    def __init__(self, y: Point, x: np.double,
+                 functionValues: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
                  discreteValueIndex: int = 0):
         super().__init__(point=y, functionValues=functionValues)
         self.point = y
@@ -112,7 +113,7 @@ class SearchData:
 
     solution: Solution = None
 
-    def __init__(self, problem: Problem,  maxlen: int = None):
+    def __init__(self, problem: Problem, maxlen: int = None):
         self.solution = Solution(problem)
         self.__allTrials = []
         self.__RLocalQueue = CharacteristicsQueue(maxlen)
@@ -145,7 +146,7 @@ class SearchData:
         self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
         self.__RLocalQueue.Insert(rigthDataItem.localR, rigthDataItem)
 
-    def InsertFirstDataItem(self, leftDataItem : SearchDataItem,
+    def InsertFirstDataItem(self, leftDataItem: SearchDataItem,
                             rightDataItem: SearchDataItem):
         leftDataItem.SetRight(rightDataItem)
         rightDataItem.SetLeft(leftDataItem)
@@ -178,12 +179,11 @@ class SearchData:
             self.RefillQueue()
         # связывание очередей
         bestItem = self.__RGlobalQueue.GetBestItem()
-        while bestItem.flag == 0:
-            # ? исключение: опустошение очереди
-            bestItem = self.__RGlobalQueue.GetBestItem()
-        bestItem.flag = 0
+        # while bestItem.flag == 0:
+        #    # ? исключение: опустошение очереди
+        #    bestItem = self.__RGlobalQueue.GetBestItem()
+        # bestItem.flag = 0
         return bestItem
-
 
     def GetDataItemWithMaxLocalR(self) -> SearchDataItem:
         if self.__RLocalQueue.IsEmpty():

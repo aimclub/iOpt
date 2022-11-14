@@ -42,7 +42,7 @@ class Process:
             # print(self.method.min_delta, self.method.parameters.eps)
             print(self.method.CheckStopCondition())
         except:
-            print('WTF')
+            print('Exception was thrown')
         for listener in self.__listeners:
             listener.OnMethodStop(self.searchData)
         return self.GetResults()
