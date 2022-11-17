@@ -27,4 +27,4 @@ class TestRastrigin(unittest.TestCase):
 
 """Executing the tests in the above test case class"""
 if __name__ == "__main__":
- unittest.main()
+    unittest.main()

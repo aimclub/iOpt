@@ -7,7 +7,7 @@ from iOpt.trial import Point, Trial
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
 from iOpt.method.optim_task import OptimizationTask
-from iOpt.solver import SolverParameters
+from iOpt.solver_parametrs import SolverParameters
 
 
 # TODO: Привести комментарии в порядок
@@ -33,7 +33,15 @@ class Method:
         self.Z = [np.infty for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
         self.dimension = task.problem.numberOfFloatVariables  # А ДЛЯ ДИСКРЕТНЫХ?
         # self.best: Trial = SearchData.solution.bestTrials[0]  # Это ведь ССЫЛКА, ДА?
-        self.min_delta = self.searchData.solution.solutionAccuracy
+        self.searchData.solution.solutionAccuracy = np.infty
+
+    @property
+    def min_delta(self):
+        return self.searchData.solution.solutionAccuracy
+
+    @min_delta.setter
+    def min_delta(self, val):
+        self.searchData.solution.solutionAccuracy = val
 
     def FirstIteration(self):
         self.iterationsCount = 1
@@ -51,7 +59,7 @@ class Method:
 
         # Вычисление значения функции в 0.5
         self.CalculateFunctionals(middle)
-        self.best = middle
+        self.UpdateOptimum(middle)
 
         # Вычисление характеристик
         self.CalculateGlobalR(left, None)
@@ -63,7 +71,10 @@ class Method:
         self.searchData.InsertDataItem(middle, right)
 
     def CheckStopCondition(self):
-        self.stop = self.min_delta < self.parameters.eps
+        if self.min_delta < self.parameters.eps:
+            self.stop = True
+        else:
+            self.stop = False
         return self.stop
 
     def RecalcAllCharacteristics(self):
@@ -80,6 +91,7 @@ class Method:
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
         left = point.GetLeft()
         if left is None:
+            print("CalculateNextPointCoordinate: Left point is NONE")
             raise "CalculateNextPointCoordinate: Left point is NONE"
         xl = left.GetX()
         xr = point.GetX()
@@ -98,6 +110,7 @@ class Method:
         else:
             x = 0.5 * (xl + xr)
         if x <= xl or x >= xr:
+            print(f"CalculateNextPointCoordinate: x is outside of interval {x} {xl} {xr}")
             raise "CalculateNextPointCoordinate: x is outside of interval"
         return x
 
@@ -113,7 +126,7 @@ class Method:
         self.min_delta = min(old.delta, self.min_delta)
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx)
-        new = SearchDataItem(newy, newx)
+        new = SearchDataItem(Point(newy, []), newx)
         return (new, old)
 
     def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
@@ -123,7 +136,7 @@ class Method:
 
         # Завернуть в цикл для индексной схемы
         point = self.task.Calculate(point, 0)
-        point.SetZ(point.functionValues[0])
+        point.SetZ(point.functionValues[0].value)
         point.SetIndex(0)
 
         # Обновление числа испытаний
@@ -135,6 +148,7 @@ class Method:
         Calculate holder constant of curr_point in assumption that curr_point.left should be left_point
         """
         if curr_point is None:
+            print("CalculateM: curr_point is None")
             raise RuntimeError("CalculateM: curr_point is None")
         if left_point is None:
             return
@@ -153,8 +167,9 @@ class Method:
         Calculate Global characteristic of curr_point in assumption that curr_point.left should be left_point
         """
         if curr_point is None:
+            print("CalculateGlobalR: Curr point is NONE")
             raise "CalculateGlobalR: Curr point is NONE"
-        if curr_point.GetIndex() < 0 or left_point is None:
+        if left_point is None:
             curr_point.globalR = -np.infty
             return None
         zl = left_point.GetZ()
@@ -194,12 +209,14 @@ class Method:
         self.searchData.InsertDataItem(newpoint, oldpoint)
 
     def UpdateOptimum(self, point: SearchDataItem):
-        if self.best.GetIndex() < point.GetIndex():  # CHECK INDEX
+        if self.best is None or self.best.GetIndex() < point.GetIndex():  # CHECK INDEX
             self.best = point
             self.recalc = True
+            self.Z[point.GetIndex()] = point.GetZ()
         elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
             self.best = point
             self.recalc = True
+            self.Z[point.GetIndex()] = point.GetZ()
 
     def FinalizeIteration(self):
         self.iterationsCount += 1

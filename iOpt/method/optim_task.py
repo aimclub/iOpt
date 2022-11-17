@@ -14,14 +14,15 @@ class TypeOfCalculation(Enum):
 class OptimizationTask:
     def __init__(self,
                  problem: Problem,
-                 perm: np.ndarray(shape=(1), dtype=np.int) = []
+                 perm: np.ndarray(shape=(1), dtype=int) = None
                  ):
         self.problem = problem
 
-        if perm == []: #
-            self.perm = np.ndarray(shape=(self.problem.numberOfObjectives+self.problem.numberOfConstraints), dtype=np.int)
+        if perm is None:
+            self.perm = np.ndarray(shape=(self.problem.numberOfObjectives + self.problem.numberOfConstraints),
+                                   dtype=int)
             for i in range(self.perm.size):
-                self.perm[i]=i
+                self.perm[i] = i
         else:
             self.perm = perm
 
@@ -31,7 +32,7 @@ class OptimizationTask:
                   type: TypeOfCalculation = TypeOfCalculation.FUNCTION
                   ) -> SearchDataItem:
         """Compute selected function by number."""
-        #???
+        # ???
         dataItem.functionValues[self.perm[functionIndex]] = self.problem.Calculate(dataItem.point,
                                                                                    dataItem.functionValues[
                                                                                        self.perm[functionIndex]])

@@ -8,7 +8,7 @@ from depq import DEPQ
 
 # from bintrees import AVLTree
 
-from iOpt.trial import Point
+from iOpt.trial import Point, FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
 from iOpt.solution import Solution
@@ -31,11 +31,10 @@ class SearchDataItem(Trial):
 
     iterationNumber: int = -1
 
-    def __init__(self,
-                 y: Point,
-                 x: np.double,
-                 discreteValueIndex: int = 0
-                ):
+    def __init__(self, y: Point, x: np.double,
+                 functionValues: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
+                 discreteValueIndex: int = 0):
+        super().__init__(point=y, functionValues=functionValues)
         self.point = y
         self.__x = x
         self.__discreteValueIndex = discreteValueIndex
@@ -114,7 +113,7 @@ class SearchData:
 
     solution: Solution = None
 
-    def __init__(self, problem: Problem,  maxlen: int = None):
+    def __init__(self, problem: Problem, maxlen: int = None):
         self.solution = Solution(problem)
         self.__allTrials = []
         self.__RLocalQueue = CharacteristicsQueue(maxlen)
@@ -143,9 +142,11 @@ class SearchData:
         self.__allTrials.append(newDataItem)
 
         self.__RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
+        self.__RGlobalQueue.Insert(rigthDataItem.globalR, rigthDataItem)
         self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
+        self.__RLocalQueue.Insert(rigthDataItem.localR, rigthDataItem)
 
-    def InsertFirstDataItem(self, leftDataItem : SearchDataItem,
+    def InsertFirstDataItem(self, leftDataItem: SearchDataItem,
                             rightDataItem: SearchDataItem):
         leftDataItem.SetRight(rightDataItem)
         rightDataItem.SetLeft(leftDataItem)
@@ -170,21 +171,19 @@ class SearchData:
         # итерируемся по rightPoint от минимального элемента
         for item in self:
             if item.GetX() > x:
-                rightDataItem = item
-                break
-        return rightDataItem
+                return item
+        return None
 
     def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
         if self.__RGlobalQueue.IsEmpty():
             self.RefillQueue()
         # связывание очередей
         bestItem = self.__RGlobalQueue.GetBestItem()
-        while bestItem.flag == 0:
-            # ? исключение: опустошение очереди
-            bestItem = self.__RGlobalQueue.GetBestItem()
-        bestItem.flag = 0
+        # while bestItem.flag == 0:
+        #    # ? исключение: опустошение очереди
+        #    bestItem = self.__RGlobalQueue.GetBestItem()
+        # bestItem.flag = 0
         return bestItem
-
 
     def GetDataItemWithMaxLocalR(self) -> SearchDataItem:
         if self.__RLocalQueue.IsEmpty():

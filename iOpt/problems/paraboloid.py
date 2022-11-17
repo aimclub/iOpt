@@ -6,8 +6,7 @@ from iOpt.problem import Problem
 import math
 
 
-class Rastrigin(Problem):
-    """Base class for optimization problems"""
+class Paraboloid(Problem):
 
     def __init__(self, dimension: int):
         self.dimension = dimension
@@ -39,8 +38,7 @@ class Rastrigin(Problem):
         """Compute selected function at given point."""
         sum: np.double = 0
         for i in range(self.dimension):
-            sum += point.floatVariables[i] * point.floatVariables[i] - 10 * math.cos(
-                2 * math.pi * point.floatVariables[i]) + 10
+            sum += point.floatVariables[i] * point.floatVariables[i]
 
         functionValue.value = sum
         return functionValue
