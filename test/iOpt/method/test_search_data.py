@@ -40,7 +40,7 @@ class TestSearchDataItem(unittest.TestCase):
 
     def test_SetLeft(self):
         pointl = Point([0.3, 0.78], ["c", "d"])
-        leftDataItem = SearchDataItem(pointl, 0.6, 1)
+        leftDataItem = SearchDataItem(pointl, 0.6,  None, 1)
         self.searchDataItem.SetLeft(leftDataItem)
 
         self.assertEqual(self.searchDataItem.GetLeft().GetX(), 0.6)
@@ -50,7 +50,7 @@ class TestSearchDataItem(unittest.TestCase):
 
     def test_SetRigth(self):
         pointr = Point([-0.3, 0.78], ["e", "f"])
-        rightDataItem = SearchDataItem(pointr, 0.16, 0)
+        rightDataItem = SearchDataItem(pointr, 0.16,  None, 0)
         self.searchDataItem.SetRight(rightDataItem)
 
         self.assertEqual(self.searchDataItem.GetRight().GetX(), 0.16)
@@ -61,12 +61,12 @@ class TestSearchDataItem(unittest.TestCase):
 
 class TestCharacteristicsQueue(unittest.TestCase):
     def setUp(self):
-        self.characteristicsQueueGlobalR = CharacteristicsQueue(maxlen= 3)
-        self.characteristicsQueueLocalR = CharacteristicsQueue(maxlen= 3)
+        self.characteristicsQueueGlobalR = CharacteristicsQueue(maxlen=3)
+        self.characteristicsQueueLocalR = CharacteristicsQueue(maxlen=3)
 
     def test_Insert(self):
         point = Point([1.03, 0.5], ["k", "m"])
-        dataItem = SearchDataItem(point, 0, 1)
+        dataItem = SearchDataItem(point, 0,  None, 1)
         dataItem.globalR = 2.56
         dataItem.localR = -0.2
         try:
@@ -79,12 +79,12 @@ class TestCharacteristicsQueue(unittest.TestCase):
     def test_InsertWithEqualR(self):
 
         point = Point([-0.3, 0.78], ["e", "m"])
-        dataItem = SearchDataItem(point, 0.2, 1)
+        dataItem = SearchDataItem(point, 0.2,  None, 1)
         dataItem.globalR = 4.76
         dataItem.localR = 3.2
 
         point = Point([-0.5, 0.07], ["a", "f"])
-        dataItem = SearchDataItem(point, 0.6, 1)
+        dataItem = SearchDataItem(point, 0.6, None, 1)
         dataItem.globalR = 4.76
         dataItem.localR = 3.2
         try:
@@ -106,13 +106,13 @@ class TestCharacteristicsQueue(unittest.TestCase):
 
     def test_CanGetBestItem(self):
         point1 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem1 = SearchDataItem(point1, 0.2, 1)
+        dataItem1 = SearchDataItem(point1, 0.2, None, 1)
         dataItem1.globalR = 4.76
         dataItem1.localR = 3.2
         self.characteristicsQueueGlobalR.Insert(dataItem1.globalR, dataItem1)
 
         point2 = Point([-0.6, 0.7], ["e", "f"])
-        dataItem2 = SearchDataItem(point2, 0.05, 2)
+        dataItem2 = SearchDataItem(point2, 0.05, None, 2)
         dataItem2.globalR = 5.0
         dataItem2.localR = -3.8
         self.characteristicsQueueGlobalR.Insert(dataItem2.globalR, dataItem2)
@@ -127,20 +127,18 @@ class TestCharacteristicsQueue(unittest.TestCase):
 
     def test_CanGetBestItmeWithEqualR(self):
         point1 = Point([-0.6, 0.7], ["a", "f"])
-        dataItem1 = SearchDataItem(point1, 0.05, 2)
+        dataItem1 = SearchDataItem(point1, 0.05, None, 2)
         dataItem1.globalR = 5.0
         dataItem1.localR = 0.56
         self.characteristicsQueueGlobalR.Insert(dataItem1.globalR, dataItem1)
         self.characteristicsQueueLocalR.Insert(dataItem1.localR, dataItem1)
 
-
         point2 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem2 = SearchDataItem(point2, 0.4, 1)
+        dataItem2 = SearchDataItem(point2, 0.4, None, 1)
         dataItem2.globalR = 5.0
         dataItem2.localR = 1.2
         self.characteristicsQueueGlobalR.Insert(dataItem2.globalR, dataItem2)
         self.characteristicsQueueLocalR.Insert(dataItem2.localR, dataItem2)
-
 
         getDataItemG = self.characteristicsQueueGlobalR.GetBestItem()
         getDataItemL = self.characteristicsQueueLocalR.GetBestItem()
@@ -159,13 +157,13 @@ class TestCharacteristicsQueue(unittest.TestCase):
 
     def test_GetLen(self):
         point1 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem1 = SearchDataItem(point1, 0.2, 1)
+        dataItem1 = SearchDataItem(point1, 0.2, None, 1)
         dataItem1.globalR = 4.76
         dataItem1.localR = 3.2
         self.characteristicsQueueGlobalR.Insert(dataItem1.globalR, dataItem1)
 
         point2 = Point([-0.6, 0.7], ["e", "f"])
-        dataItem2 = SearchDataItem(point2, 0.05, 2)
+        dataItem2 = SearchDataItem(point2, 0.05, None, 2)
         dataItem2.globalR = 5.0
         dataItem2.localR = -3.8
         self.characteristicsQueueGlobalR.Insert(dataItem2.globalR, dataItem2)
@@ -179,25 +177,25 @@ class TestCharacteristicsQueue(unittest.TestCase):
 
     def test_NotAddItemWithLowerPriority(self):
         point1 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem1 = SearchDataItem(point1, 0.2, 1)
+        dataItem1 = SearchDataItem(point1, 0.2, None, 1)
         dataItem1.globalR = 4.76
         dataItem1.localR = 3.2
         self.characteristicsQueueGlobalR.Insert(dataItem1.globalR, dataItem1)
 
         point2 = Point([-0.6, 0.7], ["s", "k"])
-        dataItem2 = SearchDataItem(point2, 0.05, 2)
+        dataItem2 = SearchDataItem(point2, 0.05, None, 2)
         dataItem2.globalR = 5.0
         dataItem2.localR = -3.8
         self.characteristicsQueueGlobalR.Insert(dataItem2.globalR, dataItem2)
 
         point3 = Point([1.08, 4.56], ["a", "b"])
-        dataItem3 = SearchDataItem(point3, 0.7, 1)
+        dataItem3 = SearchDataItem(point3, 0.7, None, 1)
         dataItem3.globalR = 3.05
         dataItem3.localR = -0.12
         self.characteristicsQueueGlobalR.Insert(dataItem3.globalR, dataItem3)
 
         point4 = Point([0.076, 2.7], ["c", "d"])
-        dataItem4 = SearchDataItem(point4, 0.5, 1)
+        dataItem4 = SearchDataItem(point4, 0.5, None, 1)
         dataItem4.globalR = 1.5
         dataItem4.localR = 3.8
         self.characteristicsQueueGlobalR.Insert(dataItem4.globalR, dataItem4)
@@ -223,25 +221,25 @@ class TestCharacteristicsQueue(unittest.TestCase):
     def test_AddItemWithHightPriority(self):
         # maxlen = 3
         point1 = Point([-0.6, 0.7], ["a", "f"])
-        dataItem1 = SearchDataItem(point1, 0.05, 2)
+        dataItem1 = SearchDataItem(point1, 0.05, None, 2)
         dataItem1.globalR = 4.10
         dataItem1.localR = 0.56
         self.characteristicsQueueGlobalR.Insert(dataItem1.globalR, dataItem1)
 
         point2 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem2 = SearchDataItem(point2, 0.74, 1)
+        dataItem2 = SearchDataItem(point2, 0.74, None, 1)
         dataItem2.globalR = 2.50
         dataItem2.localR = 1.2
         self.characteristicsQueueGlobalR.Insert(dataItem2.globalR, dataItem2)
 
         point3 = Point([1.5, 3.2], ["r", "s"])
-        dataItem3 = SearchDataItem(point3, 0.12, 0)
+        dataItem3 = SearchDataItem(point3, 0.12, None, 0)
         dataItem3.globalR = 3.23
         dataItem3.localR = 0.56
         self.characteristicsQueueGlobalR.Insert(dataItem3.globalR, dataItem3)
 
         point4 = Point([2.67, -0.78], ["h", "k"])
-        dataItem4 = SearchDataItem(point4, 0.4, 1)
+        dataItem4 = SearchDataItem(point4, 0.4, None, 1)
         dataItem4.globalR = 3.0
         dataItem4.localR = -0.89
         self.characteristicsQueueGlobalR.Insert(dataItem4.globalR, dataItem4)
@@ -275,12 +273,12 @@ class TestSearchData(unittest.TestCase):
 
     def test_InsertDataItemFirst(self):
         point = Point([-0.3, 0.78], ["e", "f"])
-        leftdataItem = SearchDataItem(point, 0, 1)
+        leftdataItem = SearchDataItem(point, 0, None, 1)
         leftdataItem.globalR = 4.76
         leftdataItem.localR = 3.2
 
         point = Point([-0.3, 0.78], ["a", "b"])
-        rightdataItem = SearchDataItem(point, 1, 1)
+        rightdataItem = SearchDataItem(point, 1, None, 1)
         rightdataItem.globalR = -3.2
         rightdataItem.localR = 1.03
 
@@ -291,18 +289,18 @@ class TestSearchData(unittest.TestCase):
 
     def test_InsertDataItemWithRight(self):
         point = Point([1.4, 3.078], ["c", "f"])
-        dataItem = SearchDataItem(point, 0.5, 1)
+        dataItem = SearchDataItem(point, 0.5, None, 1)
         dataItem.globalR = -0.9
         dataItem.localR = 0.5
 
         # rightPoint
         point = Point([-0.3, 0.78], ["a", "b"])
-        rightdataItem = SearchDataItem(point, 1, 1)
+        rightdataItem = SearchDataItem(point, 1, None, 1)
         rightdataItem.globalR = -3.2
         rightdataItem.localR = 1.03
         # leftPoint
         point = Point([-0.3, 0.78], ["e", "f"])
-        leftdataItem = SearchDataItem(point, 0, 1)
+        leftdataItem = SearchDataItem(point, 0, None, 1)
         leftdataItem.globalR = 4.76
         leftdataItem.localR = 3.2
 
@@ -315,12 +313,12 @@ class TestSearchData(unittest.TestCase):
 
     def test_CanUseIteration(self):
         point = Point([-0.3, 0.78], ["e", "f"])
-        leftdataItem = SearchDataItem(point, 0, 1)
+        leftdataItem = SearchDataItem(point, 0, None, 1)
         leftdataItem.globalR = 4.76
         leftdataItem.localR = 3.2
 
         point = Point([-0.3, 0.78], ["a", "b"])
-        rightdataItem = SearchDataItem(point, 1, 1)
+        rightdataItem = SearchDataItem(point, 1, None, 1)
         rightdataItem.globalR = -3.2
         rightdataItem.localR = 1.03
 
@@ -339,12 +337,12 @@ class TestSearchData(unittest.TestCase):
     def test_FindDataItemByOneDimensionalPoint(self):
         # rightPoint - покрывающая точка
         point = Point([-0.3, 0.78], ["a", "b"])
-        rightdataItem = SearchDataItem(point, 1, 1)
+        rightdataItem = SearchDataItem(point, 1, None, 1)
         rightdataItem.globalR = -3.2
         rightdataItem.localR = 1.03
         # leftPoint
         point = Point([-0.3, 0.78], ["e", "f"])
-        leftdataItem = SearchDataItem(point, 0, 1)
+        leftdataItem = SearchDataItem(point, 0, None, 1)
         leftdataItem.globalR = 4.76
         leftdataItem.localR = 3.2
 
@@ -363,12 +361,12 @@ class TestSearchData(unittest.TestCase):
 
     def test_InsertDataItemWithoutRight(self):
         point = Point([-0.3, 0.78], ["e", "f"])
-        dataItemFirst = SearchDataItem(point, 0, 1)
+        dataItemFirst = SearchDataItem(point, 0, None, 1)
         dataItemFirst.globalR = 4.76
         dataItemFirst.localR = 3.2
 
         point = Point([-0.3, 0.78], ["e", "f"])
-        dataItemSecond = SearchDataItem(point, 1, 1)
+        dataItemSecond = SearchDataItem(point, 1, None, 1)
         dataItemSecond.globalR = -3.2
         dataItemSecond.localR = 1.03
 
@@ -377,7 +375,7 @@ class TestSearchData(unittest.TestCase):
         self.searchData.InsertFirstDataItem(dataItemFirst, dataItemSecond)
 
         point = Point([-0.4, 0.078], ["e", "f"])
-        dataItem = SearchDataItem(point, 0.2, 1)
+        dataItem = SearchDataItem(point, 0.2, None, 1)
         dataItem.globalR = -4.76
         dataItem.localR = 0.2
 
@@ -388,17 +386,17 @@ class TestSearchData(unittest.TestCase):
 
     def test_InsertDataItemWithEqulsCharactiristic(self):
         point = Point([-0.3, 0.78], ["e", "f"])
-        dataItemFirst = SearchDataItem(point, 0, 1)
+        dataItemFirst = SearchDataItem(point, 0, None, 1)
         dataItemFirst.globalR = 4.76
         dataItemFirst.localR = 3.2
 
         point = Point([-0.5, 0.02], ["e", "c"])
-        dataItemSecond = SearchDataItem(point, 1, 1)
+        dataItemSecond = SearchDataItem(point, 1, None, 1)
         dataItemSecond.globalR = 4.76
         dataItemSecond.localR = 1.03
 
         point = Point([0.13, -0.2], ["e", "c"])
-        dataItemThird = SearchDataItem(point, 0.5, 1)
+        dataItemThird = SearchDataItem(point, 0.5, None, 1)
         dataItemThird.globalR = -0.476
         dataItemThird.localR = 3.2
 
@@ -411,12 +409,12 @@ class TestSearchData(unittest.TestCase):
 
     def test_RefillQueue(self):
         point = Point([-0.3, 0.78], ["e", "f"])
-        dataItemFirst = SearchDataItem(point, 0, 1)
+        dataItemFirst = SearchDataItem(point, 0, None, 1)
         dataItemFirst.globalR = 4.76
         dataItemFirst.localR = 3.2
 
         point = Point([-0.5, 0.02], ["e", "c"])
-        dataItemSecond = SearchDataItem(point, 1, 1)
+        dataItemSecond = SearchDataItem(point, 1,None,  1)
         dataItemSecond.globalR = 4.76
         dataItemSecond.localR = 1.03
 
@@ -429,17 +427,17 @@ class TestSearchData(unittest.TestCase):
 
     def test_GetDataItemWithMaxGlobalR(self):
         point1 = Point([-0.6, 0.7], ["a", "f"])
-        dataItem1 = SearchDataItem(point1, 0.05, 2)
+        dataItem1 = SearchDataItem(point1, 0.05, None, 2)
         dataItem1.globalR = 4.10
         dataItem1.localR = 1.2
 
         point3 = Point([1.4, 3.7], ["a", "f"])
-        dataItem3 = SearchDataItem(point3, 0.8, 1)
+        dataItem3 = SearchDataItem(point3, 0.8, None, 1)
         dataItem3.globalR = 2.6
         dataItem3.localR = -0.8
 
         point2 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem2 = SearchDataItem(point2, 0.2, 1)
+        dataItem2 = SearchDataItem(point2, 0.2, None, 1)
         dataItem2.globalR = 5.0
         dataItem2.localR = 3.2
 
@@ -456,17 +454,17 @@ class TestSearchData(unittest.TestCase):
 
     def test_GetDataItemWithMaxLocalR(self):
         point1 = Point([-0.6, 0.7], ["a", "f"])
-        dataItem1 = SearchDataItem(point1, 0.05, 2)
+        dataItem1 = SearchDataItem(point1, 0.05, None, 2)
         dataItem1.globalR = 4.10
         dataItem1.localR = 1.2
 
         point3 = Point([1.4, 3.7], ["a", "f"])
-        dataItem3 = SearchDataItem(point3, 0.8, 1)
+        dataItem3 = SearchDataItem(point3, 0.8,  None, 1)
         dataItem3.globalR = 2.6
         dataItem3.localR = -0.8
 
         point2 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem2 = SearchDataItem(point2, 0.2, 1)
+        dataItem2 = SearchDataItem(point2, 0.2, None, 1)
         dataItem2.globalR = 5.0
         dataItem2.localR = 3.2
 
@@ -483,19 +481,19 @@ class TestSearchData(unittest.TestCase):
 
     def test_GetDataItemWithMaxGlobalRWithEaqualR(self):
         point1 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem1 = SearchDataItem(point1, 0, 1)
+        dataItem1 = SearchDataItem(point1, 0, None, 1)
         dataItem1.globalR = 4.89
         dataItem1.localR = 3.2
 
         point2 = Point([-0.6, 0.7], ["a", "f"])
-        dataItem2 = SearchDataItem(point2, 1, 2)
+        dataItem2 = SearchDataItem(point2, 1, None, 2)
         dataItem2.globalR = 5.0
         dataItem2.localR = 1.2
 
         dataItem2.SetLeft(dataItem1)
 
         point3 = Point([0.06, 0.17], ["c", "f"])
-        dataItem3 = SearchDataItem(point3, 0.078, 1)
+        dataItem3 = SearchDataItem(point3, 0.078, None, 1)
         dataItem3.globalR = 5.0
         dataItem3.localR = 0.2
 
@@ -512,19 +510,19 @@ class TestSearchData(unittest.TestCase):
 
     def test_GetDataItemWithMaxLocalRWithEqualR(self):
         point1 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem1 = SearchDataItem(point1, 0, 1)
+        dataItem1 = SearchDataItem(point1, 0, None, 1)
         dataItem1.globalR = 4.89
         dataItem1.localR = 1.2
 
         point2 = Point([-0.6, 0.7], ["a", "f"])
-        dataItem2 = SearchDataItem(point2, 1, 2)
+        dataItem2 = SearchDataItem(point2, 1, None, 2)
         dataItem2.globalR = 5.0
         dataItem2.localR = 1.2
 
         dataItem2.SetLeft(dataItem1)
 
         point3 = Point([0.06, 0.17], ["c", "f"])
-        dataItem3 = SearchDataItem(point3, 0.078, 1)
+        dataItem3 = SearchDataItem(point3, 0.078, None, 1)
         dataItem3.globalR = 5.0
         dataItem3.localR = 0.2
 
@@ -539,22 +537,40 @@ class TestSearchData(unittest.TestCase):
         self.assertEqual(getDataItem.GetY().floatVariables, [-0.3, 0.78])
         self.assertEqual(getDataItem.GetY().discreteVariables, ['e', 'f'])
 
+    def test_CheckSearchData(self):
+        dataItem1 = SearchDataItem(([-0.6, 0.7], ["a", "f"]), 0.0, None)
+        dataItem2 = SearchDataItem(([1.3, 4.7], ["a", "b"]), 1.0,  None)
+
+        self.searchData.InsertFirstDataItem(dataItem1, dataItem2)
+
+        dataItem3 = SearchDataItem(([2.1, -0.7], ["b", "f"]), 0.5,  None)
+        dataItem3.globalR = 3.4
+        self.searchData.InsertDataItem(dataItem3, dataItem2)
+
+        getItem = self.searchData.GetDataItemWithMaxGlobalR()
+        self.assertEqual(getItem.GetX(), 0.5)
+
+        dataItem3.globalR = 2.7
+        dataItem4 = SearchDataItem(([3.06, 1.67], ["d", "f"]), 0.2,  None)
+        dataItem4.globalR = 1.2
+        self.searchData.InsertDataItem(dataItem4, dataItem3)
+
+        getItem = self.searchData.GetDataItemWithMaxGlobalR()
+
+        self.assertEqual(getItem.GetX(), 0.5)
+
     def test_CheckQueueLinked(self):
-        point1 = Point([-0.6, 0.7], ["a", "f"])
-        dataItem1 = SearchDataItem(point1, 0.0, 2)
+        dataItem1 = SearchDataItem(([-0.6, 0.7], ["a", "f"]), 0.0, None)
         dataItem1.globalR = 4.10
         dataItem1.localR = 1.2
 
-        point2 = Point([-0.3, 0.78], ["e", "f"])
-        dataItem2 = SearchDataItem(point2, 1.0, 1)
+        dataItem2 = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 1.0, None)
         dataItem2.globalR = 5.0
         dataItem2.localR = 4.56
 
-        point3 = Point([1.4, 3.7], ["a", "f"])
-        dataItem3 = SearchDataItem(point3, 0.8, 1)
+        dataItem3 = SearchDataItem(([1.4, 3.7], ["a", "f"]), 0.8, None)
         dataItem3.globalR = 2.6
         dataItem3.localR = -0.8
-
 
         self.searchData.InsertFirstDataItem(dataItem1, dataItem2)
         self.searchData.InsertDataItem(dataItem3)
@@ -572,15 +588,14 @@ class TestSearchData(unittest.TestCase):
         self.assertEqual(getDataItemLocal.GetX(), 0.8)
         self.assertEqual(getDataItemLocal.localR, -0.8)
 
-
     def test_GetCount(self):
         point = Point([-0.01, 0.78], ["e", "f"])
-        dataItemFirst = SearchDataItem(point, 0, 1)
+        dataItemFirst = SearchDataItem(point, 0, 1, None)
         dataItemFirst.globalR = 0.76
         dataItemFirst.localR = 3.2
 
         point = Point([-0.5, 0.02], ["e", "c"])
-        dataItemSecond = SearchDataItem(point, 1, 1)
+        dataItemSecond = SearchDataItem(point, 1, 1, None)
         dataItemSecond.globalR = 4.76
         dataItemSecond.localR = 1.03
 

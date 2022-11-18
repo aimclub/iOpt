@@ -22,7 +22,8 @@ class SearchDataItem(Trial):
 
     __leftPoint: SearchDataItem = None
     __rightPoint: SearchDataItem = None
-    flag: int = 0
+    flagR: int = 1
+    flagL: int = 1
 
     delta: np.double = -1.0
 
@@ -127,43 +128,43 @@ class SearchData:
     # в качестве интервала используем [i-1, i]
     # если rigthDataItem == None то его необходимо найти по дереву __allTrials
     def InsertDataItem(self, newDataItem: SearchDataItem,
-                       rigthDataItem: SearchDataItem = None):
-        if rigthDataItem is None:
-            rigthDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
+                       rightDataItem: SearchDataItem = None):
+        if rightDataItem is None:
+            rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
 
-        newDataItem.SetLeft(rigthDataItem.GetLeft())
-        rigthDataItem.SetLeft(newDataItem)
-        newDataItem.SetRight(rigthDataItem)
+        newDataItem.SetLeft(rightDataItem.GetLeft())
+        rightDataItem.SetLeft(newDataItem)
+        newDataItem.SetRight(rightDataItem)
         newDataItem.GetLeft().SetRight(newDataItem)
-
-        # связывание очередей
-        newDataItem.flag = 1
 
         self.__allTrials.append(newDataItem)
 
         self.__RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
-        self.__RGlobalQueue.Insert(rigthDataItem.globalR, rigthDataItem)
+        if rightDataItem.flagL == 0:
+            self.__RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
         self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
-        self.__RLocalQueue.Insert(rigthDataItem.localR, rigthDataItem)
+        if rightDataItem.flagL == 0:
+            self.__RLocalQueue.Insert(rightDataItem.localR, rightDataItem)
+
 
     def InsertFirstDataItem(self, leftDataItem: SearchDataItem,
-                            rightDataItem: SearchDataItem):
-        leftDataItem.SetRight(rightDataItem)
-        rightDataItem.SetLeft(leftDataItem)
+                                rightDataItem: SearchDataItem):
+            leftDataItem.SetRight(rightDataItem)
+            rightDataItem.SetLeft(leftDataItem)
 
-        leftDataItem.flag = 1
-        rightDataItem.flag = 1
+            leftDataItem.flag = 1
+            rightDataItem.flag = 1
 
-        self.__allTrials.append(leftDataItem)
-        self.__allTrials.append(rightDataItem)
+            self.__allTrials.append(leftDataItem)
+            self.__allTrials.append(rightDataItem)
 
-        self.__RGlobalQueue.Insert(leftDataItem.globalR, leftDataItem)
-        self.__RLocalQueue.Insert(leftDataItem.localR, leftDataItem)
+            self.__RGlobalQueue.Insert(leftDataItem.globalR, leftDataItem)
+            self.__RLocalQueue.Insert(leftDataItem.localR, leftDataItem)
 
-        self.__RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
-        self.__RLocalQueue.Insert(rightDataItem.localR, rightDataItem)
+            self.__RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
+            self.__RLocalQueue.Insert(rightDataItem.localR, rightDataItem)
 
-        self.__firstDataItem = leftDataItem
+            self.__firstDataItem = leftDataItem
 
     # поиск покрывающего интервала
     # возвращает правую точку
@@ -179,10 +180,10 @@ class SearchData:
             self.RefillQueue()
         # связывание очередей
         bestItem = self.__RGlobalQueue.GetBestItem()
-        # while bestItem.flag == 0:
-        #    # ? исключение: опустошение очереди
-        #    bestItem = self.__RGlobalQueue.GetBestItem()
-        # bestItem.flag = 0
+        while bestItem.flagR == 0:
+            # ? исключение: опустошение очереди
+            bestItem = self.__RGlobalQueue.GetBestItem()
+        bestItem.flagL = 0
         return bestItem
 
     def GetDataItemWithMaxLocalR(self) -> SearchDataItem:
@@ -190,9 +191,9 @@ class SearchData:
             self.RefillQueue()
         # связывание очередей
         bestItem = self.__RLocalQueue.GetBestItem()
-        while bestItem.flag == 0:
+        while bestItem.flagL == 0:
             bestItem = self.__RLocalQueue.GetBestItem()
-        bestItem.flag = 0
+        bestItem.flagR = 0
         return bestItem
 
     # Перезаполнение очереди (при ее опустошении или при смене оценки константы Липшица)
