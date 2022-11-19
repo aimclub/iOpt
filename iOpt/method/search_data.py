@@ -22,11 +22,11 @@ class SearchDataItem(Trial):
 
     __leftPoint: SearchDataItem = None
     __rightPoint: SearchDataItem = None
-    flag: int = 0
 
     delta: np.double = -1.0
+    flag: int = 1
 
-    localR: np.double = -1.0
+    # localR: np.double = -1.0
     globalR: np.double = -1.0
 
     iterationNumber: int = -1
@@ -104,7 +104,6 @@ class CharacteristicsQueue:
 
 class SearchData:
     # очереди характеристик
-    __RLocalQueue: CharacteristicsQueue = CharacteristicsQueue(None)
     __RGlobalQueue: CharacteristicsQueue = CharacteristicsQueue(None)
     # упорядоченное множество всех испытаний по X
     # __allTrials: AVLTree = AVLTree()
@@ -116,12 +115,10 @@ class SearchData:
     def __init__(self, problem: Problem, maxlen: int = None):
         self.solution = Solution(problem)
         self.__allTrials = []
-        self.__RLocalQueue = CharacteristicsQueue(maxlen)
         self.__RGlobalQueue = CharacteristicsQueue(maxlen)
 
     def ClearQueue(self):
         self.__RGlobalQueue.Clear()
-        self.__RLocalQueue.Clear()
 
     # вставка точки если знает правую точку
     # в качестве интервала используем [i-1, i]
@@ -136,32 +133,23 @@ class SearchData:
         newDataItem.SetRight(rigthDataItem)
         newDataItem.GetLeft().SetRight(newDataItem)
 
-        # связывание очередей
-        newDataItem.flag = 1
-
         self.__allTrials.append(newDataItem)
 
         self.__RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
-        self.__RGlobalQueue.Insert(rigthDataItem.globalR, rigthDataItem)
-        self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
-        self.__RLocalQueue.Insert(rigthDataItem.localR, rigthDataItem)
+        # всегда ли делается?
+        if rigthDataItem.flag == 0:
+            self.__RGlobalQueue.Insert(rigthDataItem.globalR, rigthDataItem)
 
     def InsertFirstDataItem(self, leftDataItem: SearchDataItem,
                             rightDataItem: SearchDataItem):
         leftDataItem.SetRight(rightDataItem)
         rightDataItem.SetLeft(leftDataItem)
 
-        leftDataItem.flag = 1
-        rightDataItem.flag = 1
-
         self.__allTrials.append(leftDataItem)
         self.__allTrials.append(rightDataItem)
 
         self.__RGlobalQueue.Insert(leftDataItem.globalR, leftDataItem)
-        self.__RLocalQueue.Insert(leftDataItem.localR, leftDataItem)
-
         self.__RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
-        self.__RLocalQueue.Insert(rightDataItem.localR, rightDataItem)
 
         self.__firstDataItem = leftDataItem
 
@@ -177,32 +165,16 @@ class SearchData:
     def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
         if self.__RGlobalQueue.IsEmpty():
             self.RefillQueue()
-        # связывание очередей
         bestItem = self.__RGlobalQueue.GetBestItem()
-        # while bestItem.flag == 0:
-        #    # ? исключение: опустошение очереди
-        #    bestItem = self.__RGlobalQueue.GetBestItem()
-        # bestItem.flag = 0
-        return bestItem
-
-    def GetDataItemWithMaxLocalR(self) -> SearchDataItem:
-        if self.__RLocalQueue.IsEmpty():
-            self.RefillQueue()
-        # связывание очередей
-        bestItem = self.__RLocalQueue.GetBestItem()
-        while bestItem.flag == 0:
-            bestItem = self.__RLocalQueue.GetBestItem()
         bestItem.flag = 0
         return bestItem
 
     # Перезаполнение очереди (при ее опустошении или при смене оценки константы Липшица)
     def RefillQueue(self):
         self.__RGlobalQueue.Clear()
-        self.__RLocalQueue.Clear()
 
         for itr in self:
             self.__RGlobalQueue.Insert(itr.globalR, itr)
-            self.__RLocalQueue.Insert(itr.localR, itr)
 
     # Возвращает текущее число интервалов в дереве
     def GetCount(self) -> int:
