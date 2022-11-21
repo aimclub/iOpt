@@ -75,3 +75,4 @@ class Solver:
 
     def AddListener(self, listener: Listener):
         self.__listeners.append(listener)
+        self.process.AddListener(listener)

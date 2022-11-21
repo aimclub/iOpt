@@ -43,28 +43,34 @@ class Process:
             print(self.method.CheckStopCondition())
         except:
             print('Exception was thrown')
+
         for listener in self.__listeners:
-            listener.OnMethodStop(self.searchData)
+            listener.OnMethodStop(self.searchData, self.GetResults())
         return self.GetResults()
 
     def DoGlobalIteration(self, number: int = 1):
         """
         :param number: The number of iterations of the global search
         """
+        savedNewPoints = []
         for _ in range(number):
             if self.__first_iteration is False:
                 for listener in self.__listeners:
-                    listener.BeforeMethodStart(self.searchData)
+                    listener.BeforeMethodStart(self.searchData, self.task.problem)
                 self.method.FirstIteration()
+                savedNewPoints.append(self.method.evolvent.GetImage(0.5)[0])
                 self.__first_iteration = True
             else:
                 newpoint, oldpoint = self.method.CalculateIterationPoint()
+                savedNewPoints.append(newpoint.GetY().floatVariables[0])
                 self.method.CalculateFunctionals(newpoint)
                 self.method.UpdateOptimum(newpoint)
                 self.method.RenewSearchData(newpoint, oldpoint)
                 self.method.FinalizeIteration()
+
         for listener in self.__listeners:
-            listener.OnEndIteration(self.searchData)
+            listener.OnEndIteration(self.searchData, savedNewPoints)
+
 
     def DoLocalRefinement(self, number: int = 1):
         """
