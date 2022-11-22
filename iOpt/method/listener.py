@@ -11,13 +11,13 @@ import time
 
 #интерфейс в методе
 class Listener:
-    def BeforeMethodStart(self, searchData: SearchData, solution: Solution):
+    def BeforeMethodStart(self, searchData: SearchData,):
         pass
 
-    def OnEndIteration(self, searchData: SearchData, savedNewPoints: SearchDataItem):
+    def OnEndIteration(self, searchData: SearchData):
         pass
 
-    def OnMethodStop(self, searchData: SearchData, solution: Solution):
+    def OnMethodStop(self, searchData: SearchData):
         pass
 
     def OnRefrash(self, searchData: SearchData):
@@ -82,17 +82,14 @@ class PaintListener(Listener):
 class AnimationPaintListener(Listener):
     __fp : FunctionAnimationPainter = None
 
-    def BeforeMethodStart(self, searchData: SearchData,
-                    problem : Problem):
+    def BeforeMethodStart(self, problem : Problem):
         self.__fp = FunctionAnimationPainter(problem)
         self.__fp.PaintObjectiveFunc()
 
-    def OnEndIteration(self, searchData: SearchData,
-                    savedNewPoints):
+    def OnEndIteration(self, savedNewPoints):
         self.__fp.PaintPoint(savedNewPoints)
 
-    def OnMethodStop(self, searchData : SearchData,
-                    solution: Solution):
+    def OnMethodStop(self, searchData : SearchData, solution: Solution):
         self.__fp.PaintOptimum(solution)
 
 class StaticVisualization1D:
@@ -122,10 +119,10 @@ class StaticVisualization1D:
 
     def drawPoints(self):
         for point in self.points:
-            self.ax.plot(point, self.optimumValue - 1, color='green', 
-                        label='original', marker='o', markersize=2)     
+            self.ax.plot(point, self.optimumValue - 1, color='black', 
+                        label='original', marker='o', markersize=1)     
         self.ax.plot(self.optimum, self.optimumValue - 1, color='red', 
-                    label='original', marker='x', markersize=5)
+                    label='original', marker='x', markersize=4)
     
 class AnimateVisualization1D:
     def __init__(self, _points, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc):
@@ -159,9 +156,9 @@ class AnimateVisualization1D:
 
     def drawPoint(self, point, value):
         #self.ax.plot(point, value, color='green', 
-        #        label='original', marker='o', markersize=2)
+        #        label='original', marker='o', markersize=1)
         self.ax.plot(point, -1, color='black', 
-                label='original', marker='o', markersize=2)
+                label='original', marker='o', markersize=1)
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()
@@ -172,7 +169,7 @@ class AnimateVisualization1D:
 
     def drawOptimum(self, point, value):
         self.ax.plot(point, -1, color='red', 
-                label='original', marker='x', markersize=5)
+                label='original', marker='x', markersize=4)
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()
