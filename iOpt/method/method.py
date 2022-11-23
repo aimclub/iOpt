@@ -99,7 +99,7 @@ class Method:
         idr = point.GetIndex()
         if idl == idr:
             v = idr
-            dif = left.GetZ() - point.GetZ()
+            dif = point.GetZ() - left.GetZ()
             dg = -1.0
             if dif > 0:
                 dg = 1.0
