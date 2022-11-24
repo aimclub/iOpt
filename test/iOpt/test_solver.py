@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from iOpt.problems.rastrigin import Rastrigin
-from iOpt.problems.paraboloid import Paraboloid
+from iOpt.problems.xsquared import XSquared
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 
@@ -20,7 +20,7 @@ class TestSolveRastrigin(unittest.TestCase):
 
 class TestSolveParaboloid(unittest.TestCase):
      def setUp(self):
-         self.problem = Paraboloid(1)
+         self.problem = XSquared(1)
          params = SolverParameters(r=3.5, eps=0.001)
          self.solver = Solver(self.problem, parameters=params)
 
