@@ -2,16 +2,19 @@ from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.trial import Trial, Point, FunctionValue
 from iOpt.problem import Problem
 from iOpt.solution import Solution
+from iOpt.method.method import Method
+from iOpt.solver_parametrs import SolverParameters
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import rcParams
 import numpy as np
 import time
+from enum import Enum
 
 #интерфейс в методе
 class Listener:
-    def BeforeMethodStart(self, searchData: SearchData,):
+    def BeforeMethodStart(self, searchData: SearchData):
         pass
 
     def OnEndIteration(self, searchData: SearchData):
@@ -60,36 +63,175 @@ class FunctionAnimationPainter:
     def PaintObjectiveFunc(self):
         self.av1d.drawObjFunction(pointsCount=150)
 
-    def PaintPoint(self, savedNewPoints):
-        x_ = Point(savedNewPoints, [])
-        fv = FunctionValue()
-        fv = self.problem.Calculate(x_, fv)
-        self.av1d.drawPoint(savedNewPoints[0], fv.value)
+    def PaintPoint(self, savedNewPoints : SearchDataItem):
+        x_ = savedNewPoints[0].GetY().floatVariables
+        fv = savedNewPoints[0].GetZ()
+        self.av1d.drawPoint(x_, fv)
 
     def PaintOptimum(self, solution : Solution):
         bestTrialPoint = solution.bestTrials[0].point.floatVariables
         bestTrialValue = solution.bestTrials[0].functionValues[0].value
         self.av1d.drawOptimum(bestTrialPoint, bestTrialValue)
 
-# пример слушателя
+'''
+class FunctionConsoleBriefOutput:
+    def __init__(self, problem : Problem, frequencyPrint : int):
+        self.problem = problem
+        self.frequencyPrint = frequencyPrint
+'''
+
+class FunctionConsoleFullOutput:
+    def __init__(self, problem : Problem, parameters : SolverParameters):
+        self.problem = problem
+        self.parameters = parameters
+        self.__outputer = ConsolePrint()
+        self.iterNum = 1
+
+    def printInitInfo(self):
+        self.__outputer.printInit(
+            self.parameters.eps,
+            self.parameters.r,
+            self.parameters.epsR,
+            self.parameters.itersLimit,
+
+            self.problem.numberOfFloatVariables,
+            self.problem.numberOfObjectives,
+            self.problem.numberOfConstraints,
+            self.problem.lowerBoundOfFloatVariables,
+            self.problem.upperBoundOfFloatVariables
+        )
+
+    def printIterInfo(self, savedNewPoints : SearchDataItem):
+        point = savedNewPoints[0].GetY().floatVariables
+        value = savedNewPoints[0].GetZ()
+
+        self.__outputer.printIter(
+            point,
+            value,
+            self.iterNum
+        )
+        self.iterNum += 1
+
+    def printFinalResult(self, solution : Solution, status: bool):
+        bestTrialPoint = solution.bestTrials[0].point.floatVariables
+        bestTrialValue = solution.bestTrials[0].functionValues[0].value
+        self.__outputer.printResult(
+            status,
+            solution.numberOfGlobalTrials,
+            solution.numberOfLocalTrials,
+            solution.solvingTime,
+            solution.solutionAccuracy,
+            bestTrialPoint,
+            bestTrialValue
+        )
+
+class ConsolePrint:
+    def printInit(self, eps, r, epsR, itersLimit, floatdim, numberOfObjectives, numberOfConstraints,
+        lowerBoundOfFloatVariables, upperBoundOfFloatVariables):
+        dim = floatdim
+        print()
+        print("-"*(30 + 20 * dim + 2))
+        print("|{:^{width}}|".format("Task Discription", width=30+20*dim))
+        print("-"*(30 + 20 * dim + 2))
+        print("|{:>29} {:<{width}}|".format("dimension: ", floatdim, width=20*dim))
+        tempstr = "["
+        for i in range (floatdim):
+            tempstr += "["
+            tempstr += str(lowerBoundOfFloatVariables[i])
+            tempstr += ", "
+            tempstr += str(upperBoundOfFloatVariables[i])
+            tempstr += "], "
+        tempstr = tempstr[:-2]
+        tempstr += "]"
+        print("|{:>29} {:<{width}}|".format("bounds: ", tempstr, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("objective-function count: ", numberOfObjectives, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("constraint-function count: ", numberOfConstraints, width=20*dim))
+        print("-"*(30 + 20 * dim + 2))
+        print("|{:^{width}}|".format("Method Parameters", width=30+20*dim))
+        print("-"*(30 + 20 * dim + 2))
+        print("|{:>29} {:<{width}}|".format("eps: ", eps, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("r: ", r, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("epsR: ", epsR, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("itersLimit: ", itersLimit, width=20*dim))
+        print("-"*(30 + 20 * dim + 2))
+        print("|{:^{width}}|".format("Iterations", width=30+20*dim))
+        print("-"*(30 + 20 * dim + 2))
+        pass
+
+    def printIter(self, point, value, iter):
+        dim = len(point)
+        print("|", end=' ')
+        print("{:>5}:".format(iter), end=' ')
+        print("{:>19.8f}".format(value), end ='   ')
+        '''
+        print("[", end='')
+        for item in point:
+            print("{:>8.8f}".format(item), end=', ')
+        print("]", end='')
+        print("{:>}".format("|"))
+
+        width = 30
+        print("{:<{width}}|".format(str(point), width=width))
+
+        print("{:<30}|".format(str(point)))
+        '''
+        print("{:<{width}}|".format(str(point), width=20*dim))
+        
+        pass
+
+    def printResult(self, solved, numberOfGlobalTrials, numberOfLocalTrials, solvingTime, solutionAccuracy,
+        bestTrialPoint, bestTrialValue):
+        dim = len(bestTrialPoint)
+        print("-"*(30 + 20 * dim + 2))
+        print("|{:^{width}}|".format("Result",width=30+20*dim))
+        print("-"*(30 + 20 * dim + 2))
+        print("|{:>29} {:<{width}}|".format("is solved: ", str(solved), width=20*dim))
+        print("|{:>29} {:<{width}}|".format("global iteration count: ", numberOfGlobalTrials, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("local iteration count: ", numberOfLocalTrials, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("solving time: ", solvingTime, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("solution point: ", str(bestTrialPoint), width=20*dim))
+        print("|{:>29} {:<{width}.8f}|".format("solution value: ", bestTrialValue, width=20*dim))
+        print("|{:>29} {:<{width}.8f}|".format("accuracy: ", solutionAccuracy, width=20*dim))
+        print("-"*(30 + 20 * dim + 2))
+        pass
+
+
+class ConsoleFullOutputListener(Listener):
+    def __init__(self):
+        self.__fcfo : FunctionConsoleFullOutput = None
+
+    def BeforeMethodStart(self, method : Method):
+        self.__fcfo = FunctionConsoleFullOutput(method.task.problem, method.parameters)
+        self.__fcfo.printInitInfo()
+        pass
+
+    def OnEndIteration(self, savedNewPoints : SearchDataItem):
+        self.__fcfo.printIterInfo(savedNewPoints)
+        pass
+
+    def OnMethodStop(self, searchData : SearchData, solution: Solution, status: bool):
+        self.__fcfo.printFinalResult(solution, status)
+        pass
+
 class PaintListener(Listener):
     # нарисовать все точки испытаний
     def OnMethodStop(self, searchData: SearchData,
-                    solution: Solution):
+                    solution: Solution, status : bool):
         fp = FunctionStaticPainter(searchData, solution)
         fp.Paint()
 
 class AnimationPaintListener(Listener):
-    __fp : FunctionAnimationPainter = None
+    def __init__(self):
+        self.__fp : FunctionAnimationPainter = None
 
-    def BeforeMethodStart(self, problem : Problem):
-        self.__fp = FunctionAnimationPainter(problem)
+    def BeforeMethodStart(self, method : Method):
+        self.__fp = FunctionAnimationPainter(method.task.problem)
         self.__fp.PaintObjectiveFunc()
 
-    def OnEndIteration(self, savedNewPoints):
+    def OnEndIteration(self, savedNewPoints : SearchDataItem):
         self.__fp.PaintPoint(savedNewPoints)
 
-    def OnMethodStop(self, searchData : SearchData, solution: Solution):
+    def OnMethodStop(self, searchData : SearchData, solution: Solution, status : bool):
         self.__fp.PaintOptimum(solution)
 
 class StaticVisualization1D:

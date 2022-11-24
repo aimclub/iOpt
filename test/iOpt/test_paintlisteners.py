@@ -19,7 +19,6 @@ class TestStaticPaintRastrigin(unittest.TestCase):
 
     def test_solveWithPrint(self):
         sol = self.solver.Solve()
-        print(sol.bestTrials[0].point.floatVariables)
 
 class TestAnimatePaintParaboloid(unittest.TestCase):
      def setUp(self):
@@ -31,7 +30,7 @@ class TestAnimatePaintParaboloid(unittest.TestCase):
 
      def test_solveWithPrint(self):
          sol = self.solver.Solve()
-         print(sol.bestTrials[0].point.floatVariables)
 
 if __name__ == "__main__":
     unittest.main()
+

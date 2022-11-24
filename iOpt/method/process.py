@@ -41,12 +41,13 @@ class Process:
                 self.DoGlobalIteration()
                 # print(self.method.min_delta, self.method.parameters.eps)
             # print(self.method.min_delta, self.method.parameters.eps)
-            print(self.method.CheckStopCondition())
+            #print(self.method.CheckStopCondition())
         except:
             print('Exception was thrown')
 
         for listener in self.__listeners:
-            listener.OnMethodStop(self.searchData, self.GetResults())
+            status = self.method.CheckStopCondition()
+            listener.OnMethodStop(self.searchData, self.GetResults(), status)
         return self.GetResults()
 
     def DoGlobalIteration(self, number: int = 1):
@@ -57,13 +58,20 @@ class Process:
         for _ in range(number):
             if self.__first_iteration is False:
                 for listener in self.__listeners:
-                    listener.BeforeMethodStart(self.task.problem)
-                self.method.FirstIteration()
-                savedNewPoints.append(self.method.evolvent.GetImage(0.5)[0])
+                    listener.BeforeMethodStart(self.method)
+                self.method.FirstIteration()    
+                # костыль
+                i = -1
+                for item in self.searchData:
+                    i = i + 1
+                    if i == 1:
+                        savedNewPoints.append(item)
+                        break
+                # конец костыля
                 self.__first_iteration = True
             else:
                 newpoint, oldpoint = self.method.CalculateIterationPoint()
-                savedNewPoints.append(newpoint.GetY().floatVariables[0])
+                savedNewPoints.append(newpoint)
                 self.method.CalculateFunctionals(newpoint)
                 self.method.UpdateOptimum(newpoint)
                 self.method.RenewSearchData(newpoint, oldpoint)
