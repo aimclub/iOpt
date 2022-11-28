@@ -1,18 +1,14 @@
 from iOpt.method.search_data import SearchData, SearchDataItem
-from iOpt.trial import Trial, Point, FunctionValue
+from iOpt.trial import Point, FunctionValue
 from iOpt.problem import Problem
 from iOpt.solution import Solution
 from iOpt.method.method import Method
 from iOpt.solver_parametrs import SolverParameters
 
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib import rcParams
 import numpy as np
 import time
-from enum import Enum
 
-#интерфейс в методе
 class Listener:
     def BeforeMethodStart(self, searchData: SearchData):
         pass
@@ -26,7 +22,6 @@ class Listener:
     def OnRefrash(self, searchData: SearchData):
         pass
 
-#реализацию вынести за метод!
 class FunctionStaticPainter:
     def __init__(self, searchData: SearchData,
                  solution: Solution):
@@ -73,13 +68,6 @@ class FunctionAnimationPainter:
         bestTrialValue = solution.bestTrials[0].functionValues[0].value
         self.av1d.drawOptimum(bestTrialPoint, bestTrialValue)
 
-'''
-class FunctionConsoleBriefOutput:
-    def __init__(self, problem : Problem, frequencyPrint : int):
-        self.problem = problem
-        self.frequencyPrint = frequencyPrint
-'''
-
 class FunctionConsoleFullOutput:
     def __init__(self, problem : Problem, parameters : SolverParameters):
         self.problem = problem
@@ -101,14 +89,15 @@ class FunctionConsoleFullOutput:
             self.problem.upperBoundOfFloatVariables
         )
 
-    def printIterInfo(self, savedNewPoints : SearchDataItem):
+    def printIterInfo(self, savedNewPoints : SearchDataItem, mode):
         point = savedNewPoints[0].GetY().floatVariables
         value = savedNewPoints[0].GetZ()
 
         self.__outputer.printIter(
             point,
             value,
-            self.iterNum
+            self.iterNum,
+            mode
         )
         self.iterNum += 1
 
@@ -156,28 +145,19 @@ class ConsolePrint:
         print("-"*(30 + 20 * dim + 2))
         print("|{:^{width}}|".format("Iterations", width=30+20*dim))
         print("-"*(30 + 20 * dim + 2))
+        print()
         pass
 
-    def printIter(self, point, value, iter):
+    def printIter(self, point, value, iter, mode):
+        time.sleep(0.1)
         dim = len(point)
-        print("|", end=' ')
+        if mode == 1:
+            print("|", end=' ')
+        elif mode == 2:
+            print("\033[A|", end=' ')
         print("{:>5}:".format(iter), end=' ')
         print("{:>19.8f}".format(value), end ='   ')
-        '''
-        print("[", end='')
-        for item in point:
-            print("{:>8.8f}".format(item), end=', ')
-        print("]", end='')
-        print("{:>}".format("|"))
-
-        width = 30
-        print("{:<{width}}|".format(str(point), width=width))
-
-        print("{:<30}|".format(str(point)))
-        '''
         print("{:<{width}}|".format(str(point), width=20*dim))
-        
-        pass
 
     def printResult(self, solved, numberOfGlobalTrials, numberOfLocalTrials, solvingTime, solutionAccuracy,
         bestTrialPoint, bestTrialValue):
@@ -195,10 +175,10 @@ class ConsolePrint:
         print("-"*(30 + 20 * dim + 2))
         pass
 
-
 class ConsoleFullOutputListener(Listener):
-    def __init__(self):
+    def __init__(self, mode):
         self.__fcfo : FunctionConsoleFullOutput = None
+        self.mode = mode
 
     def BeforeMethodStart(self, method : Method):
         self.__fcfo = FunctionConsoleFullOutput(method.task.problem, method.parameters)
@@ -206,7 +186,7 @@ class ConsoleFullOutputListener(Listener):
         pass
 
     def OnEndIteration(self, savedNewPoints : SearchDataItem):
-        self.__fcfo.printIterInfo(savedNewPoints)
+        self.__fcfo.printIterInfo(savedNewPoints, self.mode)
         pass
 
     def OnMethodStop(self, searchData : SearchData, solution: Solution, status: bool):
@@ -214,7 +194,6 @@ class ConsoleFullOutputListener(Listener):
         pass
 
 class PaintListener(Listener):
-    # нарисовать все точки испытаний
     def OnMethodStop(self, searchData: SearchData,
                     solution: Solution, status : bool):
         fp = FunctionStaticPainter(searchData, solution)
@@ -282,7 +261,6 @@ class AnimateVisualization1D:
         self.ax.set_autoscaley_on(True)
         self.ax.set_xlim(self.leftBound, self.rightBound)
         self.ax.tick_params(axis = 'both', labelsize = 8)
-
     
     def drawObjFunction(self, pointsCount):
         x = np.arange(self.leftBound, self.rightBound, (self.rightBound - self.leftBound) / pointsCount)
@@ -295,7 +273,6 @@ class AnimateVisualization1D:
         plt.rcParams['contour.negative_linestyle'] = 'solid'
         plt.plot(x, z, linewidth=1, color='blue')
 
-
     def drawPoint(self, point, value):
         #self.ax.plot(point, value, color='green', 
         #        label='original', marker='o', markersize=1)
@@ -304,10 +281,7 @@ class AnimateVisualization1D:
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()
-        self.fig.canvas.flush_events()
-
-        #time.sleep(1)
-        
+        self.fig.canvas.flush_events() 
 
     def drawOptimum(self, point, value):
         self.ax.plot(point, -1, color='red', 
@@ -316,9 +290,8 @@ class AnimateVisualization1D:
         self.ax.autoscale_view()
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
-         # Отключить интерактивный режим по завершению анимации
+        # отключить интерактивный режим по завершению анимации
         plt.ioff()
-        # Нужно, чтобы график не закрывался после завершения анимации
-        #plt.show()
+        # нужно, чтобы график не закрывался после завершения анимации
+        # plt.show()
         plt.savefig("output\methodWorks.pdf")
-        pass
