@@ -8,6 +8,7 @@ from iOpt.solver_parametrs import SolverParameters
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+import os
 
 class Listener:
     def BeforeMethodStart(self, searchData: SearchData):
@@ -28,7 +29,7 @@ class FunctionStaticPainter:
         self.searchData = searchData
         self.solution = solution
 
-    def Paint(self):
+    def Paint(self, fileName):
         # формируем массив точек итераций для графика
         points = []
         for item in self.searchData:
@@ -46,7 +47,9 @@ class FunctionStaticPainter:
         sv1d = StaticVisualization1D(points, bestTrialPoint, bestTrialValue, leftBound, rightBound, self.solution.problem.Calculate)
         sv1d.drawObjFunction(pointsCount=150)
         sv1d.drawPoints()
-        plt.savefig("output\methodWorks.pdf")
+        if not os.path.isdir("output"):
+            os.mkdir("output")
+        plt.savefig("output\\" + fileName)
 
 class FunctionAnimationPainter:
     def __init__(self, problem : Problem):
@@ -63,10 +66,10 @@ class FunctionAnimationPainter:
         fv = savedNewPoints[0].GetZ()
         self.av1d.drawPoint(x_, fv)
 
-    def PaintOptimum(self, solution : Solution):
+    def PaintOptimum(self, solution : Solution, fileName):
         bestTrialPoint = solution.bestTrials[0].point.floatVariables
         bestTrialValue = solution.bestTrials[0].functionValues[0].value
-        self.av1d.drawOptimum(bestTrialPoint, bestTrialValue)
+        self.av1d.drawOptimum(bestTrialPoint, bestTrialValue, fileName)
 
 class FunctionConsoleFullOutput:
     def __init__(self, problem : Problem, parameters : SolverParameters):
@@ -194,14 +197,18 @@ class ConsoleFullOutputListener(Listener):
         pass
 
 class PaintListener(Listener):
+    def __init__(self, fileName):
+        self.fileName = fileName
+
     def OnMethodStop(self, searchData: SearchData,
                     solution: Solution, status : bool):
         fp = FunctionStaticPainter(searchData, solution)
-        fp.Paint()
+        fp.Paint(self.fileName)
 
 class AnimationPaintListener(Listener):
-    def __init__(self):
+    def __init__(self, fileName):
         self.__fp : FunctionAnimationPainter = None
+        self.fileName = fileName
 
     def BeforeMethodStart(self, method : Method):
         self.__fp = FunctionAnimationPainter(method.task.problem)
@@ -211,7 +218,7 @@ class AnimationPaintListener(Listener):
         self.__fp.PaintPoint(savedNewPoints)
 
     def OnMethodStop(self, searchData : SearchData, solution: Solution, status : bool):
-        self.__fp.PaintOptimum(solution)
+        self.__fp.PaintOptimum(solution, self.fileName)
 
 class StaticVisualization1D:
     def __init__(self, _points, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc):
@@ -283,7 +290,7 @@ class AnimateVisualization1D:
         self.fig.canvas.draw()
         self.fig.canvas.flush_events() 
 
-    def drawOptimum(self, point, value):
+    def drawOptimum(self, point, value, fileName):
         self.ax.plot(point, -1, color='red', 
                 label='original', marker='x', markersize=4)
         self.ax.relim()
@@ -294,4 +301,7 @@ class AnimateVisualization1D:
         plt.ioff()
         # нужно, чтобы график не закрывался после завершения анимации
         # plt.show()
-        plt.savefig("output\methodWorks.pdf")
+
+        if not os.path.isdir("output"):
+            os.mkdir("output")
+        plt.savefig("output\\" + fileName)
