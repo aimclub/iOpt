@@ -4,7 +4,7 @@ from iOpt.problems.rastrigin import Rastrigin
 from iOpt.problems.xsquared import XSquared
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import PaintListener, AnimationPaintListener
+from iOpt.method.listener import StaticPaintListener, AnimationPaintListener
 
 
 class TestStaticPaintRastrigin(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestStaticPaintRastrigin(unittest.TestCase):
         self.problem = Rastrigin(1)
         params = SolverParameters(r=3.5, eps=0.001)
         self.solver = Solver(self.problem, parameters=params)
-        pl = PaintListener("rastrigin_1_3.5_0.001.pdf")
+        pl = StaticPaintListener("rastrigin_1_3.5_0.001.pdf")
         self.solver.AddListener(pl)
 
     def test_solveWithPrint(self):
