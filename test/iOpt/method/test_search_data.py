@@ -397,6 +397,30 @@ class TestSearchData(unittest.TestCase):
 
         self.assertEqual(self.searchData.GetCount(), 2)
 
+    def test_GetLastItem(self):
+        dataItem1 = SearchDataItem(([-0.6, 0.7], ["a", "f"]), 0.0, None, 2)
+
+        dataItem2 = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 1.0, None, 1)
+        dataItem2.globalR = 1.0
+
+        dataItem3 = SearchDataItem(([1.4, 3.7], ["a", "f"]), 0.8, None, 1)
+        dataItem3.globalR = 2.6
+
+        self.searchData.InsertFirstDataItem(dataItem1, dataItem2)
+        self.searchData.InsertDataItem(dataItem3, dataItem2)
+
+        getLastItem = self.searchData.GetLastItem()
+        self.assertEqual(getLastItem.GetX(), dataItem3.GetX())
+
+    def test_GetLastItemExcept(self):
+        dataItem1 = SearchDataItem(([-0.6, 0.7], ["a", "f"]), 0.0, None, 2)
+
+        dataItem2 = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 1.0, None, 1)
+        dataItem2.globalR = 1.0
+        try:
+            getLastItem = self.searchData.GetLastItem()
+        except Exception as exc:
+            assert True, f"'self.searchData.GetLastItem()' raised an exception{exc}"
 
 class TestSearchDataDualQueue(unittest.TestCase):
     def setUp(self):

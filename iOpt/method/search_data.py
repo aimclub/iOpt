@@ -167,6 +167,12 @@ class SearchData:
     def GetCount(self) -> int:
         return len(self._allTrials)
 
+    def GetLastItem(self) -> SearchDataItem:
+        try:
+            return self._allTrials[-1]
+        except:
+            print("GetLastItem: List is empty")
+
     def SaveProgress(self, fileName: str):
         """
         :return:
