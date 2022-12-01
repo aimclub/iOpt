@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import List
 import sys
 import numpy as np
-import queue
 import depq
 from depq import DEPQ
 
@@ -15,22 +14,6 @@ from iOpt.solution import Solution
 
 
 class SearchDataItem(Trial):
-    __x: np.double
-    __index: int = -2
-    __discreteValueIndex: int = 0
-    __z: np.double = sys.float_info.max
-
-    __leftPoint: SearchDataItem = None
-    __rightPoint: SearchDataItem = None
-    flag: int = 0
-
-    delta: np.double = -1.0
-
-    localR: np.double = -1.0
-    globalR: np.double = -1.0
-
-    iterationNumber: int = -1
-
     def __init__(self, y: Point, x: np.double,
                  functionValues: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
                  discreteValueIndex: int = 0):
@@ -38,6 +21,14 @@ class SearchDataItem(Trial):
         self.point = y
         self.__x = x
         self.__discreteValueIndex = discreteValueIndex
+        self.__index: int = -2
+        self.__z: np.double = sys.float_info.max
+        self.__leftPoint: SearchDataItem = None
+        self.__rightPoint: SearchDataItem = None
+        self.delta: np.double = -1.0
+        self.globalR: np.double = -1.0
+        self.localR: np.double = -1.0
+        self.iterationNumber: int = -1
 
     def GetX(self) -> np.double:
         return self.__x
@@ -77,10 +68,10 @@ class SearchDataItem(Trial):
 
 
 class CharacteristicsQueue:
-    __baseQueue: depq = DEPQ(iterable=None, maxlen=None)
+    # __baseQueue: depq = DEPQ(iterable=None, maxlen=None)
 
     def __init__(self, maxlen: int):
-        self.__baseQueue = DEPQ(maxlen=maxlen)
+        self.__baseQueue = DEPQ(iterable=None, maxlen=maxlen)
 
     def Clear(self):
         self.__baseQueue.clear()
@@ -89,8 +80,8 @@ class CharacteristicsQueue:
         # приоритет - значение характеристики
         self.__baseQueue.insert(dataItem, key)
 
-    def GetBestItem(self) -> SearchDataItem:
-        return self.__baseQueue.popfirst()[0]
+    def GetBestItem(self) -> (SearchDataItem, np.double):
+        return self.__baseQueue.popfirst()
 
     def IsEmpty(self):
         return self.__baseQueue.is_empty()
@@ -104,64 +95,51 @@ class CharacteristicsQueue:
 
 class SearchData:
     # очереди характеристик
-    __RLocalQueue: CharacteristicsQueue = CharacteristicsQueue(None)
-    __RGlobalQueue: CharacteristicsQueue = CharacteristicsQueue(None)
+    # _RGlobalQueue: CharacteristicsQueue = CharacteristicsQueue(None)
     # упорядоченное множество всех испытаний по X
     # __allTrials: AVLTree = AVLTree()
-    __allTrials: List = []
-    __firstDataItem: SearchDataItem = None
+    # _allTrials: List = []
+    # __firstDataItem:
 
-    solution: Solution = None
+    # solution: Solution = None
 
     def __init__(self, problem: Problem, maxlen: int = None):
         self.solution = Solution(problem)
-        self.__allTrials = []
-        self.__RLocalQueue = CharacteristicsQueue(maxlen)
-        self.__RGlobalQueue = CharacteristicsQueue(maxlen)
+        self._allTrials = []
+        self._RGlobalQueue = CharacteristicsQueue(maxlen)
+        self.__firstDataItem: SearchDataItem = None
 
     def ClearQueue(self):
-        self.__RGlobalQueue.Clear()
-        self.__RLocalQueue.Clear()
+        self._RGlobalQueue.Clear()
 
     # вставка точки если знает правую точку
     # в качестве интервала используем [i-1, i]
-    # если rigthDataItem == None то его необходимо найти по дереву __allTrials
+    # если rightDataItem == None то его необходимо найти по дереву _allTrials
     def InsertDataItem(self, newDataItem: SearchDataItem,
-                       rigthDataItem: SearchDataItem = None):
-        if rigthDataItem is None:
-            rigthDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
+                       rightDataItem: SearchDataItem = None):
+        flag = True
+        if rightDataItem is None:
+            rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
+            flag = False
 
-        newDataItem.SetLeft(rigthDataItem.GetLeft())
-        rigthDataItem.SetLeft(newDataItem)
-        newDataItem.SetRight(rigthDataItem)
+        newDataItem.SetLeft(rightDataItem.GetLeft())
+        rightDataItem.SetLeft(newDataItem)
+        newDataItem.SetRight(rightDataItem)
         newDataItem.GetLeft().SetRight(newDataItem)
 
-        # связывание очередей
-        newDataItem.flag = 1
+        self._allTrials.append(newDataItem)
 
-        self.__allTrials.append(newDataItem)
-
-        self.__RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
-        self.__RGlobalQueue.Insert(rigthDataItem.globalR, rigthDataItem)
-        self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
-        self.__RLocalQueue.Insert(rigthDataItem.localR, rigthDataItem)
+        self._RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
+        if flag:
+            self._RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
 
     def InsertFirstDataItem(self, leftDataItem: SearchDataItem,
                             rightDataItem: SearchDataItem):
         leftDataItem.SetRight(rightDataItem)
         rightDataItem.SetLeft(leftDataItem)
 
-        leftDataItem.flag = 1
-        rightDataItem.flag = 1
-
-        self.__allTrials.append(leftDataItem)
-        self.__allTrials.append(rightDataItem)
-
-        self.__RGlobalQueue.Insert(leftDataItem.globalR, leftDataItem)
-        self.__RLocalQueue.Insert(leftDataItem.localR, leftDataItem)
-
-        self.__RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
-        self.__RLocalQueue.Insert(rightDataItem.localR, rightDataItem)
+        self._allTrials.append(leftDataItem)
+        self._allTrials.append(rightDataItem)
 
         self.__firstDataItem = leftDataItem
 
@@ -175,38 +153,25 @@ class SearchData:
         return None
 
     def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
-        if self.__RGlobalQueue.IsEmpty():
+        if self._RGlobalQueue.IsEmpty():
             self.RefillQueue()
-        # связывание очередей
-        bestItem = self.__RGlobalQueue.GetBestItem()
-        # while bestItem.flag == 0:
-        #    # ? исключение: опустошение очереди
-        #    bestItem = self.__RGlobalQueue.GetBestItem()
-        # bestItem.flag = 0
-        return bestItem
-
-    def GetDataItemWithMaxLocalR(self) -> SearchDataItem:
-        if self.__RLocalQueue.IsEmpty():
-            self.RefillQueue()
-        # связывание очередей
-        bestItem = self.__RLocalQueue.GetBestItem()
-        while bestItem.flag == 0:
-            bestItem = self.__RLocalQueue.GetBestItem()
-        bestItem.flag = 0
-        return bestItem
+        return self._RGlobalQueue.GetBestItem()[0]
 
     # Перезаполнение очереди (при ее опустошении или при смене оценки константы Липшица)
     def RefillQueue(self):
-        self.__RGlobalQueue.Clear()
-        self.__RLocalQueue.Clear()
-
+        self._RGlobalQueue.Clear()
         for itr in self:
-            self.__RGlobalQueue.Insert(itr.globalR, itr)
-            self.__RLocalQueue.Insert(itr.localR, itr)
+            self._RGlobalQueue.Insert(itr.globalR, itr)
 
     # Возвращает текущее число интервалов в дереве
     def GetCount(self) -> int:
-        return len(self.__allTrials)
+        return len(self._allTrials)
+
+    def GetLastItem(self) -> SearchDataItem:
+        try:
+            return self._allTrials[-1]
+        except:
+            print("GetLastItem: List is empty")
 
     def SaveProgress(self, fileName: str):
         """
@@ -220,7 +185,7 @@ class SearchData:
 
     def __iter__(self):
         # вернуть самую левую точку из дерева (ниже код проверить!)
-        # return self.__allTrials.min_item()[1]
+        # return self._allTrials.min_item()[1]
         self.curIter = self.__firstDataItem
         if self.curIter is None:
             raise StopIteration
@@ -234,3 +199,61 @@ class SearchData:
             tmp = self.curIter
             self.curIter = self.curIter.GetRight()
             return tmp
+
+
+class SearchDataDualQueue(SearchData):
+    # __RLocalQueue: CharacteristicsQueue = CharacteristicsQueue(None)
+
+    def __init__(self, problem: Problem, maxlen: int = None):
+        super().__init__(problem, maxlen)
+        self.__RLocalQueue = CharacteristicsQueue(maxlen)
+
+    def ClearQueue(self):
+        self._RGlobalQueue.Clear()
+        self.__RLocalQueue.Clear()
+
+    def InsertDataItem(self, newDataItem: SearchDataItem,
+                       rightDataItem: SearchDataItem = None):
+        flag = True
+        if rightDataItem is None:
+            rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
+            flag = False
+
+        newDataItem.SetLeft(rightDataItem.GetLeft())
+        rightDataItem.SetLeft(newDataItem)
+        newDataItem.SetRight(rightDataItem)
+        newDataItem.GetLeft().SetRight(newDataItem)
+
+        self._allTrials.append(newDataItem)
+
+        self._RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
+        self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
+        if flag:
+            self._RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
+            self.__RLocalQueue.Insert(rightDataItem.localR, rightDataItem)
+
+    def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
+        if self._RGlobalQueue.IsEmpty():
+            self.RefillQueue()
+        bestItem = self._RGlobalQueue.GetBestItem()
+        while bestItem[1] != bestItem[0].globalR:
+            if self._RGlobalQueue.IsEmpty():
+                self.RefillQueue()
+            bestItem = self._RGlobalQueue.GetBestItem()
+        return bestItem[0]
+
+    def GetDataItemWithMaxLocalR(self) -> SearchDataItem:
+        if self.__RLocalQueue.IsEmpty():
+            self.RefillQueue()
+        bestItem = self.__RLocalQueue.GetBestItem()
+        while bestItem[1] != bestItem[0].localR:
+            if self.__RLocalQueue.IsEmpty():
+                self.RefillQueue()
+            bestItem = self.__RLocalQueue.GetBestItem()
+        return bestItem[0]
+
+    def RefillQueue(self):
+        self.ClearQueue()
+        for itr in self:
+            self._RGlobalQueue.Insert(itr.globalR, itr)
+            self.__RLocalQueue.Insert(itr.localR, itr)
