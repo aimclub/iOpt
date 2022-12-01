@@ -12,7 +12,7 @@ class TestStaticPaintRastrigin(unittest.TestCase):
         self.problem = Rastrigin(1)
         params = SolverParameters(r=3.5, eps=0.001)
         self.solver = Solver(self.problem, parameters=params)
-        pl = StaticPaintListener("rastrigin_1_3.5_0.001.pdf")
+        pl = StaticPaintListener("C:\\GitHub\\iOpt\\output\\", "rastrigin_1_3.5_0.001.pdf")
         self.solver.AddListener(pl)
 
     def test_solveWithPrint(self):
@@ -23,7 +23,7 @@ class TestStaticPaintXSquared(unittest.TestCase):
         self.problem = XSquared(1)
         params = SolverParameters(r=3.5, eps=0.001)
         self.solver = Solver(self.problem, parameters=params)
-        apl = AnimationPaintListener("xsquared_1_3.5_0.001.pdf")
+        apl = AnimationPaintListener("C:\\GitHub\\iOpt\\output\\", "xsquared_1_3.5_0.001.pdf")
         self.solver.AddListener(apl)
 
      def test_solveWithPrint(self):

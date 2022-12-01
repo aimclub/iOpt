@@ -12,7 +12,7 @@ class FunctionStaticPainter:
         self.searchData = searchData
         self.solution = solution
 
-    def Paint(self, fileName):
+    def Paint(self, fileName, pathForSaves):
         # формируем массив точек итераций для графика
         points = []
         for item in self.searchData:
@@ -30,9 +30,9 @@ class FunctionStaticPainter:
         sv1d = StaticVisualization1D(points, bestTrialPoint, bestTrialValue, leftBound, rightBound, self.solution.problem.Calculate)
         sv1d.drawObjFunction(pointsCount=150)
         sv1d.drawPoints()
-        if not os.path.isdir("output"):
-            os.mkdir("output")
-        plt.savefig("output\\" + fileName)
+        if not os.path.isdir(pathForSaves):
+            os.mkdir(pathForSaves)
+        plt.savefig(pathForSaves + fileName)
         
 class StaticVisualization1D:
     def __init__(self, _points, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc):

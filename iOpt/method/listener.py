@@ -38,18 +38,20 @@ class ConsoleFullOutputListener(Listener):
         pass
 
 class StaticPaintListener(Listener):
-    def __init__(self, fileName):
+    def __init__(self, pathForSaves, fileName):
         self.fileName = fileName
+        self.pathForSaves = pathForSaves
 
     def OnMethodStop(self, searchData: SearchData,
                     solution: Solution, status : bool):
         fp = FunctionStaticPainter(searchData, solution)
-        fp.Paint(self.fileName)
+        fp.Paint(self.fileName, self.pathForSaves)
 
 class AnimationPaintListener(Listener):
-    def __init__(self, fileName):
+    def __init__(self, pathForSaves, fileName):
         self.__fp : FunctionAnimationPainter = None
         self.fileName = fileName
+        self.pathForSaves = pathForSaves
 
     def BeforeMethodStart(self, method : Method):
         self.__fp = FunctionAnimationPainter(method.task.problem)
@@ -59,4 +61,4 @@ class AnimationPaintListener(Listener):
         self.__fp.PaintPoint(savedNewPoints)
 
     def OnMethodStop(self, searchData : SearchData, solution: Solution, status : bool):
-        self.__fp.PaintOptimum(solution, self.fileName)
+        self.__fp.PaintOptimum(solution, self.fileName, self.pathForSaves)

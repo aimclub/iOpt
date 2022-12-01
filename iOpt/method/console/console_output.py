@@ -3,7 +3,7 @@ from iOpt.problem import Problem
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
 
-import time
+#import time
 
 class FunctionConsoleFullOutput:
     def __init__(self, problem : Problem, parameters : SolverParameters):
@@ -86,7 +86,7 @@ class ConsoleOutputer:
         pass
 
     def printIter(self, point, value, iter, mode):
-        time.sleep(0.1)
+        #time.sleep(0.1)
         dim = len(point)
         if mode == 1:
             print("|", end=' ')

@@ -22,10 +22,10 @@ class FunctionAnimationPainter:
         fv = savedNewPoints[0].GetZ()
         self.av1d.drawPoint(x_, fv)
 
-    def PaintOptimum(self, solution : Solution, fileName):
+    def PaintOptimum(self, solution : Solution, fileName, pathForSaves):
         bestTrialPoint = solution.bestTrials[0].point.floatVariables
         bestTrialValue = solution.bestTrials[0].functionValues[0].value
-        self.av1d.drawOptimum(bestTrialPoint, bestTrialValue, fileName)
+        self.av1d.drawOptimum(bestTrialPoint, bestTrialValue, fileName, pathForSaves)
         
 class AnimateVisualization1D:
     def __init__(self, _points, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc):
@@ -65,7 +65,7 @@ class AnimateVisualization1D:
         self.fig.canvas.draw()
         self.fig.canvas.flush_events() 
 
-    def drawOptimum(self, point, value, fileName):
+    def drawOptimum(self, point, value, fileName, pathForSaves):
         self.ax.plot(point, -1, color='red', 
                 label='original', marker='x', markersize=4)
         self.ax.relim()
@@ -77,6 +77,6 @@ class AnimateVisualization1D:
         # нужно, чтобы график не закрывался после завершения анимации
         # plt.show()
 
-        if not os.path.isdir("output"):
-            os.mkdir("output")
-        plt.savefig("output\\" + fileName)
+        if not os.path.isdir(pathForSaves):
+            os.mkdir(pathForSaves)
+        plt.savefig(pathForSaves + fileName)
