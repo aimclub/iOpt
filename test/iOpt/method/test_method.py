@@ -128,7 +128,7 @@ class TestMethod(unittest.TestCase):
         # test 2
         curr.SetIndex(-2)
         self.method.CalculateGlobalR(curr, left)
-        self.assertEqual(curr.globalR, -np.infty)
+        self.assertEqual(curr.globalR, 2.0)
         # test 3
         curr.SetIndex(0)
         left.SetIndex(-2)
