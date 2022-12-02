@@ -60,14 +60,7 @@ class Process:
                 for listener in self.__listeners:
                     listener.BeforeMethodStart(self.method)
                 self.method.FirstIteration()    
-                # костыль
-                i = -1
-                for item in self.searchData:
-                    i = i + 1
-                    if i == 1:
-                        savedNewPoints.append(item)
-                        break
-                # конец костыля
+                savedNewPoints.append(self.searchData.GetLastItem())
                 self.__first_iteration = True
             else:
                 newpoint, oldpoint = self.method.CalculateIterationPoint()
