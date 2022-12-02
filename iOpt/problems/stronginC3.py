@@ -61,3 +61,5 @@ class StronginC3(Problem):
 
         functionValue.value = res
         return functionValue
+    def GetName(self):
+        return self.name

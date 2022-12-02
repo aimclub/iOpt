@@ -43,3 +43,5 @@ class XSquared(Problem):
 
         functionValue.value = sum
         return functionValue
+    def GetName(self):
+        return self.name

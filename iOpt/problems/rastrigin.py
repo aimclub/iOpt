@@ -45,3 +45,5 @@ class Rastrigin(Problem):
 
         functionValue.value = sum
         return functionValue
+    def GetName(self):
+        return self.name
