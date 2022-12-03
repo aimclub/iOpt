@@ -1,7 +1,8 @@
 import unittest
-import numpy as np
-import iOpt.evolvent
 
+import numpy as np
+
+import iOpt.evolvent
 from iOpt.evolvent.evolvent import Evolvent
 
 
@@ -61,8 +62,8 @@ class TestEvolvent(unittest.TestCase):
                         y.append(np.double(yValue.split('=')[1]))
 
                     # [-0.5, 0.5]
-                    lower = - np.ones(N, dtype=np.int) / 2
-                    upper = np.ones(N, dtype=np.int) / 2
+                    lower = - np.ones(N, dtype=np.int32) / 2
+                    upper = np.ones(N, dtype=np.int32) / 2
 
                     evolvent = Evolvent(lower, upper, N, m) 
                     xx = evolvent.GetInverseImage(y)
@@ -93,8 +94,8 @@ class TestEvolvent(unittest.TestCase):
                         y.append(np.double(yValue.split('=')[1]))
 
                     # [-0.5, 0.5]
-                    lower = - np.ones(N, dtype=np.int) / 2
-                    upper = np.ones(N, dtype=np.int) / 2
+                    lower = - np.ones(N, dtype=np.int32) / 2
+                    upper = np.ones(N, dtype=np.int32) / 2
 
                     evolvent = Evolvent(lower, upper, N, m) 
                     yy = evolvent.GetImage(x)
@@ -104,4 +105,4 @@ class TestEvolvent(unittest.TestCase):
 
 # Executing the tests in the above test case class
 if __name__ == "__main__":
- unittest.main()
+    unittest.main()

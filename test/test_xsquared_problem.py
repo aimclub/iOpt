@@ -1,8 +1,9 @@
 import unittest
+
 import numpy as np
-from iOpt.trial import FunctionValue
-from iOpt.trial import Point
+
 from iOpt.problems.xsquared import XSquared
+from iOpt.trial import FunctionValue, Point
 
 
 class TestXSquared(unittest.TestCase):
@@ -25,4 +26,4 @@ class TestXSquared(unittest.TestCase):
 
 """Executing the tests in the above test case class"""
 if __name__ == "__main__":
- unittest.main()
+    unittest.main()

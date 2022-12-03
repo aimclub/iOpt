@@ -2,13 +2,8 @@ import unittest
 
 import iOpt.method.search_data
 import iOpt.trial
-
-from iOpt.method.search_data import SearchDataItem
+from iOpt.method.search_data import CharacteristicsQueue, SearchData, SearchDataDualQueue, SearchDataItem
 from iOpt.trial import Point
-
-from iOpt.method.search_data import CharacteristicsQueue
-from iOpt.method.search_data import SearchData
-from iOpt.method.search_data import SearchDataDualQueue
 
 
 class TestSearchDataItem(unittest.TestCase):

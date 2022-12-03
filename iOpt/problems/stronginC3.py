@@ -1,10 +1,9 @@
-import numpy as np
-from iOpt.trial import FunctionType
-from iOpt.trial import Point
-from iOpt.trial import FunctionValue
-from iOpt.trial import Trial
-from iOpt.problem import Problem
 import math
+
+import numpy as np
+
+from iOpt.problem import Problem
+from iOpt.trial import FunctionType, FunctionValue, Point, Trial
 
 
 class StronginC3(Problem):

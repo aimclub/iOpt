@@ -1,9 +1,10 @@
 import math
 import unittest
+
 import numpy as np
-from iOpt.trial import FunctionValue
-from iOpt.trial import Point
+
 from iOpt.problems.rastrigin import Rastrigin
+from iOpt.trial import FunctionValue, Point
 
 
 class TestRastrigin(unittest.TestCase):

@@ -1,10 +1,10 @@
 import math
 import unittest
+
 import numpy as np
-from iOpt.trial import FunctionValue
-from iOpt.trial import Point
+
 from iOpt.problems.stronginC3 import StronginC3
-from iOpt.trial import FunctionType
+from iOpt.trial import FunctionType, FunctionValue, Point
 
 
 class TestStronginC3(unittest.TestCase):

@@ -1,16 +1,13 @@
-from __future__ import annotations
-from typing import List
 import sys
+
 import numpy as np
-import depq
 from depq import DEPQ
 
-# from bintrees import AVLTree
-
-from iOpt.trial import Point, FunctionValue
-from iOpt.trial import Trial
 from iOpt.problem import Problem
 from iOpt.solution import Solution
+from iOpt.trial import FunctionValue, Point, Trial
+
+# from bintrees import AVLTree
 
 
 class SearchDataItem(Trial):
@@ -51,16 +48,16 @@ class SearchDataItem(Trial):
     def GetZ(self) -> np.double:
         return self.__z
 
-    def SetLeft(self, point: SearchDataItem):
+    def SetLeft(self, point: 'SearchDataItem'):
         self.__leftPoint = point
 
-    def GetLeft(self) -> SearchDataItem:
+    def GetLeft(self) -> 'SearchDataItem':
         return self.__leftPoint
 
-    def SetRight(self, point: SearchDataItem):
+    def SetRight(self, point: 'SearchDataItem'):
         self.__rightPoint = point
 
-    def GetRight(self) -> SearchDataItem:
+    def GetRight(self) -> 'SearchDataItem':
         return self.__rightPoint
 
     def __lt__(self, other):
@@ -170,7 +167,7 @@ class SearchData:
     def GetLastItem(self) -> SearchDataItem:
         try:
             return self._allTrials[-1]
-        except:
+        except BaseException:
             print("GetLastItem: List is empty")
 
     def SaveProgress(self, fileName: str):

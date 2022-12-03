@@ -1,6 +1,6 @@
-from __future__ import annotations
-import numpy as np
 from enum import Enum
+
+import numpy as np
 
 from iOpt.method.search_data import SearchDataItem
 from iOpt.problem import Problem

@@ -1,4 +1,5 @@
 import numpy as np
+
 from iOpt.trial import Point
 
 
@@ -14,7 +15,8 @@ class SolverParameters:
                  ):
         """
         :param eps:method tolerance. Less value -- better search precision, less probability of early stop.
-        :param r: reliability parameter. Higher value of r -- slower convergence, higher chance to cache the global minima.
+        :param r: reliability parameter. Higher value of r -- slower convergence,
+               higher chance to cache the global minima.
         :param itersLimit: max number of iterations.
         :param evolventDensity:density of evolvent. By default density is 2^-12 on hybercube [0,1]^N,
                which means that maximum search accuracy is 2^-12.

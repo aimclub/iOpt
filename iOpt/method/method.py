@@ -1,16 +1,13 @@
-from __future__ import annotations
-
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
-from iOpt.trial import Point, Trial
-from iOpt.method.search_data import SearchData
-from iOpt.method.search_data import SearchDataItem
 from iOpt.method.optim_task import OptimizationTask
+from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
-
+from iOpt.trial import Point
 
 # TODO: Привести комментарии в порядок
+
 
 class Method:
     stop: bool = False
@@ -179,7 +176,7 @@ class Method:
         if left_point.GetIndex() == curr_point.GetIndex():
             v = curr_point.GetIndex()
             globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
-                      2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
+                2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
         elif left_point.GetIndex() < curr_point.GetIndex():
             v = curr_point.GetIndex()
             globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])

@@ -1,15 +1,13 @@
 import unittest
 from unittest import mock
+from unittest.mock import Mock
 
 import numpy as np
 
-from unittest.mock import Mock
-
 from iOpt.evolvent.evolvent import Evolvent
-
+from iOpt.method.method import Method
 from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solver import SolverParameters
-from iOpt.method.method import Method
 from iOpt.trial import Point
 
 

@@ -1,13 +1,12 @@
 from typing import List
 
-from iOpt.method.listener import Listener
 from iOpt.evolvent.evolvent import Evolvent
-from iOpt.method.search_data import SearchData
-from iOpt.method.optim_task import OptimizationTask
+from iOpt.method.listener import Listener
 from iOpt.method.method import Method
-from iOpt.problem import Problem
-from iOpt.solver_parametrs import SolverParameters
+from iOpt.method.optim_task import OptimizationTask
+from iOpt.method.search_data import SearchData
 from iOpt.solution import Solution
+from iOpt.solver_parametrs import SolverParameters
 
 
 class Process:
@@ -41,7 +40,7 @@ class Process:
                 # print(self.method.min_delta, self.method.parameters.eps)
             # print(self.method.min_delta, self.method.parameters.eps)
             print(self.method.CheckStopCondition())
-        except:
+        except BaseException:
             print('Exception was thrown')
         for listener in self.__listeners:
             listener.OnMethodStop(self.searchData)

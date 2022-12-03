@@ -1,11 +1,12 @@
 import math
 import unittest
+
 import numpy as np
-from iOpt.trial import FunctionValue
-from iOpt.trial import Point
-from iOpt.problems.rastrigin import Rastrigin
+
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchDataItem
+from iOpt.problems.rastrigin import Rastrigin
+from iOpt.trial import FunctionValue, Point
 
 
 class TestOptimizationTask(unittest.TestCase):
@@ -15,7 +16,7 @@ class TestOptimizationTask(unittest.TestCase):
         self.optimizationTask = OptimizationTask(self.problem)
 
         self.problemPerm = Rastrigin(3)
-        self.perm = np.ndarray(shape=(self.problemPerm.numberOfObjectives+self.problemPerm.numberOfConstraints), dtype=np.int)
+        self.perm = np.ndarray(shape=(self.problemPerm.numberOfObjectives+self.problemPerm.numberOfConstraints), dtype=np.int32)
         for i in range(self.perm.size):
             self.perm[i] = self.perm.size-1-i
         self.optimizationTaskPerm = OptimizationTask(self.problem, self.perm)
@@ -43,4 +44,4 @@ class TestOptimizationTask(unittest.TestCase):
 
 """Executing the tests in the above test case class"""
 if __name__ == "__main__":
- unittest.main()
+    unittest.main()
