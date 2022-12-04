@@ -10,7 +10,7 @@ from iOpt.solver_parametrs import SolverParameters
 
 problem = GKLS(2)
 #problem=Rastrigin(2)
-params = SolverParameters(r=3.5, eps=0.001, itersLimit=10)
+params = SolverParameters(r=3.5, eps=0.01, itersLimit=10)
 solver = Solver(problem, parameters=params)
 
 sol = solver.Solve()

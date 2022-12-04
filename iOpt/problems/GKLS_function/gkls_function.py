@@ -247,7 +247,7 @@ class GKLSFunction:
             scal += (x[i] - self.GKLS_minima.local_min[index][i]) * (self.GKLS_minima.local_min[0][i] - self.GKLS_minima.local_min[index][i])
   # Return the value of the cubic interpolation function *#
         res = np.double(0)
-        res = ((1.0 - 2.0 / rho * scal / norm + a / rho / rho) * norm * norm + self.GKLS_minima.f[index])
+        res = (2.0 / rho / rho * scal / norm - 2.0*a / rho / rho / rho)*norm*norm*norm + (1.0 - 4.0*scal / norm / rho + 3.0*a / rho / rho)*norm*norm + self.GKLS_minima.f[index]
         return res
 
     def GKLS_norm(self, x1, x2):

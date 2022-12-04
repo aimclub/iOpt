@@ -47,7 +47,7 @@ class GKLSRandomGenerator:
             if ss >= 1.0:
                 ss -= 1.0 - 2 * ulp  # cyclic shift of 51 bits */
 
-        for j  in range(GKLSRandomGenerator.KK + GKLSRandomGenerator.KK - 1):
+        for j  in range(GKLSRandomGenerator.KK, GKLSRandomGenerator.KK + GKLSRandomGenerator.KK - 1):
             u[j] = ul[j] = 0.0
 
         u[1] += ulp
@@ -99,7 +99,8 @@ class GKLSRandomGenerator:
             self.rnd_num[j] = self.ran_u[j]
         for j in range(GKLSRandomGenerator.KK, n): 
             self.rnd_num[j] = GKLSRandomGenerator.mod_sum(self.rnd_num[j - GKLSRandomGenerator.KK], self.rnd_num[j - GKLSRandomGenerator.LL])
-        
+        j = j + 1
+
         for i in range(GKLSRandomGenerator.LL):
             self.ran_u[i] = GKLSRandomGenerator.mod_sum(self.rnd_num[j - GKLSRandomGenerator.KK], self.rnd_num[j - GKLSRandomGenerator.LL])
             j = j + 1
