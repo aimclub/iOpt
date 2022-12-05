@@ -15,6 +15,7 @@ from datetime import datetime
 import time
 
 import scipy
+from scipy.optimize import Bounds
 
 class Process:
     __listeners: List[Listener] = []
@@ -92,12 +93,14 @@ class Process:
         """
         self.localMethodIterationCount = number
         if (number == -1):
-            self.localMethodIterationCount = 1000000
+            self.localMethodIterationCount = self.parameters.itersLimit * 0.9
 
         result = self.GetResults()
         startPoint = result.bestTrials[0].point.floatVariables
 
-        nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0 = startPoint, method='Nelder-Mead', options={        'maxiter':self.localMethodIterationCount})
+        bounds = Bounds(self.task.problem.lowerBoundOfFloatVariables, self.task.problem.upperBoundOfFloatVariables)
+
+        nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0 = startPoint, method='Nelder-Mead', options={        'maxiter':self.localMethodIterationCount}, bounds=bounds)
 
         result.bestTrials[0].point.floatVariables = nelder_mead.x
         result.bestTrials[0].functionValues[0].value = self.problemCalculate(result.bestTrials[0].point.floatVariables)
