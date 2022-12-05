@@ -75,6 +75,10 @@ class Method:
             self.stop = True
         else:
             self.stop = False
+
+        if (self.iterationsCount >= self.parameters.itersLimit):
+            self.stop = True
+
         return self.stop
 
     def RecalcAllCharacteristics(self):
