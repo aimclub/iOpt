@@ -31,7 +31,7 @@ class Trial:
     def __init__(
             self,
             point: Point,
-            functionValues: list[FunctionValue]
+            functionValues: List[FunctionValue]
     ):
         self.point = point
         self.functionValues = functionValues

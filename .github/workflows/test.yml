@@ -63,11 +63,3 @@ jobs:
           python -m pip install -e .[test]
       - name: Run tests
         run: python -m pytest --cov-report=xml test/
-      - name: Upload coverage
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}  # not required for public repos
-          files: coverage.xml
-          flags: unittests  # optional
-          fail_ci_if_error: true  # optional (default = false)
-          verbose: true  # optional (default = false)

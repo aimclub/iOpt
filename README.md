@@ -16,7 +16,7 @@ Install lib in dev mode
 ### Running tests and linters 
 
 ```shell
-python -m unittest
+pytest .
 ```
 
 ```shell
