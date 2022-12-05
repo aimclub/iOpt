@@ -1,6 +1,5 @@
 from abc import abstractmethod
-
-import numpy as np
+from typing import List
 
 from iOpt.trial import FunctionValue, Point, Trial
 
@@ -8,20 +7,20 @@ from iOpt.trial import FunctionValue, Point, Trial
 class Problem:
     """Base class for optimization problems"""
 
-    def __init__(self):
-        self.numberOfFloatVariables: int = 0
-        self.numberOfDisreteVariables: int = 0
-        self.numberOfObjectives: int = 0
-        self.numberOfConstraints: int = 0
+    def __init__(self) -> None:
+        self.numberOfFloatVariables = 0
+        self.numberOfDisreteVariables = 0
+        self.numberOfObjectives = 0
+        self.numberOfConstraints = 0
 
-        self.floatVariableNames: np.ndarray(shape=(1), dtype=str) = []
-        self.discreteVariableNames: np.ndarray(shape=(1), dtype=str) = []
+        self.floatVariableNames: List[str] = []
+        self.discreteVariableNames: List[str] = []
 
-        self.lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
-        self.upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
-        self.discreteVariableValues: np.ndarray(shape=(1, 1), dtype=str) = []
+        self.lowerBoundOfFloatVariables: List[float] = []
+        self.upperBoundOfFloatVariables: List[float] = []
+        self.discreteVariableValues: List[str] = []
 
-        self.knownOptimum: np.ndarray(shape=(1), dtype=Trial) = []
+        self.knownOptimum: List[Trial] = []
 
     @abstractmethod
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:

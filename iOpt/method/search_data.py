@@ -1,6 +1,6 @@
 import sys
+from typing import List, Optional, Tuple
 
-import numpy as np
 from depq import DEPQ
 
 from iOpt.problem import Problem
@@ -11,23 +11,23 @@ from iOpt.trial import FunctionValue, Point, Trial
 
 
 class SearchDataItem(Trial):
-    def __init__(self, y: Point, x: np.double,
-                 functionValues: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
+    def __init__(self, y: Point, x: float,
+                 functionValues: List[FunctionValue] = [FunctionValue()],
                  discreteValueIndex: int = 0):
         super().__init__(point=y, functionValues=functionValues)
         self.point = y
         self.__x = x
         self.__discreteValueIndex = discreteValueIndex
         self.__index: int = -2
-        self.__z: np.double = sys.float_info.max
-        self.__leftPoint: SearchDataItem = None
-        self.__rightPoint: SearchDataItem = None
-        self.delta: np.double = -1.0
-        self.globalR: np.double = -1.0
-        self.localR: np.double = -1.0
+        self.__z: float = sys.float_info.max
+        self.__leftPoint: Optional[SearchDataItem] = None
+        self.__rightPoint: Optional[SearchDataItem] = None
+        self.delta: float = -1.0
+        self.globalR: float = -1.0
+        self.localR: float = -1.0
         self.iterationNumber: int = -1
 
-    def GetX(self) -> np.double:
+    def GetX(self) -> float:
         return self.__x
 
     def GetY(self) -> Point:
@@ -36,51 +36,51 @@ class SearchDataItem(Trial):
     def GetDiscreteValueIndex(self) -> int:
         return self.__discreteValueIndex
 
-    def SetIndex(self, index: int):
+    def SetIndex(self, index: int) -> None:
         self.__index = index
 
     def GetIndex(self) -> int:
         return self.__index
 
-    def SetZ(self, z: np.double):
+    def SetZ(self, z: float) -> None:
         self.__z = z
 
-    def GetZ(self) -> np.double:
+    def GetZ(self) -> float:
         return self.__z
 
-    def SetLeft(self, point: 'SearchDataItem'):
+    def SetLeft(self, point: Optional['SearchDataItem']) -> None:
         self.__leftPoint = point
 
-    def GetLeft(self) -> 'SearchDataItem':
+    def GetLeft(self) -> Optional['SearchDataItem']:
         return self.__leftPoint
 
-    def SetRight(self, point: 'SearchDataItem'):
+    def SetRight(self, point: Optional['SearchDataItem']) -> None:
         self.__rightPoint = point
 
-    def GetRight(self) -> 'SearchDataItem':
+    def GetRight(self) -> Optional['SearchDataItem']:
         return self.__rightPoint
 
-    def __lt__(self, other):
+    def __lt__(self, other: 'SearchDataItem') -> bool:
         return self.GetX() < other.GetX()
 
 
 class CharacteristicsQueue:
     # __baseQueue: depq = DEPQ(iterable=None, maxlen=None)
 
-    def __init__(self, maxlen: int):
+    def __init__(self, maxlen: Optional[int]):
         self.__baseQueue = DEPQ(iterable=None, maxlen=maxlen)
 
-    def Clear(self):
+    def Clear(self) -> None:
         self.__baseQueue.clear()
 
-    def Insert(self, key: np.double, dataItem: SearchDataItem):
+    def Insert(self, key: float, dataItem: SearchDataItem) -> None:
         # приоритет - значение характеристики
         self.__baseQueue.insert(dataItem, key)
 
-    def GetBestItem(self) -> (SearchDataItem, np.double):
+    def GetBestItem(self) -> Tuple[SearchDataItem, bool]:
         return self.__baseQueue.popfirst()
 
-    def IsEmpty(self):
+    def IsEmpty(self) -> bool:
         return self.__baseQueue.is_empty()
 
     def GetMaxLen(self) -> int:
@@ -100,29 +100,35 @@ class SearchData:
 
     # solution: Solution = None
 
-    def __init__(self, problem: Problem, maxlen: int = None):
+    def __init__(self, problem: Problem, maxlen: Optional[int] = None):
         self.solution = Solution(problem)
-        self._allTrials = []
+        self._allTrials: List[Trial] = []
         self._RGlobalQueue = CharacteristicsQueue(maxlen)
-        self.__firstDataItem: SearchDataItem = None
+        self.__firstDataItem: Optional[SearchDataItem] = None
 
-    def ClearQueue(self):
+    def ClearQueue(self) -> None:
         self._RGlobalQueue.Clear()
 
     # вставка точки если знает правую точку
     # в качестве интервала используем [i-1, i]
     # если rightDataItem == None то его необходимо найти по дереву _allTrials
     def InsertDataItem(self, newDataItem: SearchDataItem,
-                       rightDataItem: SearchDataItem = None):
+                       rightDataItem: Optional[SearchDataItem] = None) -> None:
         flag = True
         if rightDataItem is None:
             rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
             flag = False
+        if rightDataItem is None or newDataItem is None:
+            raise Exception("Bad items")
 
         newDataItem.SetLeft(rightDataItem.GetLeft())
         rightDataItem.SetLeft(newDataItem)
         newDataItem.SetRight(rightDataItem)
-        newDataItem.GetLeft().SetRight(newDataItem)
+
+        left = newDataItem.GetLeft()
+        if left is None:
+            raise Exception("Bad items")
+        left.SetRight(newDataItem)
 
         self._allTrials.append(newDataItem)
 
@@ -131,7 +137,7 @@ class SearchData:
             self._RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
 
     def InsertFirstDataItem(self, leftDataItem: SearchDataItem,
-                            rightDataItem: SearchDataItem):
+                            rightDataItem: SearchDataItem) -> None:
         leftDataItem.SetRight(rightDataItem)
         rightDataItem.SetLeft(leftDataItem)
 
@@ -142,7 +148,7 @@ class SearchData:
 
     # поиск покрывающего интервала
     # возвращает правую точку
-    def FindDataItemByOneDimensionalPoint(self, x: np.double) -> SearchDataItem:
+    def FindDataItemByOneDimensionalPoint(self, x: float) -> Optional[SearchDataItem]:
         # итерируемся по rightPoint от минимального элемента
         for item in self:
             if item.GetX() > x:
@@ -155,7 +161,7 @@ class SearchData:
         return self._RGlobalQueue.GetBestItem()[0]
 
     # Перезаполнение очереди (при ее опустошении или при смене оценки константы Липшица)
-    def RefillQueue(self):
+    def RefillQueue(self) -> None:
         self._RGlobalQueue.Clear()
         for itr in self:
             self._RGlobalQueue.Insert(itr.globalR, itr)
@@ -164,23 +170,24 @@ class SearchData:
     def GetCount(self) -> int:
         return len(self._allTrials)
 
-    def GetLastItem(self) -> SearchDataItem:
+    def GetLastItem(self) -> Trial:
         try:
             return self._allTrials[-1]
         except BaseException:
             print("GetLastItem: List is empty")
+            raise
 
-    def SaveProgress(self, fileName: str):
+    def SaveProgress(self, fileName: str) -> None:
         """
         :return:
         """
 
-    def LoadProgress(self, fileName: str):
+    def LoadProgress(self, fileName: str) -> None:
         """
         :return:
         """
 
-    def __iter__(self):
+    def __iter__(self) -> 'SearchData':
         # вернуть самую левую точку из дерева (ниже код проверить!)
         # return self._allTrials.min_item()[1]
         self.curIter = self.__firstDataItem
@@ -189,7 +196,7 @@ class SearchData:
         else:
             return self
 
-    def __next__(self):
+    def __next__(self) -> 'SearchDataItem':
         if self.curIter is None:
             raise StopIteration
         else:
@@ -201,25 +208,32 @@ class SearchData:
 class SearchDataDualQueue(SearchData):
     # __RLocalQueue: CharacteristicsQueue = CharacteristicsQueue(None)
 
-    def __init__(self, problem: Problem, maxlen: int = None):
+    def __init__(self, problem: Problem, maxlen: Optional[int] = None):
         super().__init__(problem, maxlen)
         self.__RLocalQueue = CharacteristicsQueue(maxlen)
 
-    def ClearQueue(self):
+    def ClearQueue(self) -> None:
         self._RGlobalQueue.Clear()
         self.__RLocalQueue.Clear()
 
     def InsertDataItem(self, newDataItem: SearchDataItem,
-                       rightDataItem: SearchDataItem = None):
+                       rightDataItem: Optional[SearchDataItem] = None) -> None:
         flag = True
         if rightDataItem is None:
             rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
             flag = False
 
+        if rightDataItem is None or newDataItem is None:
+            raise Exception("Bad items")
+
         newDataItem.SetLeft(rightDataItem.GetLeft())
         rightDataItem.SetLeft(newDataItem)
         newDataItem.SetRight(rightDataItem)
-        newDataItem.GetLeft().SetRight(newDataItem)
+
+        left = newDataItem.GetLeft()
+        if left is None:
+            raise Exception("Bad items")
+        left.SetRight(newDataItem)
 
         self._allTrials.append(newDataItem)
 
@@ -249,7 +263,7 @@ class SearchDataDualQueue(SearchData):
             bestItem = self.__RLocalQueue.GetBestItem()
         return bestItem[0]
 
-    def RefillQueue(self):
+    def RefillQueue(self) -> None:
         self.ClearQueue()
         for itr in self:
             self._RGlobalQueue.Insert(itr.globalR, itr)

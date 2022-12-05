@@ -1,6 +1,5 @@
 from enum import Enum
-
-import numpy as np
+from typing import List, Optional
 
 
 class FunctionType(Enum):
@@ -11,8 +10,8 @@ class FunctionType(Enum):
 class Point:
     def __init__(
         self,
-        floatVariables: np.ndarray(shape=1, dtype=np.double),
-        discreteVariables: np.ndarray(shape=1, dtype=str),
+        floatVariables: List[float],
+        discreteVariables: Optional[List[str]],
     ):
         self.floatVariables = floatVariables
         self.discreteVariables = discreteVariables
@@ -25,13 +24,14 @@ class FunctionValue:
                  ):
         self.type = type
         self.functionID = functionID
-        self.value: np.double = 0.0
+        self.value: float = 0.0
 
 
 class Trial:
-    def __init__(self,
-                 point: Point,
-                 functionValues: np.ndarray(shape=(1), dtype=FunctionValue)
-                 ):
+    def __init__(
+            self,
+            point: Point,
+            functionValues: list[FunctionValue]
+    ):
         self.point = point
         self.functionValues = functionValues

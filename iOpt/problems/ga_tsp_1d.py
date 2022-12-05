@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.typing as npt
 from sko.GA import GA_TSP
 
 from iOpt.problem import Problem
@@ -7,7 +8,12 @@ from iOpt.trial import FunctionValue, Point
 
 class GA_TSP_1D(Problem):
 
-    def __init__(self, dimension: int, costmatrix: np.ndarray, numiteration: int, populationsize: int):
+    def __init__(
+            self,
+            dimension: int,
+            costmatrix: npt.NDArray[np.double],
+            numiteration: int, populationsize: int
+    ):
         self.dimension = 1
         self.numberOfFloatVariables = 1
         self.numberOfDisreteVariables = 0
@@ -20,11 +26,11 @@ class GA_TSP_1D(Problem):
             raise ValueError('Population size cannot be negative or zero')
         self.populationSize = populationsize
         self.numberOfIterations = numiteration
-        self.floatVariableNames = np.array(["mutation probability"])
-        self.lowerBoundOfFloatVariables = np.array([0.0])
-        self.upperBoundOfFloatVariables = np.array([1.0])
+        self.floatVariableNames = ["mutation probability"]
+        self.lowerBoundOfFloatVariables = [0.0]
+        self.upperBoundOfFloatVariables = [1.0]
 
-    def calc_total_distance(self, routine):
+    def calc_total_distance(self, routine: npt.NDArray[np.int32]) -> float:
         num_points, = routine.shape
         return sum([self.costMatrix[routine[i % num_points], routine[(i + 1) % num_points]] for i in range(num_points)])
 

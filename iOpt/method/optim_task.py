@@ -1,6 +1,8 @@
 from enum import Enum
+from typing import Optional
 
 import numpy as np
+import numpy.typing as npt
 
 from iOpt.method.search_data import SearchDataItem
 from iOpt.problem import Problem
@@ -14,15 +16,12 @@ class TypeOfCalculation(Enum):
 class OptimizationTask:
     def __init__(self,
                  problem: Problem,
-                 perm: np.ndarray(shape=(1), dtype=int) = None
-                 ):
+                 perm: Optional[npt.NDArray[np.int32]] = None
+                 ) -> None:
         self.problem = problem
 
         if perm is None:
-            self.perm = np.ndarray(shape=(self.problem.numberOfObjectives + self.problem.numberOfConstraints),
-                                   dtype=int)
-            for i in range(self.perm.size):
-                self.perm[i] = i
+            self.perm = np.arange(self.problem.numberOfObjectives + self.problem.numberOfConstraints)
         else:
             self.perm = perm
 

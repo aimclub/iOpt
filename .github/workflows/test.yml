@@ -1,0 +1,73 @@
+name: Lint and Test
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/cache@v3
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-python-${{ matrix.python-version }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt', 'requirements.test.txt') }}-test
+          restore-keys: |
+            ${{ runner.os }}-python-${{ matrix.python-version }}-
+            ${{ runner.os }}-python-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: |
+          python -m pip install wheel
+          python -m pip install -e .[test]
+      - name: Run isort
+        run: python -m isort iOpt test --check
+      - name: Run flake8
+        run: python -m flake8 iOpt test
+      - name: Run mypy
+        run: python -m mypy iOpt
+
+  test-python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/cache@v3
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-python-${{ matrix.python-version }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt', 'requirements.test.txt') }}-test
+          restore-keys: |
+            ${{ runner.os }}-python-${{ matrix.python-version }}-
+            ${{ runner.os }}-python-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: |
+          python -m pip install wheel
+          python -m pip install -e .[test]
+      - name: Run tests
+        run: python -m pytest --cov-report=xml test/
+      - name: Upload coverage
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}  # not required for public repos
+          files: coverage.xml
+          flags: unittests  # optional
+          fail_ci_if_error: true  # optional (default = false)
+          verbose: true  # optional (default = false)

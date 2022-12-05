@@ -1,29 +1,31 @@
 import math
+from typing import List, Tuple
 
 import numpy as np
+import numpy.typing as npt
 
 
 class Evolvent:
     # конструктор класса
     # ------------------
-    def __init__(self,
-                 # массив для левых (нижних) границ, А
-                 lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
-                 # массив для правых (верхних) границ, В
-                 upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
-                 # N
-                 numberOfFloatVariables: int = 1,
-                 # m
-                 evolventDensity: int = 10
-                 ):
-
+    def __init__(
+            self,
+            # массив для левых (нижних) границ, А
+            lowerBoundOfFloatVariables: List[float] = [],
+            # массив для правых (верхних) границ, В
+            upperBoundOfFloatVariables: List[float] = [],
+            # N
+            numberOfFloatVariables: int = 1,
+            # m
+            evolventDensity: int = 10
+    ):
         self.numberOfFloatVariables = numberOfFloatVariables
         self.lowerBoundOfFloatVariables = np.copy(lowerBoundOfFloatVariables)
         self.upperBoundOfFloatVariables = np.copy(upperBoundOfFloatVariables)
         self.evolventDensity = evolventDensity
 
         self.nexpValue = 0  # nexpExtended
-        self.nexpExtended: np.double = 1.0
+        self.nexpExtended: float = 1.0
 
         # инициализируем массив y нулями
         self.yValues = np.zeros(self.numberOfFloatVariables, dtype=np.double)
@@ -35,18 +37,18 @@ class Evolvent:
     # ----------------
     def SetBounds(self,
                   # массив для левых (нижних) границ, А
-                  lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
+                  lowerBoundOfFloatVariables: List[float] = [],
                   # массив для правых (верхних) границ, В
-                  upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
-                  ):
+                  upperBoundOfFloatVariables: List[float] = []
+                  ) -> None:
         self.lowerBoundOfFloatVariables = np.copy(lowerBoundOfFloatVariables)
         self.upperBoundOfFloatVariables = np.copy(upperBoundOfFloatVariables)
 
     # Получить (x->y)
     # ---------------
     def GetImage(self,
-                 x: np.double
-                 ) -> np.ndarray(shape=(1), dtype=np.double):
+                 x: float
+                 ) -> npt.NDArray[np.double]:
 
         self.__GetYonX(x)
         self.__TransformP2D()
@@ -55,8 +57,8 @@ class Evolvent:
     # Получить (y->x)
     # ----------------
     def GetInverseImage(self,
-                        y: np.ndarray(shape=(1), dtype=np.double)
-                        ) -> np.double:
+                        y: npt.NDArray[np.double]
+                        ) -> float:
 
         self.yValues = np.copy(y)
         self.__TransformD2P()
@@ -65,16 +67,16 @@ class Evolvent:
 
     # ----------------------
     def GetPreimages(self,
-                     y: np.ndarray(shape=(1), dtype=np.double),
-                     ) -> np.double:
-        self.yValues = np.copy(y)
+                     y: npt.NDArray[np.double],
+                     ) -> float:
+        self.yValues = y.copy()
         self.__TransformD2P()
         x = self.__GetXonY()
         return x
 
     # Преобразование
     # --------------------------------
-    def __TransformP2D(self):
+    def __TransformP2D(self) -> None:
         for i in range(0, self.numberOfFloatVariables):
             self.yValues[i] = self.yValues[i] * \
                 (self.upperBoundOfFloatVariables[i] - self.lowerBoundOfFloatVariables[i]) + \
@@ -82,34 +84,20 @@ class Evolvent:
 
     # Преобразование
     # --------------------------------
-    def __TransformD2P(self):
+    def __TransformD2P(self) -> None:
         for i in range(0, self.numberOfFloatVariables):
             self.yValues[i] = (self.yValues[i] - (self.upperBoundOfFloatVariables[i] +
                                self.lowerBoundOfFloatVariables[i]) / 2) / \
                     (self.upperBoundOfFloatVariables[i] - self.lowerBoundOfFloatVariables[i])
 
     # ---------------------------------
-    def __GetYonX(self, _x: np.double) -> np.ndarray(shape=(1), dtype=np.double):
+    def __GetYonX(self, _x: float) -> npt.NDArray[np.double]:
         if self.numberOfFloatVariables == 1:
             self.yValues[0] = _x - 0.5
             return self.yValues
-
-        iu: np.narray(shape=(1), dtype=np.int32)
-        iv: np.narray(shape=(1), dtype=np.int32)
-        l_node: np.int32
-        d: np.double = 0.0
-        mn: np.int32
-        r: np.double
-        iw: np.narray(shape=(1), dtype=np.int32)
-        it: np.int32
-        i: np.int32
-        j: np.int32
-        iis: np.double
-
-        d = _x
+        d: float = _x
         r = 0.5
         it = 0
-
         iw = np.ones(self.numberOfFloatVariables, dtype=np.int32)
         self.yValues = np.zeros(self.numberOfFloatVariables, dtype=np.double)
         iu = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
@@ -151,22 +139,12 @@ class Evolvent:
         return np.copy(self.yValues)
 
     # ---------------------------------
-    def __GetXonY(self) -> np.double:
-        x: np.double
+    def __GetXonY(self) -> float:
+        x: float
         if self.numberOfFloatVariables == 1:
             x = self.yValues[0] + 0.5
             return x
 
-        u: np.narray(shape=(1), dtype=np.int32)
-        v: np.narray(shape=(1), dtype=np.int32)
-        w: np.narray(shape=(1), dtype=np.int32)
-        r: np.double = 0.0
-        i: np.int32
-        j: np.int32
-        it: np.int32
-        l_num: np.int32
-        r1: np.double
-        iis: np.double
         w = np.ones(self.numberOfFloatVariables, dtype=np.int32)
         u = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
         v = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
@@ -217,18 +195,16 @@ class Evolvent:
 
     def __CalculateNumbr(
         self,
-        u: np.ndarray(shape=(1), dtype=np.int32),
-        v: np.ndarray(shape=(1), dtype=np.int32),
-    ):
+        u: npt.NDArray[np.int32],
+        v: npt.NDArray[np.int32],
+    ) -> Tuple[float, int, npt.NDArray[np.int32]]:
         i = 0
         k1 = -1
         k2 = 0
         l1 = 0
         l_num = 0
-        iis: np.double
-        iff: np.double
 
-        iff = self.nexpExtended
+        iff: float = self.nexpExtended
         iis = 0.0
 
         for i in range(0, self.numberOfFloatVariables):
@@ -261,11 +237,11 @@ class Evolvent:
 
     def __CalculateNode(
         self,
-        iis: np.double,
+        iis: float,
         n: int,
-        u: np.ndarray(shape=(1), dtype=np.int32),
-        v: np.ndarray(shape=(1), dtype=np.int32),
-    ):
+        u: npt.NDArray[np.int32],
+        v: npt.NDArray[np.int32],
+    ) -> int:
 
         iq = 1
         n1 = n - 1

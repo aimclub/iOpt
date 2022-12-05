@@ -1,17 +1,15 @@
-import numpy as np
-
 from iOpt.trial import Point
 
 
 class SolverParameters:
     def __init__(self,
-                 eps: np.double = 0.01,
-                 r: np.double = 2.0,
+                 eps: float = 0.01,
+                 r: float = 2.0,
                  itersLimit: int = 20000,
                  evolventDensity: int = 10,
-                 epsR: np.double = 0.001,
+                 epsR: float = 0.001,
                  refineSolution: bool = False,
-                 startPoint: Point = []
+                 startPoint: Point = Point([], [])
                  ):
         """
         :param eps:method tolerance. Less value -- better search precision, less probability of early stop.

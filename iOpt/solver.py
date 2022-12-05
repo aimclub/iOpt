@@ -39,13 +39,13 @@ class Solver:
         """
         return self.process.Solve()
 
-    def DoGlobalIteration(self, number: int = 1):
+    def DoGlobalIteration(self, number: int = 1) -> None:
         """
         :param number: The number of iterations of the global search
         """
         self.process.DoGlobalIteration(number)
 
-    def DoLocalRefinement(self, number: int = 1):
+    def DoLocalRefinement(self, number: int = 1) -> None:
         """
         :param number: The number of iterations of the local search
         """
@@ -57,20 +57,20 @@ class Solver:
         """
         return self.process.GetResults()
 
-    def SaveProgress(self, fileName: str):
+    def SaveProgress(self, fileName: str) -> None:
         """
         :return:
         """
         self.searchData.SaveProgress(fileName=fileName)
 
-    def LoadProgress(self, fileName: str):
+    def LoadProgress(self, fileName: str) -> None:
         """
         :return:
         """
         self.searchData.LoadProgress(fileName=fileName)
 
-    def RefreshListener(self):
+    def RefreshListener(self) -> None:
         pass
 
-    def AddListener(self, listener: Listener):
+    def AddListener(self, listener: Listener) -> None:
         self.__listeners.append(listener)

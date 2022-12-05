@@ -46,7 +46,7 @@ class Process:
             listener.OnMethodStop(self.searchData)
         return self.GetResults()
 
-    def DoGlobalIteration(self, number: int = 1):
+    def DoGlobalIteration(self, number: int = 1) -> None:
         """
         :param number: The number of iterations of the global search
         """
@@ -65,7 +65,7 @@ class Process:
         for listener in self.__listeners:
             listener.OnEndIteration(self.searchData)
 
-    def DoLocalRefinement(self, number: int = 1):
+    def DoLocalRefinement(self, number: int = 1) -> None:
         """
         :param number: The number of iterations of the local search
         """
@@ -79,8 +79,8 @@ class Process:
         self.searchData.solution.bestTrials[0] = self.method.GetOptimumEstimation()
         return self.searchData.solution
 
-    def RefreshListener(self):
+    def RefreshListener(self) -> None:
         pass
 
-    def AddListener(self, listener: Listener):
+    def AddListener(self, listener: Listener) -> None:
         self.__listeners.append(listener)
