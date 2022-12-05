@@ -20,7 +20,7 @@ class GKLS(Problem):
     """Base class for optimization problems"""
 
     def __init__(self, dimension: int, 
-                 functionNumber: int = 1):
+                 functionNumber: int=1):
         self.dimension = dimension
         self.numberOfFloatVariables = dimension
         self.numberOfDisreteVariables = 0
@@ -38,54 +38,48 @@ class GKLS(Problem):
 
         self.function = GKLSFunction()
 
-        mMaxDimension = 50;
-        mMinDimension = 2;
-        mNumberOfConstraints = 0;
-        mLeftBorder = -1.0;
-        mRightBorder = 1.0;
+        self.mMaxDimension = 50
+        self.mMinDimension = 2
 
-        function_number = functionNumber
-        global_dist = 0.9
-        global_radius= 0.33
-        num_minima= 10
+        self.function_number = functionNumber
+        self.num_minima = 10
         
-        problem_class= GKLSClass.Simple
-        function_class= GKLSFuncionType.TD
+        self.problem_class = GKLSClass.Simple
+        self.function_class = GKLSFuncionType.TD
 
-        self.function.GKLS_global_dist = global_dist;
-        self.function.GKLS_global_radius = global_radius;
-        self.function.GKLS_global_value = -1.0;
-        self.function.NumberOfLocalMinima = num_minima;
-        self.function.SetDimension(self.dimension);
-        self.function.mFunctionType = function_class;
+        self.function.GKLS_global_value = -1.0
+        self.function.NumberOfLocalMinima = self.num_minima
+        self.function.SetDimension(self.dimension)
+        self.function.mFunctionType = self.function_class
 
 
-        self.function.SetFunctionClass(problem_class, self.dimension);
+        self.function.SetFunctionClass(self.problem_class, self.dimension)
 
+        self.global_dist = self.function.GKLS_global_dist
+        self.global_radius = self.function.GKLS_global_radius
 
         if (self.function.GKLS_parameters_check() != GKLSFunction.GKLS_OK):
-            return;
+            return
 
-        self.function.SetFunctionNumber(function_number);
+        self.function.SetFunctionNumber(self.function_number)
+        self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
-
-        #self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
-        #
-        #pointfv = np.ndarray(shape=(dimension), dtype=np.double)
-        #pointfv.fill(0)
-        #KOpoint = Point(pointfv, [])
-        #KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
-        #KOfunV[0] = FunctionValue()
-        #KOfunV[0].value = 0
-        #self.knownOptimum[0] = Trial(KOpoint, KOfunV)
-
+        KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
+        
+        KOfunV[0] = FunctionValue()
+        KOfunV[0].value = self.function.GetOptimumValue()
         
 
+        pointfv = np.ndarray(shape=(dimension), dtype=np.double)
+        pointfv.fill(0)
+        pointfv = self.function.GetOptimumPoint(pointfv)
+        KOpoint = Point(pointfv, [])
 
+        self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """Compute selected function at given point."""
-        sum: np.double = 0        
+        sum : np.double = 0        
 
-        functionValue.value = self.function.Calculate(point.floatVariables);
+        functionValue.value = self.function.Calculate(point.floatVariables)
         return functionValue
