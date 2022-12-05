@@ -83,3 +83,4 @@ class GKLS(Problem):
 
         functionValue.value = self.function.Calculate(point.floatVariables)
         return functionValue
+

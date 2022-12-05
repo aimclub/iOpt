@@ -48,7 +48,7 @@ class Process:
                 self.DoGlobalIteration()
                 # print(self.method.min_delta, self.method.parameters.eps)
             # print(self.method.min_delta, self.method.parameters.eps)
-            print(self.method.CheckStopCondition())
+            #print(self.method.CheckStopCondition())
         except:
             print('Exception was thrown')
         for listener in self.__listeners:
