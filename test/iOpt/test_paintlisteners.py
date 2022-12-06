@@ -12,7 +12,7 @@ class TestStaticPaintRastrigin(unittest.TestCase):
         self.problem = Rastrigin(1)
         params = SolverParameters(r=3.5, eps=0.001)
         self.solver = Solver(self.problem, parameters=params)
-        pl = StaticPaintListener("C:\\GitHub\\iOpt\\output\\", "rastrigin_1_3.5_0.001.png")
+        pl = StaticPaintListener("output", "rastrigin_1_3.5_0.001.png")
         self.solver.AddListener(pl)
 
     def test_solveWithPrint(self):
@@ -23,7 +23,7 @@ class TestStaticPaintRastrigin2D(unittest.TestCase):
         self.problem = Rastrigin(2)
         params = SolverParameters(r=3, eps=0.01)
         self.solver = Solver(self.problem, parameters=params)
-        apl = StaticNDPaintListener("C:\\GitHub\\iOpt\\output\\", "rastrigin_2_3.5_0.001.png", varsIndxs = [0,1])
+        apl = StaticNDPaintListener("output", "rastrigin_2_3.5_0.001.png", varsIndxs = [0,1])
         self.solver.AddListener(apl)
 
     def test_solve(self):
@@ -34,8 +34,8 @@ class TestOneParamPaintRastrigin2D(unittest.TestCase):
         self.problem = Rastrigin(2)
         params = SolverParameters(r=3.5, eps=0.01)
         self.solver = Solver(self.problem, parameters=params)
-        apl_0 = StaticPaintListener("C:\\GitHub\\iOpt\\output\\", "rastrigin_2_3.5_0.001_static1D_0.png", indx = 0)
-        apl_1 = StaticPaintListener("C:\\GitHub\\iOpt\\output\\", "rastrigin_2_3.5_0.001_static1D_1.png", indx = 1, isPointsAtBottom=False)
+        apl_0 = StaticPaintListener("output", "rastrigin_2_3.5_0.001_static1D_0.png", indx = 0)
+        apl_1 = StaticPaintListener("output", "rastrigin_2_3.5_0.001_static1D_1.png", indx = 1, isPointsAtBottom=False)
         self.solver.AddListener(apl_0)
         self.solver.AddListener(apl_1)
 
@@ -47,7 +47,7 @@ class TestAnimatePaintXSquared(unittest.TestCase):
         self.problem = XSquared(1)
         params = SolverParameters(r=3.5, eps=0.001)
         self.solver = Solver(self.problem, parameters=params)
-        apl = AnimationPaintListener("C:\\GitHub\\iOpt\\output\\", "xsquared_1_3.5_0.001.png")
+        apl = AnimationPaintListener("output", "xsquared_1_3.5_0.001.png")
         self.solver.AddListener(apl)
 
      def test_solveWithPrint(self):
@@ -58,7 +58,7 @@ class TestAnimatePaintRastrigin(unittest.TestCase):
         self.problem = Rastrigin(1)
         params = SolverParameters(r=3.5, eps=0.001)
         self.solver = Solver(self.problem, parameters=params)
-        apl = AnimationPaintListener("C:\\GitHub\\iOpt\\output\\", "rastrigin_1_3.5_0.001_anim.png", isPointsAtBottom=False)
+        apl = AnimationPaintListener("output", "rastrigin_1_3.5_0.001_anim.png", isPointsAtBottom=False)
         self.solver.AddListener(apl)
 
      def test_solveWithPrint(self):
@@ -70,7 +70,7 @@ class TestAnimatePaintXSquared2D(unittest.TestCase):
         params = SolverParameters(r=3.0, eps=0.01)
         self.solver = Solver(self.problem, parameters=params)
 
-        apl = AnimationNDPaintListener("C:\\GitHub\\iOpt\\output\\", "xsquared_2_3.0_0.01.png", varsIndxs=[0,1])
+        apl = AnimationNDPaintListener("output", "xsquared_2_3.0_0.01.png", varsIndxs=[0,1])
         self.solver.AddListener(apl)
 
     def test_solve(self):
@@ -83,9 +83,9 @@ class TestAnimatePaintRastriginWithoutOF(unittest.TestCase):
         self.problem = Rastrigin(1)
         params = SolverParameters(r=3.5, eps=0.001)
         self.solver = Solver(self.problem, parameters=params)
-        apl = AnimationPaintListener("C:\\GitHub\\iOpt\\output\\", "rastrigin_1_3.5_0.001_anim_wof.png", isPointsAtBottom=False, toPaintObjFunc=False)
+        apl = AnimationPaintListener("output", "rastrigin_1_3.5_0.001_anim_wof.png", isPointsAtBottom=False, toPaintObjFunc=False)
         self.solver.AddListener(apl)
-        spl = StaticPaintListener("C:\\GitHub\\iOpt\\output\\", "rastrigin_1_3.5_0.001_stat_wof.png", isPointsAtBottom=False, toPaintObjFunc=False)
+        spl = StaticPaintListener("", "rastrigin_1_3.5_0.001_stat_wof.png", isPointsAtBottom=False, toPaintObjFunc=False)
         self.solver.AddListener(spl)
 
      def test_solveWithPrint(self):
@@ -97,9 +97,9 @@ class TestAnimatePaintXSquared2DWithoutOF(unittest.TestCase):
         params = SolverParameters(r=3.0, eps=0.01)
         self.solver = Solver(self.problem, parameters=params)
 
-        apl = AnimationNDPaintListener("C:\\GitHub\\iOpt\\output\\", "xsquared_2_3.0_0.01_anim_wof.png", varsIndxs=[0,1], toPaintObjFunc=False)
+        apl = AnimationNDPaintListener("output", "xsquared_2_3.0_0.01_anim_wof.png", varsIndxs=[0,1], toPaintObjFunc=False)
         self.solver.AddListener(apl)
-        spl = StaticNDPaintListener("C:\\GitHub\\iOpt\\output\\", "xsquared_2_3.0_0.01_stats_wof.png", varsIndxs=[0,1], toPaintObjFunc=False)
+        spl = StaticNDPaintListener("C:\\GitHub\\Actual\\iOpt\\output", "xsquared_2_3.0_0.01_stats_wof.png", varsIndxs=[0,1], toPaintObjFunc=False)
         self.solver.AddListener(spl)
 
     def test_solve(self):

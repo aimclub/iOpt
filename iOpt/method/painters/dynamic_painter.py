@@ -83,8 +83,13 @@ class AnimateVisualization1D:
         # plt.show()
 
         if not os.path.isdir(pathForSaves):
-            os.mkdir(pathForSaves)
-        plt.savefig(pathForSaves + fileName)
+            if pathForSaves == "":
+                plt.savefig(fileName)
+            else:
+                os.mkdir(pathForSaves)
+                plt.savefig(pathForSaves + "\\" + fileName)
+        else:
+            plt.savefig(pathForSaves + "\\" + fileName)
 
 
 class FunctionAnimationNDPainter:
@@ -171,5 +176,10 @@ class AnimateVisualizationND:
         # plt.show()
 
         if not os.path.isdir(pathForSaves):
-            os.mkdir(pathForSaves)
-        plt.savefig(pathForSaves + fileName)
+            if pathForSaves == "":
+                plt.savefig(fileName)
+            else:
+                os.mkdir(pathForSaves)
+                plt.savefig(pathForSaves + "\\" + fileName)
+        else:
+            plt.savefig(pathForSaves + "\\" + fileName)

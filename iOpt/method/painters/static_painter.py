@@ -34,9 +34,15 @@ class FunctionStaticPainter:
         if toPaintObjFunc:
             sv1d.drawObjFunction(pointsCount=150)
         sv1d.drawPoints()
+        
         if not os.path.isdir(pathForSaves):
-            os.mkdir(pathForSaves)
-        plt.savefig(pathForSaves + fileName)
+            if pathForSaves == "":
+                plt.savefig(fileName)
+            else:
+                os.mkdir(pathForSaves)
+                plt.savefig(pathForSaves + "\\" + fileName)
+        else:
+            plt.savefig(pathForSaves + "\\" + fileName)
         
 class StaticVisualization1D:
     def __init__(self, isPointsAtBottom, parameterInNDProblem, _points, _values, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc):
@@ -123,8 +129,13 @@ class FunctionStaticNDPainter:
             sv1d.drawObjFunction(pointsCount=150)
         sv1d.drawPoints()
         if not os.path.isdir(pathForSaves):
-            os.mkdir(pathForSaves)
-        plt.savefig(pathForSaves + fileName)
+            if pathForSaves == "":
+                plt.savefig(fileName)
+            else:
+                os.mkdir(pathForSaves)
+                plt.savefig(pathForSaves + "\\" + fileName)
+        else:
+            plt.savefig(pathForSaves + "\\" + fileName)
 
 class StaticVisualizationND:
     def __init__(self, _points, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc, _firstParameter, _secondParameter):
