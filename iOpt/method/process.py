@@ -54,11 +54,13 @@ class Process:
         except:
             print('Exception was thrown')
 
+
+        if (self.parameters.refineSolution == True):
+            self.DoLocalRefinement(-1);
+
         for listener in self.__listeners:
             status = self.method.CheckStopCondition()
             listener.OnMethodStop(self.searchData, self.GetResults(), status)
-        if (self.parameters.refineSolution == True):
-            self.DoLocalRefinement(-1);
         
         result = self.GetResults()
         result.solvingTime = datetime.now() - startTime
@@ -107,7 +109,8 @@ class Process:
 
         bounds = Bounds(self.task.problem.lowerBoundOfFloatVariables, self.task.problem.upperBoundOfFloatVariables)
 
-        nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0 = startPoint, method='Nelder-Mead', options={        'maxiter':self.localMethodIterationCount}, bounds=bounds)
+        #nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0 = startPoint, method='Nelder-Mead', options={        'maxiter':self.localMethodIterationCount}, bounds=bounds)
+        nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0 = startPoint, method='Nelder-Mead', options={        'maxiter':self.localMethodIterationCount})
 
         result.bestTrials[0].point.floatVariables = nelder_mead.x
         result.bestTrials[0].functionValues[0].value = self.problemCalculate(result.bestTrials[0].point.floatVariables)
@@ -119,7 +122,7 @@ class Process:
         :return: Return current solution for the optimization problem
         """
         # ДА, ЭТО КОСТЫЛЬ. т.к. solution хранит trial
-        self.searchData.solution.bestTrials[0] = self.method.GetOptimumEstimation()
+        # self.searchData.solution.bestTrials[0] = self.method.GetOptimumEstimation()
         return self.searchData.solution
     '''
     def RefreshListener(self):
