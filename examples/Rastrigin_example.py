@@ -15,13 +15,13 @@ from iOpt.method.listener import ConsoleFullOutputListener
 from subprocess import Popen, PIPE, STDOUT
 
 problem = Rastrigin(1)
-#params = SolverParameters(r=3.5, eps=0.01, itersLimit=10000, refineSolution=True)
+params = SolverParameters(r=3.5, eps=0.01, itersLimit=10, refineSolution=True)
 #params = SolverParameters(r=3.5, eps=0.01, refineSolution=True)
-params = SolverParameters(r=3.5, eps=0.01, itersLimit=10)
+#params = SolverParameters(r=3.5, eps=0.01, itersLimit=10)
 solver = Solver(problem, parameters=params)
 
-pl = StaticPaintListener("output", "rastrigin_1_3.5_0.001.png", isPointsAtBottom = False, toPaintObjFunc=True)
-apl = AnimationPaintListener("output", "xsquared_1_3.5_0.001.png", isPointsAtBottom = False, toPaintObjFunc=True)
+pl = StaticPaintListener("output", "rastrigin.png", isPointsAtBottom = False, toPaintObjFunc=True)
+apl = AnimationPaintListener("output", "rastriginAnim.png", isPointsAtBottom = False, toPaintObjFunc=True)
 solver.AddListener(pl)
 solver.AddListener(apl)
 
