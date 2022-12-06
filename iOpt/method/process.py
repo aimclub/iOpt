@@ -18,7 +18,6 @@ import scipy
 from scipy.optimize import Bounds
 
 class Process:
-    __listeners: List[Listener] = []
     __first_iteration = False
 
     def __init__(self,
@@ -26,13 +25,15 @@ class Process:
                  task: OptimizationTask,
                  evolvent: Evolvent,
                  searchData: SearchData,
-                 method: Method
+                 method: Method,
+                 listeners: List[Listener]
                  ):
         self.parameters = parameters
         self.task = task
         self.evolvent = evolvent
         self.searchData = searchData
         self.method = method
+        self.__listeners = listeners
 
     def Solve(self) -> Solution:
         """
@@ -52,8 +53,10 @@ class Process:
             #print(self.method.CheckStopCondition())
         except:
             print('Exception was thrown')
+
         for listener in self.__listeners:
-            listener.OnMethodStop(self.searchData)
+            status = self.method.CheckStopCondition()
+            listener.OnMethodStop(self.searchData, self.GetResults(), status)
 
         if (self.parameters.refineSolution == True):
             self.DoLocalRefinement(-1);
@@ -66,20 +69,25 @@ class Process:
         """
         :param number: The number of iterations of the global search
         """
+        savedNewPoints = []
         for _ in range(number):
             if self.__first_iteration is False:
                 for listener in self.__listeners:
-                    listener.BeforeMethodStart(self.searchData)
-                self.method.FirstIteration()
+                    listener.BeforeMethodStart(self.method)
+                self.method.FirstIteration()    
+                savedNewPoints.append(self.searchData.GetLastItem())
                 self.__first_iteration = True
             else:
                 newpoint, oldpoint = self.method.CalculateIterationPoint()
+                savedNewPoints.append(newpoint)
                 self.method.CalculateFunctionals(newpoint)
                 self.method.UpdateOptimum(newpoint)
                 self.method.RenewSearchData(newpoint, oldpoint)
                 self.method.FinalizeIteration()
+
         for listener in self.__listeners:
-            listener.OnEndIteration(self.searchData)
+            listener.OnEndIteration(savedNewPoints)
+
 
     def problemCalculate(self, y):
         point = Point(y, []) 
@@ -114,9 +122,11 @@ class Process:
         # ДА, ЭТО КОСТЫЛЬ. т.к. solution хранит trial
         self.searchData.solution.bestTrials[0] = self.method.GetOptimumEstimation()
         return self.searchData.solution
-
+    '''
     def RefreshListener(self):
         pass
 
     def AddListener(self, listener: Listener):
-        self.__listeners.append(listener)
+        #self.__listeners.append(listener)
+        pass
+    '''
