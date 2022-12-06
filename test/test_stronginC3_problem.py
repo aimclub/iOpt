@@ -9,11 +9,13 @@ from iOpt.trial import FunctionType, FunctionValue, Point
 
 class TestStronginC3(unittest.TestCase):
     """setUp method is overridden from the parent class StronginC3"""
+
     def setUp(self):
         self.stronginC3 = StronginC3()
 
     def test_OptimumValue(self):
         self.assertEqual(self.stronginC3.knownOptimum[0].functionValues[0].value, -1.489444)
+
     def test_CalculateObjective(self):
         point = Point([1.0, 0.5], [])
         res: np.double = 0
@@ -65,7 +67,6 @@ class TestStronginC3(unittest.TestCase):
         functionValue = FunctionValue(FunctionType.CONSTRAINT, 2)
         functionValue = self.stronginC3.Calculate(point, functionValue)
         self.assertEqual(functionValue.value, res)
-
 
 
 """Executing the tests in the above test case class"""

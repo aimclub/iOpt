@@ -42,6 +42,10 @@ class Method:
     def min_delta(self, val: float) -> None:
         self.searchData.solution.solutionAccuracy = val
 
+    @staticmethod
+    def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
+        return pow(rx - lx, 1.0 / dimension)
+
     def FirstIteration(self) -> None:
         self.iterationsCount = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
@@ -53,8 +57,8 @@ class Method:
         right = SearchDataItem(Point(self.evolvent.GetImage(1.0).tolist(), None), 1.0)
 
         left.delta = 0
-        middle.delta = 0.5  # / self.dimension  # ???
-        right.delta = 0.5  # / self.dimension  # ???
+        middle.delta = Method.CalculateDelta(left.GetX(), middle.GetX(), self.dimension)
+        right.delta = Method.CalculateDelta(middle.GetX(), right.GetX(), self.dimension)
 
         # Вычисление значения функции в 0.5
         self.CalculateFunctionals(middle)
@@ -74,6 +78,10 @@ class Method:
             self.stop = True
         else:
             self.stop = False
+
+        if (self.iterationsCount >= self.parameters.itersLimit):
+            self.stop = True
+
         return self.stop
 
     def RecalcAllCharacteristics(self) -> None:
@@ -196,11 +204,11 @@ class Method:
         Update delta, M, R and insert points to searchData.
         """
 
-        oldpoint.delta = pow(oldpoint.GetX() - newpoint.GetX(), 1.0 / self.dimension)
+        oldpoint.delta = Method.CalculateDelta(newpoint.GetX(), oldpoint.GetX(), self.dimension)
         left = oldpoint.GetLeft()
         if left is None:
             raise Exception("left is None")
-        newpoint.delta = pow(newpoint.GetX() - left.GetX(), 1.0 / self.dimension)
+        newpoint.delta = Method.CalculateDelta(left.GetX(), newpoint.GetX(), self.dimension)
 
         self.CalculateM(newpoint, left)
         self.CalculateM(oldpoint, newpoint)

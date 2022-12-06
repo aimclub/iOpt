@@ -8,6 +8,7 @@ from iOpt.trial import FunctionValue, Point
 
 class TestXSquared(unittest.TestCase):
     """setUp method is overridden from the parent class XSquared"""
+
     def setUp(self) -> None:
         self.xsquared = XSquared(3)
 
@@ -23,6 +24,7 @@ class TestXSquared(unittest.TestCase):
 
     def test_OptimumValue(self) -> None:
         self.assertEqual(self.xsquared.knownOptimum[0].functionValues[0].value, 0.0)
+
 
 """Executing the tests in the above test case class"""
 if __name__ == "__main__":

@@ -102,7 +102,7 @@ class SearchData:
 
     def __init__(self, problem: Problem, maxlen: Optional[int] = None):
         self.solution = Solution(problem)
-        self._allTrials: List[Trial] = []
+        self._allTrials: List[SearchDataItem] = []
         self._RGlobalQueue = CharacteristicsQueue(maxlen)
         self.__firstDataItem: Optional[SearchDataItem] = None
 
@@ -170,7 +170,7 @@ class SearchData:
     def GetCount(self) -> int:
         return len(self._allTrials)
 
-    def GetLastItem(self) -> Trial:
+    def GetLastItem(self) -> SearchDataItem:
         try:
             return self._allTrials[-1]
         except BaseException:

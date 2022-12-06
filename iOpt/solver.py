@@ -12,8 +12,6 @@ from iOpt.solver_parametrs import SolverParameters
 
 
 class Solver:
-    __listeners: List[Listener] = []
-
     def __init__(self,
                  problem: Problem,
                  parameters: SolverParameters = SolverParameters()
@@ -24,13 +22,16 @@ class Solver:
         """
         self.problem = problem
         self.parameters = parameters
+
+        self.__listeners: List[Listener] = []
+
         self.searchData = SearchData(problem)
         self.evolvent = Evolvent(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables,
                                  problem.numberOfFloatVariables)
         self.task = OptimizationTask(problem)
         self.method = Method(parameters, self.task, self.evolvent, self.searchData)
         self.process = Process(parameters=parameters, task=self.task, evolvent=self.evolvent,
-                               searchData=self.searchData, method=self.method)
+                               searchData=self.searchData, method=self.method, listeners=self.__listeners)
 
     def Solve(self) -> Solution:
         """

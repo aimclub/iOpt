@@ -9,6 +9,7 @@ from iOpt.trial import FunctionValue, Point
 
 class TestRastrigin(unittest.TestCase):
     """setUp method is overridden from the parent class Rastrigin"""
+
     def setUp(self):
         self.rastrigin = Rastrigin(3)
 
@@ -25,6 +26,7 @@ class TestRastrigin(unittest.TestCase):
 
     def test_OptimumValue(self):
         self.assertEqual(self.rastrigin.knownOptimum[0].functionValues[0].value, 0.0)
+
 
 """Executing the tests in the above test case class"""
 if __name__ == "__main__":

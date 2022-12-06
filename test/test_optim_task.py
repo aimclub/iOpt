@@ -11,14 +11,19 @@ from iOpt.trial import FunctionValue, Point
 
 class TestOptimizationTask(unittest.TestCase):
     """setUp method is overridden from the parent class OptimizationTask"""
+
     def setUp(self):
         self.problem = Rastrigin(3)
         self.optimizationTask = OptimizationTask(self.problem)
 
         self.problemPerm = Rastrigin(3)
-        self.perm = np.ndarray(shape=(self.problemPerm.numberOfObjectives+self.problemPerm.numberOfConstraints), dtype=np.int32)
+        self.perm = np.ndarray(
+            shape=(
+                self.problemPerm.numberOfObjectives +
+                self.problemPerm.numberOfConstraints),
+            dtype=np.int32)
         for i in range(self.perm.size):
-            self.perm[i] = self.perm.size-1-i
+            self.perm[i] = self.perm.size - 1 - i
         self.optimizationTaskPerm = OptimizationTask(self.problem, self.perm)
 
     def test_InitWithoutPermRastrigin3(self):
@@ -41,6 +46,7 @@ class TestOptimizationTask(unittest.TestCase):
                 2 * math.pi * point.floatVariables[i]) + 10
 
         self.assertEqual(sdi.functionValues[0].value, sum)
+
 
 """Executing the tests in the above test case class"""
 if __name__ == "__main__":

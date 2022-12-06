@@ -88,7 +88,7 @@ class Evolvent:
         for i in range(0, self.numberOfFloatVariables):
             self.yValues[i] = (self.yValues[i] - (self.upperBoundOfFloatVariables[i] +
                                self.lowerBoundOfFloatVariables[i]) / 2) / \
-                    (self.upperBoundOfFloatVariables[i] - self.lowerBoundOfFloatVariables[i])
+                (self.upperBoundOfFloatVariables[i] - self.lowerBoundOfFloatVariables[i])
 
     # ---------------------------------
     def __GetYonX(self, _x: float) -> npt.NDArray[np.double]:
