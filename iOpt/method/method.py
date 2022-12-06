@@ -9,14 +9,11 @@ from iOpt.method.search_data import SearchDataItem
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.solver_parametrs import SolverParameters
 
+import copy
 
 # TODO: Привести комментарии в порядок
 
 class Method:
-    stop: bool = False
-    recalc: bool = True
-    iterationsCount: int = 0
-    best: SearchDataItem = None
 
     def __init__(self,
                  parameters: SolverParameters,
@@ -24,6 +21,11 @@ class Method:
                  evolvent: Evolvent,
                  searchData: SearchData
                  ):
+        self.stop: bool = False
+        self.recalc: bool = True
+        self.iterationsCount: int = 0
+        self.best: SearchDataItem = None
+
         self.parameters = parameters
         self.task = task
         self.evolvent = evolvent
@@ -134,7 +136,7 @@ class Method:
         self.min_delta = min(old.delta, self.min_delta)
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx)
-        new = SearchDataItem(Point(newy, []), newx)
+        new = copy.deepcopy(SearchDataItem(Point(newy, []), newx))
         return (new, old)
 
     def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
@@ -225,6 +227,7 @@ class Method:
             self.best = point
             self.recalc = True
             self.Z[point.GetIndex()] = point.GetZ()
+        self.searchData.solution.bestTrials[0] = self.best
 
     def FinalizeIteration(self):
         self.iterationsCount += 1
