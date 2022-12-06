@@ -79,8 +79,6 @@ class AnimateVisualization1D:
         self.fig.canvas.flush_events()
         # отключить интерактивный режим по завершению анимации
         plt.ioff()
-        # нужно, чтобы график не закрывался после завершения анимации
-        # plt.show()
 
         if not os.path.isdir(pathForSaves):
             if pathForSaves == "":
@@ -90,6 +88,9 @@ class AnimateVisualization1D:
                 plt.savefig(pathForSaves + "\\" + fileName)
         else:
             plt.savefig(pathForSaves + "\\" + fileName)
+
+        # нужно, чтобы график не закрывался после завершения анимации
+        plt.show()
 
 
 class FunctionAnimationNDPainter:
@@ -172,14 +173,15 @@ class AnimateVisualizationND:
         self.fig.canvas.flush_events()
         # отключить интерактивный режим по завершению анимации
         plt.ioff()
-        # нужно, чтобы график не закрывался после завершения анимации
-        # plt.show()
 
         if not os.path.isdir(pathForSaves):
             if pathForSaves == "":
-                plt.savefig(fileName)
+                plt.savefig(os.path.curdir+"/"+fileName)
             else:
                 os.mkdir(pathForSaves)
                 plt.savefig(pathForSaves + "\\" + fileName)
         else:
             plt.savefig(pathForSaves + "\\" + fileName)
+
+        # нужно, чтобы график не закрывался после завершения анимации
+        plt.show()

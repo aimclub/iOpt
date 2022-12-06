@@ -38,7 +38,7 @@ class ConsoleFullOutputListener(Listener):
         pass
 
 class StaticPaintListener(Listener):
-    def __init__(self, pathForSaves, fileName, indx = None, isPointsAtBottom = True, toPaintObjFunc=True):
+    def __init__(self, fileName: str, pathForSaves="", indx=None, isPointsAtBottom=False, toPaintObjFunc=True):
         self.fileName = fileName
         self.pathForSaves = pathForSaves
         self.parameterInNDProblem = indx
@@ -52,7 +52,7 @@ class StaticPaintListener(Listener):
         self.parameterInNDProblem, self.toPaintObjFunc)
 
 class StaticNDPaintListener(Listener):
-    def __init__(self, pathForSaves, fileName, varsIndxs=[0,1], toPaintObjFunc=True):
+    def __init__(self, fileName : str, pathForSaves="", varsIndxs=[0,1], toPaintObjFunc=True):
         self.fileName = fileName
         self.pathForSaves = pathForSaves
         self.parameters = varsIndxs
@@ -64,7 +64,7 @@ class StaticNDPaintListener(Listener):
         fp.Paint(self.fileName, self.pathForSaves, self.parameters, self.toPaintObjFunc)
 
 class AnimationPaintListener(Listener):
-    def __init__(self, pathForSaves, fileName, isPointsAtBottom=True, toPaintObjFunc=True):
+    def __init__(self, fileName : str, pathForSaves="", isPointsAtBottom=False, toPaintObjFunc=True):
         self.__fp : FunctionAnimationPainter = None
         self.fileName = fileName
         self.pathForSaves = pathForSaves
@@ -83,7 +83,7 @@ class AnimationPaintListener(Listener):
         self.__fp.PaintOptimum(solution, self.fileName, self.pathForSaves)
 
 class AnimationNDPaintListener(Listener):
-    def __init__(self, pathForSaves, fileName, varsIndxs, toPaintObjFunc=True):
+    def __init__(self, fileName : str, pathForSaves="", varsIndxs=[0,1], toPaintObjFunc=True):
         self.__fp : FunctionAnimationNDPainter = None
         self.fileName = fileName
         self.pathForSaves = pathForSaves
