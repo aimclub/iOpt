@@ -8,7 +8,14 @@ from iOpt.method.method import Method
 from iOpt.problem import Problem
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.solution import Solution
+from iOpt.trial import Point
+from iOpt.trial import FunctionValue
 
+from datetime import datetime
+import time
+
+import scipy
+from scipy.optimize import Bounds
 
 class Process:
     __first_iteration = False
@@ -36,6 +43,8 @@ class Process:
         # if self.__first_iteration is False:
         #     self.method.FirstIteration()
         #     self.__first_iteration = True
+        startTime = datetime.now()
+
         try:
             while not self.method.CheckStopCondition():
                 self.DoGlobalIteration()
@@ -80,11 +89,31 @@ class Process:
             listener.OnEndIteration(savedNewPoints)
 
 
+    def problemCalculate(self, y):
+        point = Point(y, []) 
+        functionValue = FunctionValue()
+        functionValue = self.task.problem.Calculate(point, functionValue)
+        return functionValue.value
+
     def DoLocalRefinement(self, number: int = 1):
         """
         :param number: The number of iterations of the local search
         """
-        pass
+        self.localMethodIterationCount = number
+        if (number == -1):
+            self.localMethodIterationCount = self.parameters.itersLimit * 0.9
+
+        result = self.GetResults()
+        startPoint = result.bestTrials[0].point.floatVariables
+
+        bounds = Bounds(self.task.problem.lowerBoundOfFloatVariables, self.task.problem.upperBoundOfFloatVariables)
+
+        nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0 = startPoint, method='Nelder-Mead', options={        'maxiter':self.localMethodIterationCount}, bounds=bounds)
+
+        result.bestTrials[0].point.floatVariables = nelder_mead.x
+        result.bestTrials[0].functionValues[0].value = self.problemCalculate(result.bestTrials[0].point.floatVariables)
+
+        result.numberOfLocalTrials = nelder_mead.nfev
 
     def GetResults(self) -> Solution:
         """
