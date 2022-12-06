@@ -57,7 +57,6 @@ class Process:
         for listener in self.__listeners:
             status = self.method.CheckStopCondition()
             listener.OnMethodStop(self.searchData, self.GetResults(), status)
-
         if (self.parameters.refineSolution == True):
             self.DoLocalRefinement(-1);
         
