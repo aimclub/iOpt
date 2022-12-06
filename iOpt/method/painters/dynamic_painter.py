@@ -140,21 +140,21 @@ class AnimateVisualizationND:
         xF = np.arange(self.leftBoundF, self.rightBoundF, (self.rightBoundF - self.leftBoundF) / pointsCount)
         xS = np.arange(self.leftBoundS, self.rightBoundS, (self.rightBoundS - self.leftBoundS) / pointsCount)
         copy =  optimum.copy()
-        xv, yv = np.meshgrid(xF, xS, indexing='xy')
+        xv, yv = np.meshgrid(xF, xS)
         z = []
 
         for i in range(pointsCount):
             z_ = []
             for j in range(pointsCount):
                 fv = FunctionValue()
-                copy[self.first] = xv[j,i]
-                copy[self.second] = yv[j,i]
+                copy[self.first] = xv[i,j]
+                copy[self.second] = yv[i,j]
                 x_ = Point(copy, [])
                 fv = FunctionValue()
                 fv = self.objFunc(x_, fv)
                 z_.append(fv.value)
             z.append(z_)
-        self.ax.contour(xF, xS, z, linewidths=1, cmap=plt.cm.viridis)
+        self.ax.contour(xF, xS, z, linewidths=1, levels=25, cmap=plt.cm.viridis)
 
     def drawPoint(self, point, value):
         self.ax.plot(point[self.first], point[self.second], color='blue', 
