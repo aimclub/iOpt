@@ -8,14 +8,24 @@ from iOpt.problems.xsquared import XSquared
 from iOpt.problems.GKLS import GKLS
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
+from iOpt.solver_parametrs import SolverParameters
+from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, StaticNDPaintListener, AnimationNDPaintListener
+from iOpt.method.listener import ConsoleFullOutputListener
 
 #import subprocess
 from subprocess import Popen, PIPE, STDOUT
 
 problem = GKLS(2, 1)
 #params = SolverParameters(r=3.5, eps=0.01, itersLimit=10000, refineSolution=True)
-params = SolverParameters(r=3.5, eps=0.01, refineSolution=True)
+#params = SolverParameters(r=3.5, eps=0.01, refineSolution=True)
+params = SolverParameters(r=3.5, eps=0.001, itersLimit=50)
 solver = Solver(problem, parameters=params)
+
+apl = AnimationNDPaintListener("output", "GKLS_2_3.0_0.01_anim_wof.png", varsIndxs=[0,1], toPaintObjFunc=True)
+solver.AddListener(apl)
+spl = StaticNDPaintListener("E:/iOpt", "GKLS_2_3.0_0.01_stats_wof.png", varsIndxs=[0,1], toPaintObjFunc=True)
+solver.AddListener(spl)
+
 sol = solver.Solve()
 print(sol.numberOfGlobalTrials)
 print(sol.numberOfLocalTrials)

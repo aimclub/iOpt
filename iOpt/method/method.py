@@ -9,6 +9,7 @@ from iOpt.method.search_data import SearchDataItem
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.solver_parametrs import SolverParameters
 
+import copy
 
 # TODO: Привести комментарии в порядок
 
@@ -218,11 +219,11 @@ class Method:
 
     def UpdateOptimum(self, point: SearchDataItem):
         if self.best is None or self.best.GetIndex() < point.GetIndex():  # CHECK INDEX
-            self.best = point
+            self.best = copy.deepcopy(point)
             self.recalc = True
             self.Z[point.GetIndex()] = point.GetZ()
         elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
-            self.best = point
+            self.best = copy.deepcopy(point)
             self.recalc = True
             self.Z[point.GetIndex()] = point.GetZ()
 
