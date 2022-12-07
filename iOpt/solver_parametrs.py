@@ -13,6 +13,7 @@ class SolverParameters:
                  startPoint: Point = []
                  ):
         """
+
         :param eps:method tolerance. Less value -- better search precision, less probability of early stop.
         :param r: reliability parameter. Higher value of r -- slower convergence, higher chance to cache the global minima.
         :param itersLimit: max number of iterations.
