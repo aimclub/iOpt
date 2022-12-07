@@ -14,7 +14,7 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # add needed listeners for solver
-    apl = StaticPaintListener("rastrigin_1_2.5_0.01.png")
+    apl = StaticPaintListener("rastrigin_1_2.5_0.01.png", mode="only points")
     solver.AddListener(apl)
 
     # solve the problem

@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     # add needed listeners for solver
     apl_0 = StaticPaintListener("rastrigin_2_3.5_0.001_static1D_0.png", "output", indx=0)
-    apl_1 = StaticPaintListener("rastrigin_2_3.5_0.001_static1D_1.png", "output", indx=1, toPaintObjFunc=False)
+    apl_1 = StaticPaintListener("rastrigin_2_3.5_0.001_static1D_1.png", "output", indx=1)
     solver.AddListener(apl_0)
     solver.AddListener(apl_1)
 

@@ -37,32 +37,44 @@ class ConsoleFullOutputListener(Listener):
         self.__fcfo.printFinalResult(solution, status)
         pass
 
+# moode: objective function, approximation, only points
 class StaticPaintListener(Listener):
-    def __init__(self, fileName: str, pathForSaves="", indx=None, isPointsAtBottom=False, toPaintObjFunc=True):
+    def __init__(self, fileName: str, pathForSaves="", indx=0, isPointsAtBottom=False, mode="objective function"):
         self.fileName = fileName
         self.pathForSaves = pathForSaves
         self.parameterInNDProblem = indx
         self.isPointsAtBottom = isPointsAtBottom
-        self.toPaintObjFunc = toPaintObjFunc
+        self.mode = mode
 
     def OnMethodStop(self, searchData: SearchData,
                     solution: Solution, status : bool):
         fp = FunctionStaticPainter(searchData, solution)
-        fp.Paint(self.fileName, self.pathForSaves, self.isPointsAtBottom,
-        self.parameterInNDProblem, self.toPaintObjFunc)
+        if self.mode=="objective function":
+            fp.Paint(self.fileName, self.pathForSaves, self.isPointsAtBottom, self.parameterInNDProblem, True)
+        elif self.mode=="only points":
+            fp.Paint(self.fileName, self.pathForSaves, self.isPointsAtBottom, self.parameterInNDProblem, False)
+        elif self.mode == "approximation":
+            fp.PaintApproximation(self.fileName, self.pathForSaves, self.isPointsAtBottom, self.parameterInNDProblem)
 
+# mode: surface, lines layers, approximation
 class StaticNDPaintListener(Listener):
-    def __init__(self, fileName : str, pathForSaves="", varsIndxs=[0,1], toPaintObjFunc=True):
+    def __init__(self, fileName : str, pathForSaves="", varsIndxs=[0,1], mode="lines_layers"):
         self.fileName = fileName
         self.pathForSaves = pathForSaves
         self.parameters = varsIndxs
-        self.toPaintObjFunc = toPaintObjFunc
+        self.mode = mode
 
     def OnMethodStop(self, searchData: SearchData,
-                    solution: Solution, status : bool):
+                    solution: Solution, status : bool, ):
         fp = FunctionStaticNDPainter(searchData, solution)
-        fp.Paint(self.fileName, self.pathForSaves, self.parameters, self.toPaintObjFunc)
-
+        if self.mode == "lines layers":
+            fp.Paint(self.fileName, self.pathForSaves, self.parameters)
+        elif self.mode == "approximation":
+            fp.PaintApproximation(self.fileName, self.pathForSaves, self.parameters)
+        '''
+        elif self.mode == "surface": # нужен ли?
+            fp.PaintSurface(self.fileName, self.pathForSaves, self.parameters)
+        '''
 class AnimationPaintListener(Listener):
     def __init__(self, fileName : str, pathForSaves="", isPointsAtBottom=False, toPaintObjFunc=True):
         self.__fp : FunctionAnimationPainter = None

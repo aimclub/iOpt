@@ -21,9 +21,11 @@ params = SolverParameters(r=3.5, eps=0.01, itersLimit=50, refineSolution=True)
 #params = SolverParameters(r=3.5, eps=0.001, itersLimit=50)
 solver = Solver(problem, parameters=params)
 
+cfol = ConsoleFullOutputListener(mode=2)
+solver.AddListener(cfol)
 apl = AnimationNDPaintListener("output", "GKLSanim.png", varsIndxs=[0,1], toPaintObjFunc=True)
 solver.AddListener(apl)
-spl = StaticNDPaintListener("output", "GKLS.png", varsIndxs=[0,1], toPaintObjFunc=True)
+spl = StaticNDPaintListener("output", "GKLS.png", varsIndxs=[0,1])
 solver.AddListener(spl)
 
 sol = solver.Solve()
