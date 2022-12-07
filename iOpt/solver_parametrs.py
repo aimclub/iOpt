@@ -3,6 +3,9 @@ from iOpt.trial import Point
 
 
 class SolverParameters:
+    """
+    Класс SolverParameters позволяет определить параметры поиска оптимального решения
+    """
     def __init__(self,
                  eps: np.double = 0.01,
                  r: np.double = 2.0,
@@ -12,17 +15,21 @@ class SolverParameters:
                  refineSolution: bool = False,
                  startPoint: Point = []
                  ):
-        """
+        r"""
+        Конструктор класса SolverParameters
 
-        :param eps:method tolerance. Less value -- better search precision, less probability of early stop.
-        :param r: reliability parameter. Higher value of r -- slower convergence, higher chance to cache the global minima.
-        :param itersLimit: max number of iterations.
-        :param evolventDensity:density of evolvent. By default density is 2^-12 on hybercube [0,1]^N,
-               which means that maximum search accuracy is 2^-12.
-               If search hypercube is large the density can be increased accordingly to achieve better accuracy.
-        :param epsR: parameter which prevents method from paying too much attention to constraints. Greater values of
-               this parameter speed up convergence, but global minima can be lost.
-        :param refineSolution: if true, the final solution will be refined with the HookJeves method.
+        :param eps: Точность решения поставленной задачи. Меньше значения -- выше точность поиска,
+             меньше вероятность преждевременной остановки.
+        :param r: Параметр надежности. Более высокое значение r -- более медленная сходимость,
+             более высокая вероятность нахождения глобального минимума.
+        :param itersLimit: Максимальное количество итераций поиска.
+        :param evolventDensity: Плотность построения развертки.
+             По умолчанию плотность :math:`2^{-10}` на гиперкубе :math:`[0,1]^N`,
+             что означает, что максимальная точность поиска составляет :math:`2^{-10}`.
+        :param epsR: Параметр не позволяет методу уделять слишком много внимания ограничениям.
+             Большие значения этого параметра ускоряют сходимость, но могут быть потеряны глобальные минимумы.
+        :param refineSolution: если true, то решение будет уточнено с помощью метода HookJeves.
+        :param startPoint: точка начального приближения к решению.
         """
         self.eps = eps
         self.r = r
