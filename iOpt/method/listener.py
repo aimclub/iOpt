@@ -55,6 +55,8 @@ class StaticPaintListener(Listener):
             fp.Paint(self.fileName, self.pathForSaves, self.isPointsAtBottom, self.parameterInNDProblem, False)
         elif self.mode == "approximation":
             fp.PaintApproximation(self.fileName, self.pathForSaves, self.isPointsAtBottom, self.parameterInNDProblem)
+        elif self.mode == "interpolation":
+            fp.PaintInterpolation(self.fileName, self.pathForSaves, self.isPointsAtBottom, self.parameterInNDProblem)
 
 # mode: surface, lines layers, approximation
 class StaticNDPaintListener(Listener):
@@ -71,6 +73,8 @@ class StaticNDPaintListener(Listener):
             fp.Paint(self.fileName, self.pathForSaves, self.parameters)
         elif self.mode == "approximation":
             fp.PaintApproximation(self.fileName, self.pathForSaves, self.parameters)
+        elif self.mode == "interpolation":
+            fp.PaintInterpolation(self.fileName, self.pathForSaves, self.parameters)
         '''
         elif self.mode == "surface": # нужен ли?
             fp.PaintSurface(self.fileName, self.pathForSaves, self.parameters)

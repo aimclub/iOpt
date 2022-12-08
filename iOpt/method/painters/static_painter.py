@@ -10,6 +10,8 @@ from mpl_toolkits import mplot3d
 
 from sklearn.neural_network import MLPRegressor
 
+from scipy import interpolate
+
 class FunctionStaticPainter:
     def __init__(self, searchData: SearchData,
                  solution: Solution):
@@ -99,6 +101,56 @@ class FunctionStaticPainter:
         x_plot = np.linspace(leftBound[parameterInNDProblem], rightBound[parameterInNDProblem], size)
         z = nn.predict(x_plot[:, np.newaxis])
         plt.plot(x_plot, z, color='black', linewidth=1, alpha=0.7)
+
+        sv1d.drawPoints()
+
+        if not os.path.isdir(pathForSaves):
+            if pathForSaves == "":
+                plt.savefig(fileName)
+            else:
+                os.mkdir(pathForSaves)
+                plt.savefig(pathForSaves + "\\" + fileName)
+        else:
+            plt.savefig(pathForSaves + "\\" + fileName)
+
+        plt.show()
+
+    def PaintInterpolation(self, fileName, pathForSaves, isPointsAtBottom, parameterInNDProblem):
+        # формируем массив точек итераций для графика
+        points = []
+        values = []
+        for item in self.searchData:
+            points.append(item.GetY().floatVariables)
+            if not isPointsAtBottom:
+                values.append(item.GetZ())
+
+        # оптимум
+        bestTrialPoint = self.solution.bestTrials[0].point.floatVariables
+        bestTrialValue = self.solution.bestTrials[0].functionValues[0].value
+
+        # границы
+        leftBound = self.solution.problem.lowerBoundOfFloatVariables
+        rightBound = self.solution.problem.upperBoundOfFloatVariables
+
+        # передаём точки, оптимум, границы и указатель на функцию для построения целевой функции
+        sv1d = StaticVisualization1D(isPointsAtBottom, parameterInNDProblem, points[1:len(points) - 1],
+                                     values[1:len(values) - 1], bestTrialPoint, bestTrialValue, leftBound, rightBound,
+                                     self.solution.problem.Calculate)
+
+        X_train = []
+        y_train = []
+        for item in self.searchData:
+            X_train.append(item.GetY().floatVariables[parameterInNDProblem])
+            y_train.append(item.GetZ())
+
+        X_train = np.array(X_train[1:-1])
+        y_train = np.array(y_train[1:-1])
+
+        #f = interpolate.interp1d(X_train, y_train, kind=3, fill_value="extrapolate")
+        f = interpolate.interp1d(X_train, y_train, kind=3)
+        size = 100
+        x_plot = np.linspace(min(X_train), max(X_train), size)
+        plt.plot(x_plot, f(x_plot), color='black', linewidth=1, alpha=0.7)
 
         sv1d.drawPoints()
 
@@ -304,6 +356,68 @@ class FunctionStaticNDPainter:
             plt.savefig(pathForSaves + "\\" + fileName)
 
         plt.show()
+
+    def PaintInterpolation(self, fileName, pathForSaves, params):
+        first = params[0]
+        second = params[1]
+
+        # оптимум
+        bestTrialPoint = self.solution.bestTrials[0].point.floatVariables
+        bestTrialValue = self.solution.bestTrials[0].functionValues[0].value
+
+        # границы
+        leftBound = self.solution.problem.lowerBoundOfFloatVariables
+        rightBound = self.solution.problem.upperBoundOfFloatVariables
+
+        # передаём точки, оптимум, границы и указатель на функцию для построения целевой функции
+        sv1d = StaticVisualizationND([], bestTrialPoint, bestTrialValue, leftBound, rightBound,
+                                     self.solution.problem.Calculate, first, second)
+
+        # формируем массив точек итераций для графика
+        X_train = []
+        X = []
+        Y = []
+        y_train = []
+        for item in self.searchData:
+            X.append(item.GetY().floatVariables[first])
+            Y.append(item.GetY().floatVariables[second])
+            X_train.append([item.GetY().floatVariables[first], item.GetY().floatVariables[second]])
+            y_train.append(item.GetZ())
+
+        X_train = X_train[1:-1]
+        y_train = y_train[1:-1]
+
+        X = X[1:-1]
+        Y = Y[1:-1]
+        # interp2d
+        interp = interpolate.Rbf(X, Y, y_train)
+
+        size = 50
+        x_x = np.linspace(leftBound[first], rightBound[first], size)
+        y_y = np.linspace(leftBound[second], rightBound[second], size)
+        xx, yy = np.meshgrid(x_x, y_y)
+        zz = interp(xx, yy)
+
+        # полученная аппроксимация
+        sv1d.ax = plt.subplot(projection='3d')
+        sv1d.ax.plot_surface(xx, yy, zz, cmap=plt.cm.viridis, alpha=0.6)
+        sv1d.ax.tick_params(axis='both', labelsize=8)
+        plt.subplot(projection='3d')
+        sv1d.ax.scatter(X, Y, y_train, color='blue', label='original', marker='o', s=1, alpha=1.0)
+        sv1d.ax.scatter([bestTrialPoint[first]], [bestTrialPoint[second]], bestTrialValue, s=2, color='red',
+                        label='original', marker='x', alpha=1.0)
+
+        if not os.path.isdir(pathForSaves):
+            if pathForSaves == "":
+                plt.savefig(fileName)
+            else:
+                os.mkdir(pathForSaves)
+                plt.savefig(pathForSaves + "\\" + fileName)
+        else:
+            plt.savefig(pathForSaves + "\\" + fileName)
+
+        plt.show()
+
 class StaticVisualizationND:
     def __init__(self, _points, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc, _firstParameter, _secondParameter):
         self.points = _points
