@@ -14,11 +14,11 @@ from subprocess import Popen, PIPE, STDOUT
 
 def SolveSingleGKLS():
     """
-    Запуск решения с визуализацией задачи из GKLS генератора с номером 10
+    Запуск решения с визуализацией задачи из GKLS генератора с номером 39
     """
-    problem = GKLS(2, 10)
+    problem = GKLS(2, 39)
 
-    params = SolverParameters(r=3.5, eps=0.01, itersLimit=100, refineSolution=True)
+    params = SolverParameters(r=3.5, eps=0.01, itersLimit=300, refineSolution=True)
     solver = Solver(problem, parameters=params)
     
     cfol = ConsoleFullOutputListener(mode=2)
@@ -62,4 +62,4 @@ def SolveGKLSSet():
 
 if __name__ == "__main__":
     SolveSingleGKLS()
-    SolveGKLSSet()
+    #SolveGKLSSet()
