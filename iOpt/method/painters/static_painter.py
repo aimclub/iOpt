@@ -228,7 +228,7 @@ class FunctionStaticNDPainter:
         self.searchData = searchData
         self.solution = solution
 
-    def Paint(self, fileName, pathForSaves, params):
+    def PaintLL(self, fileName, pathForSaves, params):
         first = params[0]
         second = params[1]
         # формируем массив точек итераций для графика
@@ -273,6 +273,66 @@ class FunctionStaticNDPainter:
         sv1d.ax.plot(sv1d.optimum[sv1d.first], sv1d.optimum[sv1d.second], color='red',
                      label='original', marker='x', markersize=4)
 
+
+        if not os.path.isdir(pathForSaves):
+            if pathForSaves == "":
+                plt.savefig(fileName)
+            else:
+                os.mkdir(pathForSaves)
+                plt.savefig(pathForSaves + "\\" + fileName)
+        else:
+            plt.savefig(pathForSaves + "\\" + fileName)
+
+        plt.show()
+    def PaintLLI(self, fileName, pathForSaves, params):
+        first = params[0]
+        second = params[1]
+
+        # оптимум
+        bestTrialPoint = self.solution.bestTrials[0].point.floatVariables
+        bestTrialValue = self.solution.bestTrials[0].functionValues[0].value
+
+        # границы
+        leftBound = self.solution.problem.lowerBoundOfFloatVariables
+        rightBound = self.solution.problem.upperBoundOfFloatVariables
+
+        # передаём точки, оптимум, границы и указатель на функцию для построения целевой функции
+        sv1d = StaticVisualizationND([], bestTrialPoint, bestTrialValue, leftBound, rightBound,
+                                     self.solution.problem.Calculate, first, second)
+
+        # формируем массив точек итераций для графика
+        X_train = []
+        X = []
+        Y = []
+        y_train = []
+        for item in self.searchData:
+            X.append(item.GetY().floatVariables[first])
+            Y.append(item.GetY().floatVariables[second])
+            X_train.append([item.GetY().floatVariables[first], item.GetY().floatVariables[second]])
+            y_train.append(item.GetZ())
+
+        X_train = X_train[1:-1]
+        y_train = y_train[1:-1]
+
+        X = X[1:-1]
+        Y = Y[1:-1]
+        # interp2d
+        interp = interpolate.Rbf(X, Y, y_train)
+
+        size = 100
+        x_x = np.linspace(leftBound[first], rightBound[first], size)
+        y_y = np.linspace(leftBound[second], rightBound[second], size)
+        xx, yy = np.meshgrid(x_x, y_y)
+        zz = interp(xx, yy)
+
+        sv1d.ax.contour(x_x, y_y, zz, linewidths=1, cmap=plt.cm.viridis)
+
+        for point in sv1d.points:
+            sv1d.ax.plot(point[sv1d.first], point[sv1d.second], color='blue',
+                         label='original', marker='o', markersize=1)
+
+        sv1d.ax.plot(sv1d.optimum[sv1d.first], sv1d.optimum[sv1d.second], color='red',
+                     label='original', marker='x', markersize=4)
 
         if not os.path.isdir(pathForSaves):
             if pathForSaves == "":

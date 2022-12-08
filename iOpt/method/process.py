@@ -87,7 +87,7 @@ class Process:
                 self.method.FinalizeIteration()
 
         for listener in self.__listeners:
-            listener.OnEndIteration(savedNewPoints)
+            listener.OnEndIteration(savedNewPoints, self.GetResults())
 
 
     def problemCalculate(self, y):

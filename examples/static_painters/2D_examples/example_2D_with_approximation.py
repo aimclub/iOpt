@@ -17,8 +17,6 @@ if __name__ == "__main__":
     # add needed listeners for solver
     apl = StaticNDPaintListener("rastrigin_2_2.5_0.01.png", mode="approximation")
     solver.AddListener(apl)
-    cfol = ConsoleFullOutputListener(mode=2)
-    solver.AddListener(cfol)
 
     # solve the problem
     sol = solver.Solve()

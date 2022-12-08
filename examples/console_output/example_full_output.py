@@ -14,7 +14,7 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # add needed listeners for solver
-    cfol = ConsoleFullOutputListener(mode=1)
+    cfol = ConsoleFullOutputListener(mode="full")
     solver.AddListener(cfol)
 
     # solve the problem
