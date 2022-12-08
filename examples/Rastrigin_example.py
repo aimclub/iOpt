@@ -7,31 +7,29 @@ from iOpt.problems.rastrigin import Rastrigin
 from iOpt.problems.xsquared import XSquared
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, StaticNDPaintListener, AnimationNDPaintListener
-from iOpt.method.listener import ConsoleFullOutputListener
+from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, StaticNDPaintListener, AnimationNDPaintListener, ConsoleFullOutputListener
 
-#import subprocess
 from subprocess import Popen, PIPE, STDOUT
 
-problem = Rastrigin(1)
-params = SolverParameters(r=3.5, eps=0.01, itersLimit=10, refineSolution=True)
-#params = SolverParameters(r=3.5, eps=0.01, refineSolution=True)
-#params = SolverParameters(r=3.5, eps=0.01, itersLimit=10)
-solver = Solver(problem, parameters=params)
+if __name__ == "__main__":
+    """
+    Запуск решения с визуализацией задачи Растригина с визуализацией
+    """
 
-pl = StaticPaintListener("output", "rastrigin.png", isPointsAtBottom = False, toPaintObjFunc=True)
-apl = AnimationPaintListener("output", "rastriginAnim.png", isPointsAtBottom = False, toPaintObjFunc=True)
-solver.AddListener(pl)
-solver.AddListener(apl)
+    problem = Rastrigin(1)
+    params = SolverParameters(r=3.5, eps=0.01, itersLimit=100, refineSolution=True)
+    solver = Solver(problem, parameters=params)
 
-sol = solver.Solve()
-print(sol.numberOfGlobalTrials)
-print(sol.numberOfLocalTrials)
-print(sol.solvingTime)
+    pl = StaticPaintListener("rastrigin.png", "output", isPointsAtBottom = False)
+    apl = AnimationPaintListener("rastriginAnim.png", "output", isPointsAtBottom = False, toPaintObjFunc=True)
+    solver.AddListener(pl)
+    solver.AddListener(apl)
 
-print(problem.knownOptimum[0].point.floatVariables)
-print(sol.bestTrials[0].point.floatVariables)
-print(sol.bestTrials[0].functionValues[0].value)
+    sol = solver.Solve()
+    print(sol.numberOfGlobalTrials)
+    print(sol.numberOfLocalTrials)
+    print(sol.solvingTime)
 
-aa = 0
+    print(problem.knownOptimum[0].point.floatVariables)
+    print(sol.bestTrials[0].point.floatVariables)
+    print(sol.bestTrials[0].functionValues[0].value)
