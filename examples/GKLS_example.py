@@ -14,29 +14,21 @@ from subprocess import Popen, PIPE, STDOUT
 
 def SolveSingleGKLS():
     """
-    Запуск решения с визуализацией одной задачи из GKLS генератора
+    Запуск решения с визуализацией задачи из GKLS генератора с номером 10
     """
-    problem = GKLS(2, 1)
-    params = SolverParameters(r=3.5, eps=0.01, itersLimit=50, refineSolution=True)
+    problem = GKLS(2, 10)
+
+    params = SolverParameters(r=3.5, eps=0.01, itersLimit=100, refineSolution=True)
     solver = Solver(problem, parameters=params)
     
     cfol = ConsoleFullOutputListener(mode=2)
     solver.AddListener(cfol)
-    apl = AnimationNDPaintListener("output", "GKLSanim.png", varsIndxs=[0,1], toPaintObjFunc=True)
+    apl = AnimationNDPaintListener("GKLSanim.png", "output", varsIndxs=[0,1], toPaintObjFunc=True)
     solver.AddListener(apl)
-    spl = StaticNDPaintListener("output", "GKLS.png", varsIndxs=[0,1])
+    spl = StaticNDPaintListener("GKLS.png", "output", varsIndxs=[0,1])
     solver.AddListener(spl)
     
     sol = solver.Solve()
-
-
-    print(sol.numberOfGlobalTrials)
-    print(sol.numberOfLocalTrials)
-    print(sol.solvingTime)
-    
-    print(problem.knownOptimum[0].point.floatVariables)
-    print(sol.bestTrials[0].point.floatVariables)
-    print(sol.bestTrials[0].functionValues[0].value)
 
 
 def SolveGKLSSet():
@@ -68,5 +60,6 @@ def SolveGKLSSet():
             isSolve = 1
         print(i+1, sol.numberOfGlobalTrials, isSolve)
 
-SolveSingleGKLS()
-SolveGKLSSet()
+if __name__ == "__main__":
+    SolveSingleGKLS()
+    SolveGKLSSet()
