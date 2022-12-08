@@ -23,10 +23,10 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimationNDPaintListener("output", "svc2d_anim.png", varsIndxs=[0, 1], toPaintObjFunc=True)
+    apl = AnimationNDPaintListener("svc2d_anim.png", "output", varsIndxs=[0, 1], toPaintObjFunc=False)
     solver.AddListener(apl)
 
-    spl = StaticNDPaintListener("output", "svc2d_stat.png", varsIndxs=[0, 1], toPaintObjFunc=True)
+    spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="interpolation", calc="interpolation")
     solver.AddListener(spl)
 
     solver_info = solver.Solve()
