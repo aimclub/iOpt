@@ -28,7 +28,7 @@ class Method:
         r"""
         Конструктор класса Method
 
-        :param parameters: Параметры алгоритма.
+        :param parameters: Параметры поиска оптимальных решений
         :param task: Обёртка решаемой задачи.
         :param evolvent: Развёртка.
         :param searchData: Хранилище данных.
@@ -58,6 +58,12 @@ class Method:
 
     @staticmethod
     def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
+        """
+        Возвращает расстояние между двумя точками развертки.
+        :params lx: Левая точка
+        :params rx: Правая точка
+        :params dimension: Размерность пространства
+        """
         return pow(rx - lx, 1.0 / dimension)
 
     def FirstIteration(self) -> None:
@@ -205,6 +211,7 @@ class Method:
     def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
         Считает глобальную характеристику для curr_point в предположении, что левая точка интервала - left_point.
+
         :params curr_point: Правая точка интервала
         :params left_point: Левая точка интервала
         """
@@ -231,8 +238,9 @@ class Method:
         curr_point.globalR = globalR
 
     def RenewSearchData(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
-        r"""
+        """
         Обновляет длину интервалов, константу Гёльдера, все характеристики и вставляет новую точку в хранилище.
+
         :params newpoint: Новая точка
         :params oldpoint: Её покрывающий интервал
         """
@@ -271,7 +279,7 @@ class Method:
 
     def GetIterationsCount(self) -> int:
         r"""
-        Возвращает Количество итераций.
+        Возвращает количество выполненных итераций.
         :return:  self.iterationsCount
         """
         return self.iterationsCount
