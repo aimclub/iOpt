@@ -13,14 +13,23 @@ from iOpt.method.process import Process
 
 
 class Solver:
+    """
+    Класс Solver предназначен для выбора оптимальных (в заданной метрике) значений параметров
+    сложных объектов и процессов, например, методов искусственного интеллекта и
+    машинного обучения, а также – методов эвристической оптимизации.
+    """
+
     def __init__(self,
                  problem: Problem,
                  parameters: SolverParameters = SolverParameters()
                  ):
         """
-        :param problem: Optimization problem
-        :param parameters: Parameters for solving the problem
+        Конструктор класса Solver
+
+        :param problem: Постановка задачи оптимизации
+        :param parameters: Параметры поиска оптимальных решений
         """
+
         self.problem = problem
         self.parameters = parameters
 
@@ -36,43 +45,65 @@ class Solver:
 
     def Solve(self) -> Solution:
         """
-        Retrieve a solution with check of the stop conditions
-        :return: Solution for the optimization problem
+        Метод позволяет решить задачу оптимизации. Остановка поиска выполняется согласно параметрам оптимизации,
+        полученным при создании класса Solver.
+
+        :return: Решение задачи оптимизации
         """
         return self.process.Solve()
 
     def DoGlobalIteration(self, number: int = 1):
         """
-        :param number: The number of iterations of the global search
+        Метод позволяет выполнить несколько итераций глобального поиска
+
+        :param number: Количество итераций глобального поиска
         """
         self.process.DoGlobalIteration(number)
 
     def DoLocalRefinement(self, number: int = 1):
         """
-        :param number: The number of iterations of the local search
+        Метод позволяет выполнить несколько итераций локального поиска
+
+        :param number: Количество итераций локального поиска
         """
         self.process.DoLocalRefinement(number)
 
     def GetResults(self) -> Solution:
         """
-        :return: Return current solution for the optimization problem
+        Метод позволяет получить достигнутое решение задачи оптимизации
+
+        :return: Решение задачи оптимизации
         """
         return self.process.GetResults()
 
-    def SaveProgress(self, fileName: str):
+    def SaveProgress(self, fileName: str) -> None:
         """
-        :return:
+        Сохранение процесса оптимизации в файл
+
+        :param fileName: Имя файла
         """
         self.searchData.SaveProgress(fileName=fileName)
 
-    def LoadProgress(self, fileName: str):
+    def LoadProgress(self, fileName: str) -> None:
         """
-        :return:
+        Загрузка процесса оптимизации из файла
+
+        :param fileName: Имя файла
         """
         self.searchData.LoadProgress(fileName=fileName)
 
-    def RefreshListener(self):
+    def RefreshListener(self) -> None:
+        """
+        Метод оповещения наблюдателей о произошедшем событии
+        """
+
         pass
 
-    def AddListener(self, listener: Listener):
+    def AddListener(self, listener: Listener) -> None:
+        """
+        Добавления наблюдателя за процессом оптимизации
+
+        :param listener: Объект класса реализующий методы наблюдения
+        """
+
         self.__listeners.append(listener)
