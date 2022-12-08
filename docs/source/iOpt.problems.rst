@@ -7,8 +7,6 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   iOpt.problems.GKLS_function
-
 Submodules
 ----------
 
