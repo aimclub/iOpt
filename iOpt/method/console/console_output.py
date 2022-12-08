@@ -26,16 +26,32 @@ class FunctionConsoleFullOutput:
             self.problem.upperBoundOfFloatVariables
         )
 
-    def printIterInfo(self, savedNewPoints : SearchDataItem, mode):
+    def printIterPointInfo(self, savedNewPoints : SearchDataItem):
         point = savedNewPoints[0].GetY().floatVariables
         value = savedNewPoints[0].GetZ()
 
         self.__outputer.printIter(
             point,
             value,
-            self.iterNum,
-            mode
+            self.iterNum
         )
+
+        self.iterNum += 1
+
+    def printBestPointInfo(self, solution, iters):
+        if self.iterNum % iters != 0:
+            pass
+        else:
+            bestTrialPoint = solution.bestTrials[0].point.floatVariables
+            bestTrialValue = solution.bestTrials[0].functionValues[0].value
+            self.__outputer.printBest(
+                solution.numberOfGlobalTrials,
+                solution.numberOfLocalTrials,
+                solution.solutionAccuracy,
+                bestTrialPoint,
+                bestTrialValue,
+            self.iterNum
+            )
         self.iterNum += 1
 
     def printFinalResult(self, solution : Solution, status: bool):
@@ -82,16 +98,13 @@ class ConsoleOutputer:
         print("-"*(30 + 20 * dim + 2))
         print("|{:^{width}}|".format("Iterations", width=30+20*dim))
         print("-"*(30 + 20 * dim + 2))
-        print()
-        pass
+        print("|{:^{width}}|".format("", width=30+20*dim))
 
-    def printIter(self, point, value, iter, mode):
+    def printIter(self, point, value, iter):
         #time.sleep(0.1)
         dim = len(point)
-        if mode == 1:
-            print("|", end=' ')
-        elif mode == 2:
-            print("\033[A|", end=' ')
+
+        print("\033[A|", end=' ')
         print("{:>5}:".format(iter), end=' ')
         print("{:>19.8f}".format(value), end ='   ')
         print("{:<{width}}|".format(str(point), width=20*dim))
@@ -111,3 +124,14 @@ class ConsoleOutputer:
         print("|{:>29} {:<{width}.8f}|".format("accuracy: ", solutionAccuracy, width=20*dim))
         print("-"*(30 + 20 * dim + 2))
         pass
+
+    def printBest(self, numberOfGlobalTrials, numberOfLocalTrials, solutionAccuracy,
+        bestTrialPoint, bestTrialValue, iter):
+        dim = len(bestTrialPoint)
+        print("|{:>29} {:<{width}}|".format("current iteration # ", iter, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("global iteration count: ", numberOfGlobalTrials, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("local iteration count: ", numberOfLocalTrials, width=20*dim))
+        print("|{:>29} {:<{width}}|".format("current best point: ", str(bestTrialPoint), width=20*dim))
+        print("|{:>29} {:<{width}.8f}|".format("current best value: ", bestTrialValue, width=20*dim))
+        print("|{:>29} {:<{width}.8f}|".format("currant accuracy: ", solutionAccuracy, width=20*dim))
+        print("." * (30 + 20 * dim + 2))

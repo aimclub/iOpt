@@ -20,14 +20,15 @@ def SolveSingleGKLS():
     params = SolverParameters(r=3.5, eps=0.01, itersLimit=50, refineSolution=True)
     solver = Solver(problem, parameters=params)
     
+    cfol = ConsoleFullOutputListener(mode=2)
+    solver.AddListener(cfol)
     apl = AnimationNDPaintListener("output", "GKLSanim.png", varsIndxs=[0,1], toPaintObjFunc=True)
     solver.AddListener(apl)
-    spl = StaticNDPaintListener("output", "GKLS.png", varsIndxs=[0,1], toPaintObjFunc=True)
+    spl = StaticNDPaintListener("output", "GKLS.png", varsIndxs=[0,1])
     solver.AddListener(spl)
-    cfol = ConsoleFullOutputListener(mode=1)
-    solver.AddListener(cfol)
     
     sol = solver.Solve()
+
 
     print(sol.numberOfGlobalTrials)
     print(sol.numberOfLocalTrials)
@@ -36,6 +37,7 @@ def SolveSingleGKLS():
     print(problem.knownOptimum[0].point.floatVariables)
     print(sol.bestTrials[0].point.floatVariables)
     print(sol.bestTrials[0].functionValues[0].value)
+
 
 def SolveGKLSSet():
     """
