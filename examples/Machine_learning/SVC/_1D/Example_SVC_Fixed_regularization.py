@@ -2,7 +2,7 @@ from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, St
 from sklearn.datasets import load_breast_cancer
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.problems.Machine_learning.SVC import SVC_2d
+from examples.Machine_learning.SVC._1D.Problems import SVC_Fixed_Regularization
 from sklearn.utils import shuffle
 import numpy as np
 
@@ -15,18 +15,17 @@ def load_breast_cancer_data():
 
 if __name__ == "__main__":
     x, y = load_breast_cancer_data()
-    regularization_value_bound = {'low': 1, 'up': 6}
+    regularization_value = 6
     kernel_coefficient_bound = {'low': -7, 'up': -3}
+    problem = SVC_Fixed_Regularization.SVC_Fixed_Regularization(x, y, regularization_value, kernel_coefficient_bound)
 
-    problem = SVC_2d.SVC_2D(x, y, regularization_value_bound, kernel_coefficient_bound)
-
-    method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
+    method_params = SolverParameters(r=np.double(3.0), itersLimit=10, eps=np.double(0.05))
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimationNDPaintListener("output", "svc2d_anim.png", varsIndxs=[0, 1], toPaintObjFunc=True)
+    apl = AnimationPaintListener("output", "svc1d_anim.png", toPaintObjFunc=True)
     solver.AddListener(apl)
 
-    spl = StaticNDPaintListener("output", "svc2d_stat.png", varsIndxs=[0, 1], toPaintObjFunc=True)
+    spl = StaticPaintListener("output", "svc1d_stat.png", toPaintObjFunc=True)
     solver.AddListener(spl)
 
     solver_info = solver.Solve()

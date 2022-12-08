@@ -2,7 +2,7 @@ from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, St
 from sklearn.datasets import load_breast_cancer
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.problems.Machine_learning.SVC import SVC_Fixed_Regularization
+from examples.Machine_learning.SVC._1D.Problems import SVC_Fixed_Kernel
 from sklearn.utils import shuffle
 import numpy as np
 
@@ -15,9 +15,9 @@ def load_breast_cancer_data():
 
 if __name__ == "__main__":
     x, y = load_breast_cancer_data()
-    regularization_value = 6
-    kernel_coefficient_bound = {'low': -7, 'up': -3}
-    problem = SVC_Fixed_Regularization.SVC_Fixed_Regularization(x, y, regularization_value, kernel_coefficient_bound)
+    kernel_coefficient = -3
+    regularization_value_bound = {'low': 1, 'up': 6}
+    problem = SVC_Fixed_Kernel.SVC_Fixed_Kernel(x, y, kernel_coefficient, regularization_value_bound)
 
     method_params = SolverParameters(r=np.double(3.0), eps=np.double(0.05))
     solver = Solver(problem, parameters=method_params)

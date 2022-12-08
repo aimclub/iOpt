@@ -1,7 +1,7 @@
-from iOpt.method.listener import StaticNDPaintListener, AnimationNDPaintListener
+from iOpt.method.listener import StaticPaintListener, AnimationPaintListener
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.problems.Genetic_algorithm.TSP import ga_tsp_2d
+from examples.Genetic_algorithm.TSP._1D.Problems import ga_tsp_vary_mutation
 import numpy as np
 import xml.etree.ElementTree as ET
 
@@ -20,19 +20,21 @@ def load_TSPs_matrix(filename):
 if __name__ == "__main__":
     tsp_matrix = load_TSPs_matrix('../TSPs_matrices/a280.xml')
     num_iteration = 200
+    population_size = 100
     mutation_probability_bound = {'low': 0.0, 'up': 1.0}
-    population_size_bound = {'low': 10.0, 'up': 100.0}
-    problem = ga_tsp_2d.GA_TSP_2D(tsp_matrix, num_iteration,
-                                  mutation_probability_bound, population_size_bound)
+    problem = ga_tsp_vary_mutation.GA_TSP_Vary_Mutatiom(tsp_matrix, num_iteration,
+                                                        population_size, mutation_probability_bound)
 
-    method_params = SolverParameters(r=np.double(2.0), itersLimit=300)
+    method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimationNDPaintListener("output", "gatsp_2d_anim_vary_mutation.png", varsIndxs=[0, 1], toPaintObjFunc=True)
+
+    apl = AnimationPaintListener("output", "gatsp_1d_anim_vary_mutation.png", toPaintObjFunc=True)
     solver.AddListener(apl)
 
-    spl = StaticNDPaintListener("output", "gatsp_2d_stat_vary_mutation.png", varsIndxs=[0, 1], toPaintObjFunc=True)
+    spl = StaticPaintListener("output", "gatsp_1d_stat_vary_mutation.png", toPaintObjFunc=True)
     solver.AddListener(spl)
+
 
     solver_info = solver.Solve()
     print(solver_info.numberOfGlobalTrials)
