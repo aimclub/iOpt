@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Tuple
+
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
@@ -11,9 +13,11 @@ from iOpt.solver_parametrs import SolverParameters
 
 import copy
 
-# TODO: Привести комментарии в порядок
 
 class Method:
+    """
+    Класс Method содержит методы алгоритма глобального поиска
+    """
 
     def __init__(self,
                  parameters: SolverParameters,
@@ -21,6 +25,14 @@ class Method:
                  evolvent: Evolvent,
                  searchData: SearchData
                  ):
+        r"""
+        Конструктор класса Method
+
+        :param parameters: Параметры поиска оптимальных решений
+        :param task: Обёртка решаемой задачи.
+        :param evolvent: Развёртка.
+        :param searchData: Хранилище данных.
+        """
         self.stop: bool = False
         self.recalc: bool = True
         self.iterationsCount: int = 0
@@ -34,7 +46,6 @@ class Method:
         self.M = [1.0 for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
         self.Z = [np.infty for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
         self.dimension = task.problem.numberOfFloatVariables  # А ДЛЯ ДИСКРЕТНЫХ?
-        # self.best: Trial = SearchData.solution.bestTrials[0]  # Это ведь ССЫЛКА, ДА?
         self.searchData.solution.solutionAccuracy = np.infty
 
     @property
@@ -46,14 +57,23 @@ class Method:
         self.searchData.solution.solutionAccuracy = val
 
     @staticmethod
-    def CalculateDelta(lx, rx, dimension):
+    def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
+        """
+        Возвращает расстояние между двумя точками развертки.
+        :params lx: Левая точка
+        :params rx: Правая точка
+        :params dimension: Размерность пространства
+        """
         return pow(rx - lx, 1.0 / dimension)
 
-    def FirstIteration(self):
+    def FirstIteration(self) -> None:
+        r"""
+        Метод, производящий первую итерацию АГП.
+        """
         self.iterationsCount = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-        x: np.double = 0.5
+        x: float = 0.5
         y = Point(self.evolvent.GetImage(x), None)
         middle = SearchDataItem(y, x)
         left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.0)
@@ -76,18 +96,22 @@ class Method:
         self.searchData.InsertFirstDataItem(left, right)
         self.searchData.InsertDataItem(middle, right)
 
-    def CheckStopCondition(self):
-        if self.min_delta < self.parameters.eps:
+    def CheckStopCondition(self) -> bool:
+        r"""
+        Проверка условия остановки.
+        Алгоритм должен завершить работу, когда достигнута точность eps или превышен лимит итераций.
+        """
+        if self.min_delta < self.parameters.eps or self.iterationsCount >= self.parameters.itersLimit:
             self.stop = True
         else:
             self.stop = False
 
-        if (self.iterationsCount >= self.parameters.itersLimit):
-            self.stop = True
-
         return self.stop
 
-    def RecalcAllCharacteristics(self):
+    def RecalcAllCharacteristics(self) -> None:
+        r"""
+        Пересчёт характеристик для всех испытаний, когда поднят флаг recalc.
+        """
         if self.recalc is not True:
             return
         self.searchData.ClearQueue()
@@ -97,12 +121,17 @@ class Method:
         self.searchData.RefillQueue()
         self.recalc = False
 
-    def CalculateNextPointCoordinate(self, point: SearchDataItem):
+    def CalculateNextPointCoordinate(self, point: SearchDataItem) -> float:
+        r"""
+        Подсчёт координаты новой точки по правилу АГП для выбранного интервала
+        :param point: Выбранный интервал
+        :return: Координата точки в этом интервале.
+        """
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
         left = point.GetLeft()
         if left is None:
             print("CalculateNextPointCoordinate: Left point is NONE")
-            raise "CalculateNextPointCoordinate: Left point is NONE"
+            raise Exception("CalculateNextPointCoordinate: Left point is NONE")
         xl = left.GetX()
         xr = point.GetX()
         idl = left.GetIndex()
@@ -121,13 +150,13 @@ class Method:
             x = 0.5 * (xl + xr)
         if x <= xl or x >= xr:
             print(f"CalculateNextPointCoordinate: x is outside of interval {x} {xl} {xr}")
-            raise "CalculateNextPointCoordinate: x is outside of interval"
+            raise Exception("CalculateNextPointCoordinate: x is outside of interval")
         return x
 
-    def CalculateIterationPoint(self) -> (SearchDataItem, SearchDataItem):  # return  (new, old)
-        """
-        Calculate new iteration point.
-        :return: a pair (tuple) of SearchDataItem. pair[0] -> new point (left), pair[1] -> old point (right)
+    def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
+        r"""
+        Подсчёт новой точки испытания.
+        :return: Новая точка и покрывающий интервал.
         """
         if self.recalc is True:
             self.RecalcAllCharacteristics()
@@ -137,9 +166,14 @@ class Method:
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx)
         new = copy.deepcopy(SearchDataItem(Point(newy, []), newx))
-        return (new, old)
+        return new, old
 
     def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
+        r"""
+        Подсчёт значений функций в данной точке.
+        :params point: Точка, в которой надо посчитать значение функционала.
+        :return: Точка с посчитанным функционалом.
+        """
         # point.functionValues = np.array(shape=self.task.problem.numberOfObjectives, dtype=FunctionValue)
         # for func_id in range(self.task.problem.numberOfObjectives):  # make Calculate Objectives?
         #    self.task.Calculate(point, func_id)  # SetZ, BUT
@@ -153,9 +187,11 @@ class Method:
         self.searchData.solution.numberOfGlobalTrials += 1
         return point
 
-    def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem):
-        """
-        Calculate holder constant of curr_point in assumption that curr_point.left should be left_point
+    def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+        r"""
+        Считает константу Хёльдера между curr_point и left_point.
+        :params curr_point: Правая точка интервала
+        :params left_point: Левая точка интервала
         """
         if curr_point is None:
             print("CalculateM: curr_point is None")
@@ -172,13 +208,16 @@ class Method:
     # def CalculateM(self, point: SearchDataItem):  # В python нет такой перегрузки функций, надо менять название
     #     self.CalculateM(point, point.GetLeft())
 
-    def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem):
-        """
-        Calculate Global characteristic of curr_point in assumption that curr_point.left should be left_point
+    def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+        r"""
+        Считает глобальную характеристику для curr_point в предположении, что левая точка интервала - left_point.
+
+        :params curr_point: Правая точка интервала
+        :params left_point: Левая точка интервала
         """
         if curr_point is None:
             print("CalculateGlobalR: Curr point is NONE")
-            raise "CalculateGlobalR: Curr point is NONE"
+            raise Exception("CalculateGlobalR: Curr point is NONE")
         if left_point is None:
             curr_point.globalR = -np.infty
             return None
@@ -198,13 +237,12 @@ class Method:
             globalR = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
         curr_point.globalR = globalR
 
-    # def CalculateGlobalR(self, curr_point: SearchDataItem):
-    #     self.CalculateGlobalR(curr_point, curr_point.GetLeft())
-
-    def RenewSearchData(self, newpoint: SearchDataItem, oldpoint: SearchDataItem):
+    def RenewSearchData(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
         """
-        :params: pair of SearchDataItem. newpoint -> new point (left), oldpoint -> old point (right)
-        Update delta, M, R and insert points to searchData.
+        Обновляет длину интервалов, константу Гёльдера, все характеристики и вставляет новую точку в хранилище.
+
+        :params newpoint: Новая точка
+        :params oldpoint: Её покрывающий интервал
         """
 
         oldpoint.delta = Method.CalculateDelta(newpoint.GetX(), oldpoint.GetX(), self.dimension)
@@ -218,8 +256,12 @@ class Method:
 
         self.searchData.InsertDataItem(newpoint, oldpoint)
 
-    def UpdateOptimum(self, point: SearchDataItem):
-        if self.best is None or self.best.GetIndex() < point.GetIndex():  # CHECK INDEX
+    def UpdateOptimum(self, point: SearchDataItem) -> None:
+        r"""
+        Обновляет оценку оптимума.
+        :params point: Новая точка
+        """
+        if self.best is None or self.best.GetIndex() < point.GetIndex():
             self.best = point
             self.recalc = True
             self.Z[point.GetIndex()] = point.GetZ()
@@ -229,11 +271,22 @@ class Method:
             self.Z[point.GetIndex()] = point.GetZ()
         self.searchData.solution.bestTrials[0] = self.best
 
-    def FinalizeIteration(self):
+    def FinalizeIteration(self) -> None:
+        r"""
+        Заканчивает итерацию, обновляет счётчик итераций.
+        """
         self.iterationsCount += 1
 
-    def GetIterationsCount(self):
+    def GetIterationsCount(self) -> int:
+        r"""
+        Возвращает количество выполненных итераций.
+        :return:  self.iterationsCount
+        """
         return self.iterationsCount
 
-    def GetOptimumEstimation(self):
+    def GetOptimumEstimation(self) -> SearchDataItem:
+        r"""
+        Возвращает оценку оптимума.
+        :return: self.best
+        """
         return self.best
