@@ -90,16 +90,16 @@ class Evolvent:
             self.yValues[0] = _x - 0.5
             return self.yValues
 
-        iu: np.narray(shape=(1), dtype=np.int)
-        iv: np.narray(shape=(1), dtype=np.int)
-        l: np.int 
+        iu: np.narray(shape=(1), dtype=np.int32)
+        iv: np.narray(shape=(1), dtype=np.int32)
+        l: np.int32 
         d: np.double = 0.0
-        mn: np.int 
+        mn: np.int32 
         r: np.double 
-        iw: np.narray(shape=(1), dtype=np.int)
-        it: np.int 
-        i: np.int 
-        j: np.int 
+        iw: np.narray(shape=(1), dtype=np.int32)
+        it: np.int32 
+        i: np.int32 
+        j: np.int32 
         iis: np.double 
 
         d = _x 
@@ -108,10 +108,10 @@ class Evolvent:
 
         mn = self.evolventDensity * self.numberOfFloatVariables
 
-        iw = np.ones(self.numberOfFloatVariables, dtype=np.int)
+        iw = np.ones(self.numberOfFloatVariables, dtype=np.int32)
         self.yValues = np.zeros(self.numberOfFloatVariables, dtype=np.double)
-        iu = np.zeros(self.numberOfFloatVariables, dtype=np.int)
-        iv = np.zeros(self.numberOfFloatVariables, dtype=np.int)
+        iu = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
+        iv = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
 
         for j in range(0, self.evolventDensity):
             if math.isclose(_x, 1.0):
@@ -155,19 +155,19 @@ class Evolvent:
             x = self.yValues[0] + 0.5 
             return x
 
-        u: np.narray(shape=(1), dtype=np.int)
-        v: np.narray(shape=(1), dtype=np.int)
-        w: np.narray(shape=(1), dtype=np.int)
+        u: np.narray(shape=(1), dtype=np.int32)
+        v: np.narray(shape=(1), dtype=np.int32)
+        w: np.narray(shape=(1), dtype=np.int32)
         r: np.double = 0.0
-        i: np.int 
-        j: np.int 
-        it: np.int 
-        l: np.int 
+        i: np.int32 
+        j: np.int32 
+        it: np.int32 
+        l: np.int32 
         r1: np.double 
         iis: np.double
-        w = np.ones(self.numberOfFloatVariables, dtype=np.int)
-        u = np.zeros(self.numberOfFloatVariables, dtype=np.int)
-        v = np.zeros(self.numberOfFloatVariables, dtype=np.int)
+        w = np.ones(self.numberOfFloatVariables, dtype=np.int32)
+        u = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
+        v = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
         r = 0.5
         r1 = 1.0 
         x = 0.0 
@@ -215,8 +215,8 @@ class Evolvent:
 
 #-----------------------------------------------------------------------------------------
     def __CalculateNumbr(self,
-                         u: np.ndarray(shape = (1), dtype = np.int),
-                         v: np.ndarray(shape = (1), dtype = np.int)
+                         u: np.ndarray(shape = (1), dtype = np.int32),
+                         v: np.ndarray(shape = (1), dtype = np.int32)
                          ):
         i = 0
         k1 = -1
@@ -260,8 +260,8 @@ class Evolvent:
     def __CalculateNode(self,
                          iis: np.double,
                          n: int,
-                         u: np.ndarray(shape = (1), dtype = np.int),
-                         v: np.ndarray(shape = (1), dtype = np.int),
+                         u: np.ndarray(shape = (1), dtype = np.int32),
+                         v: np.ndarray(shape = (1), dtype = np.int32),
                          ):
 
         iq = 1
