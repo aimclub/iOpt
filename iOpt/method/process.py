@@ -120,7 +120,7 @@ class Process:
         """
         self.localMethodIterationCount = number
         if number == -1:
-            self.localMethodIterationCount = self.parameters.itersLimit * 0.9
+            self.localMethodIterationCount = self.parameters.itersLimit * 0.05
 
         result = self.GetResults()
         startPoint = result.bestTrials[0].point.floatVariables

@@ -25,9 +25,11 @@ def SolveSingleGKLS():
     solver.AddListener(cfol)
     apl = AnimationNDPaintListener("GKLSanim.png", "output", varsIndxs=[0,1], toPaintObjFunc=True)
     solver.AddListener(apl)
-    spl = StaticNDPaintListener("GKLS.png", "output", varsIndxs=[0,1])
+    spl = StaticNDPaintListener("GKLS.png", "output", varsIndxs=[0,1], mode="lines layers", calc="objective function")
     solver.AddListener(spl)
-    
+    spl3D = StaticNDPaintListener("GKLS3D.png", "output", varsIndxs=[0,1], mode="surface", calc="approximation")
+    solver.AddListener(spl3D)
+
     sol = solver.Solve()
 
 
@@ -62,4 +64,4 @@ def SolveGKLSSet():
 
 if __name__ == "__main__":
     SolveSingleGKLS()
-    #SolveGKLSSet()
+    SolveGKLSSet()
