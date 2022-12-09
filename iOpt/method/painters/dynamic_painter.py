@@ -130,7 +130,7 @@ class AnimateVisualizationND:
 
         plt.ion()
         plt.style.use('fivethirtyeight')
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(figsize=(8, 6))
         self.ax.set_autoscaley_on(True)
         self.ax.set_xlim(self.leftBoundF, self.rightBoundF)
         self.ax.set_ylim(self.leftBoundS, self.rightBoundS)
@@ -158,7 +158,7 @@ class AnimateVisualizationND:
 
     def drawPoint(self, point, value):
         self.ax.plot(point[self.first], point[self.second], color='blue', 
-                        label='original', marker='o', markersize=2)
+                        label='original', marker='o', markersize=1)
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()
