@@ -22,7 +22,7 @@ if __name__ == "__main__":
     num_iteration = 200
     population_size = 100
     mutation_probability_bound = {'low': 0.0, 'up': 1.0}
-    problem = ga_tsp_vary_mutation.GA_TSP_Vary_Mutatiom(tsp_matrix, num_iteration,
+    problem = ga_tsp_vary_mutation.GA_TSP_Vary_Mutation(tsp_matrix, num_iteration,
                                                         population_size, mutation_probability_bound)
 
     method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
