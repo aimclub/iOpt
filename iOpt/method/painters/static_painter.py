@@ -251,21 +251,21 @@ class FunctionStaticNDPainter:
         xF = np.arange(sv1d.leftBoundF, sv1d.rightBoundF, (sv1d.rightBoundF - sv1d.leftBoundF) / pointsCount)
         xS = np.arange(sv1d.leftBoundS, sv1d.rightBoundS, (sv1d.rightBoundS - sv1d.leftBoundS) / pointsCount)
         copy = sv1d.optimum.copy()
-        xv, yv = np.meshgrid(xF, xS, indexing='xy')
+        xv, yv = np.meshgrid(xF, xS)
         z = []
 
         for i in range(pointsCount):
             z_ = []
             for j in range(pointsCount):
                 fv = FunctionValue()
-                copy[sv1d.first] = xv[j, i]
-                copy[sv1d.second] = yv[j, i]
+                copy[sv1d.first] = xv[i, j]
+                copy[sv1d.second] = yv[i, j]
                 x_ = Point(copy, [])
                 fv = FunctionValue()
                 fv = sv1d.objFunc(x_, fv)
                 z_.append(fv.value)
             z.append(z_)
-        sv1d.ax.contour(xF, xS, z, linewidths=1, cmap=plt.cm.viridis)
+        sv1d.ax.contour(xF, xS, z, linewidths=1, levels=25, cmap=plt.cm.viridis)
 
         for point in sv1d.points:
             sv1d.ax.plot(point[sv1d.first], point[sv1d.second], color='blue',
@@ -496,3 +496,5 @@ class StaticVisualizationND:
         self.ax.set_xlim([self.leftBoundF, self.rightBoundF])
         self.ax.set_ylim([self.leftBoundS, self.rightBoundS])
         self.ax.tick_params(axis = 'both', labelsize = 8)
+
+
