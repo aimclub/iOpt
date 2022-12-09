@@ -115,7 +115,7 @@ class ConsoleOutputer:
         print("-"*(30 + 20 * dim + 2))
         print("|{:^{width}}|".format("Result",width=30+20*dim))
         print("-"*(30 + 20 * dim + 2))
-        print("|{:>29} {:<{width}}|".format("is solved: ", str(solved), width=20*dim))
+        #print("|{:>29} {:<{width}}|".format("is solved: ", str(solved), width=20*dim))
         print("|{:>29} {:<{width}}|".format("global iteration count: ", numberOfGlobalTrials, width=20*dim))
         print("|{:>29} {:<{width}}|".format("local iteration count: ", numberOfLocalTrials, width=20*dim))
         print("|{:>29} {:<{width}}|".format("solving time: ", solvingTime, width=20*dim))
