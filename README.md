@@ -22,33 +22,39 @@ iOpt - фреймворк с открытым исходным кодом для
 ```python
 import math
 import unittest
+import sys
 import numpy as np
-from iOpt.trial import FunctionValue
-from iOpt.trial import Point
+
 from iOpt.problems.rastrigin import Rastrigin
+from iOpt.problems.xsquared import XSquared
+from iOpt.solver import Solver
+from iOpt.solver_parametrs import SolverParameters
+from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, StaticNDPaintListener, AnimationNDPaintListener, ConsoleFullOutputListener
 
-class TestRastrigin(unittest.TestCase):
-    """setUp method is overridden from the parent class Rastrigin"""
-    def setUp(self):
-        self.rastrigin = Rastrigin(3)
+from subprocess import Popen, PIPE, STDOUT
 
-    def test_Calculate(self):
-        point = Point([1.0, 0.5, 0.3], [])
-        sum: np.double = 0
-        for i in range(self.rastrigin.dimension):
-            sum += point.floatVariables[i] * point.floatVariables[i] - 10 * math.cos(
-                2 * math.pi * point.floatVariables[i]) + 10
-
-        functionValue = FunctionValue()
-        functionValue = self.rastrigin.Calculate(point, functionValue)
-        self.assertEqual(functionValue.value, sum)
-
-    def test_OptimumValue(self):
-        self.assertEqual(self.rastrigin.knownOptimum[0].functionValues[0].value, 0.0)
-
-"""Executing the tests in the above test case class"""
 if __name__ == "__main__":
-    unittest.main()
+    """
+    Запуск решения с визуализацией задачи Растригина с визуализацией
+    """
+
+    problem = Rastrigin(1)
+    params = SolverParameters(r=3.5, eps=0.01, itersLimit=100, refineSolution=True)
+    solver = Solver(problem, parameters=params)
+
+    pl = StaticPaintListener("rastrigin.png", "output", isPointsAtBottom = False)
+    apl = AnimationPaintListener("rastriginAnim.png", "output", isPointsAtBottom = False, toPaintObjFunc=True)
+    solver.AddListener(pl)
+    solver.AddListener(apl)
+
+    sol = solver.Solve()
+    print(sol.numberOfGlobalTrials)
+    print(sol.numberOfLocalTrials)
+    print(sol.solvingTime)
+
+    print(problem.knownOptimum[0].point.floatVariables)
+    print(sol.bestTrials[0].point.floatVariables)
+    print(sol.bestTrials[0].functionValues[0].value)
 ```
 
 # Примеры использования
