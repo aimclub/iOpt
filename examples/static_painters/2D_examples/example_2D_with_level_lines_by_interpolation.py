@@ -14,7 +14,7 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # add needed listeners for solver
-    apl = StaticNDPaintListener("xsquared_2_2.5_0.01.png", mode="lines layers", calc="interpolation")
+    apl = StaticNDPaintListener("xsquared_2_2.5_0.01_interp.png", mode='lines layers', calc='interpolation')
     solver.AddListener(apl)
 
     # solve the problem
