@@ -158,7 +158,7 @@ class AnimateVisualizationND:
 
     def drawPoint(self, point, value):
         self.ax.plot(point[self.first], point[self.second], color='blue', 
-                        label='original', marker='o', markersize=1)
+                        label='original', marker='o', markersize=2)
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()
