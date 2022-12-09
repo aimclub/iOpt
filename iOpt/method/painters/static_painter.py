@@ -6,10 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from mpl_toolkits import mplot3d
-
 from sklearn.neural_network import MLPRegressor
-
 from scipy import interpolate
 
 class FunctionStaticPainter:
@@ -82,11 +79,6 @@ class FunctionStaticPainter:
 
         X_train = np.array(X_train[1:-1])
         y_train = y_train[1:-1]
-        '''
-        theta = np.polyfit(X_train, y_train, deg=15)
-        model = np.poly1d(theta)
-        plt.plot(X_train, model(X_train))
-        '''
 
         nn = MLPRegressor(activation='logistic',          # can be tanh, identity, logistic, relu
                     solver='lbfgs',                          # can be lbfgs, sgd , adam
