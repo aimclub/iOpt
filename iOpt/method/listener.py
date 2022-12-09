@@ -2,9 +2,8 @@ from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
 from iOpt.method.method import Method
 
-from iOpt.method.painters.static_painter import FunctionStaticPainter, FunctionStaticNDPainter
-from iOpt.method.painters.dynamic_painter import FunctionAnimationPainter, FunctionAnimationNDPainter
-from iOpt.method.console.console_output import FunctionConsoleFullOutput
+from iOpt.output_system.painters.dynamic_painter import FunctionAnimationPainter, FunctionAnimationNDPainter
+from iOpt.output_system.console.console_output import FunctionConsoleFullOutput
 
 class Listener:
     def BeforeMethodStart(self, searchData: SearchData):

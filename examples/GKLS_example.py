@@ -16,7 +16,7 @@ from iOpt.method.listener import ConsoleFullOutputListener
 from subprocess import Popen, PIPE, STDOUT
 
 problem = GKLS(2, 1)
-params = SolverParameters(r=3.5, eps=0.01, itersLimit=50, refineSolution=True)
+params = SolverParameters(r=3.5, eps=0.01, itersLimit=200, refineSolution=True)
 #params = SolverParameters(r=3.5, eps=0.01, refineSolution=True)
 #params = SolverParameters(r=3.5, eps=0.001, itersLimit=50)
 solver = Solver(problem, parameters=params)

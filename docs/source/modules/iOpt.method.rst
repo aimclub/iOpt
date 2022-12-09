@@ -1,19 +1,10 @@
-iOpt.method package
+Пакет iOpt.method
 ===================
 
-Subpackages
------------
+Содержание модуля
+-----------------
 
-.. toctree::
-   :maxdepth: 4
-
-   iOpt.method.console
-   iOpt.method.painters
-
-Submodules
-----------
-
-iOpt.method.listener module
+iOpt.method.listener
 ---------------------------
 
 .. automodule:: iOpt.method.listener
@@ -21,7 +12,7 @@ iOpt.method.listener module
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.method module
+iOpt.method.method
 -------------------------
 
 .. automodule:: iOpt.method.method
@@ -29,7 +20,7 @@ iOpt.method.method module
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.optim\_task module
+iOpt.method.optim\_task
 ------------------------------
 
 .. automodule:: iOpt.method.optim_task
@@ -37,7 +28,7 @@ iOpt.method.optim\_task module
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.process module
+iOpt.method.process
 --------------------------
 
 .. automodule:: iOpt.method.process
@@ -45,7 +36,7 @@ iOpt.method.process module
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.search\_data module
+iOpt.method.search\_data
 -------------------------------
 
 .. automodule:: iOpt.method.search_data
@@ -53,18 +44,10 @@ iOpt.method.search\_data module
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.sol\_value module
+iOpt.method.sol\_value
 -----------------------------
 
 .. automodule:: iOpt.method.sol_value
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: iOpt.method
    :members:
    :undoc-members:
    :show-inheritance:
