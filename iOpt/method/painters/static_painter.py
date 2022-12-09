@@ -204,7 +204,7 @@ class StaticVisualization1D:
                 point = point_
         
             self.ax.plot(point, value, color='blue', 
-                        label='original', marker='o', markersize=1)     
+                        label='original', marker='o', markersize=2)
         
         if not self.isPointsAtBottom:
             value = self.optimumValue
@@ -261,7 +261,7 @@ class FunctionStaticNDPainter:
 
         for point in sv1d.points:
             sv1d.ax.plot(point[sv1d.first], point[sv1d.second], color='blue',
-                         label='original', marker='o', markersize=1)
+                         label='original', marker='o', markersize=2)
         sv1d.ax.plot(sv1d.optimum[sv1d.first], sv1d.optimum[sv1d.second], color='red',
                      label='original', marker='x', markersize=4)
 
@@ -321,7 +321,7 @@ class FunctionStaticNDPainter:
 
         for point in sv1d.points:
             sv1d.ax.plot(point[sv1d.first], point[sv1d.second], color='blue',
-                         label='original', marker='o', markersize=1)
+                         label='original', marker='o', markersize=2)
 
         sv1d.ax.plot(sv1d.optimum[sv1d.first], sv1d.optimum[sv1d.second], color='red',
                      label='original', marker='x', markersize=4)
@@ -393,8 +393,8 @@ class FunctionStaticNDPainter:
         # полученная аппроксимация
         sv1d.ax.plot_surface(xx, yy, z, cmap=plt.cm.viridis, alpha=0.6)
         sv1d.ax.tick_params(axis='both', labelsize=8)
-        sv1d.ax.scatter(X, Y, y_train, color = 'blue', label = 'original', marker = 'o', s=1, alpha=1.0)
-        sv1d.ax.scatter([bestTrialPoint[first]], [bestTrialPoint[second]], bestTrialValue, s=2, color='red', label = 'original', marker = 'x', alpha=1.0)
+        sv1d.ax.scatter(X, Y, y_train, color = 'blue', label = 'original', marker = 'o', s=2, alpha=1.0)
+        sv1d.ax.scatter([bestTrialPoint[first]], [bestTrialPoint[second]], bestTrialValue, s=4, color='red', label = 'original', marker = 'x', alpha=1.0)
 
         if not os.path.isdir(pathForSaves):
             if pathForSaves == "":
@@ -451,8 +451,8 @@ class FunctionStaticNDPainter:
         # полученная аппроксимация
         sv1d.ax.plot_surface(xx, yy, zz, cmap=plt.cm.viridis, alpha=0.6)
         sv1d.ax.tick_params(axis='both', labelsize=8)
-        sv1d.ax.scatter(X, Y, y_train, color='blue', label='original', marker='o', s=1, alpha=1.0)
-        sv1d.ax.scatter([bestTrialPoint[first]], [bestTrialPoint[second]], bestTrialValue, s=2, color='red',
+        sv1d.ax.scatter(X, Y, y_train, color='blue', label='original', marker='o', s=2, alpha=1.0)
+        sv1d.ax.scatter([bestTrialPoint[first]], [bestTrialPoint[second]], bestTrialValue, s=4, color='red',
                         label='original', marker='x', alpha=1.0)
 
         if not os.path.isdir(pathForSaves):

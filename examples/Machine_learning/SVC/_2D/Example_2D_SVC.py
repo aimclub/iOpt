@@ -26,7 +26,7 @@ if __name__ == "__main__":
     apl = AnimationNDPaintListener("svc2d_anim.png", "output", varsIndxs=[0, 1], toPaintObjFunc=False)
     solver.AddListener(apl)
 
-    spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="interpolation", calc="interpolation")
+    spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
     solver.AddListener(spl)
 
     solver_info = solver.Solve()
