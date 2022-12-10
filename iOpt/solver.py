@@ -45,10 +45,10 @@ class Solver:
 
     def Solve(self) -> Solution:
         """
-        Метод позволяет решить задачу оптимизации. Остановка поиска выполняется согласно параметрам оптимизации,
-        полученным при создании класса Solver.
+        Метод позволяет решить задачу оптимизации. Остановка поиска выполняется согласно критерию,
+        заданному при создании класса Solver.
 
-        :return: Решение задачи оптимизации
+        :return: решение задачи оптимизации
         """
         return self.process.Solve()
 
@@ -56,7 +56,7 @@ class Solver:
         """
         Метод позволяет выполнить несколько итераций глобального поиска
 
-        :param number: Количество итераций глобального поиска
+        :param number: число итераций глобального поиска
         """
         self.process.DoGlobalIteration(number)
 
@@ -64,15 +64,15 @@ class Solver:
         """
         Метод позволяет выполнить несколько итераций локального поиска
 
-        :param number: Количество итераций локального поиска
+        :param number: число итераций локального поиска
         """
         self.process.DoLocalRefinement(number)
 
     def GetResults(self) -> Solution:
         """
-        Метод позволяет получить достигнутое решение задачи оптимизации
+        Метод позволяет получить текущую оценку решения задачи оптимизации
 
-        :return: Решение задачи оптимизации
+        :return: решение задачи оптимизации
         """
         return self.process.GetResults()
 
@@ -80,7 +80,7 @@ class Solver:
         """
         Сохранение процесса оптимизации в файл
 
-        :param fileName: Имя файла
+        :param fileName: имя файла
         """
         self.searchData.SaveProgress(fileName=fileName)
 
@@ -88,7 +88,7 @@ class Solver:
         """
         Загрузка процесса оптимизации из файла
 
-        :param fileName: Имя файла
+        :param fileName: имя файла
         """
         self.searchData.LoadProgress(fileName=fileName)
 
@@ -103,7 +103,7 @@ class Solver:
         """
         Добавления наблюдателя за процессом оптимизации
 
-        :param listener: Объект класса реализующий методы наблюдения
+        :param listener: объект класса реализующий методы наблюдения
         """
 
         self.__listeners.append(listener)
