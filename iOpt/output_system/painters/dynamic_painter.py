@@ -85,9 +85,9 @@ class AnimateVisualization1D:
                 plt.savefig(fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         # нужно, чтобы график не закрывался после завершения анимации
         plt.show()
@@ -176,12 +176,12 @@ class AnimateVisualizationND:
 
         if not os.path.isdir(pathForSaves):
             if pathForSaves == "":
-                plt.savefig(os.path.curdir+"/"+fileName)
+                plt.savefig(os.path.curdir + "/" + fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         # нужно, чтобы график не закрывался после завершения анимации
         plt.show()
