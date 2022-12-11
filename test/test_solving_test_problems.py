@@ -2,7 +2,8 @@ import math
 import unittest
 import numpy as np
 import sys
-from iOpt.trial import FunctionValue, FunctionValue, Point
+
+from iOpt.trial import FunctionValue, Point
 from iOpt.problems.GKLS import GKLS
 from iOpt.problems.rastrigin import Rastrigin
 from iOpt.problems.xsquared import XSquared
@@ -77,12 +78,12 @@ class TestRastrigin(unittest.TestCase):
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
 
 
-    def test_Solve_10_GKLS_2D_problem(self):
+    def test_Solve_100_GKLS_2D_problem(self):
         self.r = 5.1;
         numberOfGlobalTrials = [883, 1441, 1061, 723, 732, 687, 684, 775, 754, 1053, 1165, 1361, 465, 760, 701, 887, 1070, 1673, 1576, 744, 392, 878, 1176, 525, 1175, 856, 898, 649, 885, 771, 972, 1042, 1042, 619, 796, 544, 647, 1071, 591, 833, 605, 458, 527, 1003, 473, 988, 1277, 649, 531, 730, 1108, 828, 648, 221, 1502, 849, 632, 641, 609, 749, 922, 693, 991, 894, 716, 575, 952, 1287, 231, 1052, 625, 516, 732, 757, 617, 1455, 490, 1118, 786, 1273, 533, 683, 278, 1456, 1091, 1171, 974, 777, 1227, 700, 767, 728, 962, 1198, 445, 809, 946, 288, 927, 903]
         
         
-        for i in range(10): 
+        for i in range(100): 
             self.problem = GKLS(2, i+1)
             params = SolverParameters(r=self.r, eps=self.epsVal)
             self.solver = Solver(self.problem, parameters=params)            
