@@ -2,7 +2,7 @@
 ===================================
 
 
-iOpt.output\_system.console.console\_output
+console\_output
 --------------------------------------------------
 
 .. automodule:: iOpt.output_system.console.console_output

@@ -1,7 +1,7 @@
 Пакет iOpt.evolvent
 ===================
 
-iOpt.evolvent.evolvent
+evolvent
 -----------------------------
 
 .. automodule:: iOpt.evolvent.evolvent

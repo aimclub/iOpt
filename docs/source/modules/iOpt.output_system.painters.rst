@@ -2,7 +2,7 @@
 ====================================
 
 
-iOpt.output\_system.painters.dynamic\_painter
+dynamic\_painter
 ----------------------------------------------------
 
 .. automodule:: iOpt.output_system.painters.dynamic_painter
@@ -10,7 +10,7 @@ iOpt.output\_system.painters.dynamic\_painter
    :undoc-members:
    :show-inheritance:
 
-iOpt.output\_system.painters.static\_painter
+static\_painter
 ---------------------------------------------------
 
 .. automodule:: iOpt.output_system.painters.static_painter
