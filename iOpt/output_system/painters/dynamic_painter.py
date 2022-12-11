@@ -90,7 +90,7 @@ class AnimateVisualization1D:
             plt.savefig(pathForSaves + "/" + fileName)
 
         # нужно, чтобы график не закрывался после завершения анимации
-        plt.show()
+        #plt.show()
 
 
 class FunctionAnimationNDPainter:
@@ -184,4 +184,4 @@ class AnimateVisualizationND:
             plt.savefig(pathForSaves + "/" + fileName)
 
         # нужно, чтобы график не закрывался после завершения анимации
-        plt.show()
+        #plt.show()
