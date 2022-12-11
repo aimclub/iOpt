@@ -1,7 +1,7 @@
 Пакет iOpt.problems
 =====================
 
-iOpt.problems.GKLS
+GKLS
 -------------------------
 
 .. automodule:: iOpt.problems.GKLS
@@ -9,7 +9,7 @@ iOpt.problems.GKLS
    :undoc-members:
    :show-inheritance:
 
-iOpt.problems.rastrigin
+rastrigin
 ------------------------------
 
 .. automodule:: iOpt.problems.rastrigin
@@ -17,7 +17,7 @@ iOpt.problems.rastrigin
    :undoc-members:
    :show-inheritance:
 
-iOpt.problems.stronginC3
+stronginC3
 -------------------------------
 
 .. automodule:: iOpt.problems.stronginC3
@@ -25,7 +25,7 @@ iOpt.problems.stronginC3
    :undoc-members:
    :show-inheritance:
 
-iOpt.problems.xsquared
+xsquared
 -----------------------------
 
 .. automodule:: iOpt.problems.xsquared

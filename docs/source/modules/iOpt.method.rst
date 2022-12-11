@@ -1,10 +1,7 @@
 Пакет iOpt.method
 ===================
 
-Содержание модуля
------------------
-
-iOpt.method.listener
+listener
 ---------------------------
 
 .. automodule:: iOpt.method.listener
@@ -12,7 +9,7 @@ iOpt.method.listener
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.method
+method
 -------------------------
 
 .. automodule:: iOpt.method.method
@@ -20,7 +17,7 @@ iOpt.method.method
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.optim\_task
+optim\_task
 ------------------------------
 
 .. automodule:: iOpt.method.optim_task
@@ -28,7 +25,7 @@ iOpt.method.optim\_task
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.process
+process
 --------------------------
 
 .. automodule:: iOpt.method.process
@@ -36,7 +33,7 @@ iOpt.method.process
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.search\_data
+search\_data
 -------------------------------
 
 .. automodule:: iOpt.method.search_data
@@ -44,7 +41,7 @@ iOpt.method.search\_data
    :undoc-members:
    :show-inheritance:
 
-iOpt.method.sol\_value
+sol\_value
 -----------------------------
 
 .. automodule:: iOpt.method.sol_value
