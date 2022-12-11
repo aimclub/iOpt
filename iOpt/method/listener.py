@@ -3,6 +3,7 @@ from iOpt.solution import Solution
 from iOpt.method.method import Method
 
 from iOpt.output_system.painters.dynamic_painter import FunctionAnimationPainter, FunctionAnimationNDPainter
+from iOpt.output_system.painters.static_painter import FunctionStaticNDPainter, FunctionStaticPainter
 from iOpt.output_system.console.console_output import FunctionConsoleFullOutput
 
 class Listener:
