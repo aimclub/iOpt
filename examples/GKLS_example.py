@@ -12,6 +12,7 @@ from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, St
 
 from subprocess import Popen, PIPE, STDOUT
 
+
 def SolveSingleGKLS():
     """
     Запуск решения с визуализацией задачи из GKLS генератора с номером 39
@@ -61,6 +62,7 @@ def SolveGKLSSet():
         if res == True:
             isSolve = 1
         print(i+1, sol.numberOfGlobalTrials, isSolve)
+
 
 if __name__ == "__main__":
     SolveSingleGKLS()

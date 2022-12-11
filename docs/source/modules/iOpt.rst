@@ -1,20 +1,19 @@
-iOpt package
+Пакет iOpt
 ============
 
-Subpackages
+Подпакеты
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
 
-   iOpt.evolvent
    iOpt.method
    iOpt.problems
-
-Submodules
-----------
-
-iOpt.problem module
+   iOpt.evolvent
+   iOpt.output_system.console
+   iOpt.output_system.painters
+   
+iOpt.problem
 -------------------
 
 .. automodule:: iOpt.problem
@@ -22,7 +21,7 @@ iOpt.problem module
    :undoc-members:
    :show-inheritance:
 
-iOpt.solution module
+iOpt.solution
 --------------------
 
 .. automodule:: iOpt.solution
@@ -30,7 +29,7 @@ iOpt.solution module
    :undoc-members:
    :show-inheritance:
 
-iOpt.solver module
+iOpt.solver
 ------------------
 
 .. automodule:: iOpt.solver
@@ -38,7 +37,7 @@ iOpt.solver module
    :undoc-members:
    :show-inheritance:
 
-iOpt.solver\_parametrs module
+iOpt.solver\_parametrs
 -----------------------------
 
 .. automodule:: iOpt.solver_parametrs
@@ -46,18 +45,10 @@ iOpt.solver\_parametrs module
    :undoc-members:
    :show-inheritance:
 
-iOpt.trial module
+iOpt.trial
 -----------------
 
 .. automodule:: iOpt.trial
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: iOpt
    :members:
    :undoc-members:
    :show-inheritance:
