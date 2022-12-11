@@ -30,6 +30,7 @@ class ConsoleFullOutputListener(Listener):
     def __init__(self, mode = 'full', iters = 100):
         """
         Конструктор класса ConsoleFullOutputListener
+
         :param mode: Режим вывода в консоль, который будет использован. Возможные режимы: 'full', 'custom' и 'result'.
          Режим 'full' осуществляет в процессе оптимизации полный вывод в консоль получаемой методом поисковой
          информации. Режим 'custom' осуществляет вывод текущей лучшей точки с заданной частотой. Режим 'result'
@@ -66,6 +67,7 @@ class StaticPaintListener(Listener):
     def __init__(self, fileName: str, pathForSaves="", indx=0, isPointsAtBottom=False, mode='objective function'):
         """
         Конструктор класса StaticPaintListener
+
         :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
         :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
          сохраняется в текущей рабочей директории.
@@ -108,6 +110,7 @@ class StaticNDPaintListener(Listener):
     def __init__(self, fileName : str, pathForSaves="", varsIndxs=[0,1], mode='lines layers', calc='objective function'):
         """
         Конструктор класса StaticNDPaintListener
+
         :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
         :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
          сохраняется в текущей рабочей директории.
@@ -153,6 +156,7 @@ class AnimationPaintListener(Listener):
     def __init__(self, fileName : str, pathForSaves="", isPointsAtBottom=False, toPaintObjFunc=True):
         """
         Конструктор класса AnimationPaintListener
+
         :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
         :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
          сохраняется в текущей рабочей директории.
@@ -186,6 +190,7 @@ class AnimationNDPaintListener(Listener):
     def __init__(self, fileName : str, pathForSaves="", varsIndxs=[0,1], toPaintObjFunc=True):
         """
         Конструктор класса AnimationNDPaintListener
+
         :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
         :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
          сохраняется в текущей рабочей директории.
