@@ -43,9 +43,9 @@ class FunctionStaticPainter:
                 plt.savefig(fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
 
@@ -101,9 +101,9 @@ class FunctionStaticPainter:
                 plt.savefig(fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
 
@@ -151,9 +151,9 @@ class FunctionStaticPainter:
                 plt.savefig(fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
         
@@ -271,9 +271,9 @@ class FunctionStaticNDPainter:
                 plt.savefig(fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
     def PaintLLI(self, fileName, pathForSaves, params):
@@ -331,9 +331,9 @@ class FunctionStaticNDPainter:
                 plt.savefig(fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
     def PaintApproximation(self, fileName, pathForSaves, params):
@@ -401,9 +401,9 @@ class FunctionStaticNDPainter:
                 plt.savefig(fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
 
@@ -460,9 +460,9 @@ class FunctionStaticNDPainter:
                 plt.savefig(fileName)
             else:
                 os.mkdir(pathForSaves)
-                plt.savefig(pathForSaves + "\\" + fileName)
+                plt.savefig(pathForSaves + "/" + fileName)
         else:
-            plt.savefig(pathForSaves + "\\" + fileName)
+            plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
 
