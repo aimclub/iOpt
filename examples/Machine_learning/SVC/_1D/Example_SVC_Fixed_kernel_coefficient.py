@@ -15,7 +15,7 @@ def load_breast_cancer_data():
 
 if __name__ == "__main__":
     x, y = load_breast_cancer_data()
-    kernel_coefficient = -3
+    kernel_coefficient = -5
     regularization_value_bound = {'low': 1, 'up': 6}
     problem = SVC_Fixed_Kernel.SVC_Fixed_Kernel(x, y, kernel_coefficient, regularization_value_bound)
 

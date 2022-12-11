@@ -3,6 +3,7 @@ from iOpt.solution import Solution
 from iOpt.method.method import Method
 
 from iOpt.output_system.painters.dynamic_painter import FunctionAnimationPainter, FunctionAnimationNDPainter
+from iOpt.output_system.painters.static_painter import FunctionStaticNDPainter, FunctionStaticPainter
 from iOpt.output_system.console.console_output import FunctionConsoleFullOutput
 
 class Listener:
@@ -29,10 +30,11 @@ class ConsoleFullOutputListener(Listener):
     def __init__(self, mode = 'full', iters = 100):
         """
         Конструктор класса ConsoleFullOutputListener
+
         :param mode: Режим вывода в консоль, который будет использован. Возможные режимы: 'full', 'custom' и 'result'.
-         Режим 'full' осуществляет в процессе оптимизации полный вывод в консоль получаемой методом поисковой
-         информации. Режим 'custom' осуществляет вывод текущей лучшей точки с заданной частотой. Режим 'result'
-         выводит в консоль только финальный результат процесса оптимизации.
+           Режим 'full' осуществляет в процессе оптимизации полный вывод в консоль получаемой методом поисковой
+           информации. Режим 'custom' осуществляет вывод текущей лучшей точки с заданной частотой. Режим 'result'
+           выводит в консоль только финальный результат процесса оптимизации.
         :param iters: Частота вывода в консоль. Используется совместно с режимом вывода 'custom'.
         """
         self.__fcfo : FunctionConsoleFullOutput = None
@@ -65,19 +67,20 @@ class StaticPaintListener(Listener):
     def __init__(self, fileName: str, pathForSaves="", indx=0, isPointsAtBottom=False, mode='objective function'):
         """
         Конструктор класса StaticPaintListener
+
         :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
         :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
-         сохраняется в текущей рабочей директории.
+           сохраняется в текущей рабочей директории.
         :param indx: Индекс переменной оптимизационной задачи. Используется в многомерной оптимизации.
-         Позволяет отобразить в сечении найденного минимума процесс оптимизации по одной выбранной переменной.
+           Позволяет отобразить в сечении найденного минимума процесс оптимизации по одной выбранной переменной.
         :param isPointsAtBottom: Должны ли точки поисковой информации ставиться под графиком или нет. Если False,
-         точки ставятся на графике.
+           точки ставятся на графике.
         :param mode: Способ вычислений для отрисовки графика целевой функции, который будет использован. Возможные
-         режимы: 'objective function', 'only points', 'approximation' и 'interpolation'. Режим 'objective function'
-         строит график, вычисляя значения целевой функции на равномерной сетке. Режим 'approximation' строит
-         нейроаппроксимацию для целевой функции на основе полученной поисковой информации. Режим 'interpolation' строит
-         интерполяцию для целевой функции на основе полученной поисковой информации. Режим 'only points' не строит
-         график целевой функции.
+           режимы: 'objective function', 'only points', 'approximation' и 'interpolation'. Режим 'objective function'
+           строит график, вычисляя значения целевой функции на равномерной сетке. Режим 'approximation' строит
+           нейроаппроксимацию для целевой функции на основе полученной поисковой информации. Режим 'interpolation' строит
+           интерполяцию для целевой функции на основе полученной поисковой информации. Режим 'only points' не строит
+           график целевой функции.
         """
         self.fileName = fileName
         self.pathForSaves = pathForSaves
@@ -107,19 +110,21 @@ class StaticNDPaintListener(Listener):
     def __init__(self, fileName : str, pathForSaves="", varsIndxs=[0,1], mode='lines layers', calc='objective function'):
         """
         Конструктор класса StaticNDPaintListener
+
         :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
         :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
-         сохраняется в текущей рабочей директории.
+           сохраняется в текущей рабочей директории.
         :param varsIndxs: Пара индексов переменных оптимизационной задачи, для которых будет построен рисунок.
-        :param mode: Режим отрисовки графика целевой функции, который будет использован. Возможные режимы:
-        'lines layers', 'surface'. Режим 'lines layers' рисует линии уровня в сечении найденного методом решения.
-         Режим 'surface' строит поверхность в сечении найденного методом решения.
+        :param mode_: Режим отрисовки графика целевой функции, который будет использован.
+           Возможные режимы:'lines layers', 'surface'.
+           Режим 'lines layers' рисует линии уровня в сечении найденного методом решения.
+           Режим 'surface' строит поверхность в сечении найденного методом решения.
         :param calc: Способ вычислений для отрисовки графика целевой функции, который будет использован. Возможные
-         режимы: 'objective function' (только в режиме 'lines layers'), 'approximation' (только в режиме 'surface')
-         и 'interpolation'. Режим 'objective function' строит график, вычисляя значения целевой функции на равномерной
-         сетке. Режим 'approximation' строит нейроаппроксимацию для целевой функции на основе полученной поисковой
-         информации. Режим 'interpolation' строит интерполяцию для целевой функции на основе полученной поисковой
-         информации.
+           режимы: 'objective function' (только в режиме 'lines layers'), 'approximation' (только в режиме 'surface')
+           и 'interpolation'. Режим 'objective function' строит график, вычисляя значения целевой функции на равномерной
+           сетке. Режим 'approximation' строит нейроаппроксимацию для целевой функции на основе полученной поисковой
+           информации. Режим 'interpolation' строит интерполяцию для целевой функции на основе полученной поисковой
+           информации.
         """
         self.fileName = fileName
         self.pathForSaves = pathForSaves
@@ -152,11 +157,12 @@ class AnimationPaintListener(Listener):
     def __init__(self, fileName : str, pathForSaves="", isPointsAtBottom=False, toPaintObjFunc=True):
         """
         Конструктор класса AnimationPaintListener
+
         :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
         :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
-         сохраняется в текущей рабочей директории.
+           сохраняется в текущей рабочей директории.
         :param isPointsAtBottom: Должны ли точки поисковой информации ставиться под графиком или нет. Если False,
-         точки ставятся на графике.
+           точки ставятся на графике.
         :param toPaintObjFunc: Должна ли отрисовываться целевая функция или нет.
         """
         self.__fp : FunctionAnimationPainter = None
@@ -185,9 +191,10 @@ class AnimationNDPaintListener(Listener):
     def __init__(self, fileName : str, pathForSaves="", varsIndxs=[0,1], toPaintObjFunc=True):
         """
         Конструктор класса AnimationNDPaintListener
+
         :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
         :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
-         сохраняется в текущей рабочей директории.
+           сохраняется в текущей рабочей директории.
         :param varsIndxs: Пара индексов переменных оптимизационной задачи, для которых будет построен рисунок.
         :param toPaintObjFunc: Должна ли отрисовываться целевая функция или нет.
         """
