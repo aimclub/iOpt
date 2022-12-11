@@ -2,16 +2,22 @@ import numpy as np
 import math
 
 class Evolvent:
-    # конструктор класса
-    # ------------------
+    """Класс разверток
+
+    :param lowerBoundOfFloatVariables: массив для левых (нижних) границ, А.
+    :type  lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
+    :param upperBoundOfFloatVariables: массив для правых (верхних) границ, В.
+    :type  upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
+    :param numberOfFloatVariables: размерность задачи (N).
+    :type  numberOfFloatVariables: int
+    :param evolventDensity: плотность развертки (m).
+    :type  evolventDensity: int
+    """
+
     def __init__(self,
-                 # массив для левых (нижних) границ, А
                  lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = [],
-                 # массив для правых (верхних) границ, В
                  upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = [],
-                 # N
                  numberOfFloatVariables: int = 1,
-                 # m
                  evolventDensity: int = 10
                 ):
 
@@ -32,30 +38,48 @@ class Evolvent:
     # Установка границ
     # ----------------
     def SetBounds(self,
-                 # массив для левых (нижних) границ, А
                  lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = [],
-                 # массив для правых (верхних) границ, В
                  upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
                  ):
+        """Установка граничных значений
+
+        :param lowerBoundOfFloatVariables: массив для левых (нижних) границ, А.
+        :type  lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
+        :param upperBoundOfFloatVariables: массив для правых (верхних) границ, В.
+        :type  upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
+        """
+
         self.lowerBoundOfFloatVariables = np.copy(lowerBoundOfFloatVariables)
         self.upperBoundOfFloatVariables = np.copy(upperBoundOfFloatVariables)    
 
-    # Получить (x->y)
-    # ---------------
     def GetImage(self,
                  x: np.double
                 ) -> np.ndarray(shape = (1), dtype = np.double):
+        """Получить образ (x->y)
+
+        :param x: значение x.
+        :type  x: np.double.
+        :return: массив значений *y*
+        :rtype: np.ndarray(shape = (1), dtype = np.double).
+
+        """
 
         self.__GetYonX(x)
         self.__TransformP2D()
         return np.copy(self.yValues)
 
-    # Получить (y->x)
-    # ----------------
+
     def GetInverseImage(self,
                         y: np.ndarray(shape = (1), dtype = np.double)
                        ) -> np.double:
+        """Получить обратное значение образа (y->x)
 
+        :param y: значение y.
+        :type  y: np.ndarray(shape = (1), dtype = np.double)
+        :return: значение *x*
+        :rtype: np.double:.
+
+        """
         self.yValues = np.copy(y)
         self.__TransformD2P()
         x = self.__GetXonY()
@@ -65,6 +89,14 @@ class Evolvent:
     def GetPreimages(self,
                  y: np.ndarray(shape = (1), dtype = np.double),
                 ) -> np.double:
+        """Получить обратное значение образа (y->x)
+
+        :param y: значение y.
+        :type  y: np.ndarray(shape = (1), dtype = np.double)
+        :return: значение *x*
+        :rtype: np.double:.
+
+        """
         self.yValues = np.copy(y)
         self.__TransformD2P()
         x = self.__GetXonY()
