@@ -1,16 +1,7 @@
-iOpt.problems package
+Пакет iOpt.problems
 =====================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-Submodules
-----------
-
-iOpt.problems.GKLS module
+iOpt.problems.GKLS
 -------------------------
 
 .. automodule:: iOpt.problems.GKLS
@@ -18,7 +9,7 @@ iOpt.problems.GKLS module
    :undoc-members:
    :show-inheritance:
 
-iOpt.problems.rastrigin module
+iOpt.problems.rastrigin
 ------------------------------
 
 .. automodule:: iOpt.problems.rastrigin
@@ -26,7 +17,7 @@ iOpt.problems.rastrigin module
    :undoc-members:
    :show-inheritance:
 
-iOpt.problems.stronginC3 module
+iOpt.problems.stronginC3
 -------------------------------
 
 .. automodule:: iOpt.problems.stronginC3
@@ -34,18 +25,10 @@ iOpt.problems.stronginC3 module
    :undoc-members:
    :show-inheritance:
 
-iOpt.problems.xsquared module
+iOpt.problems.xsquared
 -----------------------------
 
 .. automodule:: iOpt.problems.xsquared
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: iOpt.problems
    :members:
    :undoc-members:
    :show-inheritance:
