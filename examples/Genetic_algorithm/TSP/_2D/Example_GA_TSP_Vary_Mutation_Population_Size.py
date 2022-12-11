@@ -28,10 +28,10 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(2.0), itersLimit=300)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimationNDPaintListener("output", "gatsp_2d_anim_vary_mutation.png", varsIndxs=[0, 1], toPaintObjFunc=True)
+    apl = AnimationNDPaintListener("gatsp_2d_anim_vary_mutation.png", "output",  varsIndxs=[0, 1], toPaintObjFunc=True)
     solver.AddListener(apl)
 
-    spl = StaticNDPaintListener("output", "gatsp_2d_stat_vary_mutation.png", varsIndxs=[0, 1], toPaintObjFunc=True)
+    spl = StaticNDPaintListener("gatsp_2d_stat_vary_mutation.png", "output", varsIndxs=[0, 1], mode="interpolation")
     solver.AddListener(spl)
 
     solver_info = solver.Solve()
