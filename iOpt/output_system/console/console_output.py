@@ -104,7 +104,8 @@ class ConsoleOutputer:
         #time.sleep(0.1)
         dim = len(point)
 
-        print("\033[A|", end=' ')
+        print("|", end=' ')
+        #print("\033[A|", end=' ')
         print("{:>5}:".format(iter), end=' ')
         print("{:>19.8f}".format(value), end ='   ')
         print("{:<{width}}|".format(str(point), width=20*dim))
