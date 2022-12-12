@@ -701,7 +701,7 @@ class GKLSFunction:
     def GetOptimumValue(self):
         return self.GKLS_global_value;
 
-    def GetOptimumPoint(self, argmin):
+    def GetOptimumPoint(self):
         if (self.isArgSet == 1):
             argmin = self.GKLS_minima.local_min[self.GKLS_glob.gm_index[0]];
             return argmin;
