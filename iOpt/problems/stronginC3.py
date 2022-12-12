@@ -11,6 +11,7 @@ class StronginC3(Problem):
     """Base class for optimization problems"""
 
     def __init__(self):
+        self.name = StronginC3
         self.dimension: int = 2
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
@@ -60,3 +61,5 @@ class StronginC3(Problem):
 
         functionValue.value = res
         return functionValue
+    def GetName(self):
+        return self.name

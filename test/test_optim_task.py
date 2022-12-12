@@ -15,7 +15,7 @@ class TestOptimizationTask(unittest.TestCase):
         self.optimizationTask = OptimizationTask(self.problem)
 
         self.problemPerm = Rastrigin(3)
-        self.perm = np.ndarray(shape=(self.problemPerm.numberOfObjectives+self.problemPerm.numberOfConstraints), dtype=np.int)
+        self.perm = np.ndarray(shape=(self.problemPerm.numberOfObjectives+self.problemPerm.numberOfConstraints), dtype=np.int32)
         for i in range(self.perm.size):
             self.perm[i] = self.perm.size-1-i
         self.optimizationTaskPerm = OptimizationTask(self.problem, self.perm)
