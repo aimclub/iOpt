@@ -1,9 +1,8 @@
 import unittest
 from unittest import mock
+from unittest.mock import Mock
 
 import numpy as np
-
-from unittest.mock import Mock
 
 from iOpt.evolvent.evolvent import Evolvent
 
@@ -142,6 +141,49 @@ class TestMethod(unittest.TestCase):
         curr.SetIndex(0)
         self.method.CalculateGlobalR(curr, left)
         self.assertEqual(curr.globalR, 1.25)
+
+    def test_CalculateGlobalR_throws(self):
+        left = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+
+        left.SetZ(15.0)
+        self.method.M[0] = 10.0
+        with self.assertRaises(Exception):
+            self.method.CalculateGlobalR(None, left)
+
+    def test_CalculateNextPointCoordinate(self):
+        self.method.task.problem.numberOfFloatVariables = 1
+        left = SearchDataItem(x=0.0, y=Point(floatVariables=[5.0], discreteVariables=[]))
+        curr = SearchDataItem(x=1.0, y=Point(floatVariables=[10.0], discreteVariables=[]))
+
+        curr.delta = 1.0
+        left.SetZ(5.0)
+        curr.SetZ(15.0)
+        self.method.M[0] = 10.0
+        left.SetIndex(0)
+        curr.SetIndex(0)
+        self.method.parameters.r = 2.0
+
+        # test 1
+        curr.SetLeft(left)
+        self.assertEqual(0.25, self.method.CalculateNextPointCoordinate(curr))
+
+        # test 2
+        left.SetIndex(-2)
+        self.assertEqual(0.5, self.method.CalculateNextPointCoordinate(curr))
+
+    def test_CalculateNextPointCoordinate_throws(self):
+        self.method.task.problem.numberOfFloatVariables = 1
+        curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+
+        curr.SetZ(15.0)
+        self.method.M[0] = 10.0
+        # test 1
+        with self.assertRaises(Exception):
+            self.method.CalculateNextPointCoordinate(curr)
+        # test 2
+        curr.SetLeft(curr)
+        with self.assertRaises(Exception):
+            self.method.CalculateNextPointCoordinate(curr)
 
 
 # def test_RecalcAll_mock(self):

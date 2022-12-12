@@ -6,7 +6,7 @@ from iOpt.trial import Trial
 
 
 class Problem(ABC):
-    """Base class for optimization problems"""
+    """Базовый класс для задач оптимизации"""
     def __init__(self):
         self.numberOfFloatVariables: int = 0
         self.numberOfDisreteVariables: int = 0
@@ -25,8 +25,9 @@ class Problem(ABC):
     @abstractmethod
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
-        Compute selected function at given point.
-        For any new problem that inherits from :class:`Problem`, this method should be replaced.
-        :return: Calculated function value."""
+        Метод вычисления функции в заданной точке.
+          Для любой новой постановки задачи, которая наследуется от :class:`Problem`, этот метод следует перегрузить.
+
+        :return: Вычисленное значение функции."""
         pass
 
