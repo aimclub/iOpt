@@ -1,4 +1,3 @@
-import math
 import unittest
 import numpy as np
 from iOpt.trial import FunctionValue
@@ -6,8 +5,8 @@ from iOpt.trial import Point
 from iOpt.problems.shekel import Shekel
 
 
-class TestHill(unittest.TestCase):
-    """setUp method is overridden from the parent class Rastrigin"""
+class TestShekel(unittest.TestCase):
+    """setUp method is overridden from the parent class Shekel"""
     def setUp(self):
         self.Shekel = Shekel(0)
 
