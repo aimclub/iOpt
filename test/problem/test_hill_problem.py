@@ -4,11 +4,10 @@ import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
 from iOpt.problems.hill import Hill
-#from iOpt.problems.hill import lConstantHill
 
 
 class TestHill(unittest.TestCase):
-    """setUp method is overridden from the parent class Rastrigin"""
+    """setUp method is overridden from the parent class TestHill"""
     def setUp(self):
         self.Hill = Hill(0)
 

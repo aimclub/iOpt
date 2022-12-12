@@ -4,13 +4,16 @@ from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
 import iOpt.problems.hill_generation as hillGen
-#from iOpt.problems.hill_function import aHill
 import math
 
 class Hill(Problem):
-    """Base class for optimization problems"""
 
     def __init__(self, function_number: int):
+        """
+        Конструктор класса Hill problem.
+        :param dimension: Размерность задачи = 1
+        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
+        """
         self.name = Hill
         self.dimension = 1
         self.numberOfFloatVariables = self.dimension
@@ -39,7 +42,12 @@ class Hill(Problem):
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
-        """Compute selected function at given point."""
+        """
+        Compute selected function at given point.
+        :param point: координаты точки испытания, в которой будет вычислено значение функции
+        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
+        :return: Вычисленное значение функции в точке point
+        """
         res: np.double = 0
         for i in range(hillGen.NUM_HILL_COEFF):
             res = res + hillGen.aHill[self.fn][i] * math.sin(2 * i * math.pi * point.floatVariables[0]) + hillGen.bHill[self.fn][i] * math.cos(2 * i * math.pi * point.floatVariables[0])
