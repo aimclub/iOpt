@@ -61,8 +61,8 @@ class TestEvolvent(unittest.TestCase):
                         y.append(np.double(yValue.split('=')[1]))
 
                     # [-0.5, 0.5]
-                    lower = - np.ones(N, dtype=np.int) / 2
-                    upper = np.ones(N, dtype=np.int) / 2
+                    lower = - np.ones(N, dtype=np.int32) / 2
+                    upper = np.ones(N, dtype=np.int32) / 2
 
                     evolvent = Evolvent(lower, upper, N, m) 
                     xx = evolvent.GetInverseImage(y)
@@ -93,8 +93,8 @@ class TestEvolvent(unittest.TestCase):
                         y.append(np.double(yValue.split('=')[1]))
 
                     # [-0.5, 0.5]
-                    lower = - np.ones(N, dtype=np.int) / 2
-                    upper = np.ones(N, dtype=np.int) / 2
+                    lower = - np.ones(N, dtype=np.int32) / 2
+                    upper = np.ones(N, dtype=np.int32) / 2
 
                     evolvent = Evolvent(lower, upper, N, m) 
                     yy = evolvent.GetImage(x)
