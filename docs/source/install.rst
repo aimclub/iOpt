@@ -16,51 +16,59 @@
 
 - Сделать клон репозитория и перейти в его корневую папку
 
-```
-$ git clone https://github.com/UNN-ITMM-Software/iOpt
-$ cd iOpt
-```
+.. code-block::
+
+    git clone https://github.com/UNN-ITMM-Software/iOpt
+    cd iOpt
+
 
 - Установить поддержку **virtualenv**
 
-```
-$ pip install virtualenv
-```
+.. code-block::
+
+    pip install virtualenv
+    
 
 - Создать и автивировать рабочее окружение **ioptenv**
 
-```
-$ virtualenv ioptenv
-$ source ioptenv/bin/activate
-```
+
+.. code-block:: 
+
+    virtualenv ioptenv
+    source ioptenv/bin/activate
+
 
 - Выполнить установку пакетов
 
-```
-$ python setup.py install
-```
+.. code-block:: 
+
+    python setup.py install
+
 
 - Запустить примеры из папки **examples**
 
-```
-$ python examples/GKLS_example.py
-$ python examples/Rastrigin_example.py
-```
+.. code-block:: 
+
+    python examples/GKLS_example.py
+    python examples/Rastrigin_example.py
+
 
 - После окончания работы деактивировать виртуальное окружение
 
-```
-$ deactivate
-```
+.. code-block:: 
+
+    deactivate
+
 
 Особенности автоматической установки в ОС Windows
 -------------------------------------------------
 
 После установки **virtualenv** и создания виртуального окружения, его активация осуществляется командой
 
-```
-> ioptenv\Scripts\activate.bat
-```
+.. code-block:: 
+
+   ioptenv\Scripts\activate.bat
+
 
 Ручная установка в Unix-подобных системах
 -----------------------------------------
@@ -70,12 +78,13 @@ $ deactivate
 - перейти в корень репозитория
 - установить требуемые пакеты
 
-```
-pip install numpy depq cycler kiwisolver matplotlib scikit-learn sphinx sphinx_rtd_theme sphinxcontrib-details-directive  autodocsumm
-```
+.. code-block:: 
+
+    pip install numpy depq cycler kiwisolver matplotlib scikit-learn sphinx sphinx_rtd_theme sphinxcontrib-details-directive  autodocsumm
+
 
 - для доступа к модулю **iOpt** необходимо модифицировать переменную **PYTHONPATH** следующей командой
 
-```
-export PYTHONPATH="$PWD"
-```
+.. code-block:: 
+
+    export PYTHONPATH="$PWD"
