@@ -3,7 +3,7 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-import iOpt.problems.hill_generation as hillGen
+import iOpt.problems.Hill.hill_generation as hillGen
 import math
 
 class Hill(Problem):
@@ -11,7 +11,7 @@ class Hill(Problem):
     def __init__(self, function_number: int):
         """
         Конструктор класса Hill problem.
-        :param dimension: Размерность задачи = 1
+
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
         """
         self.name = Hill
