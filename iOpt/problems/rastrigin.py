@@ -7,6 +7,10 @@ import math
 
 
 class Rastrigin(Problem):
+    """
+    Функция  Растригина задана формулой: :math:`\varphi (y) = \left ( \sum_{i=1}^{N}[x_{i}^{2}-10*cos(2\pi x_{i})] \right )`
+       где :math:`x\in [-2.2, 1.8], N - размерность задачи`.
+    """
     def __init__(self, dimension: int):
         """
         Конструктор класса Rastrigin problem.
@@ -41,7 +45,8 @@ class Rastrigin(Problem):
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
-        Compute selected function at given point.
+        Вычисление значения выбранной функции в заданной точке.
+
         :param point: координаты точки испытания, в которой будет вычислено значение функции
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point

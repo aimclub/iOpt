@@ -1,14 +1,7 @@
-import math
-import unittest
-import sys
-import numpy as np
-
 from iOpt.problems.grishagin import Grishagin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener
-
-from subprocess import Popen, PIPE, STDOUT
 
 if __name__ == "__main__":
     """
@@ -29,7 +22,7 @@ if __name__ == "__main__":
     solver.AddListener(cfol)
 
     #Добавляем построение 3D визуализации после решения задачи
-    spl = StaticNDPaintListener("grishagin.png", "output", varsIndxs=[0,1], mode="surface", calc="approximation")
+    spl = StaticNDPaintListener("grishagin.png", "output", varsIndxs=[0,1], mode="lines layers", calc="objective function")
     solver.AddListener(spl)
 
     #Решение задачи

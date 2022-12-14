@@ -6,6 +6,13 @@ from iOpt.problem import Problem
 import iOpt.problems.Shekel.shekel_generation as shekelGen
 
 class Shekel(Problem):
+    """
+    Функция Шекеля - это многомерная, мультимодальная, непрерывная, детерминированная функция, задана формулой:
+       :math:`f(x) = \sum_{i=1}^{m}(c_{i}+(x-a_{i})^{2})^{-1}`.
+       где :math:`m – количество максимумов функции,`
+       :math:`a, c - параметры, генерируемые случайным образом`
+       В данном генераторе задача является одномерной.
+    """
     def __init__(self, function_number: int):
         """
         Конструктор класса Shekel problem.
@@ -41,7 +48,8 @@ class Shekel(Problem):
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
-        Compute selected function at given point.
+        Вычисление значения выбранной функции в заданной точке.
+
         :param point: координаты точки испытания, в которой будет вычислено значение функции
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point

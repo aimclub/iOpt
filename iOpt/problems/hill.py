@@ -7,7 +7,13 @@ import iOpt.problems.Hill.hill_generation as hillGen
 import math
 
 class Hill(Problem):
-
+    """
+    Функция Хилла - это мультимодальная, непрерывная, детерминированная функция, задана формулой:
+       :math:`f(x)=a_{0}+\sum_{i=1}^{m}(a_{i}sin(2i\pi x)+b_{i}cos(2i\pi x))`.
+       где :math:`m – количество максимумов функции.`
+       :math:`a, b - параметры, генерируемые случайным образом`
+       В данном генераторе задача является одномерной.
+    """
     def __init__(self, function_number: int):
         """
         Конструктор класса Hill problem.
@@ -43,7 +49,8 @@ class Hill(Problem):
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
-        Compute selected function at given point.
+        Вычисление значения выбранной функции в заданной точке.
+
         :param point: координаты точки испытания, в которой будет вычислено значение функции
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point

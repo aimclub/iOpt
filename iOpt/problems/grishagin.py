@@ -7,6 +7,14 @@ from iOpt.problems.grishagin_function.grishagin_function import GrishaginFunctio
 import math
 
 class Grishagin(Problem):
+    """
+    Функция Гришагина задана формулой:
+       :math:`\varphi (y) = \left \{ (\sum_{i=1}^{7}\sum_{i=1}^{7} A_{ij}a_{ij}(x)+B_{ij}b_{ij}(x))^{2}`
+       :math:`+(\sum_{i=1}^{7}\sum_{i=1}^{7} C_{ij}a_{ij}(x)+D_{ij}b_{ij}(x))^{2} \right \}`
+       где :math:`a_{ij}(x) = sin(i\pi x_{1})sin(j\pi x_{2}),`
+       :math:`b_{ij}(x) = cos(i\pi x_{1})cos(j\pi x_{2}),`
+       :math:`коэффициенты A_{ij}, B_{ij}, C_{ij}, D_{ij} - равномерно распределеные величины на отрезке [-1, 1].`
+    """
     def __init__(self, function_number: int):
         """
         Конструктор класса Grishagin problem.
@@ -42,7 +50,8 @@ class Grishagin(Problem):
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
-        Compute selected function at given point.
+        Вычисление значения выбранной функции в заданной точке.
+
         :param point: координаты точки испытания, в которой будет вычислено значение функции
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
