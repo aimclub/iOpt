@@ -18,7 +18,9 @@ import datetime
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent / '../../'))
+import os
+sys.path.insert(0, os.path.abspath('../../'))
+#sys.path.insert(0, str(Path(__file__).parent / '../../'))
 
 
 
@@ -75,7 +77,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
