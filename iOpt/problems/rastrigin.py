@@ -7,9 +7,12 @@ import math
 
 
 class Rastrigin(Problem):
-    """Base class for optimization problems"""
-
     def __init__(self, dimension: int):
+        """
+        Конструктор класса Rastrigin problem.
+
+        :param dimension: Размерность задачи.
+        """
         self.name = Rastrigin
         self.dimension = dimension
         self.numberOfFloatVariables = dimension
@@ -37,7 +40,12 @@ class Rastrigin(Problem):
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
-        """Compute selected function at given point."""
+        """
+        Compute selected function at given point.
+        :param point: координаты точки испытания, в которой будет вычислено значение функции
+        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
+        :return: Вычисленное значение функции в точке point
+        """
         sum: np.double = 0
         for i in range(self.dimension):
             sum += point.floatVariables[i] * point.floatVariables[i] - 10 * math.cos(

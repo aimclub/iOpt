@@ -3,14 +3,13 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-import iOpt.problems.shekel_generation as shekelGen
+import iOpt.problems.Shekel.shekel_generation as shekelGen
 
 class Shekel(Problem):
     def __init__(self, function_number: int):
         """
         Конструктор класса Shekel problem.
 
-        :param dimension: Размерность задачи = 1
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
         """
         self.name = Shekel
@@ -41,7 +40,12 @@ class Shekel(Problem):
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
-        """Compute selected function at given point."""
+        """
+        Compute selected function at given point.
+        :param point: координаты точки испытания, в которой будет вычислено значение функции
+        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
+        :return: Вычисленное значение функции в точке point
+        """
         res: np.double = 0
         for i in range(shekelGen.NUM_SHEKEL_COEFF):
             res = res + (2 * shekelGen.kShekel[self.fn][i] * (point.floatVariables[0] - shekelGen.aShekel[self.fn][i])) /\
