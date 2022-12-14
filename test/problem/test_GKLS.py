@@ -7,7 +7,7 @@ from iOpt.problems.GKLS import GKLS
 
 
 class TestGKLS(unittest.TestCase):
-    """setUp method is overridden from the parent class Rastrigin"""
+    """setUp method is overridden from the parent class GKLS"""
     def setUp(self):
         self.GKLS = GKLS(3)
 

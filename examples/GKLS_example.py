@@ -1,14 +1,7 @@
-import math
-import unittest
-import sys
-import numpy as np
-
 from iOpt.problems.GKLS import GKLS
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener
-
-from subprocess import Popen, PIPE, STDOUT
 
 
 def SolveSingleGKLS():
