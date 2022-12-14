@@ -10,9 +10,9 @@ sphinx:
   configuration: docs/source/conf.py
 #  fail_on_warning: true
 
-formats:
-  - html
-  - pdf
+# formats:
+#  - html
+#  - pdf
 
 python:
   version: 3.8
