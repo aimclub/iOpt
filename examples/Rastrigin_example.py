@@ -1,8 +1,3 @@
-import math
-import unittest
-import sys
-import numpy as np
-
 from iOpt.problems.rastrigin import Rastrigin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
