@@ -8,9 +8,10 @@ import math
 
 
 class StronginC3(Problem):
-    """Base class for optimization problems"""
-
     def __init__(self):
+        """
+        Конструктор класса StronginC3 problem.
+        """
         self.name = StronginC3
         self.dimension: int = 2
         self.numberOfFloatVariables = self.dimension
@@ -41,7 +42,12 @@ class StronginC3(Problem):
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
-        """Compute selected function at given point."""
+        """
+        Compute selected function at given point.
+        :param point: координаты точки испытания, в которой будет вычислено значение функции
+        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
+        :return: Вычисленное значение функции в точке point
+        """
         res: np.double = 0
         x1: np.double = point.floatVariables[0]
         x2: np.double = point.floatVariables[1]

@@ -3,16 +3,14 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-from iOpt.problems.grishagin_function import GrishaginFunction
+from iOpt.problems.grishagin_function.grishagin_function import GrishaginFunction
 import math
 
 class Grishagin(Problem):
-    """Base class for optimization problems"""
-
     def __init__(self, function_number: int):
         """
-        Конструктор класса Grishagin.
-        :param dimension: Размерность задачи = 2
+        Конструктор класса Grishagin problem.
+
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 100`
         """
         self.name = Grishagin

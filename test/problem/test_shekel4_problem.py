@@ -3,7 +3,7 @@ import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
 from iOpt.problems.shekel4 import Shekel4
-import iOpt.problems.shekel4_generation as shekelGen
+import iOpt.problems.Shekel.shekel_generation as shekelGen
 
 
 class TestShekel4(unittest.TestCase):

@@ -3,14 +3,13 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-import iOpt.problems.shekel4_generation as shekelGen
+import iOpt.problems.Shekel4.shekel4_generation as shekelGen
 
 class Shekel4(Problem):
     def __init__(self, function_number: int):
         """
         Конструктор класса Shekel problem.
 
-        :param dimension: Размерность задачи = 4
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 3`
         """
         self.name = Shekel4
