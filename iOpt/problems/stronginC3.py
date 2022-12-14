@@ -43,7 +43,8 @@ class StronginC3(Problem):
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
-        Compute selected function at given point.
+        Вычисление значения выбранной функции в заданной точке.
+
         :param point: координаты точки испытания, в которой будет вычислено значение функции
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
