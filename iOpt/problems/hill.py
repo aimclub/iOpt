@@ -3,44 +3,48 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
+import iOpt.problems.Hill.hill_generation as hillGen
 import math
 
-
-class Rastrigin(Problem):
+class Hill(Problem):
     """
-    Функция  Растригина задана формулой: :math:`\varphi (y) = \left ( \sum_{i=1}^{N}[x_{i}^{2}-10*cos(2\pi x_{i})] \right )`
-       где :math:`x\in [-2.2, 1.8], N - размерность задачи`.
+    Функция Хилла - это мультимодальная, непрерывная, детерминированная функция, задана формулой:
+       :math:`f(x)=a_{0}+\sum_{i=1}^{m}(a_{i}sin(2i\pi x)+b_{i}cos(2i\pi x))`.
+       где :math:`m – количество максимумов функции.`
+       :math:`a, b - параметры, генерируемые случайным образом`
+       В данном генераторе задача является одномерной.
     """
-    def __init__(self, dimension: int):
+    def __init__(self, function_number: int):
         """
-        Конструктор класса Rastrigin problem.
+        Конструктор класса Hill problem.
 
-        :param dimension: Размерность задачи.
+        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
         """
-        self.name = Rastrigin
-        self.dimension = dimension
-        self.numberOfFloatVariables = dimension
+        self.name = Hill
+        self.dimension = 1
+        self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
+        self.fn = function_number
 
         self.floatVariableNames = np.ndarray(shape=(self.dimension), dtype=str)
         for i in range(self.dimension):
             self.floatVariableNames[i] = i
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables.fill(-2.2)
+        self.lowerBoundOfFloatVariables.fill(0)
         self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables.fill(1.8)
+        self.upperBoundOfFloatVariables.fill(1)
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
         pointfv = np.ndarray(shape=(self.dimension), dtype=np.double)
-        pointfv.fill(0)
+        pointfv[0] = hillGen.minHill[self.fn][1]
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0].value = 0
+        KOfunV[0].value = hillGen.minHill[self.fn][0]
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
@@ -51,12 +55,8 @@ class Rastrigin(Problem):
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
         """
-        sum: np.double = 0
-        for i in range(self.dimension):
-            sum += point.floatVariables[i] * point.floatVariables[i] - 10 * math.cos(
-                2 * math.pi * point.floatVariables[i]) + 10
-
-        functionValue.value = sum
+        res: np.double = 0
+        for i in range(hillGen.NUM_HILL_COEFF):
+            res = res + hillGen.aHill[self.fn][i] * math.sin(2 * i * math.pi * point.floatVariables[0]) + hillGen.bHill[self.fn][i] * math.cos(2 * i * math.pi * point.floatVariables[0])
+        functionValue.value = res
         return functionValue
-    def GetName(self):
-        return self.name

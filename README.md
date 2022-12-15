@@ -2,7 +2,16 @@
   <img src="https://github.com/UNN-ITMM-Software/iOpt/blob/main/docs/iOpt_logo.png" width="200" height="150"/>
 </p>
 
+[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](https://github.com/UNN-ITMM-Software/iOpt/blob/main/LICENSE)
+[![python: 3.9](https://img.shields.io/badge/python-3.9-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-390/)
+[![python: 3.8](https://img.shields.io/badge/python-3.8-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-380/)
+[![docs: ](https://readthedocs.org/projects/ebonite/badge/?style=flat-square)](https://iopt.readthedocs.io/ru/latest/)
+[![build:](https://github.com/UNN-ITMM-Software/iOpt/actions/workflows/python-app.yml/badge.svg)](https://github.com/UNN-ITMM-Software/iOpt/actions)
+
+
+
 iOpt - фреймворк с открытым исходным кодом для автоматического выбора значений параметров как для математических моделей сложных промышленных процессов, так и для используемых в промышленности методов ИИ и МО. Фреймворк распространяется под лицензией 3-Clause BSD.
+
 
 # Ключевые возможности фреймворка
 - Автоматический выбор значений параметров математических моделей и методов ИИ и МО, используемых в промышленности.
@@ -13,88 +22,27 @@ iOpt - фреймворк с открытым исходным кодом для
 
 # Установка и настройка
 
-## Предварительные замечания
-
-- В зависимости от текущей конфигурации, команда запуска Python может быть `python` или `python3`. В дальнейшем предполагается, что они обе запускают интерпретатор версии 3.
-- Аналогично, команда запуска менджера пакетов может быть `pip` или `pip3`.
-- Для построения документации необходимо предварительно установить пакет **sphinx** (лучше с правами администратора).
-- Для установки и использования в ОС Windows нужно иметь настроенный интерпретатор команд (bash, cmd).
-
-## Автоматическая установка в Unix-подобных системах
-
-Самый простой способ установить фреймворк:
-
-- Сделать клон репозитория и перейти в его корневую папку
+## В unix-подобных системах:
 
 ```
-$ git clone https://github.com/UNN-ITMM-Software/iOpt
-$ cd iOpt
+git clone https://github.com/UNN-ITMM-Software/iOpt
+cd iOpt
+pip install virtualenv
+virtualenv ioptenv
+source ioptenv/bin/activate
+python setup.py install
 ```
 
-- Установить поддержку **virtualenv**
+## В ОС Windows:
 
 ```
-$ pip install virtualenv
+git clone https://github.com/UNN-ITMM-Software/iOpt
+cd iOpt
+pip install virtualenv
+virtualenv ioptenv
+ioptenv\Scripts\activate.bat
+python setup.py install
 ```
-
-- Создать и автивировать рабочее окружение **ioptenv**
-
-```
-$ virtualenv ioptenv
-$ source ioptenv/bin/activate
-```
-
-- Выполнить установку пакетов
-
-```
-$ python setup.py install
-```
-
-- Запустить примеры из папки **examples**
-
-```
-$ python examples/GKLS_example.py
-$ python examples/Rastrigin_example.py
-```
-
-- После окончания работы деактивировать виртуальное окружение
-
-```
-$ deactivate
-```
-
- После этого перейти в каталог **docs**, находящийся в корневой папке и дать команду
-
-```
-$ make html
-```
-
-## Особенности автоматической установки в ОС Windows
-
-После установки **virtualenv** и создания виртуального окружения, его активация осуществляется командой
-
-```
-> ioptenv\Scripts\activate.bat
-```
-
-## Ручная установка в Unix-подобных системах
-
-При этом способе необходимо:
-
-- перейти в корень репозитория
-- установить требуемые пакеты
-
-```
-pip install numpy depq cycler kiwisolver matplotlib scikit-learn sphinx sphinx_rtd_theme sphinxcontrib-details-directive  autodocsumm
-```
-
-- для доступа к модулю **iOpt** необходимо модифицировать переменную **PYTHONPATH** следующей командой
-
-```
-export PYTHONPATH="$PWD"
-```
-
-
 
 
 # Начать работать
@@ -154,4 +102,4 @@ if __name__ == "__main__":
 
 # Документация
 
-Детальное описание API фреймворка iOpt доступно по [ссылке]: (ссылка на сгенерированную документацию)
+Детальное описание API фреймворка iOpt доступно на [Read the Docs](https://iopt.readthedocs.io/ru/latest/)
