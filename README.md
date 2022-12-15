@@ -10,7 +10,7 @@ iOpt - фреймворк с открытым исходным кодом для
 
 [![python: 3.8](https://img.shields.io/badge/python-3.8-green)](https://img.shields.io/badge/python-3.8-green)
 
-
+[![docs: ](https://readthedocs.org/projects/ebonite/badge/?style=flat-square)](https://iopt.readthedocs.io/ru/latest/)
 
 
 # Ключевые возможности фреймворка
