@@ -8,8 +8,9 @@ import math
 
 class Rastrigin(Problem):
     """
-    Функция  Растригина задана формулой: :math:`\varphi (y) = \left ( \sum_{i=1}^{N}[x_{i}^{2}-10*cos(2\pi x_{i})] \right )`
-       где :math:`x\in [-2.2, 1.8], N - размерность задачи`.
+    Функция  Растригина задана формулой:
+       :math:`f(y)=(\sum_{i=1}^{N}[x_{i}^{2}-10*cos(2\pi x_{i})])`,
+       где :math:`x\in [-2.2, 1.8], N` – размерность задачи.
     """
     def __init__(self, dimension: int):
         """

@@ -8,9 +8,9 @@ import iOpt.problems.Shekel.shekel_generation as shekelGen
 class Shekel(Problem):
     """
     Функция Шекеля - это многомерная, мультимодальная, непрерывная, детерминированная функция, задана формулой:
-       :math:`f(x) = \sum_{i=1}^{m}(c_{i}+(x-a_{i})^{2})^{-1}`.
-       где :math:`m – количество максимумов функции,`
-       :math:`a, c - параметры, генерируемые случайным образом`
+       :math:`f(x) = \sum_{i=1}^{m}(c_{i}+(x-a_{i})^{2})^{-1}`,
+       где :math:`m` – количество максимумов функции,
+       :math:`a, c` - параметры, генерируемые случайным образом.
        В данном генераторе задача является одномерной.
     """
     def __init__(self, function_number: int):
@@ -56,8 +56,7 @@ class Shekel(Problem):
         """
         res: np.double = 0
         for i in range(shekelGen.NUM_SHEKEL_COEFF):
-            res = res + (2 * shekelGen.kShekel[self.fn][i] * (point.floatVariables[0] - shekelGen.aShekel[self.fn][i])) /\
-                  pow((shekelGen.kShekel[self.fn][i] * pow(point.floatVariables[0] - shekelGen.aShekel[self.fn][i], 2.0) + shekelGen.cShekel[self.fn][i]), 2)
+            res = res - 1 / (shekelGen.kShekel[self.fn][i]*pow(point.floatVariables[0]-shekelGen.aShekel[self.fn][i], 2)+shekelGen.cShekel[self.fn][i])
 
         functionValue.value = res
         return functionValue
