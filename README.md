@@ -6,6 +6,12 @@ iOpt - фреймворк с открытым исходным кодом для
 
 [![License: BSD 3-Clause](https://img.shields.io/github/license/ITMO-NSS-team/Fedot.Industrial?style=flat-square)](https://github.com/UNN-ITMM-Software/iOpt/blob/main/LICENSE)
 
+[![python: 3.9](https://img.shields.io/badge/python-3.9-green)](https://img.shields.io/badge/python-3.9-green)
+
+
+
+
+
 
 # Ключевые возможности фреймворка
 - Автоматический выбор значений параметров математических моделей и методов ИИ и МО, используемых в промышленности.
