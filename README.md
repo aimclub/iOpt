@@ -6,9 +6,9 @@ iOpt - фреймворк с открытым исходным кодом для
 
 [![License: BSD 3-Clause](https://img.shields.io/github/license/ITMO-NSS-team/Fedot.Industrial?style=flat-square)](https://github.com/UNN-ITMM-Software/iOpt/blob/main/LICENSE)
 
-[![python: 3.9](https://img.shields.io/badge/python-3.9-green)](https://img.shields.io/badge/python-3.9-green)
+[![python: 3.9](https://img.shields.io/badge/python-3.9-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-390/)
 
-[![python: 3.8](https://img.shields.io/badge/python-3.8-green)](https://img.shields.io/badge/python-3.8-green)
+[![python: 3.8](https://img.shields.io/badge/python-3.8-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-380/)
 
 [![docs: ](https://readthedocs.org/projects/ebonite/badge/?style=flat-square)](https://iopt.readthedocs.io/ru/latest/)
 
