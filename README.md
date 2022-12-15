@@ -8,7 +8,7 @@ iOpt - фреймворк с открытым исходным кодом для
 
 [![python: 3.9](https://img.shields.io/badge/python-3.9-green)](https://img.shields.io/badge/python-3.9-green)
 
-
+[![python: 3.8](https://img.shields.io/badge/python-3.8-green)](https://img.shields.io/badge/python-3.8-green)
 
 
 
