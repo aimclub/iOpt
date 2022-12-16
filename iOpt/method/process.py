@@ -73,12 +73,14 @@ class Process:
         if self.parameters.refineSolution:
             self.DoLocalRefinement(-1)
 
+        result = self.GetResults()
+        result.solvingTime = (datetime.now() - startTime).total_seconds()
+
         for listener in self.__listeners:
             status = self.method.CheckStopCondition()
             listener.OnMethodStop(self.searchData, self.GetResults(), status)
 
-        result = self.GetResults()
-        result.solvingTime = datetime.now() - startTime
+
         return result
 
     def DoGlobalIteration(self, number: int = 1):
