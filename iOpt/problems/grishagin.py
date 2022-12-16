@@ -9,11 +9,11 @@ import math
 class Grishagin(Problem):
     """
     Функция Гришагина задана формулой:
-       :math:`\varphi (y) = \left \{ (\sum_{i=1}^{7}\sum_{i=1}^{7} A_{ij}a_{ij}(x)+B_{ij}b_{ij}(x))^{2}`
-       :math:`+(\sum_{i=1}^{7}\sum_{i=1}^{7} C_{ij}a_{ij}(x)+D_{ij}b_{ij}(x))^{2} \right \}`
+       :math:`f(y) = \{ (\sum_{i=1}^{7}\sum_{i=1}^{7} A_{ij}a_{ij}(x)+B_{ij}b_{ij}(x))^{2}+`
+       :math:`+(\sum_{i=1}^{7}\sum_{i=1}^{7} C_{ij}a_{ij}(x)+D_{ij}b_{ij}(x))^{2}\}`,
        где :math:`a_{ij}(x) = sin(i\pi x_{1})sin(j\pi x_{2}),`
        :math:`b_{ij}(x) = cos(i\pi x_{1})cos(j\pi x_{2}),`
-       :math:`коэффициенты A_{ij}, B_{ij}, C_{ij}, D_{ij} - равномерно распределеные величины на отрезке [-1, 1].`
+       коэффициенты :math:`A_{ij}, B_{ij}, C_{ij}, D_{ij}` - равномерно распределеные величины на отрезке :math:`[-1, 1].`
     """
     def __init__(self, function_number: int):
         """

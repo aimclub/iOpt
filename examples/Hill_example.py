@@ -9,7 +9,7 @@ if __name__ == "__main__":
     """
 
     #создание объекта задачи
-    problem = Hill(1)
+    problem = Hill(0)
 
     #Формируем параметры решателя
     params = SolverParameters(r=3, eps=0.01, itersLimit=300, refineSolution=True)
