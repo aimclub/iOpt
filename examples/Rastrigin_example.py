@@ -10,23 +10,18 @@ if __name__ == "__main__":
     Минимизация тестовой функции Растригина с визуализацией
     """
 
-    #создание объекта задачи
+    # Создание тестовой задачи
     problem = Rastrigin(2)
-
-    #Формируем параметры решателя
+    # Параметры решателя
     params = SolverParameters(r=2.5, eps=0.01, itersLimit=300, refineSolution=True)
-
-    #Создаем решатель
+    # Создание решателя
     solver = Solver(problem, parameters=params)
-
-    #Добавляем вывод резултатов в консоль
+    # Вывод результатов в консоль в процессе решения задачи
     cfol = ConsoleFullOutputListener(mode='full')
     solver.AddListener(cfol)
-
-    #Добавляем построение 3D визуализации после решения задачи
-    spl = StaticNDPaintListener("rastrigin.png", "output", varsIndxs=[0,1], mode="surface", calc="interpolation")
+    # 3D визуализация по окончании решения задачи
+    spl = StaticNDPaintListener("rastrigin.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
     solver.AddListener(spl)
-
-    #Решение задачи
+    # Запуск решения задачи
     sol = solver.Solve()
 

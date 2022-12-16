@@ -2,10 +2,12 @@
   <img src="https://github.com/UNN-ITMM-Software/iOpt/blob/main/docs/iOpt_logo.png" width="200" height="150"/>
 </p>
 
-[![License: BSD 3-Clause](https://img.shields.io/github/license/ITMO-NSS-team/Fedot.Industrial?style=flat-square)](https://github.com/UNN-ITMM-Software/iOpt/blob/main/LICENSE)
+[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](https://github.com/UNN-ITMM-Software/iOpt/blob/main/LICENSE)
 [![python: 3.9](https://img.shields.io/badge/python-3.9-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-390/)
 [![python: 3.8](https://img.shields.io/badge/python-3.8-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-380/)
 [![docs: ](https://readthedocs.org/projects/ebonite/badge/?style=flat-square)](https://iopt.readthedocs.io/ru/latest/)
+[![build:](https://github.com/UNN-ITMM-Software/iOpt/actions/workflows/python-app.yml/badge.svg)](https://github.com/UNN-ITMM-Software/iOpt/actions)
+
 
 
 iOpt - фреймворк с открытым исходным кодом для автоматического выбора значений параметров как для математических моделей сложных промышленных процессов, так и для используемых в промышленности методов ИИ и МО. Фреймворк распространяется под лицензией 3-Clause BSD.
@@ -45,49 +47,81 @@ python setup.py install
 
 # Начать работать
 
-Использование фреймворка продемонстрируем на примере решения тестовой задачи с целевой функцией в виде параболоида.
+Использование фреймворка iOpt для минимизации функции Растригина.
 
 ```python
-import math
-import unittest
-import sys
-import numpy as np
-
 from iOpt.problems.rastrigin import Rastrigin
-from iOpt.problems.xsquared import XSquared
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, StaticNDPaintListener, AnimationNDPaintListener, ConsoleFullOutputListener
+from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener
 
 from subprocess import Popen, PIPE, STDOUT
 
 if __name__ == "__main__":
     """
-    Запуск решения с визуализацией задачи Растригина с визуализацией
+    Минимизация тестовой функции Растригина с визуализацией
     """
-
-    problem = Rastrigin(1)
-    params = SolverParameters(r=3.5, eps=0.01, itersLimit=100, refineSolution=True)
+    #Создание тестовой задачи
+    problem = Rastrigin(2)
+    #Параметры решателя
+    params = SolverParameters(r=2.5, eps=0.01, itersLimit=300, refineSolution=True)
+    #Создание решателя
     solver = Solver(problem, parameters=params)
-
-    pl = StaticPaintListener("rastrigin.png", "output", isPointsAtBottom = False)
-    apl = AnimationPaintListener("rastriginAnim.png", "output", isPointsAtBottom = False, toPaintObjFunc=True)
-    solver.AddListener(pl)
-    solver.AddListener(apl)
-
+    #Вывод результатов в консоль в процессе решения
+    cfol = ConsoleFullOutputListener(mode='full')
+    solver.AddListener(cfol)
+    #3D визуализация по окончании решения
+    spl = StaticNDPaintListener("rastrigin.png", "output", varsIndxs=[0,1], mode="surface", calc="interpolation")
+    solver.AddListener(spl)
+    #Запуск решения задачи
     sol = solver.Solve()
-    print(sol.numberOfGlobalTrials)
-    print(sol.numberOfLocalTrials)
-    print(sol.solvingTime)
-
-    print(problem.knownOptimum[0].point.floatVariables)
-    print(sol.bestTrials[0].point.floatVariables)
-    print(sol.bestTrials[0].functionValues[0].value)
 ```
 
 # Примеры использования
 
-Описать пару примеров из папки example
+Продемонстрируем использование фреймворка iOpt при настройке гиперпараметров одного из методов машинного обучения. В методе опорных векторов  ([SVC](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html)) найдем оптимальные вещественные гиперпараметры (**C** - параметр регуляризации, **gamma** - коэффициент ядра) в задаче классификации рака молочной железы ([подробное описание данных](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic))). 
+
+
+```python
+import numpy as np
+from sklearn.utils import shuffle
+from sklearn.datasets import load_breast_cancer
+
+from iOpt.method.listener import StaticNDPaintListener, AnimationNDPaintListener, ConsoleFullOutputListener
+from iOpt.solver import Solver
+from iOpt.solver_parametrs import SolverParameters
+from examples.Machine_learning.SVC._2D.Problems import SVC_2d
+
+
+def load_breast_cancer_data():
+    dataset = load_breast_cancer()
+    x_raw, y_raw = dataset['data'], dataset['target']
+    inputs, outputs = shuffle(x_raw, y_raw ^ 1, random_state=42)
+    return inputs, outputs
+
+
+if __name__ == "__main__":
+    x, y = load_breast_cancer_data()
+    regularization_value_bound = {'low': 1, 'up': 6}
+    kernel_coefficient_bound = {'low': -7, 'up': -3}
+
+    problem = SVC_2d.SVC_2D(x, y, regularization_value_bound, kernel_coefficient_bound)
+
+    method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
+    solver = Solver(problem, parameters=method_params)
+
+    apl = AnimationNDPaintListener("svc2d_anim.png", "output", varsIndxs=[0, 1], toPaintObjFunc=False)
+    solver.AddListener(apl)
+
+    spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
+    solver.AddListener(spl)
+    
+    cfol = ConsoleFullOutputListener(mode='full')
+    solver.AddListener(cfol)
+
+    solver_info = solver.Solve()
+
+```
 
 # Структура проекта
 
