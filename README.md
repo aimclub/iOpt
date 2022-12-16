@@ -67,13 +67,13 @@ if __name__ == "__main__":
     params = SolverParameters(r=2.5, eps=0.01, itersLimit=300, refineSolution=True)
     #Создание решателя
     solver = Solver(problem, parameters=params)
-    #Вывод результатов в консоль
+    #Вывод результатов в консоль в процессе решения
     cfol = ConsoleFullOutputListener(mode='full')
     solver.AddListener(cfol)
-    #3D визуализация после решения задачи
+    #3D визуализация по окончании решения
     spl = StaticNDPaintListener("rastrigin.png", "output", varsIndxs=[0,1], mode="surface", calc="interpolation")
     solver.AddListener(spl)
-    #Решение задачи
+    #Запуск решения задачи
     sol = solver.Solve()
 ```
 
