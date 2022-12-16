@@ -1,4 +1,4 @@
-from iOpt.method.listener import StaticPaintListener, AnimationPaintListener
+from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, ConsoleFullOutputListener
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from examples.Genetic_algorithm.TSP._1D.Problems import ga_tsp_vary_mutation
@@ -25,21 +25,17 @@ if __name__ == "__main__":
     problem = ga_tsp_vary_mutation.GA_TSP_Vary_Mutation(tsp_matrix, num_iteration,
                                                         population_size, mutation_probability_bound)
 
-    method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
+    method_params = SolverParameters(r=np.double(3.0), itersLimit=40)
     solver = Solver(problem, parameters=method_params)
 
 
-    apl = AnimationPaintListener("gatsp_1d_anim_vary_mutation.png", "output", toPaintObjFunc=True)
+    apl = AnimationPaintListener("gatsp_1d_anim_vary_mutation.png", "output", toPaintObjFunc=False)
     solver.AddListener(apl)
 
     spl = StaticPaintListener("gatsp_1d_stat_vary_mutation.png", "output", mode="interpolation")
     solver.AddListener(spl)
 
+    cfol = ConsoleFullOutputListener(mode='full')
+    solver.AddListener(cfol)
 
     solver_info = solver.Solve()
-    print(solver_info.numberOfGlobalTrials)
-    print(solver_info.numberOfLocalTrials)
-    print(solver_info.solvingTime)
-
-    print(solver_info.bestTrials[0].point.floatVariables)
-    print(solver_info.bestTrials[0].functionValues[0].value)

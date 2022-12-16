@@ -1,4 +1,4 @@
-from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, StaticNDPaintListener, AnimationNDPaintListener
+from iOpt.method.listener import StaticNDPaintListener, AnimationNDPaintListener, ConsoleFullOutputListener
 from sklearn.datasets import load_breast_cancer
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
@@ -29,10 +29,7 @@ if __name__ == "__main__":
     spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
     solver.AddListener(spl)
 
-    solver_info = solver.Solve()
-    print(solver_info.numberOfGlobalTrials)
-    print(solver_info.numberOfLocalTrials)
-    print(solver_info.solvingTime)
+    cfol = ConsoleFullOutputListener(mode='full')
+    solver.AddListener(cfol)
 
-    print(solver_info.bestTrials[0].point.floatVariables)
-    print(solver_info.bestTrials[0].functionValues[0].value)
+    solver_info = solver.Solve()
