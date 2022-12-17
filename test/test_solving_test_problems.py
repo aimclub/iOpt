@@ -9,6 +9,7 @@ from iOpt.problems.rastrigin import Rastrigin
 from iOpt.problems.xsquared import XSquared
 from iOpt.problems.hill import Hill
 from iOpt.problems.shekel import Shekel
+from iOpt.problems.grishagin import Grishagin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 
@@ -83,7 +84,27 @@ class TestRastrigin(unittest.TestCase):
         self.problem = Shekel(1)
         params = SolverParameters(r=self.r, eps=self.epsVal)
         self.solver = Solver(self.problem, parameters=params)
-        numberOfGlobalTrials = 65
+        numberOfGlobalTrials = 34
+
+        sol = self.solver.Solve()
+                
+        isSolve = 0
+        res = True
+        for j in range(self.problem.dimension): 
+            fabsx = np.abs(self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
+            fm = self.epsVal * (self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j]);
+            if (fabsx > fm):
+                res = res and False
+
+        self.assertEqual(res, True)
+        self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
+
+    def test_Grishagin_Solve(self):
+        self.r = 3;
+        self.problem = Grishagin(1)
+        params = SolverParameters(r=self.r, eps=self.epsVal)
+        self.solver = Solver(self.problem, parameters=params)
+        numberOfGlobalTrials = 543
 
         sol = self.solver.Solve()
                 
