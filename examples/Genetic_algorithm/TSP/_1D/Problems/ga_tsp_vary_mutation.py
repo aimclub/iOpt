@@ -61,5 +61,5 @@ class GA_TSP_Vary_Mutation(Problem):
                         max_iter=self.numberOfIterations, prob_mut=mutation_prob)
         best_points, best_distance = ga_tsp.run()
         functionValue.value = best_distance[0]
-        print(best_distance[0])
+#        print(best_distance[0])
         return functionValue
