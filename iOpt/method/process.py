@@ -48,6 +48,7 @@ class Process:
         self.method = method
         self.__listeners = listeners
         self.__first_iteration = True
+        self.localMethodIterationCount = 0
 
     def Solve(self) -> Solution:
         """
@@ -79,7 +80,6 @@ class Process:
         for listener in self.__listeners:
             status = self.method.CheckStopCondition()
             listener.OnMethodStop(self.searchData, self.GetResults(), status)
-
 
         return result
 

@@ -7,20 +7,21 @@ from iOpt.trial import Trial
 
 class Problem(ABC):
     """Базовый класс для задач оптимизации"""
+
     def __init__(self):
         self.numberOfFloatVariables: int = 0
         self.numberOfDisreteVariables: int = 0
         self.numberOfObjectives: int = 0
         self.numberOfConstraints: int = 0
 
-        self.floatVariableNames: np.ndarray(shape = (1), dtype = str) = []
-        self.discreteVariableNames: np.ndarray(shape = (1), dtype = str) = []
+        self.floatVariableNames: np.ndarray(shape=(1), dtype=str) = []
+        self.discreteVariableNames: np.ndarray(shape=(1), dtype=str) = []
 
-        self.lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
-        self.upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double) = []
-        self.discreteVariableValues: np.ndarray(shape = (1, 1), dtype = str) = []
-        
-        self.knownOptimum: np.ndarray(shape = (1), dtype = Trial) = []
+        self.lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
+        self.upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
+        self.discreteVariableValues: np.ndarray(shape=(1, 1), dtype=str) = []
+
+        self.knownOptimum: np.ndarray(shape=(1), dtype=Trial) = []
 
     @abstractmethod
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
@@ -30,4 +31,3 @@ class Problem(ABC):
 
         :return: Вычисленное значение функции."""
         pass
-

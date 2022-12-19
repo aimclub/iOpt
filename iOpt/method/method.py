@@ -59,7 +59,8 @@ class Method:
     @staticmethod
     def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
         """
-        Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1], полученными при редукции размерности.
+        Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
+          полученными при редукции размерности.
         
         :param lx: левая точка
         :param rx: правая точка
@@ -164,7 +165,8 @@ class Method:
         r"""
         Вычисление точки нового испытания :math:`x^{k+1}`.
         
-        :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`, которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
+        :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
+          которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
         if self.recalc is True:
             self.RecalcAllCharacteristics()
@@ -239,7 +241,7 @@ class Method:
         if left_point.GetIndex() == curr_point.GetIndex():
             v = curr_point.GetIndex()
             globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
-                      2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
+                2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
         elif left_point.GetIndex() < curr_point.GetIndex():
             v = curr_point.GetIndex()
             globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
@@ -250,7 +252,8 @@ class Method:
 
     def RenewSearchData(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
         """
-        Метод обновляет всю поисковую инфтрмацию: длины интервалов, константы Гёльдера, все характеристики и вставляет новую точку в хранилище.
+        Метод обновляет всю поисковую инфтрмацию: длины интервалов, константы Гёльдера, все характеристики и вставляет
+          новую точку в хранилище.
 
         :param newpoint: новая точка
         :param oldpoint: правая точка интервала, которому принадлежит новая точка

@@ -5,6 +5,7 @@ from examples.Genetic_algorithm.TSP._1D.Problems import ga_tsp_vary_mutation
 import numpy as np
 import xml.etree.ElementTree as ET
 
+
 def load_TSPs_matrix(filename):
     root = ET.parse(filename).getroot()
     columns = root.findall('graph/vertex')
@@ -27,7 +28,6 @@ if __name__ == "__main__":
 
     method_params = SolverParameters(r=np.double(3.0), itersLimit=40)
     solver = Solver(problem, parameters=method_params)
-
 
     apl = AnimationPaintListener("gatsp_1d_anim_vary_mutation.png", "output", toPaintObjFunc=False)
     solver.AddListener(apl)

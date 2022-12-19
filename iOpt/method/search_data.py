@@ -19,6 +19,7 @@ class SearchDataItem(Trial):
         интервал с включенной правой точкой, а так же ссылками на соседние интервалы. SearchDataItem
         является наследником от класса Trial.
     """
+
     def __init__(self, y: Point, x: np.double,
                  functionValues: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
                  discreteValueIndex: int = 0):
@@ -169,6 +170,7 @@ class CharacteristicsQueue:
         Приоритетом является значении характерристики на данном интервале.
 
         :param key: Приоритет поискового интервала
+        :param dataItem: Вставляемый интервал
         """
         self.__baseQueue.insert(dataItem, key)
 
@@ -210,6 +212,7 @@ class SearchData:
     Класс SearchData предназначен для хранения множества всех интервалов, исходной задачи
     и приоритетной очереди глобальных характеристик.
     """
+
     # очереди характеристик
     # _RGlobalQueue: CharacteristicsQueue = CharacteristicsQueue(None)
     # упорядоченное множество всех испытаний по X
@@ -334,7 +337,7 @@ class SearchData:
         """
         try:
             return self._allTrials[-1]
-        except:
+        except Exception:
             print("GetLastItem: List is empty")
 
     def SaveProgress(self, fileName: str):
@@ -368,8 +371,8 @@ class SearchData:
 class SearchDataDualQueue(SearchData):
     """
     Класс SearchDataDualQueue является наследником класса SearchData. Предназначен
-    для хренения множества всех интервалов, исходной задачи и двух приоритетных очередей
-    для глобальных и локальных характеристик.
+      для хренения множества всех интервалов, исходной задачи и двух приоритетных очередей
+      для глобальных и локальных характеристик.
 
     """
 
@@ -394,7 +397,7 @@ class SearchDataDualQueue(SearchData):
                        rightDataItem: SearchDataItem = None):
         """
         Метод позволяет добавить новый интервал испытаний в список всех проведенных испытаний
-        и приоритетные очереди глобальных и локальных характеристик.
+          и приоритетные очереди глобальных и локальных характеристик.
 
         :param newDataItem: Новый интервал испытаний
         :param rightDataItem: Покрывающий интервал, является правым интервалом для newDataItem
@@ -450,7 +453,7 @@ class SearchDataDualQueue(SearchData):
     def RefillQueue(self):
         """
        Метод позволяет перезаполнить очереди глобальных и локальных характеристик, например,
-       при их опустошении или при смене оценки константы Липшица.
+         при их опустошении или при смене оценки константы Липшица.
 
        """
         self.ClearQueue()

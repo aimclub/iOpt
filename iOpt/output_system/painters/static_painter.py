@@ -9,6 +9,7 @@ import os
 from sklearn.neural_network import MLPRegressor
 from scipy import interpolate
 
+
 class FunctionStaticPainter:
     def __init__(self, searchData: SearchData,
                  solution: Solution):
@@ -33,11 +34,13 @@ class FunctionStaticPainter:
         rightBound = self.solution.problem.upperBoundOfFloatVariables
 
         # передаём точки, оптимум, границы и указатель на функцию для построения целевой функции
-        sv1d = StaticVisualization1D(isPointsAtBottom, parameterInNDProblem, points[1:len(points) - 1], values[1:len(values) - 1], bestTrialPoint, bestTrialValue, leftBound, rightBound, self.solution.problem.Calculate)
+        sv1d = StaticVisualization1D(isPointsAtBottom, parameterInNDProblem, points[1:len(points) - 1],
+                                     values[1:len(values) - 1], bestTrialPoint, bestTrialValue, leftBound, rightBound,
+                                     self.solution.problem.Calculate)
         if toPaintObjFunc:
             sv1d.drawObjFunction(pointsCount=150)
         sv1d.drawPoints()
-        
+
         if not os.path.isdir(pathForSaves):
             if pathForSaves == "":
                 plt.savefig(fileName)
@@ -80,13 +83,13 @@ class FunctionStaticPainter:
         X_train = np.array(X_train[1:-1])
         y_train = y_train[1:-1]
 
-        nn = MLPRegressor(activation='logistic',          # can be tanh, identity, logistic, relu
-                    solver='lbfgs',                          # can be lbfgs, sgd , adam
-                    alpha=0.001,
-                    hidden_layer_sizes=(50,),
-                    max_iter=5000,
-                    tol=10e-8,
-                    random_state=None)
+        nn = MLPRegressor(activation='logistic',  # can be tanh, identity, logistic, relu
+                          solver='lbfgs',  # can be lbfgs, sgd , adam
+                          alpha=0.001,
+                          hidden_layer_sizes=(50,),
+                          max_iter=5000,
+                          tol=10e-8,
+                          random_state=None)
 
         nn.fit(X_train[:, np.newaxis], y_train)
         size = 100
@@ -138,7 +141,7 @@ class FunctionStaticPainter:
         X_train = np.array(X_train[1:-1])
         y_train = np.array(y_train[1:-1])
 
-        #f = interpolate.interp1d(X_train, y_train, kind=3, fill_value="extrapolate")
+        # f = interpolate.interp1d(X_train, y_train, kind=3, fill_value="extrapolate")
         f = interpolate.interp1d(X_train, y_train, kind=3)
         size = 100
         x_plot = np.linspace(min(X_train), max(X_train), size)
@@ -156,9 +159,11 @@ class FunctionStaticPainter:
             plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
-        
+
+
 class StaticVisualization1D:
-    def __init__(self, isPointsAtBottom, parameterInNDProblem, _points, _values, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc):
+    def __init__(self, isPointsAtBottom, parameterInNDProblem, _points, _values, _optimum, _optimumValue, _leftBound,
+                 _rightBound, _objFunc):
         self.points = _points
         self.values = _values
         self.isPointsAtBottom = isPointsAtBottom
@@ -172,12 +177,12 @@ class StaticVisualization1D:
         plt.style.use('fivethirtyeight')
         self.fig, self.ax = plt.subplots(1, 1)
         self.ax.set_xlim([self.leftBound, self.rightBound])
-        self.ax.tick_params(axis = 'both', labelsize = 8)
-    
+        self.ax.tick_params(axis='both', labelsize=8)
+
     def drawObjFunction(self, pointsCount):
         x = np.arange(self.leftBound, self.rightBound, (self.rightBound - self.leftBound) / pointsCount)
         z = []
-        x_ : Point
+        x_: Point
         copy = self.optimum.copy()
         for i in range(pointsCount):
             if self.parameterInNDProblem is not None:
@@ -189,7 +194,7 @@ class StaticVisualization1D:
             fv = self.objFunc(x_, fv)
             z.append(fv.value)
         plt.rcParams['contour.negative_linestyle'] = 'solid'
-        plt.plot(x, z, linewidth = 1, color='black', alpha=0.7)      
+        plt.plot(x, z, linewidth=1, color='black', alpha=0.7)
 
     def drawPoints(self):
         for i in range(len(self.points)):
@@ -202,17 +207,17 @@ class StaticVisualization1D:
                 point = point_[self.parameterInNDProblem]
             else:
                 point = point_
-        
-            self.ax.plot(point, value, color='blue', 
-                        label='original', marker='o', markersize=2)
-        
+
+            self.ax.plot(point, value, color='blue',
+                         label='original', marker='o', markersize=2)
+
         if not self.isPointsAtBottom:
             value = self.optimumValue
         else:
             value - self.optimumValue - 1
-        self.ax.plot(self.optimum[self.parameterInNDProblem], value, color='red', 
-                    label='original', marker='x', markersize=4)
-    
+        self.ax.plot(self.optimum[self.parameterInNDProblem], value, color='red',
+                     label='original', marker='x', markersize=4)
+
 
 class FunctionStaticNDPainter:
     def __init__(self, searchData: SearchData,
@@ -237,9 +242,10 @@ class FunctionStaticNDPainter:
         rightBound = self.solution.problem.upperBoundOfFloatVariables
 
         # передаём точки, оптимум, границы и указатель на функцию для построения целевой функции
-        sv1d = StaticVisualizationND("2d", points, bestTrialPoint, bestTrialValue, leftBound, rightBound, self.solution.problem.Calculate, first, second)
+        sv1d = StaticVisualizationND("2d", points, bestTrialPoint, bestTrialValue, leftBound, rightBound,
+                                     self.solution.problem.Calculate, first, second)
 
-        pointsCount=150
+        pointsCount = 150
         xF = np.arange(sv1d.leftBoundF, sv1d.rightBoundF, (sv1d.rightBoundF - sv1d.leftBoundF) / pointsCount)
         xS = np.arange(sv1d.leftBoundS, sv1d.rightBoundS, (sv1d.rightBoundS - sv1d.leftBoundS) / pointsCount)
         copy = sv1d.optimum.copy()
@@ -265,7 +271,6 @@ class FunctionStaticNDPainter:
         sv1d.ax.plot(sv1d.optimum[sv1d.first], sv1d.optimum[sv1d.second], color='red',
                      label='original', marker='x', markersize=4)
 
-
         if not os.path.isdir(pathForSaves):
             if pathForSaves == "":
                 plt.savefig(fileName)
@@ -276,6 +281,7 @@ class FunctionStaticNDPainter:
             plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
+
     def PaintLLI(self, fileName, pathForSaves, params):
         first = params[0]
         second = params[1]
@@ -336,6 +342,7 @@ class FunctionStaticNDPainter:
             plt.savefig(pathForSaves + "/" + fileName)
 
         plt.show()
+
     def PaintApproximation(self, fileName, pathForSaves, params):
         first = params[0]
         second = params[1]
@@ -349,7 +356,8 @@ class FunctionStaticNDPainter:
         rightBound = self.solution.problem.upperBoundOfFloatVariables
 
         # передаём точки, оптимум, границы и указатель на функцию для построения целевой функции
-        sv1d = StaticVisualizationND("3d", [], bestTrialPoint, bestTrialValue, leftBound, rightBound, self.solution.problem.Calculate, first, second)
+        sv1d = StaticVisualizationND("3d", [], bestTrialPoint, bestTrialValue, leftBound, rightBound,
+                                     self.solution.problem.Calculate, first, second)
 
         # формируем массив точек итераций для графика
         X_train = []
@@ -369,12 +377,12 @@ class FunctionStaticNDPainter:
         Y = Y[1:-1]
 
         nn = MLPRegressor(activation='logistic',  # can be tanh, identity, logistic, relu
-                             solver='lbfgs',  # can be lbfgs, sgd , adam
-                             alpha=0.001,
-                             hidden_layer_sizes=(40,),
-                             max_iter=10000,
-                             tol=10e-6,
-                             random_state=10)
+                          solver='lbfgs',  # can be lbfgs, sgd , adam
+                          alpha=0.001,
+                          hidden_layer_sizes=(40,),
+                          max_iter=10000,
+                          tol=10e-6,
+                          random_state=10)
 
         nn.fit(X_train, y_train)
         size = 50
@@ -393,8 +401,9 @@ class FunctionStaticNDPainter:
         # полученная аппроксимация
         sv1d.ax.plot_surface(xx, yy, z, cmap=plt.cm.viridis, alpha=0.6)
         sv1d.ax.tick_params(axis='both', labelsize=8)
-        sv1d.ax.scatter(X, Y, y_train, color = 'blue', label = 'original', marker = 'o', s=2, alpha=1.0)
-        sv1d.ax.scatter([bestTrialPoint[first]], [bestTrialPoint[second]], bestTrialValue, s=4, color='red', label = 'original', marker = 'x', alpha=1.0)
+        sv1d.ax.scatter(X, Y, y_train, color='blue', label='original', marker='o', s=2, alpha=1.0)
+        sv1d.ax.scatter([bestTrialPoint[first]], [bestTrialPoint[second]], bestTrialValue, s=4, color='red',
+                        label='original', marker='x', alpha=1.0)
 
         if not os.path.isdir(pathForSaves):
             if pathForSaves == "":
@@ -466,8 +475,10 @@ class FunctionStaticNDPainter:
 
         plt.show()
 
+
 class StaticVisualizationND:
-    def __init__(self, mode, _points, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc, _firstParameter, _secondParameter):
+    def __init__(self, mode, _points, _optimum, _optimumValue, _leftBound, _rightBound, _objFunc, _firstParameter,
+                 _secondParameter):
         self.points = _points
         self.optimum = _optimum
         self.optimumValue = _optimumValue
@@ -488,6 +499,4 @@ class StaticVisualizationND:
         plt.rcParams["figure.figsize"] = (8, 6)
         self.ax.set_xlim([self.leftBoundF, self.rightBoundF])
         self.ax.set_ylim([self.leftBoundS, self.rightBoundS])
-        self.ax.tick_params(axis = 'both', labelsize = 8)
-
-
+        self.ax.tick_params(axis='both', labelsize=8)

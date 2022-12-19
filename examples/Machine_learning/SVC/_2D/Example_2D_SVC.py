@@ -6,6 +6,7 @@ from examples.Machine_learning.SVC._2D.Problems import SVC_2d
 from sklearn.utils import shuffle
 import numpy as np
 
+
 def load_breast_cancer_data():
     dataset = load_breast_cancer()
     x_raw, y_raw = dataset['data'], dataset['target']

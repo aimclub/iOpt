@@ -9,11 +9,15 @@ from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
 from typing import Dict
 
+
 class SVC_Fixed_Regularization(Problem):
     """
-    Класс SVC_Fixed_Regularization представляет возможность поиска оптимального набора гиперпараметров алгоритма C-Support Vector Classification.
-    Найденные параметры являются оптимальными при фиксированном значении параметра регуляризации (С) при варьировании значения коэфицента ядра (gamma)
+    Класс SVC_Fixed_Regularization представляет возможность поиска оптимального набора гиперпараметров алгоритма
+      C-Support Vector Classification.
+      Найденные параметры являются оптимальными при фиксированном значении параметра регуляризации (С) при
+      варьировании значения коэфицента ядра (gamma)
     """
+
     def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray, regularization_value: float,
                  kernel_coefficient_bound: Dict[str, float]):
         """
@@ -24,6 +28,7 @@ class SVC_Fixed_Regularization(Problem):
         :param regularization_value: Значение параметра регуляризации
         :param kernel_coefficient_bound: Границы изменения значений коэфицента ядра (low - нижняя граница, up - верхняя)
         """
+        super(SVC_Fixed_Regularization, self).__init__()
         self.dimension = 1
         self.numberOfFloatVariables = 1
         self.numberOfDisreteVariables = 0
@@ -50,5 +55,5 @@ class SVC_Fixed_Regularization(Problem):
         clf = SVC(C=10 ** self.regularizationValue, gamma=10 ** kernel_coefficient)
         clf.fit(self.x, self.y)
         functionValue.value = -cross_val_score(clf, self.x, self.y,
-                                              scoring=lambda model, x, y: f1_score(y, model.predict(x))).mean()
+                                               scoring=lambda model, x, y: f1_score(y, model.predict(x))).mean()
         return functionValue

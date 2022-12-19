@@ -6,10 +6,12 @@ from iOpt.problem import Problem
 from sko.GA import GA_TSP
 from typing import Dict
 
+
 class GA_TSP_2D(Problem):
     """
     Класс GA_TSP представляет возможность решения задачи коммивояжёра средствами генетического алгоритма.
-    Найденное решение является оптимальным при использовании фиксированного значений количества итераций при варьировании значений вероятности мутации и размера популяции.
+      Найденное решение является оптимальным при использовании фиксированного значений количества итераций
+      при варьировании значений вероятности мутации и размера популяции.
     """
 
     def __init__(self, cost_matrix: np.ndarray, num_iteration: int,
@@ -23,6 +25,7 @@ class GA_TSP_2D(Problem):
         :param population_size_bound: Границы изменения размера популяции (low - нижняя граница, up - верхняя)
         :param mutation_probability_bound: Границы изменения вероятности мутации (low - нижняя граница, up - верхняя)
         """
+        super(GA_TSP_2D, self).__init__()
         self.dimension = 2
         self.numberOfFloatVariables = 2
         self.numberOfDisreteVariables = 0
@@ -32,8 +35,12 @@ class GA_TSP_2D(Problem):
         # Проверка корректности числа итераций метода
         if num_iteration <= 0:
             raise ValueError('The number of iterations cannot be zero or negative.')
-        #Проверка валидности интервала вероятностей мутации
-        if mutation_probability_bound['low'] > mutation_probability_bound['up'] or mutation_probability_bound['low'] < 0.0 or mutation_probability_bound['low'] > 1.0 or mutation_probability_bound['up'] < 0.0 or mutation_probability_bound['up'] > 1.0:
+        # Проверка валидности интервала вероятностей мутации
+        if mutation_probability_bound['low'] > mutation_probability_bound['up'] or \
+                mutation_probability_bound['low'] < 0.0 or \
+                mutation_probability_bound['low'] > 1.0 or \
+                mutation_probability_bound['up'] < 0.0 or \
+                mutation_probability_bound['up'] > 1.0:
             raise ValueError('Invalid mutation probability interval')
         # Проверка валидности размера популяции
         if population_size_bound['low'] < 2 or population_size_bound['low'] > population_size_bound['up']:
@@ -44,8 +51,6 @@ class GA_TSP_2D(Problem):
         self.lowerBoundOfFloatVariables = np.array([mutation_probability_bound['low'], population_size_bound['low']])
         self.upperBoundOfFloatVariables = np.array([mutation_probability_bound['up'], population_size_bound['up'] / 2])
         self.n_dim = cost_matrix.shape[0]
-
-
 
     def calc_total_distance(self, routine):
         """
@@ -64,7 +69,7 @@ class GA_TSP_2D(Problem):
         :param functionValue: объект хранения значения целевой функции в точке
         """
         mutation_prob, num_population = point.floatVariables[0], int(point.floatVariables[1])
-        #Контроль чётности осыбей популяции
+        # Контроль чётности осыбей популяции
         if num_population % 2 != 0:
             num_population -= 1
 

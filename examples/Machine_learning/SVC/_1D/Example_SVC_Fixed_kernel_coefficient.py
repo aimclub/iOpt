@@ -1,10 +1,11 @@
-from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, StaticNDPaintListener, AnimationNDPaintListener
+from iOpt.method.listener import StaticPaintListener, AnimationPaintListener
 from sklearn.datasets import load_breast_cancer
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from examples.Machine_learning.SVC._1D.Problems import SVC_Fixed_Kernel
 from sklearn.utils import shuffle
 import numpy as np
+
 
 def load_breast_cancer_data():
     dataset = load_breast_cancer()

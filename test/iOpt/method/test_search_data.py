@@ -117,7 +117,7 @@ class TestCharacteristicsQueue(unittest.TestCase):
         self.assertEqual(getDataItemG.GetX(), 0.05)
         self.assertEqual(getDataItemG.GetDiscreteValueIndex(), 2)
         self.assertEqual(getDataItemG.globalR, 5.0)
-        self.assertEqual(getDataItemG.GetY(),([-0.6, 0.7], ['a', 'f']))
+        self.assertEqual(getDataItemG.GetY(), ([-0.6, 0.7], ['a', 'f']))
 
     def test_GetLen(self):
         dataItem1 = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0.2, 1)
@@ -421,6 +421,7 @@ class TestSearchData(unittest.TestCase):
             getLastItem = self.searchData.GetLastItem()
         except Exception as exc:
             assert True, f"'self.searchData.GetLastItem()' raised an exception{exc}"
+
 
 class TestSearchDataDualQueue(unittest.TestCase):
     def setUp(self):

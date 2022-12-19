@@ -1,9 +1,6 @@
-import numpy as np
-from iOpt.trial import Point, FunctionValue, Trial
 from iOpt.problem import Problem
-from iOpt.problems.GKLS_function.gkls_random import GKLSRandomGenerator
-from iOpt.problems.GKLS_function.gkls_function import T_GKLS_Minima, T_GKLS_GlobalMinima, GKLSClass, GKLSFuncionType, GKLSParameters, GKLSFunction
-import math
+from iOpt.problems.GKLS_function.gkls_function import GKLSClass, GKLSFuncionType, GKLSFunction
+from iOpt.trial import Point, FunctionValue, Trial
 
 
 class GKLS(Problem):
@@ -13,14 +10,15 @@ class GKLS(Problem):
     значением функции в ней и т.п. 
     """
 
-    def __init__(self, dimension: int, 
-                 functionNumber: int=1) -> None:
+    def __init__(self, dimension: int,
+                 functionNumber: int = 1) -> None:
         """
         Конструктор класса GKLS генератора. 
 
         :param dimension: Размерность задачи, :math:`2 <= dimension <= 5`
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 100`
         """
+        super(GKLS, self).__init__()
         self.dimension = dimension
         self.numberOfFloatVariables = dimension
         self.numberOfDisreteVariables = 0
@@ -35,19 +33,18 @@ class GKLS(Problem):
         self.function: GKLSFunction = GKLSFunction()
 
         self.mMaxDimension: int = 5
-        self.mMinDimension: int  = 2
+        self.mMinDimension: int = 2
 
-        self.function_number: int  = functionNumber
-        self.num_minima: int  = 10
-        
-        self.problem_class: int  = GKLSClass.Simple
-        self.function_class: int  = GKLSFuncionType.TD
+        self.function_number: int = functionNumber
+        self.num_minima: int = 10
+
+        self.problem_class: int = GKLSClass.Simple
+        self.function_class: int = GKLSFuncionType.TD
 
         self.function.GKLS_global_value: float = -1.0
         self.function.NumberOfLocalMinima: int = self.num_minima
         self.function.SetDimension(self.dimension)
-        self.function.mFunctionType: int  = self.function_class
-
+        self.function.mFunctionType: int = self.function_class
 
         self.function.SetFunctionClass(self.problem_class, self.dimension)
 
@@ -60,7 +57,7 @@ class GKLS(Problem):
 
         KOfunV = FunctionValue()
         KOfunV.value = self.function.GetOptimumValue()
-        
+
         KOpoint = Point(self.function.GetOptimumPoint(), [])
 
         self.knownOptimum = [Trial(KOpoint, [KOfunV])]
@@ -76,4 +73,3 @@ class GKLS(Problem):
         """
         functionValue.value = self.function.Calculate(point.floatVariables)
         return functionValue
-

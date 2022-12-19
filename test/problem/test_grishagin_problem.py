@@ -8,6 +8,7 @@ from iOpt.problems.grishagin import Grishagin
 
 class TesGrishagin(unittest.TestCase):
     """setUp method is overridden from the parent class Grishagin"""
+
     def setUp(self):
         self.Grishagin = Grishagin(4)
 
@@ -21,6 +22,7 @@ class TesGrishagin(unittest.TestCase):
 
     def test_OptimumValue(self):
         self.assertEqual(self.Grishagin.knownOptimum[0].functionValues[0].value, -11.541191160513788)
+
 
 """Executing the tests in the above test case class"""
 if __name__ == "__main__":

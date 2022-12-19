@@ -93,9 +93,10 @@ class TestMethod(unittest.TestCase):
 
     def test_CalculateM_dont_throws(self):
         curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+
         try:
             self.method.CalculateM(curr, None)
-        except:
+        except RuntimeError:
             self.fail("exception was raised!")
 
     def test_CalculateM_throws(self):

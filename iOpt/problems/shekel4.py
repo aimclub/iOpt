@@ -5,6 +5,7 @@ from iOpt.trial import Trial
 from iOpt.problem import Problem
 import iOpt.problems.Shekel4.shekel4_generation as shekelGen
 
+
 class Shekel4(Problem):
     """
     Функция Шекеля - это многомерная, мультимодальная, непрерывная, детерминированная функция, задана формулой:
@@ -13,12 +14,14 @@ class Shekel4(Problem):
        :math:`a, c` - параметры, генерируемые случайным образом.
        В генераторе размерность задачи равна 4.
     """
+
     def __init__(self, function_number: int):
         """
         Конструктор класса Shekel problem.
 
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 3`
         """
+        super(Shekel4, self).__init__()
         self.name = Shekel4
         self.dimension = 4
         self.numberOfFloatVariables = self.dimension
@@ -55,7 +58,7 @@ class Shekel4(Problem):
         :return: Вычисленное значение функции в точке point
         """
         res: np.double = 0
-        for i in range(shekelGen.maxI[self.fn-1]):
+        for i in range(shekelGen.maxI[self.fn - 1]):
             den: np.double = 0
             for j in range(self.dimension):
                 den = den + pow((point.floatVariables[j] - shekelGen.a[i][j]), 2.0)

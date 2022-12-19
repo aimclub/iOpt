@@ -5,6 +5,7 @@ from examples.Genetic_algorithm.TSP._2D.Problems import ga_tsp_2d
 import numpy as np
 import xml.etree.ElementTree as ET
 
+
 def load_TSPs_matrix(filename):
     root = ET.parse(filename).getroot()
     columns = root.findall('graph/vertex')

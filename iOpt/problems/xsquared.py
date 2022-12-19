@@ -6,8 +6,12 @@ from iOpt.problem import Problem
 
 
 class XSquared(Problem):
+    """
+    Функция критерия :math:`f(x) = x^2`.
+    """
 
     def __init__(self, dimension: int):
+        super(XSquared, self).__init__()
         self.name = XSquared
         self.dimension = dimension
         self.numberOfFloatVariables = dimension
@@ -31,12 +35,13 @@ class XSquared(Problem):
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0].value = 0;
+        KOfunV[0].value = 0
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
-        Compute selected function at given point.
+        Вычисление значения критерия
+
         :param point: координаты точки испытания, в которой будет вычислено значение функции
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
@@ -47,5 +52,6 @@ class XSquared(Problem):
 
         functionValue.value = sum
         return functionValue
+
     def GetName(self):
         return self.name
