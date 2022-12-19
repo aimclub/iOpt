@@ -8,23 +8,22 @@ if __name__ == "__main__":
     Минимизация тестовой функции Хилла c визуализацией
     """
 
-    #создание объекта задачи
+    # создание объекта задачи
     problem = Hill(0)
 
-    #Формируем параметры решателя
+    # Формируем параметры решателя
     params = SolverParameters(r=3, eps=0.01, itersLimit=300, refineSolution=True)
 
-    #Создаем решатель
+    # Создаем решатель
     solver = Solver(problem, parameters=params)
 
-    #Добавляем вывод результатов в консоль
+    # Добавляем вывод результатов в консоль
     cfol = ConsoleFullOutputListener(mode='full')
     solver.AddListener(cfol)
 
-    #Добавляем построение визуализации после решения задачи
+    # Добавляем построение визуализации после решения задачи
     spl = StaticPaintListener("hill.png", "output", indx=0, isPointsAtBottom=False, mode="objective function")
     solver.AddListener(spl)
 
-    #Решение задачи
+    # Решение задачи
     sol = solver.Solve()
-

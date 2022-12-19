@@ -12,12 +12,14 @@ class Rastrigin(Problem):
        :math:`f(y)=(\sum_{i=1}^{N}[x_{i}^{2}-10*cos(2\pi x_{i})])`,
        где :math:`x\in [-2.2, 1.8], N` – размерность задачи.
     """
+
     def __init__(self, dimension: int):
         """
         Конструктор класса Rastrigin problem.
 
         :param dimension: Размерность задачи.
         """
+        super(Rastrigin, self).__init__()
         self.name = Rastrigin
         self.dimension = dimension
         self.numberOfFloatVariables = dimension
@@ -59,5 +61,6 @@ class Rastrigin(Problem):
 
         functionValue.value = sum
         return functionValue
+
     def GetName(self):
         return self.name

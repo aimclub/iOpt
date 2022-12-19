@@ -8,6 +8,7 @@ from iOpt.problems.GKLS import GKLS
 
 class TestGKLS(unittest.TestCase):
     """setUp method is overridden from the parent class GKLS"""
+
     def setUp(self):
         self.GKLS = GKLS(3)
 
@@ -22,7 +23,7 @@ class TestGKLS(unittest.TestCase):
     def test_OptimumValue(self):
         self.assertEqual(self.GKLS.knownOptimum[0].functionValues[0].value, -1.0)
 
+
 """Executing the tests in the above test case class"""
 if __name__ == "__main__":
     unittest.main()
-

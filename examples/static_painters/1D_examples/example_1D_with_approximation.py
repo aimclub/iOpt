@@ -1,7 +1,7 @@
 from iOpt.problems.rastrigin import Rastrigin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import  StaticPaintListener
+from iOpt.method.listener import StaticPaintListener
 
 if __name__ == "__main__":
     # create the problem 1D dimension
@@ -19,3 +19,4 @@ if __name__ == "__main__":
 
     # solve the problem
     sol = solver.Solve()
+    

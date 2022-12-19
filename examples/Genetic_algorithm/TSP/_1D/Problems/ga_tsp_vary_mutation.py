@@ -5,10 +5,12 @@ from iOpt.problem import Problem
 from sko.GA import GA_TSP
 from typing import Dict
 
+
 class GA_TSP_Vary_Mutation(Problem):
     """
     Класс GA_TSP_Vary_Mutatiom представляет возможность решения задачи коммивояжёра средствами генетического алгоритма.
-    Найденное решение является оптимальным при использовании фиксированных значений количества итераций и размера популяции на обозначенном отрезке варьирования вероятности мутации.
+      Найденное решение является оптимальным при использовании фиксированных значений количества итераций и размера
+      популяции на обозначенном отрезке варьирования вероятности мутации.
     """
 
     def __init__(self, cost_matrix: np.ndarray, num_iteration: int, population_size: int,
@@ -21,6 +23,7 @@ class GA_TSP_Vary_Mutation(Problem):
         :param population_size: Размер популяции
         :param mutation_probability_bound: Границы изменения вероятности мутации (low - нижняя граница, up - верхняя)
         """
+        super(GA_TSP_Vary_Mutation, self).__init__()
         self.dimension = 1
         self.numberOfFloatVariables = 1
         self.numberOfDisreteVariables = 0
@@ -37,7 +40,6 @@ class GA_TSP_Vary_Mutation(Problem):
         self.lowerBoundOfFloatVariables = np.array([mutation_probability_bound['low']], dtype=np.double)
         self.upperBoundOfFloatVariables = np.array([mutation_probability_bound['up']], dtype=np.double)
         self.n_dim = cost_matrix.shape[0]
-
 
     def calc_total_distance(self, routine):
         """
@@ -61,5 +63,5 @@ class GA_TSP_Vary_Mutation(Problem):
                         max_iter=self.numberOfIterations, prob_mut=mutation_prob)
         best_points, best_distance = ga_tsp.run()
         functionValue.value = best_distance[0]
-#        print(best_distance[0])
+        #        print(best_distance[0])
         return functionValue

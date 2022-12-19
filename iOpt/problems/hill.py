@@ -6,6 +6,7 @@ from iOpt.problem import Problem
 import iOpt.problems.Hill.hill_generation as hillGen
 import math
 
+
 class Hill(Problem):
     """
     Функция Хилла - это мультимодальная, непрерывная, детерминированная функция, задана формулой:
@@ -14,12 +15,14 @@ class Hill(Problem):
        :math:`a, b` - параметры, генерируемые случайным образом.
        В данном генераторе задача является одномерной.
     """
+
     def __init__(self, function_number: int):
         """
         Конструктор класса Hill problem.
 
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
         """
+        super(Hill, self).__init__()
         self.name = Hill
         self.dimension = 1
         self.numberOfFloatVariables = self.dimension
@@ -57,6 +60,7 @@ class Hill(Problem):
         """
         res: np.double = 0
         for i in range(hillGen.NUM_HILL_COEFF):
-            res = res + hillGen.aHill[self.fn][i] * math.sin(2 * i * math.pi * point.floatVariables[0]) + hillGen.bHill[self.fn][i] * math.cos(2 * i * math.pi * point.floatVariables[0])
+            res = res + hillGen.aHill[self.fn][i] * math.sin(2 * i * math.pi * point.floatVariables[0]) + \
+                  hillGen.bHill[self.fn][i] * math.cos(2 * i * math.pi * point.floatVariables[0])
         functionValue.value = res
         return functionValue

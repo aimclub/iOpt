@@ -6,6 +6,7 @@ from iOpt.problem import Problem
 from iOpt.problems.grishagin_function.grishagin_function import GrishaginFunction
 import math
 
+
 class Grishagin(Problem):
     """
     Функция Гришагина задана формулой:
@@ -13,14 +14,17 @@ class Grishagin(Problem):
        :math:`+(\sum_{i=1}^{7}\sum_{i=1}^{7} C_{ij}a_{ij}(x)+D_{ij}b_{ij}(x))^{2}\}`,
        где :math:`a_{ij}(x) = sin(i\pi x_{1})sin(j\pi x_{2}),`
        :math:`b_{ij}(x) = cos(i\pi x_{1})cos(j\pi x_{2}),`
-       коэффициенты :math:`A_{ij}, B_{ij}, C_{ij}, D_{ij}` - равномерно распределеные величины на отрезке :math:`[-1, 1].`
+       коэффициенты :math:`A_{ij}, B_{ij}, C_{ij}, D_{ij}` - равномерно распределеные величины
+       на отрезке :math:`[-1, 1].`
     """
+
     def __init__(self, function_number: int):
         """
         Конструктор класса Grishagin problem.
 
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 100`
         """
+        super(Grishagin, self).__init__()
         self.name = Grishagin
         self.dimension = 2
         self.numberOfFloatVariables = self.dimension
@@ -37,7 +41,7 @@ class Grishagin(Problem):
         self.upperBoundOfFloatVariables.fill(1)
 
         self.functionNumber = function_number
-        self.function:  GrishaginFunction = GrishaginFunction(self.functionNumber)
+        self.function: GrishaginFunction = GrishaginFunction(self.functionNumber)
         self.function.SetFunctionNumber()
 
         self.knownOptimum = np.ndarray(shape=(1,), dtype=Trial)
