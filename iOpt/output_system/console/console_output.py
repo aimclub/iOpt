@@ -75,7 +75,7 @@ class ConsoleOutputer:
         dim = floatdim
         print()
         print("-" * (30 + 20 * dim + 2))
-        print("|{:^{width}}|".format("Task Discription", width=30 + 20 * dim))
+        print("|{:^{width}}|".format("Task Description", width=30 + 20 * dim))
         print("-" * (30 + 20 * dim + 2))
         print("|{:>29} {:<{width}}|".format("dimension: ", floatdim, width=20 * dim))
         tempstr = "["
