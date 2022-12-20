@@ -1,9 +1,6 @@
-import math
 import unittest
 import numpy as np
-import sys
 
-from iOpt.trial import FunctionValue, Point
 from iOpt.problems.GKLS import GKLS
 from iOpt.problems.rastrigin import Rastrigin
 from iOpt.problems.xsquared import XSquared
@@ -29,7 +26,6 @@ class TestRastrigin(unittest.TestCase):
 
         sol = self.solver.Solve()
 
-        isSolve = 0
         res = True
         for j in range(self.problem.dimension):
             fabsx = np.abs(self.problem.knownOptimum[0].point.floatVariables[j] -
@@ -51,7 +47,6 @@ class TestRastrigin(unittest.TestCase):
 
         sol = self.solver.Solve()
 
-        isSolve = 0
         res = True
         for j in range(self.problem.dimension):
             fabsx = np.abs(
@@ -73,7 +68,6 @@ class TestRastrigin(unittest.TestCase):
 
         sol = self.solver.Solve()
 
-        isSolve = 0
         res = True
         for j in range(self.problem.dimension):
             fabsx = np.abs(
@@ -95,7 +89,6 @@ class TestRastrigin(unittest.TestCase):
 
         sol = self.solver.Solve()
 
-        isSolve = 0
         res = True
         for j in range(self.problem.dimension):
             fabsx = np.abs(
@@ -117,7 +110,6 @@ class TestRastrigin(unittest.TestCase):
 
         sol = self.solver.Solve()
 
-        isSolve = 0
         res = True
         for j in range(self.problem.dimension):
             fabsx = np.abs(
@@ -144,7 +136,6 @@ class TestRastrigin(unittest.TestCase):
         sol = self.solver.Solve()
 
         # Проверяем что найденный АГП минимумом соответствуйте априори известному, для этой задачи, с точностью eps
-        isSolve = 0
         res = True
         for j in range(self.problem.dimension):
             fabsx = np.abs(
@@ -181,7 +172,6 @@ class TestRastrigin(unittest.TestCase):
 
             # Проверяем что найденный АГП минимумом соответствуйте априори известному, для этой задачи, с точностью eps
 
-            isSolve = 0
             res = True
             for j in range(self.problem.dimension):
                 fabsx = np.abs(
@@ -204,14 +194,13 @@ class TestRastrigin(unittest.TestCase):
 
         sol = self.solver.Solve()
 
-        isSolve = 0
         res = True
         for j in range(self.problem.dimension):
             fabsx = np.abs(
                 self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
             fm = self.epsVal * (
                     self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
-            if (fabsx > fm):
+            if fabsx > fm:
                 res = res and False
 
         self.assertEqual(res, True)
