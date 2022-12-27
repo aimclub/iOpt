@@ -102,7 +102,7 @@ class Evolvent:
         x = self.__GetXonY()
         return x
 
-    # Преобразование 
+    # Преобразование
     # --------------------------------
     def __TransformP2D(self):
         for i in range(0, self.numberOfFloatVariables):
@@ -129,7 +129,7 @@ class Evolvent:
         iv: np.narray(shape=(1), dtype=np.int32)
         l: np.int32
         d: np.double = 0.0
-        mn: np.int32
+        #mn: np.int32
         r: np.double
         iw: np.narray(shape=(1), dtype=np.int32)
         it: np.int32
@@ -141,7 +141,7 @@ class Evolvent:
         r = 0.5
         it = 0
 
-        mn = self.evolventDensity * self.numberOfFloatVariables
+        #mn = self.evolventDensity * self.numberOfFloatVariables
 
         iw = np.ones(self.numberOfFloatVariables, dtype=np.int32)
         self.yValues = np.zeros(self.numberOfFloatVariables, dtype=np.double)
