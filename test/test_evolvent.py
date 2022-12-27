@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-import iOpt.evolvent
+#import iOpt.evolvent
 
 from iOpt.evolvent.evolvent import Evolvent
 
@@ -41,7 +41,7 @@ class TestEvolvent(unittest.TestCase):
 
         with open('test/evolventTestData/evolventGetInverseImage.txt') as file:
             for line in file:
-                # читаем строку N = ; m = 
+                # читаем строку N = ; m =
                 (Nstr, mstr) = line.split(';')
                 # извлекаем N и m
                 N = int(Nstr.split('=')[1])
@@ -73,7 +73,7 @@ class TestEvolvent(unittest.TestCase):
 
         with open('test/evolventTestData/evolventGetImage.txt') as file:
             for line in file:
-                # читаем строку N = ; m = 
+                # читаем строку N = ; m =
                 (Nstr, mstr) = line.split(';')
                 # извлекаем N и m
                 N = int(Nstr.split('=')[1])
