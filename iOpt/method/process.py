@@ -1,21 +1,18 @@
-from typing import List
-
-from iOpt.method.listener import Listener
-from iOpt.evolvent.evolvent import Evolvent
-from iOpt.method.search_data import SearchData
-from iOpt.method.optim_task import OptimizationTask
-from iOpt.method.method import Method
-from iOpt.problem import Problem
-from iOpt.solver_parametrs import SolverParameters
-from iOpt.solution import Solution
-from iOpt.trial import Point
-from iOpt.trial import FunctionValue
-
 from datetime import datetime
-import time
+from typing import List
 
 import scipy
 from scipy.optimize import Bounds
+
+from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.listener import Listener
+from iOpt.method.method import Method
+from iOpt.method.optim_task import OptimizationTask
+from iOpt.method.search_data import SearchData
+from iOpt.solution import Solution
+from iOpt.solver_parametrs import SolverParameters
+from iOpt.trial import FunctionValue
+from iOpt.trial import Point
 
 
 class Process:

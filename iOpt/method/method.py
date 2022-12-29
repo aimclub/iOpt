@@ -1,17 +1,16 @@
 from __future__ import annotations
 
+import copy
 from typing import Tuple
 
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
-from iOpt.trial import Point, Trial
+from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
-from iOpt.method.optim_task import OptimizationTask
 from iOpt.solver_parametrs import SolverParameters
-
-import copy
+from iOpt.trial import Point
 
 
 class Method:
@@ -61,11 +60,11 @@ class Method:
         """
         Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
           полученными при редукции размерности.
-        
+
         :param lx: левая точка
         :param rx: правая точка
         :param dimension: размерность исходного пространства
-        
+
         :return: гельдерово расстояние между lx и rx.
         """
         return pow(rx - lx, 1.0 / dimension)
@@ -104,8 +103,8 @@ class Method:
         r"""
         Проверка условия остановки.
         Алгоритм должен завершить работу, когда достигнута точность eps или превышен лимит итераций.
-        
-        :return: True, если выполнен критерий остановки; False - в противном случае.        
+
+        :return: True, если выполнен критерий остановки; False - в противном случае.
         """
         if self.min_delta < self.parameters.eps or self.iterationsCount >= self.parameters.itersLimit:
             self.stop = True
@@ -130,9 +129,9 @@ class Method:
     def CalculateNextPointCoordinate(self, point: SearchDataItem) -> float:
         r"""
         Вычисление точки нового испытания :math:`x^{k+1}` в заданном интервале :math:`[x_{t-1},x_t]`.
-        
+
         :param point: интервал, заданный его правой точкой :math:`x_t`.
-        
+
         :return: точка нового испытания :math:`x^{k+1}` в этом интервале.
         """
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
@@ -164,7 +163,7 @@ class Method:
     def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
         Вычисление точки нового испытания :math:`x^{k+1}`.
-        
+
         :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
           которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
@@ -181,9 +180,9 @@ class Method:
     def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
         Проведение поискового испытания в заданной точке.
-        
+
         :param point: точка, в которой надо провести испытание.
-        
+
         :return: точка, в которой сохранены результаты испытания.
         """
         # point.functionValues = np.array(shape=self.task.problem.numberOfObjectives, dtype=FunctionValue)
@@ -202,7 +201,7 @@ class Method:
     def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
         Вычисление оценки константы Гельдера между между curr_point и left_point.
-        
+
         :param curr_point: правая точка интервала
         :param left_point: левая точка интервала
         """
@@ -241,7 +240,7 @@ class Method:
         if left_point.GetIndex() == curr_point.GetIndex():
             v = curr_point.GetIndex()
             globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
-                2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
+                      2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
         elif left_point.GetIndex() < curr_point.GetIndex():
             v = curr_point.GetIndex()
             globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
@@ -252,7 +251,7 @@ class Method:
 
     def RenewSearchData(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
         """
-        Метод обновляет всю поисковую инфтрмацию: длины интервалов, константы Гёльдера, все характеристики и вставляет
+        Метод обновляет всю поисковую информацию: длины интервалов, константы Гёльдера, все характеристики и вставляет
           новую точку в хранилище.
 
         :param newpoint: новая точка
@@ -273,7 +272,7 @@ class Method:
     def UpdateOptimum(self, point: SearchDataItem) -> None:
         r"""
         Обновляет оценку оптимума.
-        
+
         :param point: точка нового испытания.
         """
         if self.best is None or self.best.GetIndex() < point.GetIndex():
@@ -295,7 +294,7 @@ class Method:
     def GetIterationsCount(self) -> int:
         r"""
         Возвращает число выполненных итераций.
-        
+
         :return:  число выполненных итераций.
         """
         return self.iterationsCount
@@ -303,7 +302,7 @@ class Method:
     def GetOptimumEstimation(self) -> SearchDataItem:
         r"""
         Возвращает оценку оптимума.
-        
+
         :return: текущая оценка оптимума.
         """
         return self.best
