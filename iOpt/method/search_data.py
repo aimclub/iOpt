@@ -1,21 +1,22 @@
 from __future__ import annotations
-from typing import List
+
 import sys
+
 import numpy as np
-import depq
 from depq import DEPQ
 
-# from bintrees import AVLTree
-
-from iOpt.trial import Point, FunctionValue
-from iOpt.trial import Trial
 from iOpt.problem import Problem
 from iOpt.solution import Solution
+from iOpt.trial import Point, FunctionValue
+from iOpt.trial import Trial
+
+
+# from bintrees import AVLTree
 
 
 class SearchDataItem(Trial):
     """
-        Класс SearchDataItem предназначен для хранения поисковой информации, преставляющей собой
+        Класс SearchDataItem предназначен для хранения поисковой информации, представляющей собой
         интервал с включенной правой точкой, а так же ссылками на соседние интервалы. SearchDataItem
         является наследником от класса Trial.
     """
@@ -70,7 +71,7 @@ class SearchDataItem(Trial):
 
     def SetIndex(self, index: int):
         """
-        Метод позволяет задать значение индекса последнего выполненого ограничения
+        Метод позволяет задать значение индекса последнего выполненного ограничения
         для индексной схемы.
 
         :param index: Индекс ограничения
@@ -79,7 +80,7 @@ class SearchDataItem(Trial):
 
     def GetIndex(self) -> int:
         """
-        Метод позволяет получить значение индекса последнего выполненого ограничения
+        Метод позволяет получить значение индекса последнего выполненного ограничения
         для индексной схемы.
 
         :return: Значение индекса
@@ -88,7 +89,7 @@ class SearchDataItem(Trial):
 
     def SetZ(self, z: np.double):
         """
-        Метод позволяет задать значение функции для заданого индекса.
+        Метод позволяет задать значение функции для заданного индекса.
 
         :param z: Значение функции
         """
@@ -96,7 +97,7 @@ class SearchDataItem(Trial):
 
     def GetZ(self) -> np.double:
         """
-        Метод позволяет получить значение функции для заданого индекса.
+        Метод позволяет получить значение функции для заданного индекса.
 
         :return: Значение функции для index
         """
@@ -136,7 +137,7 @@ class SearchDataItem(Trial):
 
     def __lt__(self, other):
         """
-       Метод переопределяет оператор сравнения  < для двух интервалов.
+       Метод переопределяет оператор сравнения < для двух интервалов.
        :param other: Второй интервал
        :return: Значение true - если правая точка исходного интервала меньше
        правой точки второго, иначе - false.
@@ -146,7 +147,7 @@ class SearchDataItem(Trial):
 
 class CharacteristicsQueue:
     """
-    Класс CharacteristicsQueue предназачен для хранения приоритетной очереди
+    Класс CharacteristicsQueue предназначен для хранения приоритетной очереди
     характеристик с вытеснением.
     """
 
@@ -166,8 +167,8 @@ class CharacteristicsQueue:
 
     def Insert(self, key: np.double, dataItem: SearchDataItem):
         """
-        Метод добавляет поисковый интервал с указаным приоритетом.
-        Приоритетом является значении характерристики на данном интервале.
+        Метод добавляет поисковый интервал с указанным приоритетом.
+        Приоритетом является значение характеристики на данном интервале.
 
         :param key: Приоритет поискового интервала
         :param dataItem: Вставляемый интервал
@@ -176,7 +177,7 @@ class CharacteristicsQueue:
 
     def GetBestItem(self) -> (SearchDataItem, np.double):
         """
-        Метод позволяет получить интервал с лучшей хараактеристикой
+        Метод позволяет получить интервал с лучшей характеристикой
 
         :return: Кортеж: интервал с лучшей характеристикой, приоритет интервала в очереди
         """
@@ -200,7 +201,7 @@ class CharacteristicsQueue:
 
     def GetLen(self) -> int:
         """
-        Метод позвольяет получить текущий размер очереди.
+        Метод позволяет получить текущий размер очереди.
 
         :return: Значение текущего размера очереди
         """
@@ -236,7 +237,7 @@ class SearchData:
 
     def ClearQueue(self):
         """
-        Метод позвоялет очистить очередь характеристик
+        Метод позволяет очистить очередь характеристик
         """
         self._RGlobalQueue.Clear()
 
@@ -331,9 +332,9 @@ class SearchData:
 
     def GetLastItem(self) -> SearchDataItem:
         """
-        Метод позволяет получить последний добавленый интервал в список.
+        Метод позволяет получить последний добавленный интервал в список.
 
-        :return: Значение последнего добавленого интервала
+        :return: Значение последнего добавленного интервала
         """
         try:
             return self._allTrials[-1]
@@ -371,7 +372,7 @@ class SearchData:
 class SearchDataDualQueue(SearchData):
     """
     Класс SearchDataDualQueue является наследником класса SearchData. Предназначен
-      для хренения множества всех интервалов, исходной задачи и двух приоритетных очередей
+      для хранения множества всех интервалов, исходной задачи и двух приоритетных очередей
       для глобальных и локальных характеристик.
 
     """
@@ -388,7 +389,7 @@ class SearchDataDualQueue(SearchData):
 
     def ClearQueue(self):
         """
-        Метод позвоялет очистить очереди характеристик
+        Метод позволяет очистить очереди характеристик
         """
         self._RGlobalQueue.Clear()
         self.__RLocalQueue.Clear()
