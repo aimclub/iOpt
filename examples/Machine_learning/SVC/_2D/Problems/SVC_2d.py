@@ -3,12 +3,12 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-from sko.GA import GA_TSP
 from sklearn.metrics import f1_score
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
 from typing import Dict
-
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 class SVC_2D(Problem):
     """
@@ -53,8 +53,6 @@ class SVC_2D(Problem):
         :param functionValue: объект хранения значения целевой функции в точке
         """
         cs, gammas = point.floatVariables[0], point.floatVariables[1]
-        clf = SVC(C=10 ** cs, gamma=10 ** gammas)
-        clf.fit(self.x, self.y)
-        functionValue.value = -cross_val_score(clf, self.x, self.y,
-                                               scoring=lambda model, x, y: f1_score(y, model.predict(x))).mean()
+        clf = Pipeline([('scaler', StandardScaler()), ('model', SVC(C=10 ** cs, gamma=10 ** gammas))])
+        functionValue.value = -cross_val_score(clf, self.x, self.y, scoring='f1').mean()
         return functionValue
