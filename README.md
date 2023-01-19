@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/UNN-ITMM-Software/iOpt/blob/main/docs/iOpt_logo.png" width="200" height="150"/>
+  <img src="/docs/iOpt_logo.png" width="200" height="150"/>
 </p>
 
 [![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](https://github.com/UNN-ITMM-Software/iOpt/blob/main/LICENSE)
