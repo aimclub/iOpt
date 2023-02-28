@@ -10,19 +10,20 @@
 
 
 
-iOpt - фреймворк с открытым исходным кодом для автоматического выбора значений параметров как для математических моделей сложных промышленных процессов, так и для используемых в промышленности методов ИИ и МО. Фреймворк распространяется под лицензией 3-Clause BSD.
+iOpt is an open source framework for automatic selection of parameter values both for mathematical models of complex industrial processes and for AI and ML methods used in industry. The framework is distributed under the 3-Clause BSD license.
 
 
-# Ключевые возможности фреймворка
-- Автоматический выбор значений параметров математических моделей и методов ИИ и МО, используемых в промышленности.
-- Интеллектуальное управление процессом выбора оптимальных параметров для промышленных задач.
-- Интеграция с внешними библиотеками или фреймворками искусственного интеллекта и машинного обучения, а также предметными моделями.
-- Автоматизация предварительного анализа исследуемых моделей, например, выделение различных классов зависимостей модели от разных групп параметров.
-- Визуализация процесса выбора оптимальных параметров.
+# **Key features of the framework**
+- Automatic selection of parameter values both for mathematical models and for AI and ML methods used in industry.
+- Intelligent control of the process of choosing the optimal parameters for industrial applications.
+- Integration with external artificial intelligence and machine learning libraries or frameworks as well as applied models.
+- Automation of the preliminary analysis of the models under study, e.g., by identifying different types of model dependencies on different groups of parameters.
+- Visualization of the process of choosing optimal parameters.
 
-# Установка и настройка
 
-## В unix-подобных системах:
+# **Installation**
+
+## On Unix-like systems:
 
 ```
 git clone https://github.com/UNN-ITMM-Software/iOpt
@@ -33,7 +34,7 @@ source ioptenv/bin/activate
 python setup.py install
 ```
 
-## В ОС Windows:
+## On Windows:
 
 ```
 git clone https://github.com/UNN-ITMM-Software/iOpt
@@ -45,9 +46,9 @@ python setup.py install
 ```
 
 
-# Начать работать
+# **How to Use**
 
-Использование фреймворка iOpt для минимизации функции Растригина.
+Using the iOpt framework to minimize the Rastrigin test function.
 
 ```python
 from iOpt.problems.rastrigin import Rastrigin
@@ -59,27 +60,27 @@ from subprocess import Popen, PIPE, STDOUT
 
 if __name__ == "__main__":
     """
-    Минимизация тестовой функции Растригина с визуализацией
+    Minimization of the Rastrigin test function with visualization
     """
-    #Создание тестовой задачи
+    #Create a test task
     problem = Rastrigin(2)
-    #Параметры решателя
+    #Setup a solver options
     params = SolverParameters(r=2.5, eps=0.01, itersLimit=300, refineSolution=True)
-    #Создание решателя
+    #Create the solver
     solver = Solver(problem, parameters=params)
-    #Вывод результатов в консоль в процессе решения
+    #Print results to console while solving
     cfol = ConsoleFullOutputListener(mode='full')
     solver.AddListener(cfol)
-    #3D визуализация по окончании решения
+    #3D visualization at the end of the solution
     spl = StaticNDPaintListener("rastrigin.png", "output", varsIndxs=[0,1], mode="surface", calc="interpolation")
     solver.AddListener(spl)
-    #Запуск решения задачи
+    #Run problem solution
     sol = solver.Solve()
 ```
 
-# Примеры использования
+# **Examples**
 
-Продемонстрируем использование фреймворка iOpt при настройке гиперпараметров одного из методов машинного обучения. В методе опорных векторов  ([SVC](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html)) найдем оптимальные вещественные гиперпараметры (**C** - параметр регуляризации, **gamma** - коэффициент ядра) в задаче классификации рака молочной железы ([подробное описание данных](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic))). 
+Let’s demonstrate the use of the iOpt framework when tuning the hyperparameters of one of the machine learning methods. In the support vector machine ([SVC](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html)), we find the optimal hyperparameters (the regularization parameter **C**, the kernel coefficient **gamma**) in the problem of breast cancer classification ([detailed description of the data](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic))).
 
 
 ```python
@@ -123,15 +124,14 @@ if __name__ == "__main__":
 
 ```
 
-# Структура проекта
+# **Project Structure**
 
-Последняя стабильная версия фреймворка доступна в ветке [main](https://github.com/UNN-ITMM-Software/iOpt/tree/main).
-Репозиторий включает следующие каталоги:
-- Каталог [iOpt](https://github.com/UNN-ITMM-Software/iOpt/tree/main/iOpt) содержит ядро фреймворка в виде  классов на языке Python.
-- Каталог [examples](https://github.com/UNN-ITMM-Software/iOpt/tree/main/examples) содержит примеры использования фреймворка как для решения модельных, так и прикладных задач.
-- Модульные тесты размещены в каталоге [test](https://github.com/UNN-ITMM-Software/iOpt/tree/main/test).
-- Исходные файлы документации находятся в каталоге [docs](https://github.com/UNN-ITMM-Software/iOpt/tree/main/docs).
+The latest stable release of iOpt is in the [main](https://github.com/UNN-ITMM-Software/iOpt/tree/main) branch. The repository includes the following directories:
+- The [iOpt](https://github.com/UNN-ITMM-Software/iOpt/tree/main/iOpt) directory contains the framework core in the form of Python classes.
+- The [examples](https://github.com/UNN-ITMM-Software/iOpt/tree/main/examples) directory contains examples of using the framework for both test and applied problems.
+- Unit tests are located in the [test](https://github.com/UNN-ITMM-Software/iOpt/tree/main/test) directory.
+- Documentation source files are located in the [docs](https://github.com/UNN-ITMM-Software/iOpt/tree/main/docs) directory.
 
-# Документация
+# **Documentation**
 
-Детальное описание API фреймворка iOpt доступно на [Read the Docs](https://iopt.readthedocs.io/ru/latest/)
+A detailed description of the iOpt framework API is available at [Read the Docs](https://iopt.readthedocs.io/ru/latest/).
