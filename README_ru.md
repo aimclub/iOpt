@@ -2,12 +2,12 @@
   <img src="/docs/iOpt_logo.png" width="200" height="150"/>
 </p>
 
-[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](https://github.com/aimclub/iOpt/blob/main/LICENSE)
+[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](LICENSE)
 [![python: 3.9](https://img.shields.io/badge/python-3.9-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-390/)
 [![python: 3.8](https://img.shields.io/badge/python-3.8-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-380/)
 [![docs: ](https://readthedocs.org/projects/ebonite/badge/?style=flat-square)](https://iopt.readthedocs.io/ru/latest/)
 [![build:](https://github.com/UNN-ITMM-Software/iOpt/actions/workflows/python-app.yml/badge.svg)](https://github.com/aimclub/iOpt/actions)
-[![eng:](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/aimclub/iOpt/blob/main/README.md)
+[![eng:](https://img.shields.io/badge/lang-en-red.svg)](README.md)
 
 
 
