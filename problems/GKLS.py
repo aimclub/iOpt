@@ -1,5 +1,5 @@
 from iOpt.problem import Problem
-from iOpt.problems.GKLS_function.gkls_function import GKLSClass, GKLSFuncionType, GKLSFunction
+from problems.GKLS_function.gkls_function import GKLSClass, GKLSFuncionType, GKLSFunction
 from iOpt.trial import Point, FunctionValue, Trial
 
 

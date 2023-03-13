@@ -1,12 +1,12 @@
 import unittest
 import numpy as np
 
-from iOpt.problems.GKLS import GKLS
-from iOpt.problems.rastrigin import Rastrigin
-from iOpt.problems.xsquared import XSquared
-from iOpt.problems.hill import Hill
-from iOpt.problems.shekel import Shekel
-from iOpt.problems.grishagin import Grishagin
+from problems.GKLS import GKLS
+from problems.rastrigin import Rastrigin
+from problems.xsquared import XSquared
+from problems.hill import Hill
+from problems.shekel import Shekel
+from problems.grishagin import Grishagin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 

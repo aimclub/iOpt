@@ -3,27 +3,27 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-import iOpt.problems.Shekel.shekel_generation as shekelGen
+import problems.Shekel4.shekel4_generation as shekelGen
 
 
-class Shekel(Problem):
+class Shekel4(Problem):
     """
     Функция Шекеля - это многомерная, мультимодальная, непрерывная, детерминированная функция, задана формулой:
-       :math:`f(x) = \sum_{i=1}^{m}(c_{i}+(x-a_{i})^{2})^{-1}`,
+       :math:`f(x) = \sum_{i=1}^{m}(c_{i}+\sum_{j=1}^{n}(x-a_{i})^{2})^{-1}`,
        где :math:`m` – количество максимумов функции,
        :math:`a, c` - параметры, генерируемые случайным образом.
-       В данном генераторе задача является одномерной.
+       В генераторе размерность задачи равна 4.
     """
 
     def __init__(self, function_number: int):
         """
         Конструктор класса Shekel problem.
 
-        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
+        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 3`
         """
-        super(Shekel, self).__init__()
-        self.name = Shekel
-        self.dimension = 1
+        super(Shekel4, self).__init__()
+        self.name = Shekel4
+        self.dimension = 4
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
         self.numberOfObjectives = 1
@@ -42,11 +42,11 @@ class Shekel(Problem):
         self.knownOptimum = np.ndarray(shape=(1,), dtype=Trial)
 
         pointfv = np.ndarray(shape=(self.dimension,), dtype=np.double)
-        pointfv[0] = shekelGen.minShekel[self.fn][1]
+        pointfv.fill(4)
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1,), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0].value = shekelGen.minShekel[self.fn][0]
+        KOfunV[0] = self.Calculate(KOpoint, KOfunV[0])
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
@@ -58,10 +58,11 @@ class Shekel(Problem):
         :return: Вычисленное значение функции в точке point
         """
         res: np.double = 0
-        for i in range(shekelGen.NUM_SHEKEL_COEFF):
-            res = res - 1 / (
-                        shekelGen.kShekel[self.fn][i] * pow(point.floatVariables[0] - shekelGen.aShekel[self.fn][i], 2)
-                        + shekelGen.cShekel[self.fn][i])
+        for i in range(shekelGen.maxI[self.fn - 1]):
+            den: np.double = 0
+            for j in range(self.dimension):
+                den = den + pow((point.floatVariables[j] - shekelGen.a[i][j]), 2.0)
+            res = res - 1 / (den + shekelGen.c[i])
 
         functionValue.value = res
         return functionValue

@@ -3,7 +3,7 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-import iOpt.problems.Hill.hill_generation as hillGen
+import problems.Hill.hill_generation as hillGen
 import math
 
 

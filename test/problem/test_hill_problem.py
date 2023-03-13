@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
-from iOpt.problems.hill import Hill
+from problems.hill import Hill
 
 
 class TestHill(unittest.TestCase):

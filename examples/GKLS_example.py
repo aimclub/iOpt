@@ -1,4 +1,4 @@
-from iOpt.problems.GKLS import GKLS
+from problems.GKLS import GKLS
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener
