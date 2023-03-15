@@ -55,8 +55,22 @@ class Method:
     def min_delta(self, val):
         self.searchData.solution.solutionAccuracy = val
 
-    @staticmethod
-    def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
+    # @staticmethod
+    # def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
+    #     """
+    #     Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
+    #       полученными при редукции размерности.
+    #
+    #     :param lx: левая точка
+    #     :param rx: правая точка
+    #     :param dimension: размерность исходного пространства
+    #
+    #     :return: гельдерово расстояние между lx и rx.
+    #     """
+    #     return pow(rx - lx, 1.0 / dimension)
+
+
+    def CalculateDelta(lPoint: SearchDataItem, rPoint: SearchDataItem, dimension: int) -> float:
         """
         Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
           полученными при редукции размерности.
@@ -67,7 +81,8 @@ class Method:
 
         :return: гельдерово расстояние между lx и rx.
         """
-        return pow(rx - lx, 1.0 / dimension)
+        return pow(rPoint.GetX() - lPoint.GetX(), 1.0 / dimension)
+
 
     def FirstIteration(self) -> None:
         r"""
@@ -83,8 +98,11 @@ class Method:
         right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0)
 
         left.delta = 0
-        middle.delta = Method.CalculateDelta(left.GetX(), middle.GetX(), self.dimension)
-        right.delta = Method.CalculateDelta(middle.GetX(), right.GetX(), self.dimension)
+        # middle.delta = Method.CalculateDelta(left.GetX(), middle.GetX(), self.dimension)
+        # right.delta = Method.CalculateDelta(middle.GetX(), right.GetX(), self.dimension)
+
+        middle.delta = self.CalculateDelta(left, middle, self.dimension)
+        right.delta = self.CalculateDelta(middle, right, self.dimension)
 
         # Вычисление значения функции в 0.5
         self.CalculateFunctionals(middle)
@@ -258,8 +276,11 @@ class Method:
         :param oldpoint: правая точка интервала, которому принадлежит новая точка
         """
 
-        oldpoint.delta = Method.CalculateDelta(newpoint.GetX(), oldpoint.GetX(), self.dimension)
-        newpoint.delta = Method.CalculateDelta(oldpoint.GetLeft().GetX(), newpoint.GetX(), self.dimension)
+        # oldpoint.delta = Method.CalculateDelta(newpoint.GetX(), oldpoint.GetX(), self.dimension)
+        # newpoint.delta = Method.CalculateDelta(oldpoint.GetLeft().GetX(), newpoint.GetX(), self.dimension)
+
+        oldpoint.delta = self.CalculateDelta(newpoint, oldpoint, self.dimension)
+        newpoint.delta = self.CalculateDelta(oldpoint.GetLeft(), newpoint, self.dimension)
 
         self.CalculateM(newpoint, oldpoint.GetLeft())
         self.CalculateM(oldpoint, newpoint)

@@ -39,6 +39,7 @@ class IndexMethod(Method):
         :param curr_point: правая точка интервала
         :param left_point: левая точка интервала
         """
+        #Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
         pass
 
     def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
