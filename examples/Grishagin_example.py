@@ -1,4 +1,4 @@
-from iOpt.problems.grishagin import Grishagin
+from problems.grishagin import Grishagin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener

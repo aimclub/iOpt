@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
-from iOpt.problems.grishagin import Grishagin
+from problems.grishagin import Grishagin
 
 
 class TesGrishagin(unittest.TestCase):

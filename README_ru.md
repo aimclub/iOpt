@@ -53,7 +53,7 @@ python setup.py install
 Использование фреймворка iOpt для минимизации функции Растригина.
 
 ```python
-from iOpt.problems.rastrigin import Rastrigin
+from problems.rastrigin import Rastrigin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener

@@ -1,4 +1,4 @@
-from iOpt.problems.xsquared import XSquared
+from problems.xsquared import XSquared
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticNDPaintListener

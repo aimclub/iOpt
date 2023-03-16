@@ -1,6 +1,6 @@
 import numpy as np
 from iOpt.trial import Point
-import iOpt.problems.grishagin_function.grishagin_generation as grishaginGen
+import problems.grishagin_function.grishagin_generation as grishaginGen
 import math
 
 

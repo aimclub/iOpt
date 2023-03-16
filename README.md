@@ -52,7 +52,7 @@ python setup.py install
 Using the iOpt framework to minimize the Rastrigin test function.
 
 ```python
-from iOpt.problems.rastrigin import Rastrigin
+from problems.rastrigin import Rastrigin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener

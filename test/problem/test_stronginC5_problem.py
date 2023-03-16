@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
-from iOpt.problems.stronginC5 import StronginC5
+from problems.stronginC5 import StronginC5
 from iOpt.trial import FunctionType
 
 

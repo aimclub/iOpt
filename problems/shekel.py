@@ -3,7 +3,7 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-import iOpt.problems.Shekel.shekel_generation as shekelGen
+import problems.Shekel.shekel_generation as shekelGen
 
 
 class Shekel(Problem):
@@ -22,7 +22,7 @@ class Shekel(Problem):
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
         """
         super(Shekel, self).__init__()
-        self.name = 'Shekel'
+        self.name = Shekel
         self.dimension = 1
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
