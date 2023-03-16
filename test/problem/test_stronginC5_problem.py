@@ -59,6 +59,7 @@ class TestStronginC3(unittest.TestCase):
         functionValue = FunctionValue(FunctionType.CONSTRAINT, 2)
         functionValue = self.stronginC5.Calculate(point, functionValue)
         self.assertEqual(functionValue.value, res)
+
     def test_CalculateConstraint4(self):
         point = Point([1.0, 1.0, 1.0, 1.0, 1.0], [])
         res: np.double = 0
@@ -70,6 +71,7 @@ class TestStronginC3(unittest.TestCase):
         functionValue = FunctionValue(FunctionType.CONSTRAINT, 3)
         functionValue = self.stronginC5.Calculate(point, functionValue)
         self.assertEqual(functionValue.value, res)
+
     def test_CalculateConstraint5(self):
         point = Point([1.0, 1.0, 1.0, 1.0, 1.0], [])
         res: np.double = 0
