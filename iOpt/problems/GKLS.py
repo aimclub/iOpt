@@ -19,6 +19,7 @@ class GKLS(Problem):
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 100`
         """
         super(GKLS, self).__init__()
+        self.name = 'GKLS'
         self.dimension = dimension
         self.numberOfFloatVariables = dimension
         self.numberOfDisreteVariables = 0

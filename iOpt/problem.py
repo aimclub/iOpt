@@ -9,6 +9,7 @@ class Problem(ABC):
     """Базовый класс для задач оптимизации"""
 
     def __init__(self):
+        self.name: str = ''
         self.numberOfFloatVariables: int = 0
         self.numberOfDisreteVariables: int = 0
         self.numberOfObjectives: int = 0
@@ -31,3 +32,12 @@ class Problem(ABC):
 
         :return: Вычисленное значение функции."""
         pass
+
+   # @abstractmethod
+    def GetName(self):
+        """
+        Метод позволяет получить имя задачи
+
+        :return: self.name."""
+        return self.name
+        #pass
