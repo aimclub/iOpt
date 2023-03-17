@@ -1,3 +1,5 @@
+# This workflow will mirror iOpt repository to GitLab
+
 name: Mirror repo to GitLab
 
 on: [push, delete]
