@@ -20,7 +20,7 @@ class Rastrigin(Problem):
         :param dimension: Размерность задачи.
         """
         super(Rastrigin, self).__init__()
-        self.name = Rastrigin
+        self.name = 'Rastrigin'
         self.dimension = dimension
         self.numberOfFloatVariables = dimension
         self.numberOfDisreteVariables = 0
