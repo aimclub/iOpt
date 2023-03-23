@@ -13,7 +13,7 @@ class StronginC3(Problem):
         Конструктор класса StronginC3 problem.
         """
         super(StronginC3, self).__init__()
-        self.name = 'StronginC3'
+        self.name = StronginC3
         self.dimension: int = 2
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0

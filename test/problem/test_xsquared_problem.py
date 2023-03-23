@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
-from iOpt.problems.xsquared import XSquared
+from problems.xsquared import XSquared
 
 
 class TestXSquared(unittest.TestCase):
