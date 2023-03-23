@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from iOpt.problems.GKLS_function.gkls_random import GKLSRandomGenerator
+from problems.GKLS_function.gkls_random import GKLSRandomGenerator
 
 
 # ***************************************************************************#

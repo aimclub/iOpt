@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
-from iOpt.problems.rastrigin import Rastrigin
+from problems.rastrigin import Rastrigin
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchDataItem
 

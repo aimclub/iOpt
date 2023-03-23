@@ -1,4 +1,4 @@
-from iOpt.problems.shekel import Shekel
+from problems.shekel import Shekel
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticPaintListener, ConsoleFullOutputListener

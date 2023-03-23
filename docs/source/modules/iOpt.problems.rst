@@ -1,10 +1,10 @@
-Пакет iOpt.problems
+Пакет problems
 =====================
 
 GKLS
 -------------------------
 
-.. automodule:: iOpt.problems.GKLS
+.. automodule:: problems.GKLS
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ GKLS
 rastrigin
 ------------------------------
 
-.. automodule:: iOpt.problems.rastrigin
+.. automodule:: problems.rastrigin
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,7 +20,7 @@ rastrigin
 Grishagin
 -----------------------------
 
-.. automodule:: iOpt.problems.grishagin
+.. automodule:: problems.grishagin
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,7 +28,7 @@ Grishagin
 Hill
 -----------------------------
 
-.. automodule:: iOpt.problems.hill
+.. automodule:: problems.hill
    :members:
    :undoc-members:
    :show-inheritance:
@@ -36,7 +36,7 @@ Hill
 Shekel
 -----------------------------
 
-.. automodule:: iOpt.problems.shekel
+.. automodule:: problems.shekel
    :members:
    :undoc-members:
    :show-inheritance:
@@ -44,7 +44,7 @@ Shekel
 Shekel4
 -----------------------------
 
-.. automodule:: iOpt.problems.shekel4
+.. automodule:: problems.shekel4
    :members:
    :undoc-members:
    :show-inheritance:
@@ -52,7 +52,7 @@ Shekel4
 stronginC3
 -------------------------------
 
-.. automodule:: iOpt.problems.stronginC3
+.. automodule:: problems.stronginC3
    :members:
    :undoc-members:
    :show-inheritance:
@@ -60,7 +60,7 @@ stronginC3
 xsquared
 -----------------------------
 
-.. automodule:: iOpt.problems.xsquared
+.. automodule:: problems.xsquared
    :members:
    :undoc-members:
    :show-inheritance:

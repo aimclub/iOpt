@@ -1,4 +1,4 @@
-from iOpt.problems.hill import Hill
+from problems.hill import Hill
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.listener import StaticPaintListener, ConsoleFullOutputListener

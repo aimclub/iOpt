@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
-from iOpt.problems.GKLS import GKLS
+from problems.GKLS import GKLS
 
 
 class TestGKLS(unittest.TestCase):
