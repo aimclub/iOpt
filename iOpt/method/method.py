@@ -6,6 +6,8 @@ from typing import Tuple
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.calculator import Calculator
+from iOpt.method.imethod import IMethod
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
@@ -13,7 +15,7 @@ from iOpt.solver_parametrs import SolverParameters
 from iOpt.trial import Point
 
 
-class Method:
+class Method(IMethod):
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
     """
@@ -84,38 +86,70 @@ class Method:
         return pow(rPoint.GetX() - lPoint.GetX(), 1.0 / dimension)
 
 
-    def FirstIteration(self) -> None:
+    def FirstIteration(self, calculator:Calculator = None) -> None:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
         self.iterationsCount = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-        x: float = 0.5
-        y = Point(self.evolvent.GetImage(x), None)
-        middle = SearchDataItem(y, x)
         left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.0)
         right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0)
 
+        h: float = 1.0 / (self.parameters.numberOfParallelPoints + 1)
+        items: list[SearchDataItem] = []
+
+        for i in range(self.parameters.numberOfParallelPoints):
+            x = h * (i + 1)
+            y = Point(self.evolvent.GetImage(x), None)
+            item = SearchDataItem(y, x)
+            items.append(item)
+
+        if(calculator is None):
+            for item in items:
+                self.CalculateFunctionals(item)
+        else:
+            calculator.CalculateFunctionalsForItems(items)
+
+        for item in items:
+            self.UpdateOptimum(item)
+
+        # # middle.delta = Method.CalculateDelta(left.GetX(), middle.GetX(), self.dimension)
+        # # right.delta = Method.CalculateDelta(middle.GetX(), right.GetX(), self.dimension)
+        #
+        # middle.delta = self.CalculateDelta(left, middle, self.dimension)
+        # right.delta = self.CalculateDelta(middle, right, self.dimension)
+
+        # # Вычисление характеристик
+        # self.CalculateGlobalR(left, None)
+        # self.CalculateGlobalR(middle, left)
+        # self.CalculateGlobalR(right, middle)
+
+
         left.delta = 0
-        # middle.delta = Method.CalculateDelta(left.GetX(), middle.GetX(), self.dimension)
-        # right.delta = Method.CalculateDelta(middle.GetX(), right.GetX(), self.dimension)
-
-        middle.delta = self.CalculateDelta(left, middle, self.dimension)
-        right.delta = self.CalculateDelta(middle, right, self.dimension)
-
-        # Вычисление значения функции в 0.5
-        self.CalculateFunctionals(middle)
-        self.UpdateOptimum(middle)
-
-        # Вычисление характеристик
         self.CalculateGlobalR(left, None)
-        self.CalculateGlobalR(middle, left)
-        self.CalculateGlobalR(right, middle)
+
+        items[0].delta = self.CalculateDelta(left, items[0], self.dimension)
+        self.CalculateGlobalR(items[0], left)
+        for id_item, item in enumerate(items):
+            if(id_item > 0):
+                items[id_item].delta = self.CalculateDelta(items[id_item - 1], items[id_item], self.dimension)
+                self.CalculateGlobalR(items[id_item], items[id_item - 1])
+                self.CalculateM(items[id_item], items[id_item - 1])
+
+        right.delta = self.CalculateDelta(items[-1], right, self.dimension)
+        self.CalculateGlobalR(right, items[-1])
+
 
         # вставить left  и right, потом middle
         self.searchData.InsertFirstDataItem(left, right)
-        self.searchData.InsertDataItem(middle, right)
+        # self.searchData.InsertDataItem(middle, right)
+
+        for item in items:
+            self.searchData.InsertDataItem(item, right)
+
+        self.recalc = True
+
 
     def CheckStopCondition(self) -> bool:
         r"""
@@ -193,6 +227,10 @@ class Method:
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx)
         new = copy.deepcopy(SearchDataItem(Point(newy, []), newx))
+
+        # Обновление числа испытаний
+        self.searchData.solution.numberOfGlobalTrials += 1
+
         return new, old
 
     def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
@@ -213,7 +251,7 @@ class Method:
         point.SetIndex(0)
 
         # Обновление числа испытаний
-        self.searchData.solution.numberOfGlobalTrials += 1
+        # self.searchData.solution.numberOfGlobalTrials += 1
         return point
 
     def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
