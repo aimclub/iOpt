@@ -3,12 +3,12 @@ from __future__ import annotations
 from itertools import repeat
 from multiprocessing import Pool
 
-from sqlalchemy.dialects.mssql import IMAGE
-
 from iOpt.method.imethod import IMethod
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
 
+import sys
+sys.setrecursionlimit(10000)
 
 class Calculator:
 
@@ -36,7 +36,9 @@ class Calculator:
         # for point in points:
         #     self.worker(point, self.method)
 
+#        Calculator.pool = Pool(self.parameters.numberOfParallelPoints)
         points_res = Calculator.pool.starmap(Calculator.worker, zip(points, repeat(self.method)))
+#        Calculator.pool.close()
 
         for point, point_r in zip(points, points_res):
             point.functionValues[0] = point_r.functionValues[0]

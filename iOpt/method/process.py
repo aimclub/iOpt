@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import List
 
+import traceback
+
 import scipy
 from scipy.optimize import Bounds
 
@@ -67,6 +69,7 @@ class Process:
             # print(self.method.CheckStopCondition())
         except BaseException:
             print('Exception was thrown')
+            print(traceback.format_exc())
 
         if self.parameters.refineSolution:
             self.DoLocalRefinement(-1)

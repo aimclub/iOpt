@@ -4,6 +4,7 @@ from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.calculator import Calculator
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
+from iOpt.method.indexMethodCalculator import IndexMethodCalculator
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.process import Process
 from iOpt.method.search_data import SearchData, SearchDataItem
@@ -32,7 +33,8 @@ class ParallelProcess(Process):
         """
         super(ParallelProcess, self).__init__(parameters, task, evolvent, searchData, method, listeners)
 
-        self.calculator = Calculator(method, parameters)
+        self.indexMethodCalculator = IndexMethodCalculator(task)
+        self.calculator = Calculator(self.indexMethodCalculator, parameters)
 
     def DoGlobalIteration(self, number: int = 1):
         """
