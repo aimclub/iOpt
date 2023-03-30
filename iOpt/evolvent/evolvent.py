@@ -1,5 +1,4 @@
-import numpy as np
-import math
+from math import isclose
 
 
 class Evolvent:
@@ -15,33 +14,21 @@ class Evolvent:
     :type  evolventDensity: int
     """
 
-    def __init__(self,
-                 lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
-                 upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
-                 numberOfFloatVariables: int = 1,
-                 evolventDensity: int = 10
-                 ):
+    def __init__(self, lowerBoundOfFloatVariables: list[float] = [], upperBoundOfFloatVariables: list[float] = [],
+                 numberOfFloatVariables: int = 1, evolventDensity: int = 10):
 
         self.numberOfFloatVariables = numberOfFloatVariables
-        self.lowerBoundOfFloatVariables = np.copy(lowerBoundOfFloatVariables)
-        self.upperBoundOfFloatVariables = np.copy(upperBoundOfFloatVariables)
+        self.lowerBoundOfFloatVariables = lowerBoundOfFloatVariables.copy()
+        self.upperBoundOfFloatVariables = upperBoundOfFloatVariables.copy()
         self.evolventDensity = evolventDensity
 
         self.nexpValue = 0  # nexpExtended
-        self.nexpExtended: np.double = 1.0
+        self.nexpExtended: float = 2 ** self.numberOfFloatVariables
 
-        # инициализируем массив y нулями
-        self.yValues = np.zeros(self.numberOfFloatVariables, dtype=np.double)
-        # np.ndarray(shape = (1), dtype = np.double) = [0,0] # y
-        for i in range(0, self.numberOfFloatVariables):
-            self.nexpExtended += self.nexpExtended
+        self.yValues = [0.0] * len(self.lowerBoundOfFloatVariables)
 
-    # Установка границ
-    # ----------------
-    def SetBounds(self,
-                  lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
-                  upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
-                  ):
+    def SetBounds(self, lowerBoundOfFloatVariables: list[float] = [],
+                  upperBoundOfFloatVariables: list[float] = []) -> None:
         """Установка граничных значений
 
         :param lowerBoundOfFloatVariables: массив для левых (нижних) границ, А.
@@ -50,12 +37,10 @@ class Evolvent:
         :type  upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
         """
 
-        self.lowerBoundOfFloatVariables = np.copy(lowerBoundOfFloatVariables)
-        self.upperBoundOfFloatVariables = np.copy(upperBoundOfFloatVariables)
+        self.lowerBoundOfFloatVariables = lowerBoundOfFloatVariables.copy()
+        self.upperBoundOfFloatVariables = upperBoundOfFloatVariables.copy()
 
-    def GetImage(self,
-                 x: np.double
-                 ) -> np.ndarray(shape=(1), dtype=np.double):
+    def GetImage(self, x: float) -> list[float]:
         """Получить образ (x->y)
 
         :param x: значение x.
@@ -67,11 +52,9 @@ class Evolvent:
 
         self.__GetYonX(x)
         self.__TransformP2D()
-        return np.copy(self.yValues)
+        return self.yValues.copy()
 
-    def GetInverseImage(self,
-                        y: np.ndarray(shape=(1), dtype=np.double)
-                        ) -> np.double:
+    def GetInverseImage(self, y: list[float]) -> float:
         """Получить обратное значение образа (y->x)
 
         :param y: значение y.
@@ -80,15 +63,12 @@ class Evolvent:
         :rtype: np.double:.
 
         """
-        self.yValues = np.copy(y)
+        self.yValues = y.copy()
         self.__TransformD2P()
         x = self.__GetXonY()
         return x
 
-    # ----------------------
-    def GetPreimages(self,
-                     y: np.ndarray(shape=(1), dtype=np.double),
-                     ) -> np.double:
+    def GetPreimages(self, y: list[float]) -> float:
         """Получить обратное значение образа (y->x)
 
         :param y: значение y.
@@ -97,60 +77,39 @@ class Evolvent:
         :rtype: np.double:.
 
         """
-        self.yValues = np.copy(y)
-        self.__TransformD2P()
-        x = self.__GetXonY()
-        return x
+        return self.GetInverseImage(y)
 
-    # Преобразование
-    # --------------------------------
-    def __TransformP2D(self):
-        for i in range(0, self.numberOfFloatVariables):
-            self.yValues[i] = self.yValues[i] * (
-                        self.upperBoundOfFloatVariables[i] - self.lowerBoundOfFloatVariables[i]) + \
-                        (self.upperBoundOfFloatVariables[i] + self.lowerBoundOfFloatVariables[i]) / 2
+    def __TransformP2D(self) -> None:
+        self.yValues = [y * (upper - lower) + (upper + lower) / 2
+                        for y, upper, lower in zip(self.yValues,
+                                                   self.upperBoundOfFloatVariables,
+                                                   self.lowerBoundOfFloatVariables)]
 
-    # Преобразование
-    # --------------------------------
-    def __TransformD2P(self):
-        for i in range(0, self.numberOfFloatVariables):
-            self.yValues[i] = (self.yValues[i] - (
-                        self.upperBoundOfFloatVariables[i] + self.lowerBoundOfFloatVariables[i]) / 2) / \
-                        (self.upperBoundOfFloatVariables[i] - self.lowerBoundOfFloatVariables[i])
+    def __TransformD2P(self) -> None:
+        self.yValues = [(y - 0.5 * (upper + lower)) / (upper - lower)
+                        for y, upper, lower in zip(self.yValues,
+                                                   self.upperBoundOfFloatVariables,
+                                                   self.lowerBoundOfFloatVariables)]
 
-    # ---------------------------------
-
-    def __GetYonX(self, _x: np.double) -> np.ndarray(shape=(1), dtype=np.double):
+    def __GetYonX(self, x: float) -> None:
         if self.numberOfFloatVariables == 1:
-            self.yValues[0] = _x - 0.5
-            return self.yValues
 
-        iu: np.narray(shape=(1), dtype=np.int32)
-        iv: np.narray(shape=(1), dtype=np.int32)
-        node: np.int32
-        d: np.double = 0.0
-        # mn: np.int32
-        r: np.double
-        iw: np.narray(shape=(1), dtype=np.int32)
-        it: np.int32
-        i: np.int32
-        j: np.int32
-        iis: np.double
+            self.yValues[0] = x - 0.5
+            return
 
-        d = _x
+        d, it = x, 0
         r = 0.5
-        it = 0
 
         # mn = self.evolventDensity * self.numberOfFloatVariables
 
-        iw = np.ones(self.numberOfFloatVariables, dtype=np.int32)
-        self.yValues = np.zeros(self.numberOfFloatVariables, dtype=np.double)
-        iu = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
-        iv = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
+        iw = [1] * self.numberOfFloatVariables
+        iu = [0] * self.numberOfFloatVariables
+        iv = [0] * self.numberOfFloatVariables
+        self.yValues = [0] * self.numberOfFloatVariables
 
-        for j in range(0, self.evolventDensity):
-            if math.isclose(_x, 1.0):
-                iis = self.nexpExtended - 1.0
+        for _ in range(self.evolventDensity):
+            if isclose(x, 1):
+                iis = self.nexpExtended - 1
                 d = 0.0
             else:
                 d *= self.nexpExtended
@@ -159,181 +118,106 @@ class Evolvent:
 
                 # print(iis, self.numberOfFloatVariables)
             node = self.__CalculateNode(iis, self.numberOfFloatVariables, iu, iv)
-            # print(j, node)
+            node = node + it * (node == 0) - it * (node == it)
 
-            # заменить на () = () !
-            i = iu[0]
-            iu[0] = iu[it]
-            iu[it] = i
-            i = iv[0]
-            iv[0] = iv[it]
-            iv[it] = i
+            iu[0], iu[it] = iu[it], iu[0]
+            iv[0], iv[it] = iv[it], iv[0]
 
-            if node == 0:
-                node = it
-            elif node == it:
-                node = 0
-
-            r *= 0.5
+            r /= 2
             it = node
-            for i in range(0, self.numberOfFloatVariables):
+
+            for i in range(self.numberOfFloatVariables):
                 iu[i] *= iw[i]
                 iw[i] *= -iv[i]
                 self.yValues[i] += r * iu[i]
 
-        return np.copy(self.yValues)
+    def __GetXonY(self) -> float:
 
-    # ---------------------------------
-    def __GetXonY(self) -> np.double:
-        x: np.double
         if self.numberOfFloatVariables == 1:
-            x = self.yValues[0] + 0.5
-            return x
+            return self.yValues[0] + 0.5
 
-        u: np.narray(shape=(1), dtype=np.int32)
-        v: np.narray(shape=(1), dtype=np.int32)
-        w: np.narray(shape=(1), dtype=np.int32)
-        r: np.double = 0.0
-        i: np.int32
-        j: np.int32
-        it: np.int32
-        node: np.int32
-        r1: np.double
-        iis: np.double
-        w = np.ones(self.numberOfFloatVariables, dtype=np.int32)
-        u = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
-        v = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
-        r = 0.5
-        r1 = 1.0
-        x = 0.0
+        w = [1] * self.numberOfFloatVariables
+        u = [0] * self.numberOfFloatVariables
+        v = [0] * self.numberOfFloatVariables
+
+        r, r1, x, = 0.5, 1.0, 0.0
         it = 0
 
-        for j in range(0, self.evolventDensity):
-            r *= 0.5
-            for i in range(0, self.numberOfFloatVariables):
-                if self.yValues[i] < 0:
-                    u[i] = -1
-                else:
-                    u[i] = 1
+        for _ in range(self.evolventDensity):
 
+            r *= 0.5
+
+            for i in range(self.numberOfFloatVariables):
+
+                u[i] = 2 * (self.yValues[i] >= 0) - 1
                 self.yValues[i] -= r * u[i]
                 u[i] *= w[i]
 
-            i = u[0]
-            u[0] = u[it]
-            u[it] = i
+            u[0], u[it] = u[it], u[0]
 
             iis, node, v = self.__CalculateNumbr(u, v)
-            # print(u)
-            # print(v)
-            # print(iis, node)
+            node = node + it * (node == 0) - it * (node == it)
 
-            i = v[0]
-            v[0] = v[it]
-            v[it] = i
+            v[0], v[it] = v[it], v[0]
 
-            for i in range(0, self.numberOfFloatVariables):
-                w[i] *= -v[i]
-
-            if node == 0:
-                node = it
-            elif node == it:
-                node = 0
+            w = [-1 * x * y for x, y in zip(w, v)]
 
             it = node
-            r1 = r1 / self.nexpExtended
+            r1 /= self.nexpExtended
             x += r1 * iis
 
         return x
 
-    # -----------------------------------------------------------------------------------------
-    def __CalculateNumbr(self,
-                         u: np.ndarray(shape=(1), dtype=np.int32),
-                         v: np.ndarray(shape=(1), dtype=np.int32)
-                         ):
-        i = 0
-        k1 = -1
-        k2 = 0
-        l1 = 0
-        node = 0
-        iis: np.double
-        iff: np.double
+    def __CalculateNumbr(self, u: list[int], v: list[int]) -> tuple[float, int, list[int]]:
+        iff, iis = self.nexpExtended, 0.0
+        k1, node1, node = -1.0, 0, 0
 
-        iff = self.nexpExtended
-        iis = 0.0
-
-        for i in range(0, self.numberOfFloatVariables):
+        for i in range(self.numberOfFloatVariables):
             iff /= 2
-            k2 = -k1 * u[i]
             v[i] = u[i]
-            k1 = k2
-            if k2 < 0:
+            k1 = -k1 * u[i]
+            if k1 < 0:
                 node1 = i
             else:
                 iis += iff
                 node = i
 
-        if math.isclose(iis, 0.0):
+        if isclose(iis, 0.0):
+            return iis, self.numberOfFloatVariables - 1, v
+        v[-1] *= -1
+        if isclose(iis, self.nexpExtended - 1):
             node = self.numberOfFloatVariables - 1
+        elif node1 == self.numberOfFloatVariables - 1:
+            v[node] *= -1
         else:
-            v[self.numberOfFloatVariables - 1] = -v[self.numberOfFloatVariables - 1]
-            if math.isclose(iis, self.nexpExtended - 1.0):
-                node = self.numberOfFloatVariables - 1
-            else:
-                if node1 == self.numberOfFloatVariables - 1:
-                    v[node] = -v[node]
-                else:
-                    node = node1
-        s = iis
+            node = node1
+        return iis, node, v
 
-        return s, node, v
+    def __CalculateNode(self, iis: float, n: int, u: list[int], v: list[int]) -> int:
 
-    # -----------------------------------------------------------------------------------------
-    def __CalculateNode(self,
-                        iis: np.double,
-                        n: int,
-                        u: np.ndarray(shape=(1), dtype=np.int32),
-                        v: np.ndarray(shape=(1), dtype=np.int32),
-                        ):
-
-        iq = 1
-        n1 = n - 1
-        node = 0
-        if math.isclose(iis, 0.0):
-            node = n1
-            for i in range(0, n):
-                u[i] = -1
-                v[i] = -1
-        elif math.isclose(iis, self.nexpExtended - 1.0):
-            node = n1
-            u[0] = 1
-            v[0] = 1
-            for i in range(1, n):
-                u[i] = -1
-                v[i] = -1
-            v[n1] = 1
+        node, iq = 0, 1
+        if isclose(iis, 0.0):
+            node = n - 1
+            u[:] = [-1] * n
+            v[:] = [-1] * n
+        elif isclose(iis, self.nexpExtended - 1):
+            node = n - 1
+            u[:] = [1] + [-1] * (n - 1)
+            v[:] = [1] + [-1] * (n - 2) + [1]
         else:
-            iff = self.nexpExtended
-            k1 = -1
-            for i in range(0, n):
+            iff, k1 = self.nexpExtended, -1
+            for i in range(n):
                 iff /= 2
-                if iis >= iff:  # исправить сравнение!
-                    if math.isclose(iis, iff) and not math.isclose(iis, 1.0):
-                        node = i
-                        iq = -1
+                k2 = 2 * (iis >= iff) - 1  # исправить сравнение!
+                if k2 == 1:
+                    if isclose(iis, iff) and not isclose(iis, 1):
+                        node, iq = i, -k2
                     iis -= iff
-                    k2 = 1
-                else:
-                    k2 = -1
-                    if math.isclose(iis, (iff - 1.0)) and not math.isclose(iis, 0.0):
-                        node = i
-                        iq = 1
+                elif isclose(iis, iff - 1) and not isclose(iis, 0):
+                    node, iq = i, -k2
                 j = -k1 * k2
-                v[i] = j
-                u[i] = j
+                v[i] = u[i] = j
                 k1 = k2
-            v[node] = v[node] * iq
-            v[n1] = -v[n1]
+            v[node] *= iq
+            v[-1] *= -1
         return node
-
-# -----------------------------------------------------------------------------------------
