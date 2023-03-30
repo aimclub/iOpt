@@ -24,12 +24,19 @@ class Calculator:
         """
         self.method = method
         self.parameters = parameters
-        Calculator.pool = Pool(parameters.numberOfParallelPoints)
+        Calculator.pool = Pool(parameters.numberOfParallelPoints,
+                               initializer=Calculator.worker_init,
+                               initargs=(self.method,))
         # Calculator.pool = Pool(1)
 
     @staticmethod
-    def worker(point: SearchDataItem, method: IMethod) -> SearchDataItem:
-        method.CalculateFunctionals(point)
+    def worker_init(method: IMethod):
+        Calculator.method = method
+        # print("Init !", flush=True)
+
+    @staticmethod
+    def worker(point: SearchDataItem) -> SearchDataItem:
+        Calculator.method.CalculateFunctionals(point)
         return point
 
     def CalculateFunctionalsForItems(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
@@ -37,7 +44,8 @@ class Calculator:
         #     self.worker(point, self.method)
 
 #        Calculator.pool = Pool(self.parameters.numberOfParallelPoints)
-        points_res = Calculator.pool.starmap(Calculator.worker, zip(points, repeat(self.method)))
+#         points_res = Calculator.pool.starmap(Calculator.worker, zip(points, repeat(self.method)))
+        points_res = Calculator.pool.map(Calculator.worker, points)
 #        Calculator.pool.close()
 
         for point, point_r in zip(points, points_res):
