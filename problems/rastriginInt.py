@@ -133,14 +133,3 @@ class RastriginInt(Problem):
         result = np.double(- result)
         return result
 
-# if __name__ == "__main__":
-#     problem = RastriginInt(3, 2)
-#     print(problem.A)
-#     print(problem.B)
-#     print(problem.optPoint)
-#     print(problem.optMultKoef)
-#     print(problem.multKoef)
-#     point = Point([-0.2], ["A", "A"])
-#     functionValue = FunctionValue()
-#     functionValue = problem.Calculate(point, functionValue)
-#     print(functionValue.value)
