@@ -1,7 +1,8 @@
 from iOpt.problems.shekel import Shekel
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import StaticPaintListener, ConsoleFullOutputListener
+from iOpt.output_system.listeners.static_painters import StaticPainterListener
+from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 if __name__ == "__main__":
     """
@@ -18,11 +19,11 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # Добавляем вывод результатов в консоль
-    cfol = ConsoleFullOutputListener(mode='full')
+    cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
 
     # Добавляем построение визуализации после решения задачи
-    spl = StaticPaintListener("shekel.png", "output", indx=0, isPointsAtBottom=False, mode="objective function")
+    spl = StaticPainterListener("shekel.png", "output", indx=0, isPointsAtBottom=False, mode="objective function")
     solver.AddListener(spl)
 
     # Решение задачи
