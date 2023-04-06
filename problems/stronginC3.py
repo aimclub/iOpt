@@ -7,13 +7,13 @@ from iOpt.problem import Problem
 import math
 
 
-class StronginC3(Problem):
+class Stronginc3(Problem):
     def __init__(self):
         """
-        Конструктор класса StronginC3 problem.
+        Конструктор класса Stronginc3 problem.
         """
-        super(StronginC3, self).__init__()
-        self.name = StronginC3
+        super(Stronginc3, self).__init__()
+        self.name = "Stronginc3"
         self.dimension: int = 2
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
@@ -25,17 +25,14 @@ class StronginC3(Problem):
             self.floatVariableNames[i] = i
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables[0] = 0
-        self.lowerBoundOfFloatVariables[1] = -1
+        self.lowerBoundOfFloatVariables = [0, -1]
         self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables[0] = 4
-        self.upperBoundOfFloatVariables[1] = 3
+        self.upperBoundOfFloatVariables = [4, 3]
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
         pointfv = np.ndarray(shape=(self.dimension), dtype=np.double)
-        pointfv[0] = 0.941176
-        pointfv[1] = 0.941176
+        pointfv = [0.941176, 0.941176]
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
@@ -51,21 +48,20 @@ class StronginC3(Problem):
         :return: Вычисленное значение функции в точке point
         """
         res: np.double = 0
-        x1: np.double = point.floatVariables[0]
-        x2: np.double = point.floatVariables[1]
+        x: np.double = point.floatVariables
 
         if functionValue.type == FunctionType.OBJECTIV:
-            t1: np.double = pow(0.5 * x1 - 0.5, 4.0)
-            t2: np.double = pow(x2 - 1.0, 4.0)
-            res = np.double(1.5 * x1 * x1 * math.exp(1.0 - x1 * x1 - 20.25 * (x1 - x2) * (x1 - x2)))
+            t1: np.double = pow(0.5 * x[0] - 0.5, 4.0)
+            t2: np.double = pow(x[1] - 1.0, 4.0)
+            res = np.double(1.5 * x[0] * x[0] * math.exp(1.0 - x[0] * x[0] - 20.25 * (x[0] - x[1]) * (x[0] - x[1])))
             res = np.double(res + t1 * t2 * math.exp(2.0 - t1 - t2))
             res = np.double(-res)
         elif functionValue.functionID == 0:  # constraint 1
-            res = np.double(0.01 * ((x1 - 2.2) * (x1 - 2.2) + (x2 - 1.2) * (x2 - 1.2) - 2.25))
+            res = np.double(0.01 * ((x[0] - 2.2) * (x[0] - 2.2) + (x[1] - 1.2) * (x[1] - 1.2) - 2.25))
         elif functionValue.functionID == 1:  # constraint 2
-            res = np.double(100.0 * (1.0 - ((x1 - 2.0) / 1.2) * ((x1 - 2.0) / 1.2) - (x2 / 2.0) * (x2 / 2.0)))
+            res = np.double(100.0 * (1.0 - ((x[0] - 2.0) / 1.2) * ((x[0] - 2.0) / 1.2) - (x[1] / 2.0) * (x[1] / 2.0)))
         elif functionValue.functionID == 2:  # constraint 3
-            res = np.double(10.0 * (x2 - 1.5 - 1.5 * math.sin(6.283 * (x1 - 1.75))))
+            res = np.double(10.0 * (x[1] - 1.5 - 1.5 * math.sin(6.283 * (x[0] - 1.75))))
 
         functionValue.value = res
         return functionValue

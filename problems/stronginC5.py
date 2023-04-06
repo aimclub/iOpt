@@ -7,13 +7,13 @@ from iOpt.problem import Problem
 import math
 
 
-class StronginC5(Problem):
+class Stronginc5(Problem):
     def __init__(self):
         """
-        Конструктор класса StronginC5 problem.
+        Конструктор класса Stronginc5 problem.
         """
-        super(StronginC5, self).__init__()
-        self.name = 'StronginC5'
+        super(Stronginc5, self).__init__()
+        self.name = 'Stronginc5'
         self.dimension: int = 5
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
@@ -25,22 +25,13 @@ class StronginC5(Problem):
             self.floatVariableNames[i] = i
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables.fill(-3)
-        self.lowerBoundOfFloatVariables[3] = -10
-        self.lowerBoundOfFloatVariables[4] = -10
+        self.lowerBoundOfFloatVariables = [-3, -3, -3, -10, -10]
         self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables.fill(3)
-        self.upperBoundOfFloatVariables[3] = 10
-        self.upperBoundOfFloatVariables[4] = 10
+        self.upperBoundOfFloatVariables = [3, 3, 3, 10, 10]
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
-        pointfv = np.ndarray(shape=(self.dimension), dtype=np.double)
-        pointfv[0] = -0.0679
-        pointfv[1] = 1.9434
-        pointfv[2] = 2.4512
-        pointfv[3] = 9.9013
-        pointfv[4] = 9.9008
+        pointfv = [-0.0679, 1.9434, 2.4512, 9.9013, 9.9008]
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
@@ -71,9 +62,8 @@ class StronginC5(Problem):
                             x[2] * x[2] * (math.sin(x[2] + x[4]) + math.sin(10 * (x[2] - x[3]) / 3)) - 4)
         elif functionValue.functionID == 4:  # constraint 5
             res = np.double(x[0] * x[0] + x[1] * x[1] * pow(math.sin((x[0] + x[3]) / 3 + 6.6) +
-                                                            math.sin((x[1] + x[4]) / 2 + 0.9), 2)
-                            - 17 * pow(math.cos(x[0] + x[2] + 1), 2) + 16)
+                                                            math.sin((x[1] + x[4]) / 2 + 0.9), 2) - 17 *
+                            pow(math.cos(x[0] + x[2] + 1), 2) + 16)
 
         functionValue.value = res
         return functionValue
-

@@ -13,7 +13,6 @@ class TestShekel(unittest.TestCase):
 
     def test_Calculate(self):
         point = Point([0.0], [])
-        res: np.double = 0
         aShekel = np.array([6.96615, 4.56374, 3.80749, 7.42302, 5.16861, 3.25999, 8.68618, 7.24754, 0.22309, 0.78036],
                            dtype=np.double)
         cShekel = np.array([1.11196, 1.11025, 1.19145, 1.13756, 1.17645, 1.18894, 1.18148, 1.16138, 1.10642, 1.04509],

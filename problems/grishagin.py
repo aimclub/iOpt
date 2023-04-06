@@ -4,7 +4,6 @@ from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
 from problems.grishagin_function.grishagin_function import GrishaginFunction
-import math
 
 
 class Grishagin(Problem):
@@ -25,7 +24,7 @@ class Grishagin(Problem):
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 100`
         """
         super(Grishagin, self).__init__()
-        self.name = Grishagin
+        self.name = "Grishagin"
         self.dimension = 2
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
