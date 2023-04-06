@@ -2,6 +2,9 @@
   <img src="/docs/iOpt_logo.png" width="200" height="150"/>
 </p>
 
+[![SAI](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/SAI_badge_flat.svg)](https://sai.itmo.ru/)
+[![ITMO](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/ITMO_badge_flat.svg)](https://en.itmo.ru/en/)
+
 [![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](LICENSE)
 [![python: 3.9](https://img.shields.io/badge/python-3.9-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-390/)
 [![python: 3.8](https://img.shields.io/badge/python-3.8-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-380/)
@@ -136,3 +139,8 @@ The latest stable release of iOpt is in the [main](https://github.com/UNN-ITMM-S
 # **Documentation**
 
 A detailed description of the iOpt framework API is available at [Read the Docs](https://iopt.readthedocs.io/ru/latest/).
+
+# **Supported by**
+
+The study is supported by the [Research Center Strong Artificial Intelligence in Industry](https://sai.itmo.ru/) 
+of [ITMO University](https://en.itmo.ru/) as part of the plan of the center's program: Framework of intelligent heuristic optimization methods.
