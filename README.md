@@ -139,3 +139,8 @@ The latest stable release of iOpt is in the [main](https://github.com/UNN-ITMM-S
 # **Documentation**
 
 A detailed description of the iOpt framework API is available at [Read the Docs](https://iopt.readthedocs.io/ru/latest/).
+
+# **Supported by**
+
+The study is supported by the [Research Center Strong Artificial Intelligence in Industry](https://sai.itmo.ru/) 
+of [ITMO University](https://en.itmo.ru/) as part of the plan of the center's program: Framework of intelligent heuristic optimization methods.
