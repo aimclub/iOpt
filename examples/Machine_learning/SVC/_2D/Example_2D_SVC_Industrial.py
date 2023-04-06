@@ -1,4 +1,7 @@
-from iOpt.method.listener import StaticNDPaintListener, AnimationNDPaintListener, ConsoleFullOutputListener
+from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+from iOpt.output_system.listeners.animate_painters import AnimatePainterNDListener
+from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from examples.Machine_learning.SVC._2D.Problems import SVC_2d
@@ -24,10 +27,10 @@ if __name__ == "__main__":
     problem = SVC_2d.SVC_2D(x, y, regularization_value_bound, kernel_coefficient_bound)
     method_params = SolverParameters(r=np.double(2.0), itersLimit=200)
     solver = Solver(problem, parameters=method_params)
-    apl = AnimationNDPaintListener("svc2d_anim.png", "output", varsIndxs=[0, 1], toPaintObjFunc=False)
+    apl = AnimatePainterNDListener("svc2d_anim.png", "output", varsIndxs=[0, 1])
     solver.AddListener(apl)
-    spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
+    spl = StaticPainterNDListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
     solver.AddListener(spl)
-    cfol = ConsoleFullOutputListener(mode='full')
+    cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
     solver_info = solver.Solve()

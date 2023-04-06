@@ -1,4 +1,5 @@
-from iOpt.method.listener import StaticPaintListener, AnimationPaintListener
+from iOpt.output_system.listeners.static_painters import StaticPainterListener
+from iOpt.output_system.listeners.animate_painters import AnimatePainterListener
 from sklearn.datasets import load_breast_cancer
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
@@ -23,10 +24,10 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(3.0), itersLimit=10, eps=np.double(0.05))
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimationPaintListener("svc1d_anim.png", "output", toPaintObjFunc=True)
+    apl = AnimatePainterListener("svc1d_anim.png", "output", toPaintObjFunc=True)
     solver.AddListener(apl)
 
-    spl = StaticPaintListener("svc1d_stat.png", "output", mode="interpolation")
+    spl = StaticPainterListener("svc1d_stat.png", "output", mode="interpolation")
     solver.AddListener(spl)
 
     solver_info = solver.Solve()

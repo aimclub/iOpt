@@ -3,23 +3,19 @@ from iOpt.problem import Problem
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
 
-
-# import time
-
-class FunctionConsoleFullOutput:
+class ConsoleOutputer:
     def __init__(self, problem: Problem, parameters: SolverParameters):
         self.problem = problem
         self.parameters = parameters
-        self.__outputer = ConsoleOutputer()
+        self.__functions = OutputFunctions()
         self.iterNum = 1
 
-    def printInitInfo(self):
-        self.__outputer.printInit(
+    def PrintInitInfo(self):
+        self.__functions.printInit(
             self.parameters.eps,
             self.parameters.r,
             self.parameters.epsR,
             self.parameters.itersLimit,
-
             self.problem.numberOfFloatVariables,
             self.problem.numberOfObjectives,
             self.problem.numberOfConstraints,
@@ -27,11 +23,11 @@ class FunctionConsoleFullOutput:
             self.problem.upperBoundOfFloatVariables
         )
 
-    def printIterPointInfo(self, savedNewPoints: SearchDataItem):
+    def PrintIterPointInfo(self, savedNewPoints: SearchDataItem):
         point = savedNewPoints[0].GetY().floatVariables
         value = savedNewPoints[0].GetZ()
 
-        self.__outputer.printIter(
+        self.__functions.printIter(
             point,
             value,
             self.iterNum
@@ -39,13 +35,13 @@ class FunctionConsoleFullOutput:
 
         self.iterNum += 1
 
-    def printBestPointInfo(self, solution, iters):
+    def PrintBestPointInfo(self, solution, iters):
         if self.iterNum % iters != 0:
             pass
         else:
             bestTrialPoint = solution.bestTrials[0].point.floatVariables
             bestTrialValue = solution.bestTrials[0].functionValues[0].value
-            self.__outputer.printBest(
+            self.__functions.printBest(
                 solution.numberOfGlobalTrials,
                 solution.numberOfLocalTrials,
                 solution.solutionAccuracy,
@@ -55,10 +51,10 @@ class FunctionConsoleFullOutput:
             )
         self.iterNum += 1
 
-    def printFinalResult(self, solution: Solution, status: bool):
+    def PrintFinalResultInfo(self, solution: Solution, status: bool):
         bestTrialPoint = solution.bestTrials[0].point.floatVariables
         bestTrialValue = solution.bestTrials[0].functionValues[0].value
-        self.__outputer.printResult(
+        self.__functions.printResult(
             status,
             solution.numberOfGlobalTrials,
             solution.numberOfLocalTrials,
@@ -69,7 +65,7 @@ class FunctionConsoleFullOutput:
         )
 
 
-class ConsoleOutputer:
+class OutputFunctions:
     def printInit(self, eps, r, epsR, itersLimit, floatdim, numberOfObjectives, numberOfConstraints,
                   lowerBoundOfFloatVariables, upperBoundOfFloatVariables):
         dim = floatdim
@@ -104,7 +100,6 @@ class ConsoleOutputer:
 
     def printIter(self, point, value, iter):
         dim = len(point)
-
         print("|", end=' ')
         # print("\033[A|", end=' ')
         print("{:>5}:".format(iter), end=' ')
@@ -125,7 +120,6 @@ class ConsoleOutputer:
         print("|{:>29} {:<{width}.8f}|".format("solution value: ", bestTrialValue, width=20 * dim))
         print("|{:>29} {:<{width}.8f}|".format("accuracy: ", solutionAccuracy, width=20 * dim))
         print("-" * (30 + 20 * dim + 2))
-        pass
 
     def printBest(self, numberOfGlobalTrials, numberOfLocalTrials, solutionAccuracy,
                   bestTrialPoint, bestTrialValue, iter):
