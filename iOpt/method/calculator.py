@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from itertools import repeat
 from multiprocessing import Pool
 
@@ -45,7 +46,14 @@ class Calculator:
 
 #        Calculator.pool = Pool(self.parameters.numberOfParallelPoints)
 #         points_res = Calculator.pool.starmap(Calculator.worker, zip(points, repeat(self.method)))
-        points_res = Calculator.pool.map(Calculator.worker, points)
+        points_copy = []
+        for point in points:
+            sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.GetX()),
+                 functionValues = copy.deepcopy(point.functionValues),
+                 discreteValueIndex = point.GetDiscreteValueIndex())
+            points_copy.append(sd)
+
+        points_res = Calculator.pool.map(Calculator.worker, points_copy)
 #        Calculator.pool.close()
 
         for point, point_r in zip(points, points_res):
