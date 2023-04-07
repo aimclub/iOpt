@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import numpy as np
 
@@ -13,6 +13,7 @@ from iOpt.method.method import Method
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
+from iOpt.method.listener import StaticPaintListener
 
 
 class TestProcess(unittest.TestCase):
@@ -31,8 +32,9 @@ class TestProcess(unittest.TestCase):
                         task=mock_task, searchData=searchData)
         method.stop = True
         method.dimension = 1
+        listener = StaticPaintListener(fileName="Output.txt")
         self.process = Process(parameters=SolverParameters(), task=mock_task, evolvent=mock_evolvent,
-                               searchData=searchData, method=method, listeners=mock_listener)
+                               searchData=searchData, method=method, listeners=[listener])
 
     def test_SolveAssertException(self):
         self.process.parameters = None
@@ -41,36 +43,44 @@ class TestProcess(unittest.TestCase):
             self.process.Solve()
 
     def test_DoLocalRefinementItersLimit(self):
-        self.process.task.problem.Calculate = Mock(side_effect=self.Calculate)
+        self.process.task.problem.Calculate = Mock(side_effect=self.mock_Calculate)
         self.process.parameters.itersLimit = 40
+        try:
+            self.process.DoLocalRefinement(-1)
+            self.assertEqual(4, self.process.searchData.solution.numberOfLocalTrials)
+            self.assertEqual(40 * 0.05, self.process.localMethodIterationCount)
+            self.assertEqual(0.45, self.process.searchData.solution.bestTrials[0].point.floatVariables)
+            self.assertEqual(-10.25, self.process.searchData.solution.bestTrials[0].functionValues[0].value)
+        except Exception:
+            self.fail("test_DoLocalRefinementItersLimit is failed")
 
-        self.process.DoLocalRefinement(-1)
-        self.assertEqual(40 * 0.05, self.process.localMethodIterationCount)
-        self.assertEqual(0.45, self.process.searchData.solution.bestTrials[0].point.floatVariables)
-        self.assertEqual(-10.25, self.process.searchData.solution.bestTrials[0].functionValues[0].value)
-
-    def CheckStopCondition(self) -> bool:
+    def mock_CheckStopCondition(self) -> bool:
         # для выполнения в методе Solve одного вызова DoGlobalIteration()
         self.process.method.stop = not self.process.method.stop
         return self.process.method.stop
 
-    def test_SolveRefineSolution(self):
-        self.process.method.evolvent.GetImage = Mock(side_effect=self.GetImage)
-        self.process.task.Calculate = Mock(side_effect=self.CalculateTask)
-        self.process.task.problem.Calculate = Mock(side_effect=self.Calculate)
-        self.process.method.CheckStopCondition = Mock(side_effect=self.CheckStopCondition)
+    @mock.patch('iOpt.method.listener.StaticPaintListener.OnMethodStop')
+    def test_SolveRefineSolutionAndCallListener(self, mock_OnMethodStop):
+        self.process.method.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
+        self.process.task.Calculate = Mock(side_effect=self.mock_CalculateTask)
+        self.process.task.problem.Calculate = Mock(side_effect=self.mock_Calculate)
+        self.process.method.CheckStopCondition = Mock(side_effect=self.mock_CheckStopCondition)
         self.process.parameters.refineSolution = True
+        self.process.parameters.itersLimit = 20  # localMethodIterationCount = 20 * 0.05 = 2
         try:
             self.process.Solve()
+            mock_OnMethodStop.assert_called_once()
+            self.assertEqual(1, self.process.searchData.solution.numberOfGlobalTrials)
+            self.assertEqual(2, self.process.searchData.solution.numberOfLocalTrials)
         except Exception:
-            self.fail("...")
+            self.fail("test_SolveRefineSolution is failed")
 
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def mock_Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         functionValue.value = (point.floatVariables[0] - 0.45)**2 - 10.25
         return functionValue
 
     def test_problemCalculate(self):
-        self.process.task.problem.Calculate = Mock(side_effect=self.Calculate)
+        self.process.task.problem.Calculate = Mock(side_effect=self.mock_Calculate)
         self.assertEqual(-10.25, self.process.problemCalculate([0.45]))
         self.process.task.problem.Calculate.assert_called_once()
 
@@ -82,22 +92,46 @@ class TestProcess(unittest.TestCase):
         self.assertEqual(0.0, self.process.searchData.solution.problem.lowerBoundOfFloatVariables[0])
         self.assertEqual(1.0, self.process.searchData.solution.problem.upperBoundOfFloatVariables[0])
 
-
-    def GetImage(self, x: np.double):
+    def mock_GetImage(self, x: np.double):
         return [x]
 
-    def CalculateTask(self, dataItem: SearchDataItem, functionIndex: int = 0,
+    def mock_CalculateTask(self, dataItem: SearchDataItem, functionIndex: int = 0,
                   type: TypeOfCalculation = TypeOfCalculation.FUNCTION) -> SearchDataItem:
-        dataItem.functionValues[0] = self.Calculate(dataItem.point, dataItem.functionValues[0])
+        dataItem.functionValues[0] = self.mock_Calculate(dataItem.point, dataItem.functionValues[0])
         return dataItem
 
-    def test_DoGlobalIteration(self):
-        self.process.method.evolvent.GetImage = Mock(side_effect=self.GetImage)
-        self.process.task.Calculate = Mock(side_effect=self.CalculateTask)
+    @mock.patch('iOpt.method.listener.StaticPaintListener.BeforeMethodStart')
+    @mock.patch('iOpt.method.listener.StaticPaintListener.OnEndIteration')
+    def test_DoGlobalIterationAndListener(self, mock_OnEndIteration, mock_BeforeMethodStart):
+        self.process.method.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
+        self.process.task.Calculate = Mock(side_effect=self.mock_CalculateTask)
         try:
-            self.process.DoGlobalIteration(2)
+            self.process.DoGlobalIteration(1)
+            mock_BeforeMethodStart.assert_called_once()
+            mock_OnEndIteration.assert_called_once()
+            self.assertEqual(1, self.process.searchData.solution.numberOfGlobalTrials)
         except Exception:
-            self.fail("...")
+            self.fail("test_DoGlobalIteration is failed")
+
+    @mock.patch('iOpt.method.method.Method.FirstIteration')
+    @mock.patch('iOpt.method.search_data.SearchData.GetLastItem')
+    @mock.patch('iOpt.method.method.Method.CalculateIterationPoint',
+                return_value=[SearchDataItem(Point(0.25, None), 0.25), SearchDataItem(Point(0.5, None), 0.5)])
+    @mock.patch('iOpt.method.method.Method.CalculateFunctionals',
+                return_value=SearchDataItem(Point(0.25, None), 0.25, -0.45))
+    @mock.patch('iOpt.method.method.Method.UpdateOptimum')
+    @mock.patch('iOpt.method.method.Method.RenewSearchData')
+    def test_DoGlobalIterationFirst(self, mock_RenewSearchData, mock_UpdateOptimum,
+                                    mock_CalculateFunctionals, mock_CalculateIterationPoint,
+                                    mock_GetLastItem, mock_FirstIteration):
+        self.process.method.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
+        self.process.task.Calculate = Mock(side_effect=self.mock_CalculateTask)
+
+        self.process.DoGlobalIteration(2)
+        expected_calls = [call().method6()]
+        mock_FirstIteration.assert_has_calls(expected_calls, any_order=False)
+        mock_CalculateIterationPoint.assert_has_calls([call().method4()], any_order=False)
+        mock_FirstIteration.assert_called_once()
 
 
 if __name__ == '__main__':
