@@ -7,7 +7,6 @@ import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.calculator import Calculator
-from iOpt.method.imethod import IMethod
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
@@ -15,7 +14,7 @@ from iOpt.solver_parametrs import SolverParameters
 from iOpt.trial import Point
 
 
-class Method(IMethod):
+class Method:
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
     """
@@ -241,17 +240,10 @@ class Method(IMethod):
 
         :return: точка, в которой сохранены результаты испытания.
         """
-        # point.functionValues = np.array(shape=self.task.problem.numberOfObjectives, dtype=FunctionValue)
-        # for func_id in range(self.task.problem.numberOfObjectives):  # make Calculate Objectives?
-        #    self.task.Calculate(point, func_id)  # SetZ, BUT
-
-        # Завернуть в цикл для индексной схемы
         point = self.task.Calculate(point, 0)
         point.SetZ(point.functionValues[0].value)
         point.SetIndex(0)
 
-        # Обновление числа испытаний
-        # self.searchData.solution.numberOfGlobalTrials += 1
         return point
 
     def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
