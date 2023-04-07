@@ -12,6 +12,9 @@ from iOpt.solver_parametrs import SolverParameters
 
 
 class ParallelProcess(Process):
+    """
+    Класс ParallelProcess реализует распараллеливание на уровне потоков (процессов python).
+    """
 
     def __init__(self,
                  parameters: SolverParameters,
@@ -60,14 +63,12 @@ class ParallelProcess(Process):
                 list_newpoint.append(newpoint)
                 list_oldpoint.append(oldpoint)
                 savedNewPoints.append(newpoint)
-            # self.method.CalculateFunctionals(newpoint)
             self.calculator.CalculateFunctionalsForItems(list_newpoint)
 
             for newpoint, oldpoint in zip(list_newpoint, list_oldpoint):
                 self.method.UpdateOptimum(newpoint)
                 self.method.RenewSearchData(newpoint, oldpoint)
                 self.method.FinalizeIteration()
-
 
         for listener in self._listeners:
             listener.OnEndIteration(savedNewPoints, self.GetResults())
