@@ -1,7 +1,5 @@
 from __future__ import annotations
-from typing import List
 
-import numpy as np
 import itertools
 
 import copy
@@ -19,7 +17,6 @@ from iOpt.method.index_method import IndexMethod
 from iOpt.trial import Point
 
 
-
 class MixedIntegerMethod(Method):
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
@@ -33,14 +30,9 @@ class MixedIntegerMethod(Method):
                  ):
         super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, searchData)
 
-
         numberOfDisreteVariables = task.problem.numberOfDisreteVariables
 
         # u = {i, j, k}, i = {0, 1, 2}, j = {0, 1}, k = {0, 1, 2, 3, 4} -> 3*2*4=24
-
-        # numberOfParameterCombinations = 1
-        # for i in range(numberOfDisreteVariables):
-        #     numberOfParameterCombinations *= len(task.problem.discreteVariableValues[i])
 
         list_discreteValues = list(task.problem.discreteVariableValues)
         self.discreteParameters = list(itertools.product(*list_discreteValues))
@@ -64,9 +56,8 @@ class MixedIntegerMethod(Method):
         y = Point(middle_image, self.discreteParameters[0])
         middle = SearchDataItem(y, x, discreteValueIndex=0)
         left = SearchDataItem(Point(left_image, self.discreteParameters[0]), 0.0, discreteValueIndex=0)
-        left.SetIndex(-3)  # по умолчанию -2
+        #left.SetIndex(-3)  # по умолчанию -2
         right = SearchDataItem(Point(right_image, self.discreteParameters[0]), 1.0, discreteValueIndex=0)
-        right.SetIndex(-3)
         left.delta = 0
         middle.delta = self.CalculateDelta(left, middle, self.dimension)
         right.delta = self.CalculateDelta(middle, right, self.dimension)
@@ -90,9 +81,10 @@ class MixedIntegerMethod(Method):
             y = Point(middle_image, self.discreteParameters[i])
             middle = SearchDataItem(y, x, discreteValueIndex=i)
             left = self.searchData.GetLastItem().GetRight()
-            right = SearchDataItem(Point(right_image, None), float(i + 1), discreteValueIndex=i)
-            # index = - 3
-            right.SetIndex(-3)
+            left_x = left.GetX()
+            right = SearchDataItem(Point(right_image, self.discreteParameters[i]), float(i + 1), discreteValueIndex=i)
+            # index = - 2
+            #right.SetIndex(-3)
             middle.delta = self.CalculateDelta(left, middle, self.dimension)
             right.delta = self.CalculateDelta(middle, right, self.dimension)
 
@@ -101,27 +93,31 @@ class MixedIntegerMethod(Method):
             self.UpdateOptimum(middle)
 
             # Вычисление характеристик
-           # self.CalculateGlobalR(left, self.searchData.GetLastItem())
+            # self.CalculateGlobalR(left, self.searchData.GetLastItem()) - не изменилась
             self.CalculateGlobalR(middle, left)
             self.CalculateGlobalR(right, middle)
+
             # addRightPoint
-            self.searchData.InsertDataItem(right)
+            # без добавление right в RGlobalQueue
+            self.searchData.InsertRightDataItem(right)
             self.searchData.InsertDataItem(middle, right)
+        for item in self.searchData:
+            print(item.GetX())
 
 
-    def CalculateDelta(lPoint: SearchDataItem, rPoint: SearchDataItem, dimension: int) -> float:
-        """
-        Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
-          полученными при редукции размерности.
-
-        :param lx: левая точка
-        :param rx: правая точка
-        :param dimension: размерность исходного пространства
-
-        :return: гельдерово расстояние между lx и rx.
-        """
-        # Учесть что у левой точки может быть x = 1 и отрицательный индекс, тогда считать что x = 0
-        pass
+    # def CalculateDelta(lPoint: SearchDataItem, rPoint: SearchDataItem, dimension: int) -> float:
+    #     """
+    #     Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
+    #       полученными при редукции размерности.
+    #
+    #     :param lx: левая точка
+    #     :param rx: правая точка
+    #     :param dimension: размерность исходного пространства
+    #
+    #     :return: гельдерово расстояние между lx и rx.
+    #     """
+    #     # Учесть что у левой точки может быть x = 1 и отрицательный индекс, тогда считать что x = 0
+    #     pass
 
     def CalculateNextPointCoordinate(self, point: SearchDataItem) -> float:
         r"""
@@ -138,9 +134,9 @@ class MixedIntegerMethod(Method):
             print("CalculateNextPointCoordinate: Left point is NONE")
             raise Exception("CalculateNextPointCoordinate: Left point is NONE")
         xl = left.GetX()
-        xl -= math.modf(xl)[1]
+        #xl -= math.modf(xl)[1]
         xr = point.GetX()
-        xr -= math.modf(xr)[1]
+        #xr -= math.modf(xr)[1]
         idl = left.GetIndex()
         idr = point.GetIndex()
         if idl == idr:
@@ -173,7 +169,7 @@ class MixedIntegerMethod(Method):
         old = self.searchData.GetDataItemWithMaxGlobalR()
         self.min_delta = min(old.delta, self.min_delta)
         newx = self.CalculateNextPointCoordinate(old)
-        newy = self.evolvent.GetImage(newx)
+        newy = self.evolvent.GetImage(newx - math.modf(newx)[1])
         new = copy.deepcopy(SearchDataItem(Point(newy, old.point.discreteVariables),
                                            newx, discreteValueIndex=old.GetDiscreteValueIndex()))
         return new, old

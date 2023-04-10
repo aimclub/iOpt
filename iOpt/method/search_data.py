@@ -251,12 +251,12 @@ class SearchData:
     def InsertRightDataItem(self, rightDataItem: SearchDataItem):
         if rightDataItem is None:
             raise RuntimeError("InsertRightDataItem: rightDataItem is None")
-        left = self._allTrials[-1]  # получили последнюю точку, является левой для rightDataItem
+        left = self._allTrials[-1].GetRight()  # получили последнюю точку 0.5, getRight() является левой для rightDataItem
         if left is not None:
             left.SetRight(rightDataItem)
             rightDataItem.SetLeft(left)
         self._allTrials.append(rightDataItem)
-        self._RGlobalQueue(rightDataItem.globalR, rightDataItem)
+        #self._RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem) - add in InsertDataItem?
 
     # вставка точки если знает правую точку
     # в качестве интервала используем [i-1, i]
