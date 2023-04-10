@@ -1,8 +1,7 @@
 from problems.rastrigin import Rastrigin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import StaticPaintListener
-from iOpt.method.listener import ConsoleFullOutputListener
+from iOpt.output_system.listeners.static_painters import StaticPainterListener
 
 if __name__ == "__main__":
     # create the problem 2D dimension
@@ -15,7 +14,7 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # add needed listeners for solver
-    apl = StaticPaintListener("rastrigin_1_2.5_0.01.png", mode="interpolation")
+    apl = StaticPainterListener("rastrigin_1_2.5_0.01.png", mode="interpolation")
     solver.AddListener(apl)
 
     # solve the problem
