@@ -1,7 +1,7 @@
 from problems.rastrigin import Rastrigin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import ConsoleFullOutputListener
+from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 if __name__ == "__main__":
     # create the problem
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # add needed listeners for solver
-    cfol = ConsoleFullOutputListener(mode="result")
+    cfol = ConsoleOutputListener(mode="result")
     solver.AddListener(cfol)
 
     # solve the problem
