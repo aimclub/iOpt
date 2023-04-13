@@ -13,7 +13,7 @@ def SolveSingleGKLS():
     problem = GKLS(2, 39)
 
     # Формируем параметры решателя
-    params = SolverParameters(r=3.5, eps=0.01, itersLimit=300, refineSolution=True)
+    params = SolverParameters(r=3.5, eps=0.01, itersLimit=300, refineSolution=True, numberOfParallelPoints=4)
 
     # Создаем решатель
     solver = Solver(problem, parameters=params)

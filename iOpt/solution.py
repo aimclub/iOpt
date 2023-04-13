@@ -11,7 +11,7 @@ class Solution:
                  problem: Problem,
                  bestTrials: np.ndarray(shape=(1), dtype=Trial) = [Trial([], [])],
 
-                 numberOfGlobalTrials: int = 0,
+                 numberOfGlobalTrials: int = 1,
                  numberOfLocalTrials: int = 0,
                  solvingTime: np.double = 0.0,
                  solutionAccuracy: np.double = 0.0

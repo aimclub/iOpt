@@ -5,6 +5,7 @@ from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
 from iOpt.method.optim_task import OptimizationTask
+from iOpt.method.parallel_process import ParallelProcess
 from iOpt.method.search_data import SearchData
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.problem import Problem
@@ -40,8 +41,12 @@ class Solver:
                                  problem.numberOfFloatVariables)
         self.task = OptimizationTask(problem)
         self.method = Method(parameters, self.task, self.evolvent, self.searchData)
-        self.process = Process(parameters=parameters, task=self.task, evolvent=self.evolvent,
+        if(parameters.numberOfParallelPoints == 1):
+            self.process = Process(parameters=parameters, task=self.task, evolvent=self.evolvent,
                                searchData=self.searchData, method=self.method, listeners=self.__listeners)
+        else:
+            self.process = ParallelProcess(parameters=parameters, task=self.task, evolvent=self.evolvent,
+                                   searchData=self.searchData, method=self.method, listeners=self.__listeners)
 
     def Solve(self) -> Solution:
         """

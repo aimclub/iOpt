@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import List
 
+import traceback
+
 import scipy
 from scipy.optimize import Bounds
 
@@ -43,8 +45,8 @@ class Process:
         self.evolvent = evolvent
         self.searchData = searchData
         self.method = method
-        self.__listeners = listeners
-        self.__first_iteration = True
+        self._listeners = listeners
+        self._first_iteration = True
         self.localMethodIterationCount = 0
 
     def Solve(self) -> Solution:
@@ -67,6 +69,7 @@ class Process:
             # print(self.method.CheckStopCondition())
         except BaseException:
             print('Exception was thrown')
+            print(traceback.format_exc())
 
         if self.parameters.refineSolution:
             self.DoLocalRefinement(-1)
@@ -74,7 +77,7 @@ class Process:
         result = self.GetResults()
         result.solvingTime = (datetime.now() - startTime).total_seconds()
 
-        for listener in self.__listeners:
+        for listener in self._listeners:
             status = self.method.CheckStopCondition()
             listener.OnMethodStop(self.searchData, self.GetResults(), status)
 
@@ -87,22 +90,24 @@ class Process:
         :param number: Количество итераций глобального поиска
         """
         savedNewPoints = []
-        for _ in range(number):
-            if self.__first_iteration is True:
-                for listener in self.__listeners:
-                    listener.BeforeMethodStart(self.method)
-                self.method.FirstIteration()
-                savedNewPoints.append(self.searchData.GetLastItem())
-                self.__first_iteration = False
-            else:
-                newpoint, oldpoint = self.method.CalculateIterationPoint()
-                savedNewPoints.append(newpoint)
-                self.method.CalculateFunctionals(newpoint)
-                self.method.UpdateOptimum(newpoint)
-                self.method.RenewSearchData(newpoint, oldpoint)
-                self.method.FinalizeIteration()
 
-        for listener in self.__listeners:
+        if self._first_iteration is True:
+            for listener in self._listeners:
+                listener.BeforeMethodStart(self.method)
+            self.method.FirstIteration()
+            savedNewPoints.append(self.searchData.GetLastItem())
+            self._first_iteration = False
+            number = number - 1
+
+        for _ in range(number):
+            newpoint, oldpoint = self.method.CalculateIterationPoint()
+            savedNewPoints.append(newpoint)
+            self.method.CalculateFunctionals(newpoint)
+            self.method.UpdateOptimum(newpoint)
+            self.method.RenewSearchData(newpoint, oldpoint)
+            self.method.FinalizeIteration()
+
+        for listener in self._listeners:
             listener.OnEndIteration(savedNewPoints, self.GetResults())
 
     def problemCalculate(self, y):
