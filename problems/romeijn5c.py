@@ -7,13 +7,13 @@ from iOpt.problem import Problem
 import math
 
 
-class StronginC2(Problem):
+class Romeijn5c(Problem):
     def __init__(self):
         """
-        Конструктор класса StronginC2 problem.
+        Конструктор класса Romeijn5c problem.
         """
-        super(StronginC2, self).__init__()
-        self.name = 'StronginC2'
+        super(Romeijn5c, self).__init__()
+        self.name = "Romeijn5c"
         self.dimension: int = 2
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
@@ -25,21 +25,17 @@ class StronginC2(Problem):
             self.floatVariableNames[i] = i
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables[0] = 0
-        self.lowerBoundOfFloatVariables[1] = -1
+        self.lowerBoundOfFloatVariables = [-1.5, 0]
         self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables[0] = 4
-        self.upperBoundOfFloatVariables[1] = 3
+        self.upperBoundOfFloatVariables = [3.5, 15]
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
-        pointfv = np.ndarray(shape=(self.dimension), dtype=np.double)
-        pointfv[0] = 1.088
-        pointfv[1] = 1.088
+        pointfv = [2.4656, 15]
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0] = self.Calculate(KOpoint, KOfunV[0])  # -1.477
+        KOfunV[0] = self.Calculate(KOpoint, KOfunV[0]) # -195.37
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
@@ -50,21 +46,16 @@ class StronginC2(Problem):
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
         """
-        res: np.double = 0
-        x1: np.double = point.floatVariables[0]
-        x2: np.double = point.floatVariables[1]
+        result: np.double = 0
+        x = point.floatVariables
 
         if functionValue.type == FunctionType.OBJECTIV:
-            t1: np.double = pow(0.5 * x1 - 0.5, 4.0)
-            t2: np.double = pow(x2 - 1.0, 4.0)
-            res = np.double(1.5 * x1 * x1 * math.exp(1.0 - x1 * x1 - 20.25 * (x1 - x2) * (x1 - x2)))
-            res = np.double(res + t1 * t2 * math.exp(2.0 - t1 - t2))
-            res = np.double(-res)
+            temp = x[1] - 1.275 * pow(x[0], 2) + 5.0 * x[0] - 6.0
+            result = np.double(-pow(temp, 2) - 10.0 * (1 - 1 / (8.0 * math.pi)) * math.cos(math.pi * x[0]) - 10.0)
         elif functionValue.functionID == 0:  # constraint 1
-            res = np.double(((x1 - 2.2) * (x1 - 2.2) + (x2 - 1.2) * (x2 - 1.2) - 1.25))
+            result = -math.pi*x[0] - x[1]
         elif functionValue.functionID == 1:  # constraint 2
-            res = np.double(1.21 - (x1 - 2.2) * (x1 - 2.2) - (x2 - 1.2) * (x2 - 1.2))
+            result = -pow(math.pi*x[0], 2) + 4.0*x[1]
 
-        functionValue.value = res
+        functionValue.value = result
         return functionValue
-

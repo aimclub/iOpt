@@ -1,4 +1,5 @@
 import numpy as np
+from iOpt.trial import FunctionType
 from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
@@ -6,45 +7,31 @@ from iOpt.problem import Problem
 import math
 
 
-class Rastrigin(Problem):
-    """
-    Функция  Растригина задана формулой:
-       :math:`f(y)=(\sum_{i=1}^{N}[x_{i}^{2}-10*cos(2\pi x_{i})])`,
-       где :math:`x\in [-2.2, 1.8], N` – размерность задачи.
-    """
-
-    def __init__(self, dimension: int):
+class g2c(Problem):
+    def __init__(self):
         """
-        Конструктор класса Rastrigin problem.
-
-        :param dimension: Размерность задачи.
+        Конструктор класса gC2 problem.
         """
-        super(Rastrigin, self).__init__()
-        self.name = "Rastrigin"
-        self.dimension = dimension
-        self.numberOfFloatVariables = dimension
+        super(g2c, self).__init__()
+        self.name = "g2c"
+        self.dimension: int = 20
+        self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
         self.numberOfObjectives = 1
-        self.numberOfConstraints = 0
+        self.numberOfConstraints = 2
 
         self.floatVariableNames = np.ndarray(shape=(self.dimension), dtype=str)
         for i in range(self.dimension):
             self.floatVariableNames[i] = i
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables.fill(-2.2)
+        self.lowerBoundOfFloatVariables.fill(0)
         self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables.fill(1.8)
+        self.upperBoundOfFloatVariables.fill(10)
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
-        pointfv = np.ndarray(shape=(self.dimension), dtype=np.double)
-        pointfv.fill(0)
-        KOpoint = Point(pointfv, [])
-        KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
-        KOfunV[0] = FunctionValue()
-        KOfunV[0].value = 0
-        self.knownOptimum[0] = Trial(KOpoint, KOfunV)
+        # Optimum is UNDEFINED
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
@@ -54,13 +41,26 @@ class Rastrigin(Problem):
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
         """
-        sum: np.double = 0
-        for i in range(self.dimension):
-            sum += point.floatVariables[i] * point.floatVariables[i] - 10 * math.cos(
-                2 * math.pi * point.floatVariables[i]) + 10
+        result: np.double = 0
+        x = point.floatVariables
+        sum1 = 0
+        sum2 = 0
+        prod = 1
 
-        functionValue.value = sum
+        if functionValue.type == FunctionType.OBJECTIV:
+            for i in range(0, self.dimension):
+                sum1 += pow(math.cos(x[i]), 4)
+                sum2 += (i + 1) * pow(x[i], 2)
+                prod = prod * pow(x[i], 2)
+            result = - abs((sum1 - 2 * prod) / math.sqrt(sum2))
+        elif functionValue.functionID == 0:  # constraint 1
+            for i in range(0, self.dimension):
+                prod = prod * x[i]
+            result = np.double(-prod + 0.75)
+        elif functionValue.functionID == 1:  # constraint 2
+            for i in range(0, self.dimension):
+                sum1 += x[i]
+            result = np.double(sum1 - 7.5*self.dimension)
+
+        functionValue.value = result
         return functionValue
-
-    def GetName(self):
-        return self.name

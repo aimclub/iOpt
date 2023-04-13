@@ -3,7 +3,7 @@ import numpy as np
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
 from problems.rastriginInt import RastriginInt
-import test.problem.pointForTest.rastriginInt_point as Sample
+import test.problems.pointsForTest.rastriginInt_points as Sample
 
 class TestRastriginInt(unittest.TestCase):
     """setUp method is overridden from the parent class Rastrigin"""
