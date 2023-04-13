@@ -31,7 +31,7 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
         r"""
         Копирование поискового испытания.
 
-        :param dist_point: точка в которую копиркется значения испытаний.
+        :param dist_point: точка, в которую копируются значения испытаний.
         :param src_point: точка c результатами испытаний.
         """
         dist_point.functionValues[0] = src_point.functionValues[0]

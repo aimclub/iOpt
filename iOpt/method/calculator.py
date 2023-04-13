@@ -9,6 +9,7 @@ from iOpt.solver_parametrs import SolverParameters
 
 import sys
 
+#возможно стоит удалить
 sys.setrecursionlimit(10000)
 
 
@@ -33,7 +34,7 @@ class Calculator:
                                initargs=(self.evaluateMethod,))
 
     r"""
-    Инициализация метода вычислений в каждем процессе из пула процессов Calculator.Pool
+    Инициализация метода вычислений в каждом процессе из пула процессов Calculator.Pool
 
     :param evaluateMethod: метод вычислений, проводящий поисковые испытания по заданным правилам.
     """
@@ -58,10 +59,11 @@ class Calculator:
     """
 
     def CalculateFunctionalsForItems(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
-        # Ниже реализация цикла через пулл процессов
+        # пока оставленно на случай отладки
         # for point in points:
         #     self.worker(point, self.method)
 
+        # Ниже реализация цикла через пулл процессов
         points_copy = []
         for point in points:
             sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.GetX()),
