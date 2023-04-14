@@ -34,7 +34,8 @@ class Method:
         :param searchData: структура данных для хранения накопленной поисковой информации.
         """
         self.stop: bool = False
-        self.recalc: bool = True
+        self.recalcR: bool = True
+        self.recalcM: bool = True
         self.iterationsCount: int = 0
         self.best: SearchDataItem = None
 
@@ -147,7 +148,8 @@ class Method:
         for item in items:
             self.searchData.InsertDataItem(item, right)
 
-        self.recalc = True
+        self.recalcR = True
+        self.recalcM = True
 
     def CheckStopCondition(self) -> bool:
         r"""
@@ -163,18 +165,28 @@ class Method:
 
         return self.stop
 
+    def RecalcM(self) -> None:
+        r"""
+        Пересчёт оценки константы Липшица.
+        """
+        if self.recalcM is not True:
+            return
+        for item in self.searchData:
+            self.CalculateM(item, item.GetLeft())
+        self.recalcM = False
+
     def RecalcAllCharacteristics(self) -> None:
         r"""
         Пересчёт характеристик для всех поисковых интервалов.
         """
-        if self.recalc is not True:
+        if self.recalcR is not True:
             return
         self.searchData.ClearQueue()
         for item in self.searchData:  # Должно работать...
             self.CalculateGlobalR(item, item.GetLeft())
             # self.CalculateLocalR(item)
         self.searchData.RefillQueue()
-        self.recalc = False
+        self.recalcR = False
 
     def CalculateNextPointCoordinate(self, point: SearchDataItem) -> float:
         r"""
@@ -217,7 +229,9 @@ class Method:
         :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
           которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
-        if self.recalc is True:
+        if self.recalcM is True:
+            self.RecalcM()
+        if self.recalcR is True:
             self.RecalcAllCharacteristics()
 
         old = self.searchData.GetDataItemWithMaxGlobalR()
@@ -263,7 +277,7 @@ class Method:
             m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
             if m > self.M[index]:
                 self.M[index] = m
-                self.recalc = True
+                self.recalcR = True
 
     # def CalculateM(self, point: SearchDataItem):  # В python нет такой перегрузки функций, надо менять название
     #     self.CalculateM(point, point.GetLeft())
@@ -328,11 +342,11 @@ class Method:
         """
         if self.best is None or self.best.GetIndex() < point.GetIndex():
             self.best = point
-            self.recalc = True
+            self.recalcR = True
             self.Z[point.GetIndex()] = point.GetZ()
         elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
             self.best = point
-            self.recalc = True
+            self.recalcR = True
             self.Z[point.GetIndex()] = point.GetZ()
         self.searchData.solution.bestTrials[0] = self.best
 
