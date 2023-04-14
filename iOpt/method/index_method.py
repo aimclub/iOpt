@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.optim_task import OptimizationTask
@@ -30,7 +31,18 @@ class IndexMethod(Method):
 
         :return: точка, в которой сохранены результаты испытания.
         """
-        pass
+        number_of_constraints = self.task.problem.numberOfConstraints
+        for i in range(number_of_constraints):
+            point = self.task.Calculate(point, i)
+            point.SetZ(point.functionValues[i].value)
+            point.SetIndex(i)
+            if point.GetZ() < 0:
+                return point
+
+        point = self.task.Calculate(point, number_of_constraints)
+        point.SetZ(point.functionValues[number_of_constraints].value)
+        point.SetIndex(number_of_constraints)
+        return point
 
     def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
@@ -39,8 +51,33 @@ class IndexMethod(Method):
         :param curr_point: правая точка интервала
         :param left_point: левая точка интервала
         """
-        #Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
-        pass
+        # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
+        if curr_point is None:
+            print("CalculateM: curr_point is None")
+            raise RuntimeError("CalculateM: curr_point is None")
+        if left_point is None:
+            return
+        index = curr_point.GetIndex()
+        m = 0.0
+        if left_point.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+            m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
+        else:
+            i = left_point.GetLeft()
+            while (i is not None) and (i.GetIndex() < curr_point.GetIndex()):
+                i = i.GetLeft()
+            if i is not None:
+                m = abs(i.functionValues[index] - curr_point.GetZ()) / \
+                    self.CalculateDelta(i, curr_point, self.dimension)
+            
+            i = curr_point.GetRight()
+            while (i is not None) and (i.GetIndex() < curr_point.GetIndex()):
+                i = i.GetRight()
+            if i is not None:
+                m = max(m, abs(curr_point.GetZ() - i.functionValues[index]) / \
+                        self.CalculateDelta(curr_point, i, self.dimension))
+        if m > self.M[index]:
+            self.M[index] = m
+            self.recalc = True
 
     def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
@@ -51,7 +88,27 @@ class IndexMethod(Method):
         """
 
         # Сюда переедет целиком CalculateGlobalR из Method, а там останется только случай с равными индексами
-        pass
+        if curr_point is None:
+            print("CalculateGlobalR: Curr point is NONE")
+            raise Exception("CalculateGlobalR: Curr point is NONE")
+        if left_point is None:
+            curr_point.globalR = -np.infty
+            return None
+        zl = left_point.GetZ()
+        zr = curr_point.GetZ()
+        r = self.parameters.r
+        deltax = curr_point.delta
+        if left_point.GetIndex() == curr_point.GetIndex():
+            v = curr_point.GetIndex()
+            globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
+                      2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
+        elif left_point.GetIndex() < curr_point.GetIndex():
+            v = curr_point.GetIndex()
+            globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
+        else:
+            v = left_point.GetIndex()
+            globalR = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
+        curr_point.globalR = globalR
 
     def UpdateOptimum(self, point: SearchDataItem) -> None:
         r"""
@@ -61,4 +118,12 @@ class IndexMethod(Method):
         """
 
         # Сюда переедет целиком UpdateOptimum из Method, а там останется только случай с равными индексами
-        pass
+        if self.best is None or self.best.GetIndex() < point.GetIndex():
+            self.best = point
+            self.recalc = True
+            self.Z[point.GetIndex()] = point.GetZ()
+        elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
+            self.best = point
+            self.recalc = True
+            self.Z[point.GetIndex()] = point.GetZ()
+        self.searchData.solution.bestTrials[0] = self.best

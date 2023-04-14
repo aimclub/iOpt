@@ -11,7 +11,7 @@ from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.trial import Point
+from iOpt.trial import Point, FunctionValue
 
 
 class Method:
@@ -47,6 +47,7 @@ class Method:
         self.Z = [np.infty for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
         self.dimension = task.problem.numberOfFloatVariables  # А ДЛЯ ДИСКРЕТНЫХ?
         self.searchData.solution.solutionAccuracy = np.infty
+        self.numberOfAllFunctions = task.problem.numberOfObjectives + task.problem.numberOfConstraints
 
     @property
     def min_delta(self):
@@ -70,7 +71,6 @@ class Method:
     #     """
     #     return pow(rx - lx, 1.0 / dimension)
 
-
     def CalculateDelta(self, lPoint: SearchDataItem, rPoint: SearchDataItem, dimension: int) -> float:
         """
         Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
@@ -84,16 +84,17 @@ class Method:
         """
         return pow(rPoint.GetX() - lPoint.GetX(), 1.0 / dimension)
 
-
-    def FirstIteration(self, calculator:Calculator = None) -> None:
+    def FirstIteration(self, calculator: Calculator = None) -> None:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
         self.iterationsCount = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-        left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.0)
-        right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0)
+        left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.,
+                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+        right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0,
+                               functionValues=[FunctionValue()] * self.numberOfAllFunctions)
 
         h: float = 1.0 / (self.parameters.numberOfParallelPoints + 1)
         items: list[SearchDataItem] = []
@@ -101,10 +102,11 @@ class Method:
         for i in range(self.parameters.numberOfParallelPoints):
             x = h * (i + 1)
             y = Point(self.evolvent.GetImage(x), None)
-            item = SearchDataItem(y, x)
+            item = SearchDataItem(y, x,
+                                  functionValues=[FunctionValue()] * self.numberOfAllFunctions)
             items.append(item)
 
-        if(calculator is None):
+        if calculator is None:
             for item in items:
                 self.CalculateFunctionals(item)
         else:
@@ -124,21 +126,19 @@ class Method:
         # self.CalculateGlobalR(middle, left)
         # self.CalculateGlobalR(right, middle)
 
-
         left.delta = 0
         self.CalculateGlobalR(left, None)
 
         items[0].delta = self.CalculateDelta(left, items[0], self.dimension)
         self.CalculateGlobalR(items[0], left)
         for id_item, item in enumerate(items):
-            if(id_item > 0):
+            if id_item > 0:
                 items[id_item].delta = self.CalculateDelta(items[id_item - 1], items[id_item], self.dimension)
                 self.CalculateGlobalR(items[id_item], items[id_item - 1])
                 self.CalculateM(items[id_item], items[id_item - 1])
 
         right.delta = self.CalculateDelta(items[-1], right, self.dimension)
         self.CalculateGlobalR(right, items[-1])
-
 
         # вставить left  и right, потом middle
         self.searchData.InsertFirstDataItem(left, right)
@@ -148,7 +148,6 @@ class Method:
             self.searchData.InsertDataItem(item, right)
 
         self.recalc = True
-
 
     def CheckStopCondition(self) -> bool:
         r"""
@@ -225,7 +224,8 @@ class Method:
         self.min_delta = min(old.delta, self.min_delta)
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx)
-        new = copy.deepcopy(SearchDataItem(Point(newy, []), newx))
+        new = copy.deepcopy(SearchDataItem(Point(newy, []), newx,
+                                           functionValues=[FunctionValue()] * self.numberOfAllFunctions))
 
         # Обновление числа испытаний
         self.searchData.solution.numberOfGlobalTrials += 1
