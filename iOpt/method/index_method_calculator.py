@@ -1,7 +1,9 @@
+import copy
+
 from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchDataItem
-import copy
+from iOpt.trial import FunctionValue, FunctionType
 
 
 class IndexMethodCalculator(ICriterionEvaluateMethod):
@@ -24,12 +26,13 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
         """
         number_of_constraints = self.task.problem.numberOfConstraints
         for i in range(number_of_constraints):
+            point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)
             point = self.task.Calculate(point, i)
             point.SetZ(point.functionValues[i].value)
             point.SetIndex(i)
             if point.GetZ() < 0:
                 return point
-
+        point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
         point = self.task.Calculate(point, number_of_constraints)
         point.SetZ(point.functionValues[number_of_constraints].value)
         point.SetIndex(number_of_constraints)

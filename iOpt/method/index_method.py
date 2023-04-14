@@ -8,6 +8,7 @@ from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.method import Method
+from iOpt.trial import FunctionValue, FunctionType
 
 
 class IndexMethod(Method):
@@ -33,12 +34,13 @@ class IndexMethod(Method):
         """
         number_of_constraints = self.task.problem.numberOfConstraints
         for i in range(number_of_constraints):
+            point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)  # ???
             point = self.task.Calculate(point, i)
             point.SetZ(point.functionValues[i].value)
             point.SetIndex(i)
             if point.GetZ() < 0:
                 return point
-
+        point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
         point = self.task.Calculate(point, number_of_constraints)
         point.SetZ(point.functionValues[number_of_constraints].value)
         point.SetIndex(number_of_constraints)
@@ -68,8 +70,10 @@ class IndexMethod(Method):
             if i is not None:
                 m = abs(i.functionValues[index] - curr_point.GetZ()) / \
                     self.CalculateDelta(i, curr_point, self.dimension)
-            
-            i = curr_point.GetRight()
+
+            i = left_point.GetRight()
+            if i is not None and i is curr_point:  # impossible, since we don't recalculate M
+                i = i.GetRight()
             while (i is not None) and (i.GetIndex() < curr_point.GetIndex()):
                 i = i.GetRight()
             if i is not None:
