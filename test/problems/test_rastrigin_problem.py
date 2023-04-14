@@ -4,6 +4,7 @@ from iOpt.trial import Point
 from problems.rastrigin import Rastrigin
 import test.problems.pointsForTest.rastrigin_points as Sample
 
+
 class TestRastrigin(unittest.TestCase):
     """setUp method is overridden from the parent class Rastrigin"""
 
