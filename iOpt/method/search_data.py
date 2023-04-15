@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import sys
 
 import numpy as np
@@ -32,7 +33,7 @@ class SearchDataItem(Trial):
         :param functionValues: Вектор значений функций (целевой функции и функций ограничений)
         :param discreteValueIndex: Дискретный параметр
         """
-        super().__init__(point=y, functionValues=functionValues)
+        super().__init__(point=y, functionValues=copy.deepcopy(functionValues))
         self.point = y
         self.__x = x
         self.__discreteValueIndex = discreteValueIndex
@@ -44,6 +45,7 @@ class SearchDataItem(Trial):
         self.globalR: np.double = -1.0
         self.localR: np.double = -1.0
         self.iterationNumber: int = -1
+
 
     def GetX(self) -> np.double:
         """
