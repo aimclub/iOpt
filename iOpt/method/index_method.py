@@ -64,24 +64,26 @@ class IndexMethod(Method):
         if left_point.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
             m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
         else:
-            i = left_point.GetLeft()
-            while (i is not None) and (i.GetIndex() < curr_point.GetIndex()):
-                i = i.GetLeft()
-            if i is not None:
-                m = abs(i.functionValues[index] - curr_point.GetZ()) / \
-                    self.CalculateDelta(i, curr_point, self.dimension)
+            # Ищем слева
+            other_point = left_point
+            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
+                other_point = other_point.GetLeft()
+            if other_point is not None:
+                m = abs(other_point.functionValues[index] - curr_point.GetZ()) / \
+                    self.CalculateDelta(other_point, curr_point, self.dimension)
+            # Ищем слева
+            other_point = left_point.GetRight()
+            if other_point is not None and other_point is curr_point:  # возможно только при пересчёте M
+                other_point = other_point.GetRight()
+            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
+                other_point = other_point.GetRight()
+            if other_point is not None:
+                m = max(m, abs(curr_point.GetZ() - other_point.functionValues[index]) / \
+                        self.CalculateDelta(curr_point, other_point, self.dimension))
 
-            i = left_point.GetRight()
-            if i is not None and i is curr_point:  # impossible, since we don't recalculate M
-                i = i.GetRight()
-            while (i is not None) and (i.GetIndex() < curr_point.GetIndex()):
-                i = i.GetRight()
-            if i is not None:
-                m = max(m, abs(curr_point.GetZ() - i.functionValues[index]) / \
-                        self.CalculateDelta(curr_point, i, self.dimension))
         if m > self.M[index]:
             self.M[index] = m
-            self.recalc = True
+            self.recalcR = True
 
     def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
@@ -124,10 +126,10 @@ class IndexMethod(Method):
         # Сюда переедет целиком UpdateOptimum из Method, а там останется только случай с равными индексами
         if self.best is None or self.best.GetIndex() < point.GetIndex():
             self.best = point
-            self.recalc = True
+            self.recalcR = True
             self.Z[point.GetIndex()] = point.GetZ()
         elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
             self.best = point
-            self.recalc = True
+            self.recalcR = True
             self.Z[point.GetIndex()] = point.GetZ()
         self.searchData.solution.bestTrials[0] = self.best
