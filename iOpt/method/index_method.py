@@ -38,9 +38,9 @@ class IndexMethod(Method):
             point = self.task.Calculate(point, i)
             point.SetZ(point.functionValues[i].value)
             point.SetIndex(i)
-            if point.GetZ() < 0:
+            if point.GetZ() > 0:
                 return point
-        point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
+        point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, number_of_constraints)
         point = self.task.Calculate(point, number_of_constraints)
         point.SetZ(point.functionValues[number_of_constraints].value)
         point.SetIndex(number_of_constraints)
@@ -60,6 +60,8 @@ class IndexMethod(Method):
         if left_point is None:
             return
         index = curr_point.GetIndex()
+        if index < 0:
+            return
         m = 0.0
         if left_point.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
             m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
@@ -68,8 +70,9 @@ class IndexMethod(Method):
             other_point = left_point
             while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
                 other_point = other_point.GetLeft()
-            if other_point is not None:
-                m = abs(other_point.functionValues[index] - curr_point.GetZ()) / \
+            if other_point is not None and other_point.GetIndex() >= 0:
+                print(index)
+                m = abs(other_point.functionValues[index].value - curr_point.GetZ()) / \
                     self.CalculateDelta(other_point, curr_point, self.dimension)
             # Ищем слева
             other_point = left_point.GetRight()
@@ -77,8 +80,8 @@ class IndexMethod(Method):
                 other_point = other_point.GetRight()
             while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
                 other_point = other_point.GetRight()
-            if other_point is not None:
-                m = max(m, abs(curr_point.GetZ() - other_point.functionValues[index]) / \
+            if other_point is not None and other_point.GetIndex() >= 0:
+                m = max(m, abs(curr_point.GetZ() - other_point.functionValues[index].value) / \
                         self.CalculateDelta(curr_point, other_point, self.dimension))
 
         if m > self.M[index]:
