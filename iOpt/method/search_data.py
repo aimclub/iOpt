@@ -144,13 +144,6 @@ class SearchDataItem(Trial):
         :return: Значение true - если правая точка исходного интервала меньше
         правой точки второго, иначе - false.
         """
-        # Исправить с учетом __discreteValueIndex
-        # other_discretValueIndex = other.GetDiscreteValueIndex()
-        # if self.__discreteValueIndex < other_discretValueIndex:
-        #     return True
-        # elif self.__discreteValueIndex == other_discretValueIndex:
-        #     return self.GetX() < other.GetX()
-        # return False
         return self.GetX() < other.GetX()
 
 
@@ -249,16 +242,6 @@ class SearchData:
         Метод позволяет очистить очередь характеристик
         """
         self._RGlobalQueue.Clear()
-    # вставка правой точки в конец испытаний для mixed_integermethod
-    def InsertRightDataItem(self, rightDataItem: SearchDataItem):
-        if rightDataItem is None:
-            raise RuntimeError("InsertRightDataItem: rightDataItem is None")
-        left = self._allTrials[-1].GetRight()  # получили последнюю точку 0.5, getRight() является левой для rightDataItem
-        if left is not None:
-            left.SetRight(rightDataItem)
-            rightDataItem.SetLeft(left)
-        self._allTrials.append(rightDataItem)
-        #self._RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem) - add in InsertDataItem?
 
     # вставка точки если знает правую точку
     # в качестве интервала используем [i-1, i]
@@ -276,11 +259,15 @@ class SearchData:
         if rightDataItem is None:
             rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
             flag = False
-
+       # print("New:"+str(newDataItem.GetX())+" Right: "+ str(rightDataItem.GetX()))
         newDataItem.SetLeft(rightDataItem.GetLeft())
         rightDataItem.SetLeft(newDataItem)
         newDataItem.SetRight(rightDataItem)
         newDataItem.GetLeft().SetRight(newDataItem)
+        # print("New: left- "+ str(newDataItem.GetLeft().GetX())+" right- "+str(newDataItem.GetRight().GetX()))
+        # print("Right: left- " + str(rightDataItem.GetLeft().GetX()))
+        # if rightDataItem.GetRight() is not None:
+        #     print(" right- " + str(rightDataItem.GetRight().GetX()))
 
         self._allTrials.append(newDataItem)
 
