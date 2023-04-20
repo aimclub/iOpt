@@ -5,6 +5,7 @@ from iOpt.trial import Point
 from problems.rastriginInt import RastriginInt
 import test.problems.pointsForTest.rastriginInt_points as Sample
 
+
 class TestRastriginInt(unittest.TestCase):
     """setUp method is overridden from the parent class Rastrigin"""
 
@@ -13,7 +14,7 @@ class TestRastriginInt(unittest.TestCase):
 
     def test_CalculateAll(self):
         for i in range(0, 80):
-            point = Point([np.double(Sample.test_points[i][0])],[Sample.test_points[i][1], Sample.test_points[i][2]])
+            point = Point([np.double(Sample.test_points[i][0])], [Sample.test_points[i][1], Sample.test_points[i][2]])
 
             functionValue = FunctionValue()
             functionValue = self.problem.Calculate(point, functionValue)
