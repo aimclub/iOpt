@@ -51,6 +51,7 @@ class TestProcess(unittest.TestCase):
             self.assertEqual(40 * 0.05, self.process.localMethodIterationCount)
             self.assertEqual(0.45, self.process.searchData.solution.bestTrials[0].point.floatVariables)
             self.assertEqual(-10.25, self.process.searchData.solution.bestTrials[0].functionValues[0].value)
+            self.process.task.problem.Calculate.assert_called()
         except Exception:
             self.fail("test_DoLocalRefinementItersLimit is failed")
 
@@ -72,6 +73,11 @@ class TestProcess(unittest.TestCase):
             mock_OnMethodStop.assert_called_once()
             self.assertEqual(1, self.process.searchData.solution.numberOfGlobalTrials)
             self.assertEqual(2, self.process.searchData.solution.numberOfLocalTrials)
+            self.process.method.evolvent.GetImage.assert_called()
+            self.process.task.Calculate.assert_called()
+            self.process.task.problem.Calculate.assert_called()
+            self.process.method.CheckStopCondition.assert_called()
+
         except Exception:
             self.fail("test_SolveRefineSolution is failed")
 
@@ -110,6 +116,8 @@ class TestProcess(unittest.TestCase):
             mock_BeforeMethodStart.assert_called_once()
             mock_OnEndIteration.assert_called_once()
             self.assertEqual(1, self.process.searchData.solution.numberOfGlobalTrials)
+            self.process.method.evolvent.GetImage.assert_called()
+            self.process.task.Calculate.assert_called()
         except Exception:
             self.fail("test_DoGlobalIteration is failed")
 
@@ -124,9 +132,6 @@ class TestProcess(unittest.TestCase):
     def test_DoGlobalIterationFirst(self, mock_RenewSearchData, mock_UpdateOptimum,
                                     mock_CalculateFunctionals, mock_CalculateIterationPoint,
                                     mock_GetLastItem, mock_FirstIteration):
-        self.process.method.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
-        self.process.task.Calculate = Mock(side_effect=self.mock_CalculateTask)
-
         self.process.DoGlobalIteration(2)
         expected_calls = [call().method6()]
         mock_FirstIteration.assert_has_calls(expected_calls, any_order=False)
