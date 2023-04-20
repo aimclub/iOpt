@@ -39,71 +39,6 @@ class MixedIntegerMethod(Method):
         self.numberOfParameterCombinations = len(self.discreteParameters)
         # 0 0.5 1  1.5 2   2.5  3    3.5 4
 
-    # def FirstIteration(self) -> None:
-    #     r"""
-    #     Метод выполняет первую итерацию Алгоритма Глобального Поиска.
-    #     """
-    #     # [0, 0.5, 1]
-    #     self.iterationsCount = 1
-    #     # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
-    #     # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-    #     x: float = 0.5
-    #     middle_image = self.evolvent.GetImage(x)
-    #     left_image = self.evolvent.GetImage(0.0)
-    #     right_image = self.evolvent.GetImage(1.0)
-    #     left = SearchDataItem(Point(left_image, self.discreteParameters[0]), 0.0, discreteValueIndex=0)
-    #     left.delta = 0
-    #     self.CalculateGlobalR(left, None)
-    #     self.searchData.InsertDataItem(left)
-    #
-    #     # y = Point(middle_image, self.discreteParameters[0])
-    #     # middle = SearchDataItem(y, x, discreteValueIndex=0)
-    #     # left = SearchDataItem(Point(left_image, self.discreteParameters[0]), 0.0, discreteValueIndex=0)
-    #     # #left.SetIndex(-3)  # по умолчанию -2
-    #     # right = SearchDataItem(Point(right_image, self.discreteParameters[0]), 1.0, discreteValueIndex=0)
-    #     # left.delta = 0
-    #     # middle.delta = self.CalculateDelta(left, middle, self.dimension)
-    #     # right.delta = self.CalculateDelta(middle, right, self.dimension)
-    #     #
-    #     # # Вычисление значения функции в 0.5
-    #     # self.CalculateFunctionals(middle)
-    #     # self.UpdateOptimum(middle)
-    #     #
-    #     # # Вычисление характеристик
-    #     # self.CalculateGlobalR(left, None)
-    #     # self.CalculateGlobalR(middle, left)
-    #     # self.CalculateGlobalR(right, middle)
-    #     #
-    #     # # вставить left  и right, потом middle
-    #     # self.searchData.InsertFirstDataItem(left, right)
-    #     # self.searchData.InsertDataItem(middle, right)
-    #
-    #     for i in range(self.numberOfParameterCombinations):
-    #         # 1  2  3 ... self.numberOfParameterCombinations
-    #         x = i + 0.5  # (2 * i + 1) / 2
-    #         y = Point(middle_image, self.discreteParameters[i])
-    #         middle = SearchDataItem(y, x, discreteValueIndex=i)
-    #         left = self.searchData.GetLastItem().GetRight()
-    #         right = SearchDataItem(Point(right_image, self.discreteParameters[i]), float(i + 1), discreteValueIndex=i)
-    #         # index = - 2
-    #
-    #         middle.delta = self.CalculateDelta(left, middle, self.dimension)
-    #         right.delta = self.CalculateDelta(middle, right, self.dimension)
-    #
-    #         # Вычисление значения функции в 0.5
-    #         self.CalculateFunctionals(middle)
-    #         self.UpdateOptimum(middle)
-    #
-    #         # Вычисление характеристик
-    #         # left не измнилась
-    #         self.CalculateGlobalR(middle, left)
-    #         self.CalculateGlobalR(right, middle)
-    #
-    #         # addRightPoint
-    #         # без добавление right в RGlobalQueue
-    #         self.searchData.InsertRightDataItem(right)
-    #         self.searchData.InsertDataItem(middle, right)
-
     def FirstIteration(self, calculator: Calculator = None) -> None:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
@@ -113,27 +48,28 @@ class MixedIntegerMethod(Method):
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
         left = SearchDataItem(Point(self.evolvent.GetImage(0.0), self.discreteParameters[0]), 0.0)
         image_right = self.evolvent.GetImage(1.0)
-        #right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0)
         right: list[SearchDataItem] = []
 
-        modf = math.modf(self.parameters.numberOfParallelPoints / self.numberOfParameterCombinations)
-        numberOfPointsInOneInterval = int(modf[1])
-        if modf[0] > 0:
-            numberOfPointsInOneInterval += 1
+        # [(x + y - 1)/y]
+        numberOfPointsInOneInterval =\
+            int(math.modf((self.parameters.numberOfParallelPoints + self.numberOfParameterCombinations - 1)
+                          / self.numberOfParameterCombinations)[1])
 
         h: float = 1.0 / (numberOfPointsInOneInterval + 1)
         items: list[SearchDataItem] = []
         image_x: list = []
 
         for id_comb in range(self.numberOfParameterCombinations):
-            for i in range(numberOfPointsInOneInterval):  # self.parameters.numberOfParallelPoints
+            for i in range(numberOfPointsInOneInterval):
                 x = (id_comb * numberOfPointsInOneInterval) + h * (i + 1)
                 if id_comb == 0:
                     image_x.append(self.evolvent.GetImage(x))
-                y = Point(image_x[i], self.discreteParameters[id_comb])
+
+                y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
                 item = SearchDataItem(y, x, discreteValueIndex=id_comb)
                 items.append(item)
-            right.append(SearchDataItem(Point(image_right, self.discreteParameters[id_comb]),
+
+            right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
                                         float(id_comb + 1), discreteValueIndex=id_comb))
         if calculator is None:
             for item in items:
@@ -171,7 +107,7 @@ class MixedIntegerMethod(Method):
 
         # вставить left  и right, потом middle
         self.searchData.InsertFirstDataItem(left, right[-1])
-        # self.searchData.InsertDataItem(middle, right)
+
         for right_item in range(self.numberOfParameterCombinations):
             if right_item < self.numberOfParameterCombinations - 1:
                 self.searchData.InsertDataItem(right[right_item], right[-1])
@@ -179,6 +115,7 @@ class MixedIntegerMethod(Method):
             for id_item in range(numberOfPointsInOneInterval):
                 index = right_item*numberOfPointsInOneInterval + id_item
                 self.searchData.InsertDataItem(items[index], right[right_item])
+
         self.recalc = True
 
 
