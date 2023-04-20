@@ -127,7 +127,7 @@ class Evolvent:
 
         iu: np.narray(shape=(1), dtype=np.int32)
         iv: np.narray(shape=(1), dtype=np.int32)
-        l: np.int32
+        node: np.int32
         d: np.double = 0.0
         # mn: np.int32
         r: np.double
@@ -158,8 +158,8 @@ class Evolvent:
                 d -= iis
 
                 # print(iis, self.numberOfFloatVariables)
-            l = self.__CalculateNode(iis, self.numberOfFloatVariables, iu, iv)
-            # print(j, l)
+            node = self.__CalculateNode(iis, self.numberOfFloatVariables, iu, iv)
+            # print(j, node)
 
             # заменить на () = () !
             i = iu[0]
@@ -169,13 +169,13 @@ class Evolvent:
             iv[0] = iv[it]
             iv[it] = i
 
-            if l == 0:
-                l = it
-            elif l == it:
-                l = 0
+            if node == 0:
+                node = it
+            elif node == it:
+                node = 0
 
             r *= 0.5
-            it = l
+            it = node
             for i in range(0, self.numberOfFloatVariables):
                 iu[i] *= iw[i]
                 iw[i] *= -iv[i]
@@ -197,7 +197,7 @@ class Evolvent:
         i: np.int32
         j: np.int32
         it: np.int32
-        l: np.int32
+        node: np.int32
         r1: np.double
         iis: np.double
         w = np.ones(self.numberOfFloatVariables, dtype=np.int32)
@@ -223,10 +223,10 @@ class Evolvent:
             u[0] = u[it]
             u[it] = i
 
-            iis, l, v = self.__CalculateNumbr(u, v)
+            iis, node, v = self.__CalculateNumbr(u, v)
             # print(u)
             # print(v)
-            # print(iis, l)
+            # print(iis, node)
 
             i = v[0]
             v[0] = v[it]
@@ -235,12 +235,12 @@ class Evolvent:
             for i in range(0, self.numberOfFloatVariables):
                 w[i] *= -v[i]
 
-            if l == 0:
-                l = it
-            elif l == it:
-                l = 0
+            if node == 0:
+                node = it
+            elif node == it:
+                node = 0
 
-            it = l
+            it = node
             r1 = r1 / self.nexpExtended
             x += r1 * iis
 
@@ -255,7 +255,7 @@ class Evolvent:
         k1 = -1
         k2 = 0
         l1 = 0
-        l = 0
+        node = 0
         iis: np.double
         iff: np.double
 
@@ -268,25 +268,25 @@ class Evolvent:
             v[i] = u[i]
             k1 = k2
             if k2 < 0:
-                l1 = i
+                node1 = i
             else:
                 iis += iff
-                l = i
+                node = i
 
         if math.isclose(iis, 0.0):
-            l = self.numberOfFloatVariables - 1
+            node = self.numberOfFloatVariables - 1
         else:
             v[self.numberOfFloatVariables - 1] = -v[self.numberOfFloatVariables - 1]
             if math.isclose(iis, self.nexpExtended - 1.0):
-                l = self.numberOfFloatVariables - 1
+                node = self.numberOfFloatVariables - 1
             else:
-                if l1 == self.numberOfFloatVariables - 1:
-                    v[l] = -v[l]
+                if node1 == self.numberOfFloatVariables - 1:
+                    v[node] = -v[node]
                 else:
-                    l = l1
+                    node = node1
         s = iis
 
-        return s, l, v
+        return s, node, v
 
     # -----------------------------------------------------------------------------------------
     def __CalculateNode(self,
@@ -298,14 +298,14 @@ class Evolvent:
 
         iq = 1
         n1 = n - 1
-        l = 0
+        node = 0
         if math.isclose(iis, 0.0):
-            l = n1
+            node = n1
             for i in range(0, n):
                 u[i] = -1
                 v[i] = -1
         elif math.isclose(iis, self.nexpExtended - 1.0):
-            l = n1
+            node = n1
             u[0] = 1
             v[0] = 1
             for i in range(1, n):
@@ -319,21 +319,21 @@ class Evolvent:
                 iff /= 2
                 if iis >= iff:  # исправить сравнение!
                     if math.isclose(iis, iff) and not math.isclose(iis, 1.0):
-                        l = i
+                        node = i
                         iq = -1
                     iis -= iff
                     k2 = 1
                 else:
                     k2 = -1
                     if math.isclose(iis, (iff - 1.0)) and not math.isclose(iis, 0.0):
-                        l = i
+                        node = i
                         iq = 1
                 j = -k1 * k2
                 v[i] = j
                 u[i] = j
                 k1 = k2
-            v[l] = v[l] * iq
+            v[node] = v[node] * iq
             v[n1] = -v[n1]
-        return l
+        return node
 
 # -----------------------------------------------------------------------------------------

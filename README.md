@@ -2,11 +2,15 @@
   <img src="/docs/iOpt_logo.png" width="200" height="150"/>
 </p>
 
-[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](https://github.com/UNN-ITMM-Software/iOpt/blob/main/LICENSE)
+[![SAI](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/SAI_badge_flat.svg)](https://sai.itmo.ru/)
+[![ITMO](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/ITMO_badge_flat.svg)](https://en.itmo.ru/en/)
+
+[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](LICENSE)
 [![python: 3.9](https://img.shields.io/badge/python-3.9-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-390/)
 [![python: 3.8](https://img.shields.io/badge/python-3.8-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-380/)
 [![docs: ](https://readthedocs.org/projects/ebonite/badge/?style=flat-square)](https://iopt.readthedocs.io/ru/latest/)
 [![build:](https://github.com/UNN-ITMM-Software/iOpt/actions/workflows/python-app.yml/badge.svg)](https://github.com/UNN-ITMM-Software/iOpt/actions)
+[![rus:](https://img.shields.io/badge/lang-ru-yellow.svg)](README_ru.md)
 
 
 
@@ -51,10 +55,11 @@ python setup.py install
 Using the iOpt framework to minimize the Rastrigin test function.
 
 ```python
-from iOpt.problems.rastrigin import Rastrigin
+from problems.rastrigin import Rastrigin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener
+from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 from subprocess import Popen, PIPE, STDOUT
 
@@ -69,10 +74,10 @@ if __name__ == "__main__":
     #Create the solver
     solver = Solver(problem, parameters=params)
     #Print results to console while solving
-    cfol = ConsoleFullOutputListener(mode='full')
+    cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
     #3D visualization at the end of the solution
-    spl = StaticNDPaintListener("rastrigin.png", "output", varsIndxs=[0,1], mode="surface", calc="interpolation")
+    spl = StaticPainterNDListener("rastrigin.png", "output", varsIndxs=[0,1], mode="surface", calc="interpolation")
     solver.AddListener(spl)
     #Run problem solution
     sol = solver.Solve()
@@ -88,7 +93,9 @@ import numpy as np
 from sklearn.utils import shuffle
 from sklearn.datasets import load_breast_cancer
 
-from iOpt.method.listener import StaticNDPaintListener, AnimationNDPaintListener, ConsoleFullOutputListener
+from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+from iOpt.output_system.listeners.animate_painters import AnimatePainterNDListener
+from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from examples.Machine_learning.SVC._2D.Problems import SVC_2d
@@ -111,13 +118,13 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimationNDPaintListener("svc2d_anim.png", "output", varsIndxs=[0, 1], toPaintObjFunc=False)
+    apl = AnimatePainterNDListener("svc2d_anim.png", "output", varsIndxs=[0, 1], toPaintObjFunc=False)
     solver.AddListener(apl)
 
-    spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
+    spl = StaticPainterNDListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
     solver.AddListener(spl)
     
-    cfol = ConsoleFullOutputListener(mode='full')
+    cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
 
     solver_info = solver.Solve()
@@ -135,3 +142,8 @@ The latest stable release of iOpt is in the [main](https://github.com/UNN-ITMM-S
 # **Documentation**
 
 A detailed description of the iOpt framework API is available at [Read the Docs](https://iopt.readthedocs.io/ru/latest/).
+
+# **Supported by**
+
+The study is supported by the [Research Center Strong Artificial Intelligence in Industry](https://sai.itmo.ru/) 
+of [ITMO University](https://en.itmo.ru/) as part of the plan of the center's program: Framework of intelligent heuristic optimization methods.
