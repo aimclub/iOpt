@@ -259,15 +259,10 @@ class SearchData:
         if rightDataItem is None:
             rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
             flag = False
-       # print("New:"+str(newDataItem.GetX())+" Right: "+ str(rightDataItem.GetX()))
         newDataItem.SetLeft(rightDataItem.GetLeft())
         rightDataItem.SetLeft(newDataItem)
         newDataItem.SetRight(rightDataItem)
         newDataItem.GetLeft().SetRight(newDataItem)
-        # print("New: left- "+ str(newDataItem.GetLeft().GetX())+" right- "+str(newDataItem.GetRight().GetX()))
-        # print("Right: left- " + str(rightDataItem.GetLeft().GetX()))
-        # if rightDataItem.GetRight() is not None:
-        #     print(" right- " + str(rightDataItem.GetRight().GetX()))
 
         self._allTrials.append(newDataItem)
 
