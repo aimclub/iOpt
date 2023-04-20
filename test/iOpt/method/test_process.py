@@ -13,7 +13,7 @@ from iOpt.method.method import Method
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import StaticPaintListener
+from iOpt.output_system.listeners.static_painters import StaticPainterListener
 
 
 class TestProcess(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestProcess(unittest.TestCase):
                         task=mock_task, searchData=searchData)
         method.stop = True
         method.dimension = 1
-        listener = StaticPaintListener(fileName="Output.txt")
+        listener = StaticPainterListener(fileName="Output.txt")
         self.process = Process(parameters=SolverParameters(), task=mock_task, evolvent=mock_evolvent,
                                searchData=searchData, method=method, listeners=[listener])
 
@@ -60,7 +60,7 @@ class TestProcess(unittest.TestCase):
         self.process.method.stop = not self.process.method.stop
         return self.process.method.stop
 
-    @mock.patch('iOpt.method.listener.StaticPaintListener.OnMethodStop')
+    @mock.patch('iOpt.output_system.listeners.static_painters.StaticPainterListener.OnMethodStop')
     def test_SolveRefineSolutionAndCallListener(self, mock_OnMethodStop):
         self.process.method.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
         self.process.task.Calculate = Mock(side_effect=self.mock_CalculateTask)
@@ -106,8 +106,8 @@ class TestProcess(unittest.TestCase):
         dataItem.functionValues[0] = self.mock_Calculate(dataItem.point, dataItem.functionValues[0])
         return dataItem
 
-    @mock.patch('iOpt.method.listener.StaticPaintListener.BeforeMethodStart')
-    @mock.patch('iOpt.method.listener.StaticPaintListener.OnEndIteration')
+    @mock.patch('iOpt.output_system.listeners.static_painters.StaticPainterListener.BeforeMethodStart')
+    @mock.patch('iOpt.output_system.listeners.static_painters.StaticPainterListener.OnEndIteration')
     def test_DoGlobalIterationAndListener(self, mock_OnEndIteration, mock_BeforeMethodStart):
         self.process.method.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
         self.process.task.Calculate = Mock(side_effect=self.mock_CalculateTask)
