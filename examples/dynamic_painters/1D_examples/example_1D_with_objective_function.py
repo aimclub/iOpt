@@ -1,7 +1,7 @@
-from iOpt.problems.rastrigin import Rastrigin
+from problems.rastrigin import Rastrigin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import AnimationPaintListener
+from iOpt.output_system.listeners.animate_painters import AnimatePainterListener
 
 if __name__ == "__main__":
     # create the problem 1D dimension
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # add needed listeners for solver
-    apl = AnimationPaintListener("rastrigin_1_2.5_0.01.png")
+    apl = AnimatePainterListener("rastrigin_1_2.5_0.01.png")
     solver.AddListener(apl)
 
     # solve the problem

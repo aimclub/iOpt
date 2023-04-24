@@ -48,7 +48,7 @@ trial
    :maxdepth: 4
 
    iOpt.method
-   iOpt.problems
+   problems
    iOpt.evolvent
    iOpt.output_system.console
    iOpt.output_system.painters
