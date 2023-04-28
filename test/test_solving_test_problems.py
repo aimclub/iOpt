@@ -210,7 +210,7 @@ class TestRastrigin(unittest.TestCase):
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
 
     def test_StronginC3_Solve(self):
-        self.r = 8
+        self.r = 4
         self.problem = StronginC3()
         params = SolverParameters(r=self.r, eps=self.epsVal)
         self.solver = Solver(self.problem, parameters=params)

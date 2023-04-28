@@ -84,7 +84,7 @@ class IndexMethod(Method):
                 m = max(m, abs(curr_point.GetZ() - other_point.functionValues[index].value) / \
                         self.CalculateDelta(curr_point, other_point, self.dimension))
 
-        if m > self.M[index]:
+        if m > self.M[index] or (self.M[index] == 1.0 and m > 1e-12):
             self.M[index] = m
             self.recalcR = True
 
