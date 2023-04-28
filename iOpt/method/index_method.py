@@ -71,7 +71,7 @@ class IndexMethod(Method):
             while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
                 other_point = other_point.GetLeft()
             if other_point is not None and other_point.GetIndex() >= 0:
-                print(index)
+                # print(index)
                 m = abs(other_point.functionValues[index].value - curr_point.GetZ()) / \
                     self.CalculateDelta(other_point, curr_point, self.dimension)
             # Ищем слева
@@ -119,6 +119,18 @@ class IndexMethod(Method):
             globalR = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
         curr_point.globalR = globalR
 
+    def UpdateZ(self, point: SearchDataItem) -> None:
+        for i in range(point.GetIndex()):
+            if self.Z[i] > point.functionValues[i].value:
+                self.Z[i] = point.functionValues[i].value
+                self.recalcR = True
+
+    def RecalcAllCharacteristics(self) -> None:
+        for i in range(self.best.GetIndex()):
+            self.Z[i] = -self.M[i] * self.parameters.epsR
+        self.Z[self.best.GetIndex()] = self.best.GetZ()
+        super().RecalcAllCharacteristics()
+
     def UpdateOptimum(self, point: SearchDataItem) -> None:
         r"""
         Обновляет оценку оптимума.
@@ -126,13 +138,10 @@ class IndexMethod(Method):
         :param point: точка нового испытания.
         """
 
-        # Сюда переедет целиком UpdateOptimum из Method, а там останется только случай с равными индексами
-        if self.best is None or self.best.GetIndex() < point.GetIndex():
+        if self.best is None or self.best.GetIndex() < point.GetIndex() or (
+                self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ()):
             self.best = point
             self.recalcR = True
             self.Z[point.GetIndex()] = point.GetZ()
-        elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
-            self.best = point
-            self.recalcR = True
-            self.Z[point.GetIndex()] = point.GetZ()
+        # self.UpdateZ(point)
         self.searchData.solution.bestTrials[0] = self.best

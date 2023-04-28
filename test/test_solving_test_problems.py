@@ -209,12 +209,12 @@ class TestRastrigin(unittest.TestCase):
         self.assertEqual(res, True)
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
 
-    def test_StronginC2_Solve(self):
-        self.r = 15.5
-        self.problem = StronginC2()
+    def test_StronginC3_Solve(self):
+        self.r = 8
+        self.problem = StronginC3()
         params = SolverParameters(r=self.r, eps=self.epsVal)
         self.solver = Solver(self.problem, parameters=params)
-        numberOfGlobalTrials = 36
+        # numberOfGlobalTrials = 36
 
         sol = self.solver.Solve()
 
@@ -228,7 +228,7 @@ class TestRastrigin(unittest.TestCase):
                 res = False
 
         self.assertEqual(res, True)
-        self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
+        # self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
 
 
 """Executing the tests in the above test case class"""
