@@ -2,6 +2,9 @@
   <img src="/docs/iOpt_logo.png" width="200" height="150"/>
 </p>
 
+[![SAI](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/SAI_badge_flat.svg)](https://sai.itmo.ru/)
+[![ITMO](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/ITMO_badge_flat_rus.svg)](https://en.itmo.ru/en/)
+
 [![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-green)](LICENSE)
 [![python: 3.9](https://img.shields.io/badge/python-3.9-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-390/)
 [![python: 3.8](https://img.shields.io/badge/python-3.8-44cc12?style=flat-square&logo=python)](https://www.python.org/downloads/release/python-380/)
@@ -142,3 +145,7 @@ if __name__ == "__main__":
 # **Документация**
 
 Подробное описание API фреймворка iOpt доступно в разделе [Read the Docs](https://iopt.readthedocs.io/ru/latest/).
+
+# **Поддержка**
+
+Исследование проводится при поддержке [Исследовательского центра сильного искусственного интеллекта в промышленности](https://sai.itmo.ru/) [Университета ИТМО](https://itmo.ru) в рамках мероприятия программы центра: Фреймворк методов интеллектуальной эвристической оптимизации.

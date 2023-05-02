@@ -1,10 +1,12 @@
-from iOpt.method.listener import StaticPaintListener, AnimationPaintListener, ConsoleFullOutputListener
+from iOpt.output_system.listeners.static_painters import StaticPainterListener
+from iOpt.output_system.listeners.animate_painters import AnimatePainterListener
+from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from examples.Genetic_algorithm.TSP._1D.Problems import ga_tsp_vary_mutation
 import numpy as np
 import xml.etree.ElementTree as ET
-
 
 def load_TSPs_matrix(filename):
     root = ET.parse(filename).getroot()
@@ -29,13 +31,13 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(3.0), itersLimit=40)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimationPaintListener("gatsp_1d_anim_vary_mutation.png", "output", toPaintObjFunc=False)
+    apl = AnimatePainterListener("gatsp_1d_anim_vary_mutation.png", "output", toPaintObjFunc=False)
     solver.AddListener(apl)
 
-    spl = StaticPaintListener("gatsp_1d_stat_vary_mutation.png", "output", mode="interpolation")
+    spl = StaticPainterListener("gatsp_1d_stat_vary_mutation.png", "output", mode="interpolation")
     solver.AddListener(spl)
 
-    cfol = ConsoleFullOutputListener(mode='full')
+    cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
 
     solver_info = solver.Solve()

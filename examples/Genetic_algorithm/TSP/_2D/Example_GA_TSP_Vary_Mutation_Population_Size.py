@@ -1,4 +1,6 @@
-from iOpt.method.listener import StaticNDPaintListener, AnimationNDPaintListener
+from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+from iOpt.output_system.listeners.animate_painters import AnimatePainterNDListener
+
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from examples.Genetic_algorithm.TSP._2D.Problems import ga_tsp_2d
@@ -29,10 +31,10 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(2.0), itersLimit=300)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimationNDPaintListener("gatsp_2d_anim_vary_mutation.png", "output",  varsIndxs=[0, 1], toPaintObjFunc=True)
+    apl = AnimatePainterNDListener("gatsp_2d_anim_vary_mutation.png", "output",  varsIndxs=[0, 1], toPaintObjFunc=True)
     solver.AddListener(apl)
 
-    spl = StaticNDPaintListener("gatsp_2d_stat_vary_mutation.png", "output", varsIndxs=[0, 1], mode="interpolation")
+    spl = StaticPainterNDListener("gatsp_2d_stat_vary_mutation.png", "output", varsIndxs=[0, 1], mode="interpolation")
     solver.AddListener(spl)
 
     solver_info = solver.Solve()

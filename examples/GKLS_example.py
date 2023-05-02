@@ -1,7 +1,9 @@
 from problems.GKLS import GKLS
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener
+
+from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 
 def SolveSingleGKLS():
@@ -19,11 +21,11 @@ def SolveSingleGKLS():
     solver = Solver(problem, parameters=params)
 
     # Добавляем вывод резултатов в консоль
-    cfol = ConsoleFullOutputListener(mode='full')
+    cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
 
     # Добавляем построение 3D визуализации после решения задачи
-    spl = StaticNDPaintListener("GKLS.png", "output", varsIndxs=[0, 1], mode="lines layers", calc="objective function")
+    spl = StaticPainterNDListener("GKLS.png", "output", varsIndxs=[0, 1], mode="lines layers", calc="objective function")
     solver.AddListener(spl)
 
     # Решение задачи

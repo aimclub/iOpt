@@ -1,7 +1,9 @@
 from problems.grishagin import Grishagin
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.method.listener import StaticNDPaintListener, ConsoleFullOutputListener
+
+from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 if __name__ == "__main__":
     """
@@ -18,11 +20,11 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # Добавляем вывод результатов в консоль
-    cfol = ConsoleFullOutputListener(mode='full')
+    cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
 
     # Добавляем построение 3D визуализации после решения задачи
-    spl = StaticNDPaintListener("grishagin.png", "output", varsIndxs=[0, 1], mode="lines layers",
+    spl = StaticPainterNDListener("grishagin.png", "output", varsIndxs=[0, 1], mode="lines layers",
                                 calc="objective function")
     solver.AddListener(spl)
 
