@@ -16,7 +16,7 @@ from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.method import Method
 from iOpt.method.index_method import IndexMethod
 from iOpt.trial import Point
-
+from iOpt.problem import Problem
 
 class MixedIntegerMethod(Method):
     """
@@ -139,3 +139,9 @@ class MixedIntegerMethod(Method):
         self.searchData.solution.numberOfGlobalTrials += 1
 
         return new, old
+
+    @staticmethod
+    def GetDiscreteParameters(problem: Problem) -> list:
+        list_discreteValues = list(problem.discreteVariableValues)
+        return list(itertools.product(*list_discreteValues))
+ 
