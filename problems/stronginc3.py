@@ -1,53 +1,42 @@
 import numpy as np
+from iOpt.trial import FunctionType
 from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-import problems.Hill.hill_generation as hillGen
 import math
 
 
-class Hill(Problem):
-    """
-    Функция Хилла - это мультимодальная, непрерывная, детерминированная функция, задана формулой:
-       :math:`f(x)=a_{0}+\sum_{i=1}^{m}(a_{i}sin(2i\pi x)+b_{i}cos(2i\pi x))`,
-       где :math:`m` – количество максимумов функции,
-       :math:`a, b` - параметры, генерируемые случайным образом.
-       В данном генераторе задача является одномерной.
-    """
-
-    def __init__(self, function_number: int):
+class Stronginc3(Problem):
+    def __init__(self):
         """
-        Конструктор класса Hill problem.
-
-        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
+        Конструктор класса Stronginc3 problem.
         """
-        super(Hill, self).__init__()
-        self.name = "Hill"
-        self.dimension = 1
+        super(Stronginc3, self).__init__()
+        self.name = "Stronginc3"
+        self.dimension: int = 2
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
         self.numberOfObjectives = 1
-        self.numberOfConstraints = 0
-        self.fn = function_number
+        self.numberOfConstraints = 3
 
         self.floatVariableNames = np.ndarray(shape=(self.dimension), dtype=str)
         for i in range(self.dimension):
             self.floatVariableNames[i] = i
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables.fill(0)
+        self.lowerBoundOfFloatVariables = [0, -1]
         self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables.fill(1)
+        self.upperBoundOfFloatVariables = [4, 3]
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
         pointfv = np.ndarray(shape=(self.dimension), dtype=np.double)
-        pointfv[0] = hillGen.minHill[self.fn][1]
+        pointfv = [0.941176, 0.941176]
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0].value = hillGen.minHill[self.fn][0]
+        KOfunV[0].value = -1.489444
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
@@ -59,8 +48,23 @@ class Hill(Problem):
         :return: Вычисленное значение функции в точке point
         """
         res: np.double = 0
-        for i in range(hillGen.NUM_HILL_COEFF):
-            res = res + hillGen.aHill[self.fn][i] * math.sin(2 * i * math.pi * point.floatVariables[0]) + \
-                  hillGen.bHill[self.fn][i] * math.cos(2 * i * math.pi * point.floatVariables[0])
+        x: np.double = point.floatVariables
+
+        if functionValue.type == FunctionType.OBJECTIV:
+            t1: np.double = pow(0.5 * x[0] - 0.5, 4.0)
+            t2: np.double = pow(x[1] - 1.0, 4.0)
+            res = np.double(1.5 * x[0] * x[0] * math.exp(1.0 - x[0] * x[0] - 20.25 * (x[0] - x[1]) * (x[0] - x[1])))
+            res = np.double(res + t1 * t2 * math.exp(2.0 - t1 - t2))
+            res = np.double(-res)
+        elif functionValue.functionID == 0:  # constraint 1
+            res = np.double(0.01 * ((x[0] - 2.2) * (x[0] - 2.2) + (x[1] - 1.2) * (x[1] - 1.2) - 2.25))
+        elif functionValue.functionID == 1:  # constraint 2
+            res = np.double(100.0 * (1.0 - ((x[0] - 2.0) / 1.2) * ((x[0] - 2.0) / 1.2) - (x[1] / 2.0) * (x[1] / 2.0)))
+        elif functionValue.functionID == 2:  # constraint 3
+            res = np.double(10.0 * (x[1] - 1.5 - 1.5 * math.sin(6.283 * (x[0] - 1.75))))
+
         functionValue.value = res
         return functionValue
+
+    def GetName(self):
+        return self.name

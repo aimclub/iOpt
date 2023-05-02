@@ -15,7 +15,7 @@ class RastriginInt(Problem):
 
     def __init__(self, dimension: int, numberOfDisreteVariables: int):
         """
-        Конструктор класса Rastrigin problem.
+        Конструктор класса RastriginInt problem.
 
         :param dimension: Размерность задачи.
         """
@@ -132,4 +132,3 @@ class RastriginInt(Problem):
             result = np.double(result + a)
         result = np.double(- result)
         return result
-

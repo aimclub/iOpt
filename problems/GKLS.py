@@ -20,6 +20,7 @@ class GKLS(Problem):
         """
         super(GKLS, self).__init__()
         self.dimension = dimension
+        self.name = "GKLS"
         self.numberOfFloatVariables = dimension
         self.numberOfDisreteVariables = 0
         self.numberOfObjectives = 1
