@@ -11,7 +11,7 @@ class SolverParameters:
                  r: np.double = 2.0,
                  itersLimit: int = 20000,
                  evolventDensity: int = 10,
-                 epsR: np.double = 0.001,
+                 epsR: np.double = 0.01,
                  refineSolution: bool = False,
                  startPoint: Point = [],
                  numberOfParallelPoints: int = 1

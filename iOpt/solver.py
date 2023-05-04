@@ -2,6 +2,7 @@ from typing import List
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.index_method import IndexMethod
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
 from iOpt.method.optim_task import OptimizationTask
@@ -40,13 +41,13 @@ class Solver:
         self.evolvent = Evolvent(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables,
                                  problem.numberOfFloatVariables)
         self.task = OptimizationTask(problem)
-        self.method = Method(parameters, self.task, self.evolvent, self.searchData)
-        if(parameters.numberOfParallelPoints == 1):
+        self.method = IndexMethod(parameters, self.task, self.evolvent, self.searchData)
+        if parameters.numberOfParallelPoints == 1:
             self.process = Process(parameters=parameters, task=self.task, evolvent=self.evolvent,
-                               searchData=self.searchData, method=self.method, listeners=self.__listeners)
+                                   searchData=self.searchData, method=self.method, listeners=self.__listeners)
         else:
             self.process = ParallelProcess(parameters=parameters, task=self.task, evolvent=self.evolvent,
-                                   searchData=self.searchData, method=self.method, listeners=self.__listeners)
+                                           searchData=self.searchData, method=self.method, listeners=self.__listeners)
 
     def Solve(self) -> Solution:
         """
