@@ -7,9 +7,9 @@ from problems.xsquared import XSquared
 from problems.hill import Hill
 from problems.shekel import Shekel
 from problems.grishagin import Grishagin
-from problems.stronginC2 import StronginC2
-from problems.stronginC3 import StronginC3
-from problems.stronginC5 import StronginC5
+from problems.stronginc2 import Stronginc2
+from problems.stronginc3 import Stronginc3
+from problems.stronginc5 import Stronginc5
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 
@@ -211,7 +211,7 @@ class TestRastrigin(unittest.TestCase):
 
     def test_StronginC3_Solve(self):
         self.r = 4
-        self.problem = StronginC3()
+        self.problem = Stronginc3()
         params = SolverParameters(r=self.r, eps=self.epsVal)
         self.solver = Solver(self.problem, parameters=params)
         # numberOfGlobalTrials = 36
