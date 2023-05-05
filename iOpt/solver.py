@@ -4,7 +4,7 @@ import numpy as np
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.index_method import IndexMethod
 from iOpt.method.listener import Listener
-from iOpt.method.methodFactory import MethodFactory
+from iOpt.method.solverFactory import SolverFactory
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.parallel_process import ParallelProcess
 from iOpt.method.search_data import SearchData
@@ -41,13 +41,9 @@ class Solver:
         self.evolvent = Evolvent(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables,
                                  problem.numberOfFloatVariables)
         self.task = OptimizationTask(problem)
-        self.method = MethodFactory.CreateMethod(parameters, self.task, self.evolvent, self.searchData)
-        if parameters.numberOfParallelPoints == 1:
-            self.process = Process(parameters=parameters, task=self.task, evolvent=self.evolvent,
+        self.method = SolverFactory.CreateMethod(parameters, self.task, self.evolvent, self.searchData)
+        self.process = SolverFactory.CreateProcess(parameters=parameters, task=self.task, evolvent=self.evolvent,
                                    searchData=self.searchData, method=self.method, listeners=self.__listeners)
-        else:
-            self.process = ParallelProcess(parameters=parameters, task=self.task, evolvent=self.evolvent,
-                                           searchData=self.searchData, method=self.method, listeners=self.__listeners)
 
     def Solve(self) -> Solution:
         """
