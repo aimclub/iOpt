@@ -4,42 +4,38 @@ from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
-import math
 
 
-class StronginC3(Problem):
+class Romeijn2c(Problem):
     def __init__(self):
         """
-        Конструктор класса StronginC3 problem.
+        Конструктор класса Romeijn2c problem.
         """
-        super(StronginC3, self).__init__()
-        self.name = StronginC3
-        self.dimension: int = 2
+        super(Romeijn2c, self).__init__()
+        self.name = "Romeijn2c"
+        self.dimension: int = 6
         self.numberOfFloatVariables = self.dimension
         self.numberOfDisreteVariables = 0
         self.numberOfObjectives = 1
-        self.numberOfConstraints = 3
+        self.numberOfConstraints = 2
 
         self.floatVariableNames = np.ndarray(shape=(self.dimension), dtype=str)
         for i in range(self.dimension):
             self.floatVariableNames[i] = i
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables[0] = 0
-        self.lowerBoundOfFloatVariables[1] = -1
-        self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables[0] = 4
-        self.upperBoundOfFloatVariables[1] = 3
+        self.lowerBoundOfFloatVariables.fill(0)
+        self.upperBoundOfFloatVariables = np.ndarray( shape=(self.dimension), dtype=np.double)
+        self.upperBoundOfFloatVariables = [10, 10, 15, 15, 1, 1]
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
-        pointfv = np.ndarray(shape=(self.dimension), dtype=np.double)
-        pointfv[0] = 0.941176
-        pointfv[1] = 0.941176
+
+        pointfv = [10, 10, 15, 4.609, 0.78511, 0.384]
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0].value = -1.489444
+        KOfunV[0] = self.Calculate(KOpoint, KOfunV[0])
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
@@ -50,25 +46,20 @@ class StronginC3(Problem):
         :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
         """
-        res: np.double = 0
-        x1: np.double = point.floatVariables[0]
-        x2: np.double = point.floatVariables[1]
+        result: np.double = 1
+        x = point.floatVariables
 
         if functionValue.type == FunctionType.OBJECTIV:
-            t1: np.double = pow(0.5 * x1 - 0.5, 4.0)
-            t2: np.double = pow(x2 - 1.0, 4.0)
-            res = np.double(1.5 * x1 * x1 * math.exp(1.0 - x1 * x1 - 20.25 * (x1 - x2) * (x1 - x2)))
-            res = np.double(res + t1 * t2 * math.exp(2.0 - t1 - t2))
-            res = np.double(-res)
+            result = np.double(-(0.0204 + 0.0607 * pow(x[4], 2)) * x[0] * x[3] * (x[0] + x[1] + x[2]) - \
+                               (0.0187 + 0.0437 * pow(x[5], 2)) * x[1] * x[2] * (x[0] + 1.57 * x[1] + x[3]))
         elif functionValue.functionID == 0:  # constraint 1
-            res = np.double(0.01 * ((x1 - 2.2) * (x1 - 2.2) + (x2 - 1.2) * (x2 - 1.2) - 2.25))
+            for i in range(0, self.dimension):
+                result = result / x[i]
+            result = np.double(2070 * result - 1)
+
         elif functionValue.functionID == 1:  # constraint 2
-            res = np.double(100.0 * (1.0 - ((x1 - 2.0) / 1.2) * ((x1 - 2.0) / 1.2) - (x2 / 2.0) * (x2 / 2.0)))
-        elif functionValue.functionID == 2:  # constraint 3
-            res = np.double(10.0 * (x2 - 1.5 - 1.5 * math.sin(6.283 * (x1 - 1.75))))
+            result = np.double(0.00062 * x[0] * x[3] * pow(x[4], 2) * (x[0] + x[1] + x[2]) + \
+                               0.00058 * x[1] * x[2] * pow(x[5], 2) * (x[0] + 1.57 * x[1] + x[3]) - 1)
 
-        functionValue.value = res
+        functionValue.value = result
         return functionValue
-
-    def GetName(self):
-        return self.name

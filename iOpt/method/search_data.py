@@ -137,15 +137,13 @@ class SearchDataItem(Trial):
        """
         return self.__rightPoint
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         """
         Метод переопределяет оператор сравнения < для двух интервалов.
         :param other: Второй интервал
         :return: Значение true - если правая точка исходного интервала меньше
         правой точки второго, иначе - false.
         """
-        # Исправить с учетом __discreteValueIndex
-
         return self.GetX() < other.GetX()
 
 
@@ -261,7 +259,6 @@ class SearchData:
         if rightDataItem is None:
             rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
             flag = False
-
         newDataItem.SetLeft(rightDataItem.GetLeft())
         rightDataItem.SetLeft(newDataItem)
         newDataItem.SetRight(rightDataItem)

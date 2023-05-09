@@ -7,9 +7,9 @@ from problems.xsquared import XSquared
 from problems.hill import Hill
 from problems.shekel import Shekel
 from problems.grishagin import Grishagin
-from problems.stronginC2 import StronginC2
-from problems.stronginC3 import StronginC3
-from problems.stronginC5 import StronginC5
+from problems.stronginc2 import Stronginc2
+from problems.stronginc3 import Stronginc3
+from problems.stronginc5 import Stronginc5
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 
@@ -35,8 +35,8 @@ class TestRastrigin(unittest.TestCase):
                            sol.bestTrials[0].point.floatVariables[j])
             fm = self.epsVal * (self.problem.upperBoundOfFloatVariables[j] -
                                 self.problem.lowerBoundOfFloatVariables[j])
-            if (fabsx > fm):
-                res = res and False
+            if fabsx > fm:
+                res = False
 
         self.assertEqual(res, True)
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
@@ -56,8 +56,8 @@ class TestRastrigin(unittest.TestCase):
                 self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
             fm = self.epsVal * (
                     self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
-            if (fabsx > fm):
-                res = res and False
+            if fabsx > fm:
+                res = False
 
         self.assertEqual(res, True)
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
@@ -77,8 +77,8 @@ class TestRastrigin(unittest.TestCase):
                 self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
             fm = self.epsVal * (
                     self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
-            if (fabsx > fm):
-                res = res and False
+            if fabsx > fm:
+                res = False
 
         self.assertEqual(res, True)
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
@@ -98,8 +98,8 @@ class TestRastrigin(unittest.TestCase):
                 self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
             fm = self.epsVal * (
                     self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
-            if (fabsx > fm):
-                res = res and False
+            if fabsx > fm:
+                res = False
 
         self.assertEqual(res, True)
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
@@ -119,8 +119,8 @@ class TestRastrigin(unittest.TestCase):
                 self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
             fm = self.epsVal * (
                     self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
-            if (fabsx > fm):
-                res = res and False
+            if fabsx > fm:
+                res = False
 
         self.assertEqual(res, True)
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
@@ -145,8 +145,8 @@ class TestRastrigin(unittest.TestCase):
                 self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
             fm = self.epsVal * (
                     self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
-            if (fabsx > fm):
-                res = res and False
+            if fabsx > fm:
+                res = False
         # Проверяем что решение задачи действительно сошлось к глобальному минимуму
         self.assertEqual(res, True)
         # Проверяем что на решение потребовалось правильное число итераций АГП
@@ -181,8 +181,8 @@ class TestRastrigin(unittest.TestCase):
                     self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
                 fm = self.epsVal * (
                         self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
-                if (fabsx > fm):
-                    res = res and False
+                if fabsx > fm:
+                    res = False
             # Проверяем что решение задачи действительно сошлось к глобальному минимуму
             self.assertEqual(res, True)
             # Проверяем что на решение потребовалось правильное число итераций АГП
@@ -204,14 +204,14 @@ class TestRastrigin(unittest.TestCase):
             fm = self.epsVal * (
                     self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
             if fabsx > fm:
-                res = res and False
+                res = False
 
         self.assertEqual(res, True)
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
 
     def test_StronginC3_Solve(self):
         self.r = 4
-        self.problem = StronginC3()
+        self.problem = Stronginc3()
         params = SolverParameters(r=self.r, eps=self.epsVal)
         self.solver = Solver(self.problem, parameters=params)
         # numberOfGlobalTrials = 36
