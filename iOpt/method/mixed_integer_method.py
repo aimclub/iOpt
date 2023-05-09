@@ -18,7 +18,8 @@ from iOpt.method.index_method import IndexMethod
 from iOpt.trial import Point
 from iOpt.problem import Problem
 
-class MixedIntegerMethod(Method):
+
+class MixedIntegerMethod(IndexMethod):
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
     """
@@ -85,8 +86,8 @@ class MixedIntegerMethod(Method):
         self.CalculateGlobalR(left, None)
 
         items[0].delta = self.CalculateDelta(left, items[0], self.dimension)
-
         self.CalculateGlobalR(items[0], left)
+
         for id_comb in range(self.numberOfParameterCombinations):
             if id_comb > 0:
                 # вычисление left
@@ -116,8 +117,8 @@ class MixedIntegerMethod(Method):
                 index = right_item*numberOfPointsInOneInterval + id_item
                 self.searchData.InsertDataItem(items[index], right[right_item])
 
-        self.recalc = True
-
+        self.recalcR = True
+        self.recalcM = True
 
     def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
@@ -126,7 +127,10 @@ class MixedIntegerMethod(Method):
         :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
           которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
-        if self.recalc is True:
+
+        if self.recalcM is True:
+            self.RecalcM()
+        if self.recalcR is True:
             self.RecalcAllCharacteristics()
 
         old = self.searchData.GetDataItemWithMaxGlobalR()

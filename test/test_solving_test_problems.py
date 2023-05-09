@@ -7,6 +7,9 @@ from problems.xsquared import XSquared
 from problems.hill import Hill
 from problems.shekel import Shekel
 from problems.grishagin import Grishagin
+from problems.stronginc2 import Stronginc2
+from problems.stronginc3 import Stronginc3
+from problems.stronginc5 import Stronginc5
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 
@@ -205,6 +208,27 @@ class TestRastrigin(unittest.TestCase):
 
         self.assertEqual(res, True)
         self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
+
+    def test_StronginC3_Solve(self):
+        self.r = 4
+        self.problem = Stronginc3()
+        params = SolverParameters(r=self.r, eps=self.epsVal)
+        self.solver = Solver(self.problem, parameters=params)
+        # numberOfGlobalTrials = 36
+
+        sol = self.solver.Solve()
+
+        res = True
+        for j in range(self.problem.dimension):
+            fabsx = np.abs(
+                self.problem.knownOptimum[0].point.floatVariables[j] - sol.bestTrials[0].point.floatVariables[j])
+            fm = self.epsVal * (
+                    self.problem.upperBoundOfFloatVariables[j] - self.problem.lowerBoundOfFloatVariables[j])
+            if fabsx > fm:
+                res = False
+
+        self.assertEqual(res, True)
+        # self.assertEqual(sol.numberOfGlobalTrials, numberOfGlobalTrials)
 
 
 """Executing the tests in the above test case class"""
