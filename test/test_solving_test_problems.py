@@ -9,13 +9,8 @@ from problems.shekel import Shekel
 from problems.grishagin import Grishagin
 from problems.stronginc2 import Stronginc2
 from problems.stronginc3 import Stronginc3
-from problems.stronginc5 import Stronginc5
-from problems.romeijn1c import Romeijn1c
-from problems.romeijn2c import Romeijn2c
 from problems.romeijn3c import Romeijn3c
 from problems.romeijn5c import Romeijn5c
-from problems.g2c import g2c
-from problems.g8c import g8c
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 
@@ -131,7 +126,7 @@ class TestSolvingProblems(unittest.TestCase):
         problem = Stronginc2()
         params = SolverParameters(r=r, eps=self.epsVal, epsR=0.01)
 
-        number_of_global_trials = 437  # 373?
+        number_of_global_trials = 437
 
         self.checkIsSolved(problem, params, number_of_global_trials)
 
@@ -140,36 +135,9 @@ class TestSolvingProblems(unittest.TestCase):
         problem = Stronginc3()
         params = SolverParameters(r=r, eps=self.epsVal, epsR=0.01)
 
-        number_of_global_trials = 512  # 555?
+        number_of_global_trials = 512
 
         self.checkIsSolved(problem, params, number_of_global_trials)
-
-    # def test_StronginC5_Solve(self):
-    #     r = ???
-    #     problem = Stronginc5()
-    #     params = SolverParameters(r=r, eps=self.epsVal, epsR=0.001)
-    #
-    #     number_of_global_trials = ???
-    #
-    #     self.checkIsSolved(problem, params, number_of_global_trials)
-
-    # def test_Romeijn1c_Solve(self): # UNDEFINED OPTIMUM
-    #     r = 2
-    #     problem = Romeijn1c()
-    #     params = SolverParameters(r=r, eps=self.epsVal, epsR=0.01)
-    #
-    #     number_of_global_trials = 512  # 555?
-    #
-    #     self.checkIsSolved(problem, params, number_of_global_trials)
-
-    # def test_Romeijn2c_Solve(self):
-    #     r = ???
-    #     problem = Romeijn2c()
-    #     params = SolverParameters(r=r, eps=self.epsVal, epsR=0.001)
-    #
-    #     number_of_global_trials = 512  # 555?
-    #
-    #     self.checkIsSolved(problem, params, number_of_global_trials)
 
     def test_Romeijn3c_Solve(self):
         r = 4
@@ -185,27 +153,9 @@ class TestSolvingProblems(unittest.TestCase):
         problem = Romeijn5c()
         params = SolverParameters(r=r, eps=self.epsVal, epsR=0.01)
 
-        number_of_global_trials = 193  # 189
+        number_of_global_trials = 193
 
         self.checkIsSolved(problem, params, number_of_global_trials)
-
-    # def test_g2c_Solve(self): # UNDEFINED OPTIMUM
-    #     r = ???
-    #     problem = g2c()
-    #     params = SolverParameters(r=r, eps=self.epsVal, epsR=0.001, itersLimit=100000)
-    #
-    #     number_of_global_trials =  ???
-    #
-    #     self.checkIsSolved(problem, params, number_of_global_trials)
-
-    # def test_g8c_Solve(self):
-    #     r = ???
-    #     problem = g8c()
-    #     params = SolverParameters(r=r, eps=self.epsVal, epsR=0.001, itersLimit=100000)
-    #
-    #     number_of_global_trials =  ???
-    #
-    #     self.checkIsSolved(problem, params, number_of_global_trials)
 
 
 """Executing the tests in the above test case class"""
