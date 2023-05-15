@@ -35,7 +35,7 @@ class Romeijn5c(Problem):
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0] = self.Calculate(KOpoint, KOfunV[0]) # -195.37
+        KOfunV[0] = self.Calculate(KOpoint, KOfunV[0])  # -195.37
         self.knownOptimum[0] = Trial(KOpoint, KOfunV)
 
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
@@ -53,9 +53,9 @@ class Romeijn5c(Problem):
             temp = x[1] - 1.275 * pow(x[0], 2) + 5.0 * x[0] - 6.0
             result = np.double(-pow(temp, 2) - 10.0 * (1 - 1 / (8.0 * math.pi)) * math.cos(math.pi * x[0]) - 10.0)
         elif functionValue.functionID == 0:  # constraint 1
-            result = -math.pi*x[0] - x[1]
+            result = -math.pi * x[0] - x[1]
         elif functionValue.functionID == 1:  # constraint 2
-            result = -pow(math.pi*x[0], 2) + 4.0*x[1]
+            result = -pow(math.pi * x[0], 2) + 4.0 * x[1]
 
         functionValue.value = result
         return functionValue

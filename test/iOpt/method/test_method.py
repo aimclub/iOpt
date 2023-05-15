@@ -44,22 +44,22 @@ class TestMethod(unittest.TestCase):
         left.SetIndex(0)
         curr.SetIndex(0)
         # test 1. NOT AAA, BUT INITIALIZATION IS TOO BIG, AND DIFFERENT FOR easy and hard
-        self.method.recalc = False
+        self.method.recalcR = False
         self.method.CalculateM(curr, left)
         assert (self.method.M[0] == 10.0)
-        self.assertTrue(self.method.recalc)
+        self.assertTrue(self.method.recalcR)
         # test 2
-        self.method.recalc = False
+        self.method.recalcR = False
         curr.SetZ(-20.0)
         self.method.CalculateM(curr, left)
         assert (self.method.M[0] == 20.0)
-        self.assertTrue(self.method.recalc)
+        self.assertTrue(self.method.recalcR)
         # test 3
-        self.method.recalc = False
+        self.method.recalcR = False
         curr.SetZ(-5.0)
         self.method.CalculateM(curr, left)
         assert (self.method.M[0] == 20.0)
-        self.assertFalse(self.method.recalc)
+        self.assertFalse(self.method.recalcR)
 
     def test_CalculateM_hard(self):
         left = SearchDataItem(x=0.1, y=Point(floatVariables=[6.0], discreteVariables=[]))
@@ -76,20 +76,20 @@ class TestMethod(unittest.TestCase):
         curr.SetIndex(0)
         right.SetIndex(1)
         # test 1
-        self.method.recalc = False
+        self.method.recalcR = False
         self.method.CalculateM(curr, left)
         self.assertEqual(self.method.M[0], 25.0)
-        self.assertTrue(self.method.recalc)
+        self.assertTrue(self.method.recalcR)
         # test 2
-        self.method.recalc = False
+        self.method.recalcR = False
         self.method.CalculateM(right, curr)
         self.assertEqual(self.method.M[0], 25.0)
-        self.assertFalse(self.method.recalc)
+        self.assertFalse(self.method.recalcR)
         # test 3
-        self.method.recalc = False
+        self.method.recalcR = False
         self.method.CalculateM(curr, right)
         self.assertEqual(self.method.M[0], 25.0)
-        self.assertFalse(self.method.recalc)
+        self.assertFalse(self.method.recalcR)
 
     def test_CalculateM_dont_throws(self):
         curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))

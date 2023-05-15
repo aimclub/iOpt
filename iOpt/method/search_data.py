@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import sys
 
 import numpy as np
@@ -32,7 +33,7 @@ class SearchDataItem(Trial):
         :param functionValues: Вектор значений функций (целевой функции и функций ограничений)
         :param discreteValueIndex: Дискретный параметр
         """
-        super().__init__(point=y, functionValues=functionValues)
+        super().__init__(point=y, functionValues=copy.deepcopy(functionValues))
         self.point = y
         self.__x = x
         self.__discreteValueIndex = discreteValueIndex
@@ -44,6 +45,7 @@ class SearchDataItem(Trial):
         self.globalR: np.double = -1.0
         self.localR: np.double = -1.0
         self.iterationNumber: int = -1
+
 
     def GetX(self) -> np.double:
         """
@@ -135,15 +137,13 @@ class SearchDataItem(Trial):
        """
         return self.__rightPoint
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         """
         Метод переопределяет оператор сравнения < для двух интервалов.
         :param other: Второй интервал
         :return: Значение true - если правая точка исходного интервала меньше
         правой точки второго, иначе - false.
         """
-        # Исправить с учетом __discreteValueIndex
-
         return self.GetX() < other.GetX()
 
 
@@ -259,7 +259,6 @@ class SearchData:
         if rightDataItem is None:
             rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
             flag = False
-
         newDataItem.SetLeft(rightDataItem.GetLeft())
         rightDataItem.SetLeft(newDataItem)
         newDataItem.SetRight(rightDataItem)
