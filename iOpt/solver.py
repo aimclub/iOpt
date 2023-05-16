@@ -33,6 +33,8 @@ class Solver:
         self.problem = problem
         self.parameters = parameters
 
+        Solver.ChackParameters(self.problem, self.parameters)
+
         self.__listeners: List[Listener] = []
 
         self.searchData = SearchData(problem)
@@ -50,6 +52,7 @@ class Solver:
 
         :return: решение задачи оптимизации
         """
+        Solver.ChackParameters(self.problem, self.parameters)
         return self.process.Solve()
 
     def DoGlobalIteration(self, number: int = 1):
@@ -58,6 +61,7 @@ class Solver:
 
         :param number: число итераций глобального поиска
         """
+        Solver.ChackParameters(self.problem, self.parameters)
         self.process.DoGlobalIteration(number)
 
     def DoLocalRefinement(self, number: int = 1):
@@ -66,6 +70,7 @@ class Solver:
 
         :param number: число итераций локального поиска
         """
+        Solver.ChackParameters(self.problem, self.parameters)
         self.process.DoLocalRefinement(number)
 
     def GetResults(self) -> Solution:
@@ -90,6 +95,7 @@ class Solver:
 
         :param fileName: имя файла
         """
+        Solver.ChackParameters(self.problem, self.parameters)
         self.searchData.LoadProgress(fileName=fileName)
 
     def RefreshListener(self) -> None:
@@ -107,3 +113,62 @@ class Solver:
         """
 
         self.__listeners.append(listener)
+
+    @staticmethod
+    def ChackParameters(problem: Problem,
+                        parameters: SolverParameters = SolverParameters()) -> None:
+        """
+        Проверяет параметры решателя
+
+        :param problem: Постановка задачи оптимизации
+        :param parameters: Параметры поиска оптимальных решений
+
+        """
+
+        if parameters.eps <= 0:
+            raise Exception("search precision is incorrect, parameters.eps <= 0")
+        if parameters.r <= 1:
+            raise Exception("The reliability parameter should be greater 1. r>1")
+        if parameters.itersLimit < 1:
+            raise Exception("The number of iterations must not be negative. itersLimit>0")
+        if parameters.evolventDensity < 2 or parameters.evolventDensity > 20:
+            raise Exception("Evolvent density should be within [2,20]")
+        if parameters.epsR < 0 or parameters.epsR >= 1:
+            raise Exception("The epsilon redundancy parameter must be within [0, 1)")
+
+        if problem.numberOfFloatVariables < 1:
+            raise Exception("Must have at least one float variable")
+        if problem.numberOfDisreteVariables < 0:
+            raise Exception("The number of discrete parameters must not be negative")
+        if problem.numberOfObjectives < 1:
+            raise Exception("At least one criterion must be defined")
+        if problem.numberOfConstraints < 0:
+            raise Exception("The number of сonstraints must not be negative")
+
+        if problem.floatVariableNames == [] or \
+                len(problem.floatVariableNames) != problem.numberOfFloatVariables:
+            raise Exception("Floaf parameter names are not defined")
+
+        if problem.lowerBoundOfFloatVariables == [] or \
+                len(problem.lowerBoundOfFloatVariables) != problem.numberOfFloatVariables:
+            raise Exception("List of lower bounds for float search variables defined incorrectly")
+        if problem.upperBoundOfFloatVariables == [] or \
+                len(problem.upperBoundOfFloatVariables) != problem.numberOfFloatVariables:
+            raise Exception("List of upper bounds for float search variables defined incorrectly")
+
+        for lowerBound, upperBound in zip(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables):
+            if lowerBound >= upperBound:
+                raise Exception("For floating point search variables, "
+                                "the upper search bound must be greater than the lower.")
+
+        if problem.numberOfDisreteVariables > 0:
+            if problem.discreteVariableNames == [] or \
+                    len(problem.discreteVariableNames) != problem.numberOfDisreteVariables:
+                raise Exception("Discrete parameter names are not defined")
+
+            for discreteValues in problem.discreteVariableValues:
+                if len(discreteValues) < 1:
+                    raise Exception("Discrete variable values not defined")
+
+        if parameters.startPoint != []:
+            raise Exception("At the moment, the starting point is not used")

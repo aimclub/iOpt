@@ -2,8 +2,8 @@ import math
 import unittest
 import numpy as np
 
-from iOpt.problems.rastrigin import Rastrigin
-from iOpt.problems.xsquared import XSquared
+from problems.rastrigin import Rastrigin
+from problems.xsquared import XSquared
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 

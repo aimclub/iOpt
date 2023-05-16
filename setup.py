@@ -1,21 +1,39 @@
 from setuptools import setup, find_packages
 
+from pathlib import Path
+from typing import List
+
+with open("README.md") as file:
+    read_me_description = file.read()
+
+
+def _readlines(*names: str, **kwargs) -> List[str]:
+    encoding = kwargs.get('encoding', 'utf-8')
+    lines = Path(__file__).parent.joinpath(*names).read_text(encoding=encoding).splitlines()
+    return list(map(str.strip, lines))
+
+def _extract_requirements(file_name: str):
+    return [line for line in _readlines(file_name) if line and not line.startswith('#')]
+
+def _get_requirements(req_name: str):
+    requirements = _extract_requirements(req_name)
+    return requirements
+
 setup(
    name='iOpt',
-   version='0.1',
-   description='фреймворк для автоматического выбора значений параметров для математических моделей, ИИ и МО.',
+   version='0.1.6',
+   description='Фреймворк для автоматического выбора значений параметров для математических моделей, ИИ и МО.',
    author='UNN Team',
    author_email='',
-   python_requires='>=3.7',
-   packages=find_packages(),
-   install_requires=['numpy>=1.19',
-                     'depq',
-                     'cycler',
-                     'kiwisolver',
-                     'matplotlib>=3.3.2',
-                     'scikit-learn',
-                     'sphinx_rtd_theme',
-                     'readthedocs-sphinx-search',
-                     'sphinxcontrib-details-directive',
-                     'autodocsumm'],
+   long_description=read_me_description,
+   long_description_content_type="text/markdown",
+   url="https://github.com/aimclub/iOpt",
+   python_requires='>=3.8',
+   packages=find_packages(exclude=["*test*"]),
+   install_requires=_get_requirements('requirements.txt'),
+   classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+    ],
 )
