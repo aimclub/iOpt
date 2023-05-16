@@ -27,10 +27,22 @@ iOpt is an open source framework for automatic selection of parameter values bot
 
 # **Installation**
 
-## On Unix-like systems:
+
+
+## Automatic installation
+
+The simplest way to install **iOpt** is using *pip*:
 
 ```
-git clone https://github.com/UNN-ITMM-Software/iOpt
+pip install iOpt
+``` 
+
+## Manual installation
+
+### On Unix-like systems:
+
+```
+git clone https://github.com/aimclub/iOpt
 cd iOpt
 pip install virtualenv
 virtualenv ioptenv
@@ -38,15 +50,28 @@ source ioptenv/bin/activate
 python setup.py install
 ```
 
-## On Windows:
+### On Windows:
 
 ```
-git clone https://github.com/UNN-ITMM-Software/iOpt
+git clone https://github.com/aimclub/iOpt
 cd iOpt
 pip install virtualenv
 virtualenv ioptenv
 ioptenv\Scripts\activate.bat
 python setup.py install
+```
+## Docker
+
+Download the image:
+
+```
+docker pull aimclub/iopt:latest
+```
+
+Using the iOpt image:
+
+```
+docker run -it aimclub/iopt:latest
 ```
 
 
