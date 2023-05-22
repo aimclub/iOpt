@@ -13,9 +13,8 @@ from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
 
-from iOpt.method.method import Method
 from iOpt.method.index_method import IndexMethod
-from iOpt.trial import Point
+from iOpt.trial import Point, FunctionValue
 from iOpt.problem import Problem
 
 
@@ -47,12 +46,13 @@ class MixedIntegerMethod(IndexMethod):
         self.iterationsCount = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-        left = SearchDataItem(Point(self.evolvent.GetImage(0.0), self.discreteParameters[0]), 0.0)
+        left = SearchDataItem(Point(self.evolvent.GetImage(0.0), self.discreteParameters[0]), 0.0,
+                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
         image_right = self.evolvent.GetImage(1.0)
         right: list[SearchDataItem] = []
 
         # [(x + y - 1)/y]
-        numberOfPointsInOneInterval =\
+        numberOfPointsInOneInterval = \
             int(math.modf((self.parameters.numberOfParallelPoints + self.numberOfParameterCombinations - 1)
                           / self.numberOfParameterCombinations)[1])
 
@@ -67,11 +67,14 @@ class MixedIntegerMethod(IndexMethod):
                     image_x.append(self.evolvent.GetImage(x))
 
                 y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
-                item = SearchDataItem(y, x, discreteValueIndex=id_comb)
+                item = SearchDataItem(y, x, discreteValueIndex=id_comb,
+                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
                 items.append(item)
 
             right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
-                                        float(id_comb + 1), discreteValueIndex=id_comb))
+                                        float(id_comb + 1),
+                                        functionValues=[FunctionValue()] * self.numberOfAllFunctions,
+                                        discreteValueIndex=id_comb))
         if calculator is None:
             for item in items:
                 self.CalculateFunctionals(item)
@@ -91,20 +94,19 @@ class MixedIntegerMethod(IndexMethod):
         for id_comb in range(self.numberOfParameterCombinations):
             if id_comb > 0:
                 # вычисление left
-                index = id_comb*numberOfPointsInOneInterval
-                items[index].delta = self.CalculateDelta(right[id_comb-1], items[index], self.dimension)
-                self.CalculateGlobalR(items[index], right[id_comb-1])
+                index = id_comb * numberOfPointsInOneInterval
+                items[index].delta = self.CalculateDelta(right[id_comb - 1], items[index], self.dimension)
+                self.CalculateGlobalR(items[index], right[id_comb - 1])
 
             for id_item in range(1, numberOfPointsInOneInterval):
                 index = id_comb * numberOfPointsInOneInterval + id_item
-                items[index].delta = self.CalculateDelta(items[index- 1], items[index], self.dimension)
+                items[index].delta = self.CalculateDelta(items[index - 1], items[index], self.dimension)
                 self.CalculateGlobalR(items[index], items[index - 1])
                 self.CalculateM(items[index], items[index - 1])
 
             left_index = id_comb * numberOfPointsInOneInterval + numberOfPointsInOneInterval - 1
             right[id_comb].delta = self.CalculateDelta(items[left_index], right[id_comb], self.dimension)
             self.CalculateGlobalR(right[id_comb], items[left_index])
-
 
         # вставить left  и right, потом middle
         self.searchData.InsertFirstDataItem(left, right[-1])
@@ -114,7 +116,7 @@ class MixedIntegerMethod(IndexMethod):
                 self.searchData.InsertDataItem(right[right_item], right[-1])
 
             for id_item in range(numberOfPointsInOneInterval):
-                index = right_item*numberOfPointsInOneInterval + id_item
+                index = right_item * numberOfPointsInOneInterval + id_item
                 self.searchData.InsertDataItem(items[index], right[right_item])
 
         self.recalcR = True
@@ -138,7 +140,8 @@ class MixedIntegerMethod(IndexMethod):
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx - math.modf(newx)[1])
         new = copy.deepcopy(SearchDataItem(Point(newy, old.point.discreteVariables),
-                                           newx, discreteValueIndex=old.GetDiscreteValueIndex()))
+                                           newx, discreteValueIndex=old.GetDiscreteValueIndex(),
+                                           functionValues=[FunctionValue()] * self.numberOfAllFunctions))
         # Обновление числа испытаний
         self.searchData.solution.numberOfGlobalTrials += 1
 
@@ -148,4 +151,3 @@ class MixedIntegerMethod(IndexMethod):
     def GetDiscreteParameters(problem: Problem) -> list:
         list_discreteValues = list(problem.discreteVariableValues)
         return list(itertools.product(*list_discreteValues))
- 

@@ -36,7 +36,7 @@ class SolverFactory:
         :return: созданный метод
         """
 
-        if task.problem.numberOfDisreteVariables > 0:
+        if task.problem.numberOfDiscreteVariables > 0:
             return MixedIntegerMethod(parameters, task, evolvent, searchData)
         elif task.problem.numberOfConstraints > 0:
             return IndexMethod(parameters, task, evolvent, searchData)
