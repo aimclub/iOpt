@@ -11,7 +11,7 @@ class Problem(ABC):
     def __init__(self):
         self.name: str = ''
         self.numberOfFloatVariables: int = 0
-        self.numberOfDisreteVariables: int = 0
+        self.numberOfDiscreteVariables: int = 0
         self.numberOfObjectives: int = 0
         self.numberOfConstraints: int = 0
 

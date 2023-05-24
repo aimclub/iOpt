@@ -138,7 +138,7 @@ class Solver:
 
         if problem.numberOfFloatVariables < 1:
             raise Exception("Must have at least one float variable")
-        if problem.numberOfDisreteVariables < 0:
+        if problem.numberOfDiscreteVariables < 0:
             raise Exception("The number of discrete parameters must not be negative")
         if problem.numberOfObjectives < 1:
             raise Exception("At least one criterion must be defined")
@@ -161,9 +161,9 @@ class Solver:
                 raise Exception("For floating point search variables, "
                                 "the upper search bound must be greater than the lower.")
 
-        if problem.numberOfDisreteVariables > 0:
+        if problem.numberOfDiscreteVariables > 0:
             if problem.discreteVariableNames == [] or \
-                    len(problem.discreteVariableNames) != problem.numberOfDisreteVariables:
+                    len(problem.discreteVariableNames) != problem.numberOfDiscreteVariables:
                 raise Exception("Discrete parameter names are not defined")
 
             for discreteValues in problem.discreteVariableValues:
