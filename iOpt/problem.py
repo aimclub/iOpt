@@ -12,7 +12,7 @@ class Problem(ABC):
         self.name: str = ''
         self.dimension = 0
         self.numberOfFloatVariables: int = 0
-        self.numberOfDisreteVariables: int = 0
+        self.numberOfDiscreteVariables: int = 0
         self.numberOfObjectives: int = 0
         self.numberOfConstraints: int = 0
 
