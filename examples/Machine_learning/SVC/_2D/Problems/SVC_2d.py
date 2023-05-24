@@ -51,6 +51,6 @@ class SVC_2D(Problem):
         :param functionValue: объект хранения значения целевой функции в точке
         """
         cs, gammas = point.floatVariables[0], point.floatVariables[1]
-        clf = Pipeline([('scaler', StandardScaler()), ('model', SVC(C=10 ** cs, gamma=10 ** gammas))])
+        clf = SVC(C=10 ** cs, gamma=10 ** gammas)
         functionValue.value = -cross_val_score(clf, self.x, self.y, scoring='f1').mean()
         return functionValue
