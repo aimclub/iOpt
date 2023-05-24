@@ -24,6 +24,9 @@ class TestProcess(unittest.TestCase):
     def setUp(self, mock_problem, mock_task, mock_evolvent, mock_listener):
         mock_problem.lowerBoundOfFloatVariables = [0.0]
         mock_problem.upperBoundOfFloatVariables = [1.0]
+        mock_problem.numberOfObjectives = 1
+        mock_problem.numberOfConstraints = 0
+        mock_task.problem = mock_problem
         searchData = SearchData(mock_problem)
         functionValue = FunctionValue()
         functionValue.value = -5.0
