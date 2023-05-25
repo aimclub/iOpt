@@ -359,7 +359,7 @@ class SearchData:
                 fvs.append({
                     'value': fv.value,
                     'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
-                    'functionID': fv.functionID,
+                    'functionID': str(fv.functionID),
                 })
 
             data['SearchDataItem'].append({
@@ -383,7 +383,7 @@ class SearchData:
             fvs.append({
                 'value': fv.value,
                 'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
-                'functionID': fv.functionID,
+                'functionID': str(fv.functionID),
             })
 
         data['BestTrials'].append({
@@ -402,14 +402,6 @@ class SearchData:
 
         with open(fileName, 'w') as f:
             json.dump(data, f, indent='\t', separators=(',', ':'))
-
-        # with open(fileName) as json_file:
-        #     data = json.load(json_file)
-        #     for p in data['SearchDataItem']:
-        #         print(p)
-        #     print("BestTrials")
-        #     for p in data['BestTrials']:
-        #         print(p)
 
     def LoadProgress(self, fileName: str):
         """
@@ -479,12 +471,6 @@ class SearchData:
                 dataItem.SetIndex(p['index'])
 
                 self.InsertDataItem(dataItem)
-
-
-        # with open(fileName) as json_file:
-        #     data = json.load(json_file)
-        #     for p in data['SearchDataItem']:
-        #         print(p)
 
 
     def __iter__(self):
