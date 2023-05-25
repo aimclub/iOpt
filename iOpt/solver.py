@@ -98,7 +98,7 @@ class Solver:
         :param fileName: имя файла
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        self.searchData.LoadProgress(fileName=fileName)
+        self.process.LoadProgress(fileName=fileName)
 
     def RefreshListener(self) -> None:
         """

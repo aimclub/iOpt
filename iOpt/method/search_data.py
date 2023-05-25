@@ -6,9 +6,11 @@ import sys
 import numpy as np
 from depq import DEPQ
 
+import json
+
 from iOpt.problem import Problem
 from iOpt.solution import Solution
-from iOpt.trial import Point, FunctionValue
+from iOpt.trial import Point, FunctionValue, FunctionType
 from iOpt.trial import Trial
 
 
@@ -347,10 +349,140 @@ class SearchData:
         :return:
         """
 
+        data = {}
+        data['SearchDataItem'] = []
+        print(type(self._allTrials[0].GetY().discreteVariables))
+        for dataItem in self._allTrials:
+
+            fvs = []
+            for fv in dataItem.functionValues:
+                fvs.append({
+                    'value': fv.value,
+                    'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
+                    'functionID': fv.functionID,
+                })
+
+            data['SearchDataItem'].append({
+                'floatVariables': list(dataItem.GetY().floatVariables),
+                'discreteVariables': [] if dataItem.GetY().discreteVariables is None else list(
+                    dataItem.GetY().discreteVariables),
+                'functionValues': list(fvs),
+                'x': dataItem.GetX(),
+                'delta': dataItem.delta,
+                'globalR': dataItem.globalR,
+                'localR': dataItem.localR,
+                'index': dataItem.GetIndex(),
+                'discreteValueIndex': dataItem.GetDiscreteValueIndex(),
+                '__z': dataItem.GetZ()
+            })
+
+        data['BestTrials'] = []  # создаем список
+        dataItem = self.solution.bestTrials[0]
+        fvs = []  # пустой список для словарей со значениями функций
+        for fv in dataItem.functionValues:
+            fvs.append({
+                'value': fv.value,
+                'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
+                'functionID': fv.functionID,
+            })
+
+        data['BestTrials'].append({
+            'floatVariables': list(dataItem.GetY().floatVariables),
+            'discreteVariables': [] if dataItem.GetY().discreteVariables is None else list(
+                dataItem.GetY().discreteVariables),
+            'functionValues': list(fvs),
+            'x': dataItem.GetX(),
+            'delta': dataItem.delta,
+            'globalR': dataItem.globalR,
+            'localR': dataItem.localR,
+            'index': dataItem.GetIndex(),
+            'discreteValueIndex': dataItem.GetDiscreteValueIndex(),
+            '__z': dataItem.GetZ()
+        })
+
+        with open(fileName, 'w') as f:
+            json.dump(data, f, indent='\t', separators=(',', ':'))
+
+        # with open(fileName) as json_file:
+        #     data = json.load(json_file)
+        #     for p in data['SearchDataItem']:
+        #         print(p)
+        #     print("BestTrials")
+        #     for p in data['BestTrials']:
+        #         print(p)
+
     def LoadProgress(self, fileName: str):
         """
         :return:
         """
+
+        with open(fileName) as json_file:
+            data = json.load(json_file)
+
+            functionValues = []
+            for p in data['BestTrials']:
+
+                for fv in p['functionValues']:
+                    functionValues.append(FunctionValue(
+                        (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
+                        str(fv['functionID'])))
+                    functionValues[-1].value = np.double(fv['value'])
+
+                dataItem = SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
+                                          p['discreteValueIndex'])
+                dataItem.delta = p['delta']  # [-1] - обращение к последнему элементу
+                dataItem.globalR = p['globalR']
+                dataItem.localR = p['localR']
+                dataItem.SetZ(p['__z'])
+                dataItem.SetIndex(p['index'])
+                self.solution.bestTrials[0] = dataItem
+
+            firstDataItem = []
+
+            for p in data['SearchDataItem'][:2]:
+                functionValues = []
+
+                for fv in p['functionValues']:
+                    functionValues.append(FunctionValue(
+                        (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
+                        str(fv['functionID'])))
+                    functionValues[-1].value = np.double(fv['value'])
+
+                firstDataItem.append(
+                    SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
+                                   p['discreteValueIndex']))
+                firstDataItem[-1].delta = p['delta']
+                firstDataItem[-1].globalR = p['globalR']
+                firstDataItem[-1].localR = p['localR']
+                firstDataItem[-1].SetIndex(p['index'])
+
+            self.InsertFirstDataItem(firstDataItem[0], firstDataItem[1])
+
+            for p in data['SearchDataItem'][2:]:
+                functionValues = []
+
+                for fv in p['functionValues']:
+                    functionValues.append(FunctionValue(
+                        (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
+                        str(fv['functionID'])))
+                    functionValues[-1].value = np.double(fv['value'])
+
+                dataItem = SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
+                                          p['discreteValueIndex'])
+                dataItem.delta = p['delta']
+                dataItem.globalR = p['globalR']
+                dataItem.localR = p['localR']
+                dataItem.SetZ(p['__z'])
+                dataItem.SetIndex(p['index'])
+
+                self.InsertDataItem(dataItem)
+
+
+        # with open(fileName) as json_file:
+        #     data = json.load(json_file)
+        #     for p in data['SearchDataItem']:
+        #         print(p)
+
 
     def __iter__(self):
         # вернуть самую левую точку из дерева (ниже код проверить!)
