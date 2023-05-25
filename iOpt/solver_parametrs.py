@@ -14,7 +14,8 @@ class SolverParameters:
                  epsR: np.double = 0.01,
                  refineSolution: bool = False,
                  startPoint: Point = [],
-                 numberOfParallelPoints: int = 1
+                 numberOfParallelPoints: int = 1,
+                 timeout: int = -1
                  ):
         r"""
         Конструктор класса SolverParameters
@@ -32,6 +33,7 @@ class SolverParameters:
         :param refineSolution: если true, то решение будет уточнено с помощью локального метода.
         :param startPoint: точка начального приближения к решению.
         :param numberOfParallelPoints: число параллельно вычисляемых испытаний.
+        :param timeout: ограничение на время вычислений в минутах.
         """
         self.eps = eps
         self.r = r
@@ -41,3 +43,4 @@ class SolverParameters:
         self.refineSolution = refineSolution
         self.startPoint = startPoint
         self.numberOfParallelPoints = numberOfParallelPoints
+        self.timeout = timeout

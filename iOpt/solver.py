@@ -1,17 +1,14 @@
 from typing import List
-import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
-from iOpt.method.index_method import IndexMethod
 from iOpt.method.listener import Listener
-from iOpt.method.solverFactory import SolverFactory
 from iOpt.method.optim_task import OptimizationTask
-from iOpt.method.parallel_process import ParallelProcess
 from iOpt.method.search_data import SearchData
-from iOpt.solver_parametrs import SolverParameters
+from iOpt.method.solverFactory import SolverFactory
 from iOpt.problem import Problem
+from iOpt.routine.timeout import timeout
 from iOpt.solution import Solution
-from iOpt.method.process import Process
+from iOpt.solver_parametrs import SolverParameters
 
 
 class Solver:
@@ -55,7 +52,23 @@ class Solver:
         :return: решение задачи оптимизации
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        return self.process.Solve()
+        sol:Solution = None;
+        if self.parameters.timeout < 0:
+            sol = self.process.Solve()
+        else:
+            solv_with_timeout = timeout(seconds=self.parameters.timeout * 60)(self.process.Solve)
+            try:
+                solv_with_timeout()
+            except Exception as exc:
+                print(exc)
+                sol = self.GetResults()
+                sol.solvingTime = self.parameters.timeout * 60
+                self.method.recalcR = True
+                self.method.recalcM = True
+                status = self.method.CheckStopCondition()
+                for listener in self.__listeners:
+                    listener.OnMethodStop(self.searchData, self.GetResults(), status)
+        return sol
 
     def DoGlobalIteration(self, number: int = 1):
         """
