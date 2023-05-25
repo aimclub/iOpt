@@ -152,6 +152,14 @@ class Process:
         # self.searchData.solution.bestTrials[0] = self.method.GetOptimumEstimation()
         return self.searchData.solution
 
+    def SaveProgress(self, fileName: str) -> None:
+        """
+        Сохранение процесса оптимизации из файла
+
+        :param fileName: имя файла
+        """
+        self.searchData.SaveProgress(fileName=fileName)
+
 
     def LoadProgress(self, fileName: str) -> None:
         """

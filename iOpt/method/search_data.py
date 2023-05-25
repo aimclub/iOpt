@@ -346,12 +346,12 @@ class SearchData:
 
     def SaveProgress(self, fileName: str):
         """
-        :return:
-        """
+        Сохранение процесса оптимизации в файл
 
+        :param fileName: имя файла
+        """
         data = {}
         data['SearchDataItem'] = []
-        print(type(self._allTrials[0].GetY().discreteVariables))
         for dataItem in self._allTrials:
 
             fvs = []
@@ -413,7 +413,9 @@ class SearchData:
 
     def LoadProgress(self, fileName: str):
         """
-        :return:
+        Загрузка процесса оптимизации из файла
+
+        :param fileName: имя файла
         """
 
         with open(fileName) as json_file:
@@ -435,6 +437,7 @@ class SearchData:
                 dataItem.localR = p['localR']
                 dataItem.SetZ(p['__z'])
                 dataItem.SetIndex(p['index'])
+
                 self.solution.bestTrials[0] = dataItem
 
             firstDataItem = []

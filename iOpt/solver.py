@@ -89,7 +89,7 @@ class Solver:
 
         :param fileName: имя файла
         """
-        self.searchData.SaveProgress(fileName=fileName)
+        self.process.SaveProgress(fileName=fileName)
 
     def LoadProgress(self, fileName: str) -> None:
         """
