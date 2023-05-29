@@ -207,7 +207,7 @@ class Method:
         xr = point.GetX()
         idl = left.GetIndex()
         idr = point.GetIndex()
-        if idl == idr and idl > 0:
+        if idl == idr and idl >= 0:
             v = idr
             dif = point.GetZ() - left.GetZ()
             dg = -1.0
@@ -279,7 +279,7 @@ class Method:
         if left_point is None:
             return
         index = curr_point.GetIndex()
-        if left_point.GetIndex() == index and index > 0:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+        if left_point.GetIndex() == index and index >= 0:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
             m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
             if m > self.M[index]:
                 self.M[index] = m
