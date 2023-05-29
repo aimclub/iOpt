@@ -122,25 +122,23 @@ class Process:
 
         :param number: Количество итераций локального поиска
         """
-        self.localMethodIterationCount = number
-        if number == -1:
-            self.localMethodIterationCount = self.parameters.itersLimit * 0.05
+        try:
+            self.localMethodIterationCount = number
+            if number == -1:
+                self.localMethodIterationCount = self.parameters.itersLimit * 0.05
 
-        result = self.GetResults()
-        startPoint = result.bestTrials[0].point.floatVariables
+            result = self.GetResults()
+            startPoint = result.bestTrials[0].point.floatVariables
 
-        bounds = Bounds(self.task.problem.lowerBoundOfFloatVariables, self.task.problem.upperBoundOfFloatVariables)
+            nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0=startPoint, method='Nelder-Mead',
+                                                  options={'maxiter': self.localMethodIterationCount})
 
-        # nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0 = startPoint, method='Nelder-Mead',
-        # options={'maxiter':self.localMethodIterationCount}, bounds=bounds)
+            result.bestTrials[0].point.floatVariables = nelder_mead.x
+            result.bestTrials[0].functionValues[0].value = self.problemCalculate(result.bestTrials[0].point.floatVariables)
 
-        nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0=startPoint, method='Nelder-Mead',
-                                              options={'maxiter': self.localMethodIterationCount})
-
-        result.bestTrials[0].point.floatVariables = nelder_mead.x
-        result.bestTrials[0].functionValues[0].value = self.problemCalculate(result.bestTrials[0].point.floatVariables)
-
-        result.numberOfLocalTrials = nelder_mead.nfev
+            result.numberOfLocalTrials = nelder_mead.nfev
+        except BaseException:
+            print("Local Refinement is not possible")
 
     def GetResults(self) -> Solution:
         """
