@@ -14,9 +14,9 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     # add needed listeners for solver
-    apl = StaticDisreteListener("RastriginInt_3-2_2.5_0.01_1.png", mode='analysis')
+    apl = StaticDisreteListener("RastriginInt_6-4_2.1_0.01_1.png", mode='analysis')
     solver.AddListener(apl)
-    apl = StaticDisreteListener("RastriginInt_3-2_2.5_0.01_1.png", mode='bestcombination', subvars=[1, 2])
+    apl = StaticDisreteListener("RastriginInt_6-4_2.1_0.01_2.png", mode='bestcombination', subvars=[1, 2])
     solver.AddListener(apl)
 
     # solve the problem
