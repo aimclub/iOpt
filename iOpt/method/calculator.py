@@ -49,7 +49,11 @@ class Calculator:
     """
     @staticmethod
     def worker(point: SearchDataItem) -> SearchDataItem:
-        Calculator.evaluateMethod.CalculateFunctionals(point)
+        try:
+            Calculator.evaluateMethod.CalculateFunctionals(point)
+        except BaseException:
+            point.SetZ(sys.float_info.max)
+            point.SetIndex(-10)
         return point
 
     r"""

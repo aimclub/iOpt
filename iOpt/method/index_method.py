@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import math
+import sys
+
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
@@ -32,18 +35,24 @@ class IndexMethod(Method):
 
         :return: точка, в которой сохранены результаты испытания.
         """
-        number_of_constraints = self.task.problem.numberOfConstraints
-        for i in range(number_of_constraints):
-            point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)  # ???
-            point = self.task.Calculate(point, i)
-            point.SetZ(point.functionValues[i].value)
-            point.SetIndex(i)
-            if point.GetZ() > 0:
-                return point
-        point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, number_of_constraints)
-        point = self.task.Calculate(point, number_of_constraints)
-        point.SetZ(point.functionValues[number_of_constraints].value)
-        point.SetIndex(number_of_constraints)
+        try:
+            number_of_constraints = self.task.problem.numberOfConstraints
+            for i in range(number_of_constraints):
+                point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)  # ???
+                point = self.task.Calculate(point, i)
+                point.SetZ(point.functionValues[i].value)
+                point.SetIndex(i)
+                if point.GetZ() > 0:
+                    return point
+            point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, number_of_constraints)
+            point = self.task.Calculate(point, number_of_constraints)
+            point.SetZ(point.functionValues[number_of_constraints].value)
+            point.SetIndex(number_of_constraints)
+        except BaseException:
+            point.SetZ(sys.float_info.max)
+            point.SetIndex(-10)
+
+
         return point
 
     def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
@@ -107,7 +116,10 @@ class IndexMethod(Method):
         zr = curr_point.GetZ()
         r = self.parameters.r
         deltax = curr_point.delta
-        if left_point.GetIndex() == curr_point.GetIndex():
+
+        if left_point.GetIndex() < 0 and curr_point.GetIndex() < 0:
+            globalR = 2 * deltax - 4 * math.fabs(self.Z[0]) / (r * self.M[0])
+        elif left_point.GetIndex() == curr_point.GetIndex():
             v = curr_point.GetIndex()
             globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
                       2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
