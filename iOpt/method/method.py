@@ -260,7 +260,7 @@ class Method:
             point = self.task.Calculate(point, 0)
             point.SetZ(point.functionValues[0].value)
             point.SetIndex(0)
-        except BaseException:
+        except Exception:
             point.SetZ(sys.float_info.max)
             point.SetIndex(-10)
 

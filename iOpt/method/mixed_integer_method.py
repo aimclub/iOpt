@@ -151,3 +151,55 @@ class MixedIntegerMethod(IndexMethod):
     def GetDiscreteParameters(problem: Problem) -> list:
         list_discreteValues = list(problem.discreteVariableValues)
         return list(itertools.product(*list_discreteValues))
+
+    def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+        r"""
+        Вычисление оценки константы Гельдера между между curr_point и left_point.
+
+        :param curr_point: правая точка интервала
+        :param left_point: левая точка интервала
+        """
+        # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
+        if curr_point is None:
+            print("CalculateM: curr_point is None")
+            raise RuntimeError("CalculateM: curr_point is None")
+        if left_point is None:
+            return
+        index = curr_point.GetIndex()
+        if index < 0:
+            return
+        m = 0.0
+        if left_point.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+            m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
+        else:
+            # Ищем слева
+            other_point = left_point
+            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
+                if other_point.GetDiscreteValueIndex() == curr_point.GetDiscreteValueIndex():
+                    other_point = other_point.GetLeft()
+                else:
+                    other_point = None
+                    break
+            if other_point is not None and other_point.GetIndex() >= 0:
+                # print(index)
+                m = abs(other_point.functionValues[index].value - curr_point.GetZ()) / \
+                    self.CalculateDelta(other_point, curr_point, self.dimension)
+
+            # Ищем слева
+            other_point = left_point.GetRight()
+            if other_point is not None and other_point is curr_point:  # возможно только при пересчёте M
+                other_point = other_point.GetRight()
+            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
+                if other_point.GetDiscreteValueIndex() == curr_point.GetDiscreteValueIndex():
+                    other_point = other_point.GetRight()
+                else:
+                    other_point = None
+                    break
+
+            if other_point is not None and other_point.GetIndex() >= 0:
+                m = max(m, abs(curr_point.GetZ() - other_point.functionValues[index].value) / \
+                        self.CalculateDelta(curr_point, other_point, self.dimension))
+
+        if m > self.M[index] or (self.M[index] == 1.0 and m > 1e-12):
+            self.M[index] = m
+            self.recalcR = True
