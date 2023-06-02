@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from typing import List
 
@@ -111,9 +112,13 @@ class Process:
             listener.OnEndIteration(savedNewPoints, self.GetResults())
 
     def problemCalculate(self, y):
-        point = Point(y, [])
+        result = self.GetResults()
+        point = Point(y, result.bestTrials[0].point.discreteVariables)
         functionValue = FunctionValue()
-        functionValue = self.task.problem.Calculate(point, functionValue)
+        try:
+            functionValue = self.task.problem.Calculate(point, functionValue)
+        except BaseException:
+            functionValue.value = sys.float_info.max
         return functionValue.value
 
     def DoLocalRefinement(self, number: int = 1):
