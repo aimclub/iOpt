@@ -102,7 +102,7 @@ class Solver:
 
         :param fileName: имя файла
         """
-        self.searchData.SaveProgress(fileName=fileName)
+        self.process.SaveProgress(fileName=fileName)
 
     def LoadProgress(self, fileName: str) -> None:
         """
@@ -111,7 +111,7 @@ class Solver:
         :param fileName: имя файла
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        self.searchData.LoadProgress(fileName=fileName)
+        self.process.LoadProgress(fileName=fileName)
 
     def RefreshListener(self) -> None:
         """
