@@ -48,10 +48,10 @@ class TestProcess(unittest.TestCase):
     def test_DoLocalRefinementItersLimit(self):
         self.process.task.problem.Calculate = Mock(side_effect=self.mock_Calculate)
         self.process.parameters.itersLimit = 40
+        self.process.parameters.localMethodIterationCount = 40 * 0.05
         try:
             self.process.DoLocalRefinement(-1)
             self.assertEqual(4, self.process.searchData.solution.numberOfLocalTrials)
-            self.assertEqual(40 * 0.05, self.process.localMethodIterationCount)
             self.assertEqual(0.45, self.process.searchData.solution.bestTrials[0].point.floatVariables)
             self.assertEqual(-10.25, self.process.searchData.solution.bestTrials[0].functionValues[0].value)
             self.process.task.problem.Calculate.assert_called()

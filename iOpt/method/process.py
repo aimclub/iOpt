@@ -48,7 +48,6 @@ class Process:
         self.method = method
         self._listeners = listeners
         self._first_iteration = True
-        self.localMethodIterationCount = 0
 
     def Solve(self) -> Solution:
         """
@@ -73,7 +72,7 @@ class Process:
             print(traceback.format_exc())
 
         if self.parameters.refineSolution:
-            self.DoLocalRefinement(-1)
+            self.DoLocalRefinement(self.parameters.localMethodIterationCount)
 
         result = self.GetResults()
         result.solvingTime = (datetime.now() - startTime).total_seconds()
@@ -128,18 +127,20 @@ class Process:
         :param number: Количество итераций локального поиска
         """
         try:
-            self.localMethodIterationCount = number
+            localMethodIterationCount = number
             if number == -1:
-                self.localMethodIterationCount = self.parameters.itersLimit * 0.05
+                localMethodIterationCount = self.parameters.localMethodIterationCount
 
             result = self.GetResults()
             startPoint = result.bestTrials[0].point.floatVariables
 
             nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0=startPoint, method='Nelder-Mead',
-                                                  options={'maxiter': self.localMethodIterationCount})
+                                                  options={'maxiter': localMethodIterationCount})
 
-            result.bestTrials[0].point.floatVariables = nelder_mead.x
-            result.bestTrials[0].functionValues[0].value = self.problemCalculate(result.bestTrials[0].point.floatVariables)
+            if localMethodIterationCount > 0:
+                result.bestTrials[0].point.floatVariables = nelder_mead.x
+                result.bestTrials[0].functionValues[0].value = \
+                    self.problemCalculate(result.bestTrials[0].point.floatVariables)
 
             result.numberOfLocalTrials = nelder_mead.nfev
         except BaseException:
