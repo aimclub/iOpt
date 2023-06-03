@@ -155,6 +155,36 @@ class Process:
         # self.searchData.solution.bestTrials[0] = self.method.GetOptimumEstimation()
         return self.searchData.solution
 
+    def SaveProgress(self, fileName: str) -> None:
+        """
+        Сохранение процесса оптимизации из файла
+
+        :param fileName: имя файла
+        """
+        self.searchData.SaveProgress(fileName=fileName)
+
+
+    def LoadProgress(self, fileName: str) -> None:
+        """
+        Загрузка процесса оптимизации из файла
+
+        :param fileName: имя файла
+        """
+        self.searchData.LoadProgress(fileName=fileName)
+        self.method.iterationsCount = self.searchData.GetCount() - 2
+
+        for ditem in self.searchData:
+            if ditem.GetIndex() >= 0:
+                self.method.UpdateOptimum(ditem)
+
+        self.method.RecalcM()
+        self.method.RecalcAllCharacteristics()
+        self._first_iteration = False
+
+        for listener in self._listeners:
+            listener.BeforeMethodStart(self.method)
+
+
     '''
     def RefreshListener(self):
         pass
