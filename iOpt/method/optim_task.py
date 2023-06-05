@@ -36,4 +36,7 @@ class OptimizationTask:
         dataItem.functionValues[self.perm[functionIndex]] = self.problem.Calculate(dataItem.point,
                                                                                    dataItem.functionValues[
                                                                                        self.perm[functionIndex]])
+        if not(np.isfinite(dataItem.functionValues[self.perm[functionIndex]].value)):
+            raise Exception("Infinity values")
+
         return dataItem

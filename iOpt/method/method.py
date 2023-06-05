@@ -160,7 +160,7 @@ class Method:
 
         :return: True, если выполнен критерий остановки; False - в противном случае.
         """
-        if self.min_delta < self.parameters.eps or self.iterationsCount >= self.parameters.itersLimit:
+        if self.min_delta < self.parameters.eps or self.iterationsCount >= self.parameters.globalMethodIterationCount:
             self.stop = True
         else:
             self.stop = False
@@ -260,7 +260,7 @@ class Method:
             point = self.task.Calculate(point, 0)
             point.SetZ(point.functionValues[0].value)
             point.SetIndex(0)
-        except BaseException:
+        except Exception:
             point.SetZ(sys.float_info.max)
             point.SetIndex(-10)
 

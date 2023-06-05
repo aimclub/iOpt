@@ -51,7 +51,7 @@ class Calculator:
     def worker(point: SearchDataItem) -> SearchDataItem:
         try:
             Calculator.evaluateMethod.CalculateFunctionals(point)
-        except BaseException:
+        except Exception:
             point.SetZ(sys.float_info.max)
             point.SetIndex(-10)
         return point

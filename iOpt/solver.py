@@ -102,7 +102,7 @@ class Solver:
 
         :param fileName: имя файла
         """
-        self.searchData.SaveProgress(fileName=fileName)
+        self.process.SaveProgress(fileName=fileName)
 
     def LoadProgress(self, fileName: str) -> None:
         """
@@ -111,7 +111,7 @@ class Solver:
         :param fileName: имя файла
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        self.searchData.LoadProgress(fileName=fileName)
+        self.process.LoadProgress(fileName=fileName)
 
     def RefreshListener(self) -> None:
         """
@@ -160,15 +160,12 @@ class Solver:
         if problem.numberOfConstraints < 0:
             raise Exception("The number of сonstraints must not be negative")
 
-        if problem.floatVariableNames == [] or \
-                len(problem.floatVariableNames) != problem.numberOfFloatVariables:
+        if len(problem.floatVariableNames) != problem.numberOfFloatVariables:
             raise Exception("Floaf parameter names are not defined")
 
-        if problem.lowerBoundOfFloatVariables == [] or \
-                len(problem.lowerBoundOfFloatVariables) != problem.numberOfFloatVariables:
+        if len(problem.lowerBoundOfFloatVariables) != problem.numberOfFloatVariables:
             raise Exception("List of lower bounds for float search variables defined incorrectly")
-        if problem.upperBoundOfFloatVariables == [] or \
-                len(problem.upperBoundOfFloatVariables) != problem.numberOfFloatVariables:
+        if len(problem.upperBoundOfFloatVariables) != problem.numberOfFloatVariables:
             raise Exception("List of upper bounds for float search variables defined incorrectly")
 
         for lowerBound, upperBound in zip(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables):
@@ -177,13 +174,12 @@ class Solver:
                                 "the upper search bound must be greater than the lower.")
 
         if problem.numberOfDiscreteVariables > 0:
-            if problem.discreteVariableNames == [] or \
-                    len(problem.discreteVariableNames) != problem.numberOfDiscreteVariables:
+            if len(problem.discreteVariableNames) != problem.numberOfDiscreteVariables:
                 raise Exception("Discrete parameter names are not defined")
 
             for discreteValues in problem.discreteVariableValues:
                 if len(discreteValues) < 1:
                     raise Exception("Discrete variable values not defined")
 
-        if parameters.startPoint != []:
+        if parameters.startPoint:
             raise Exception("At the moment, the starting point is not used")
