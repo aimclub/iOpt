@@ -38,6 +38,13 @@ class SolverParameters:
         self.eps = eps
         self.r = r
         self.itersLimit = itersLimit
+        if refineSolution:
+            self.globalMethodIterationCount = int(self.itersLimit * 0.95)
+            self.localMethodIterationCount = self.itersLimit - self.globalMethodIterationCount
+        else:
+            self.globalMethodIterationCount = self.itersLimit
+            self.localMethodIterationCount = 0
+
         self.evolventDensity = evolventDensity
         self.epsR = epsR
         self.refineSolution = refineSolution
