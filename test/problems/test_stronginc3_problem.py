@@ -1,11 +1,10 @@
-import math
 import unittest
-import numpy as np
+
+import test.problems.pointsForTest.stronginc3_points as Sample
+from iOpt.trial import FunctionType
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
 from problems.stronginc3 import Stronginc3
-from iOpt.trial import FunctionType
-import test.problems.pointsForTest.stronginc3_points as Sample
 
 
 class TestStronginc3(unittest.TestCase):
