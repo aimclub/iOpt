@@ -48,7 +48,7 @@ class IndexMethod(Method):
             point = self.task.Calculate(point, number_of_constraints)
             point.SetZ(point.functionValues[number_of_constraints].value)
             point.SetIndex(number_of_constraints)
-        except BaseException:
+        except Exception:
             point.SetZ(sys.float_info.max)
             point.SetIndex(-10)
 
@@ -83,7 +83,7 @@ class IndexMethod(Method):
                 # print(index)
                 m = abs(other_point.functionValues[index].value - curr_point.GetZ()) / \
                     self.CalculateDelta(other_point, curr_point, self.dimension)
-            # Ищем слева
+            # Ищем справа
             other_point = left_point.GetRight()
             if other_point is not None and other_point is curr_point:  # возможно только при пересчёте M
                 other_point = other_point.GetRight()
