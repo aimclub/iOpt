@@ -11,10 +11,10 @@ from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
 from iOpt.method.optim_task import OptimizationTask
-from iOpt.method.search_data import SearchData
+from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.trial import FunctionValue
+from iOpt.trial import FunctionValue, FunctionType
 from iOpt.trial import Point
 
 
@@ -113,11 +113,26 @@ class Process:
     def problemCalculate(self, y):
         result = self.GetResults()
         point = Point(y, result.bestTrials[0].point.discreteVariables)
-        functionValue = FunctionValue()
+        functionValue = FunctionValue(FunctionType.OBJECTIV)
+
+        for i in range(self.task.problem.dimension):
+            if (y[i] < self.task.problem.lowerBoundOfFloatVariables[i]) \
+                    or (y[i] > self.task.problem.upperBoundOfFloatVariables[i]):
+                functionValue.value = sys.float_info.max
+                return functionValue.value
+
         try:
+            for i in range(self.task.problem.numberOfConstraints):
+                functionConstraintValue = FunctionValue(FunctionType.CONSTRAINT, i)
+                functionConstraintValue = self.task.problem.Calculate(point, functionConstraintValue)
+                if functionConstraintValue.value > 0:
+                    functionValue.value = sys.float_info.max
+                    return functionValue.value
+
             functionValue = self.task.problem.Calculate(point, functionValue)
-        except BaseException:
+        except Exception:
             functionValue.value = sys.float_info.max
+
         return functionValue.value
 
     def DoLocalRefinement(self, number: int = 1):
@@ -139,8 +154,31 @@ class Process:
 
             if localMethodIterationCount > 0:
                 result.bestTrials[0].point.floatVariables = nelder_mead.x
-                result.bestTrials[0].functionValues[0].value = \
-                    self.problemCalculate(result.bestTrials[0].point.floatVariables)
+
+                point: SearchDataItem = SearchDataItem(result.bestTrials[0].point,
+                                                       self.evolvent.GetInverseImage(
+                                                           result.bestTrials[0].point.floatVariables),
+                                                       functionValues=[FunctionValue()] *
+                                                                      (self.task.problem.numberOfConstraints +
+                                                                       self.task.problem.numberOfObjectives)
+                                                       )
+
+                number_of_constraints = self.task.problem.numberOfConstraints
+                for i in range(number_of_constraints):
+                    point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)
+                    point.functionValues[i] = self.task.problem.Calculate(point.point, point.functionValues[i])
+                    point.SetZ(point.functionValues[i].value)
+                    point.SetIndex(i)
+                    if point.GetZ() > 0:
+                        break
+                point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV,
+                                                                            number_of_constraints)
+                point.functionValues[number_of_constraints] = \
+                    self.task.problem.Calculate(point.point, point.functionValues[number_of_constraints])
+                point.SetZ(point.functionValues[number_of_constraints].value)
+                point.SetIndex(number_of_constraints)
+
+                result.bestTrials[0].functionValues = point.functionValues
 
             result.numberOfLocalTrials = nelder_mead.nfev
         except Exception:
@@ -164,7 +202,6 @@ class Process:
         """
         self.searchData.SaveProgress(fileName=fileName)
 
-
     def LoadProgress(self, fileName: str) -> None:
         """
         Загрузка процесса оптимизации из файла
@@ -184,7 +221,6 @@ class Process:
 
         for listener in self._listeners:
             listener.BeforeMethodStart(self.method)
-
 
     '''
     def RefreshListener(self):
