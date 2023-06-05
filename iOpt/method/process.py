@@ -67,7 +67,7 @@ class Process:
                 # print(self.method.min_delta, self.method.parameters.eps)
             # print(self.method.min_delta, self.method.parameters.eps)
             # print(self.method.CheckStopCondition())
-        except BaseException:
+        except Exception:
             print('Exception was thrown')
             print(traceback.format_exc())
 
@@ -143,7 +143,7 @@ class Process:
                     self.problemCalculate(result.bestTrials[0].point.floatVariables)
 
             result.numberOfLocalTrials = nelder_mead.nfev
-        except BaseException:
+        except Exception:
             print("Local Refinement is not possible")
 
     def GetResults(self) -> Solution:
