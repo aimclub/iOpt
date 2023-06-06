@@ -56,17 +56,13 @@ class Process:
 
         :return: Текущая оценка решения задачи оптимизации
         """
-        # if self.__first_iteration is False:
-        #     self.method.FirstIteration()
-        #     self.__first_iteration = True
+
         startTime = datetime.now()
 
         try:
             while not self.method.CheckStopCondition():
                 self.DoGlobalIteration()
-                # print(self.method.min_delta, self.method.parameters.eps)
-            # print(self.method.min_delta, self.method.parameters.eps)
-            # print(self.method.CheckStopCondition())
+
         except Exception:
             print('Exception was thrown')
             print(traceback.format_exc())
