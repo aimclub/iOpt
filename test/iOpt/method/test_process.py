@@ -47,6 +47,8 @@ class TestProcess(unittest.TestCase):
 
     def test_DoLocalRefinementItersLimit(self):
         self.process.task.problem.Calculate = Mock(side_effect=self.mock_Calculate)
+        self.process.task.problem.numberOfConstraints = 0
+        self.process.task.problem.numberOfObjectives = 1
         self.process.parameters.itersLimit = 40
         self.process.parameters.localMethodIterationCount = 40 * 0.05
         try:

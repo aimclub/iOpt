@@ -91,7 +91,7 @@ class Method:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
-        self.iterationsCount = 1
+
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
         left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.,
@@ -118,17 +118,6 @@ class Method:
         for item in items:
             self.UpdateOptimum(item)
 
-        # # middle.delta = Method.CalculateDelta(left.GetX(), middle.GetX(), self.dimension)
-        # # right.delta = Method.CalculateDelta(middle.GetX(), right.GetX(), self.dimension)
-        #
-        # middle.delta = self.CalculateDelta(left, middle, self.dimension)
-        # right.delta = self.CalculateDelta(middle, right, self.dimension)
-
-        # # Вычисление характеристик
-        # self.CalculateGlobalR(left, None)
-        # self.CalculateGlobalR(middle, left)
-        # self.CalculateGlobalR(right, middle)
-
         left.delta = 0
         self.CalculateGlobalR(left, None)
 
@@ -152,6 +141,8 @@ class Method:
 
         self.recalcR = True
         self.recalcM = True
+
+        self.iterationsCount = len(items)
 
     def CheckStopCondition(self) -> bool:
         r"""

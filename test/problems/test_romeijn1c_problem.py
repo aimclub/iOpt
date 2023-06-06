@@ -1,11 +1,12 @@
-import math
 import unittest
+
 import numpy as np
+
+import test.problems.pointsForTest.romeijn1c_points as Sample
+from iOpt.trial import FunctionType
 from iOpt.trial import FunctionValue
 from iOpt.trial import Point
 from problems.romeijn1c import Romeijn1c
-from iOpt.trial import FunctionType
-import test.problems.pointsForTest.romeijn1c_points as Sample
 
 
 class TestRomeijn1c(unittest.TestCase):

@@ -19,7 +19,7 @@ class Point:
 class FunctionValue:
     def __init__(self,
                  type: FunctionType = FunctionType.OBJECTIV,
-                 functionID: str = ""
+                 functionID: int = 0
                  ):
         self.type = type
         self.functionID = functionID

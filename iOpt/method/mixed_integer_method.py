@@ -122,6 +122,8 @@ class MixedIntegerMethod(IndexMethod):
         self.recalcR = True
         self.recalcM = True
 
+        self.iterationsCount = len(items)
+
     def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
         Вычисление точки нового испытания :math:`x^{k+1}`.
