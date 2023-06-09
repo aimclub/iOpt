@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     problem = SVC_3D.SVC_3D(x, y, regularization_value_bound, kernel_coefficient_bound, kernel_type)
 
-    method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
+    method_params = SolverParameters(itersLimit=100)
     solver = Solver(problem, parameters=method_params)
 
     cfol = ConsoleOutputListener(mode='full')
