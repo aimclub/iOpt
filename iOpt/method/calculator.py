@@ -77,3 +77,6 @@ class Calculator:
             self.evaluateMethod.CopyFunctionals(point, point_r)
 
         return points
+
+    def __del__(self):
+        self.pool.close()
