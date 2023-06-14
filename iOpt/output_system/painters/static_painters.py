@@ -1,12 +1,89 @@
+import numpy as np
+
 from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.trial import Point, FunctionValue
 from iOpt.solution import Solution
-from iOpt.output_system.painters.plotters.plotters import Plotter2D, Plotter3D
+from iOpt.output_system.painters.plotters.plotters import Plotter2D, Plotter3D, DisretePlotter
 from iOpt.output_system.painters.painter import Painter
 
 import matplotlib.pyplot as plt
 import os
 
+class DisretePainter(Painter):
+    def __init__(self, searchData, pcount, floatdim, optimumPoint, disreteValues, disreteName, id,
+                 mode, subparameters, lb, rb, fileName, pathForSaves, calc):
+        self.pathForSaves = pathForSaves
+        self.fileName = fileName
+
+        self.mode = mode
+        self.id = id
+
+        # формируем массив точек итераций для графика
+
+        self.disretePoints = disreteValues
+        self.calculate = calc
+        self.optimum = optimumPoint
+        self.subparameters = subparameters
+
+        self.values = []
+        self.points = []
+
+        self.allValues = []
+        self.allPoints = []
+        self.Xs = []
+
+        for _ in range(len(disreteValues[id])):
+            self.points.append([])
+            self.values.append([])
+
+        for item in searchData:
+            if item.GetZ() > 1.7e+308:
+                continue
+            self.Xs.append(item.GetX())
+            self.allPoints.append(item.GetY())
+            self.allValues.append(item.GetZ())
+            disVal = item.GetY().discreteVariables[id]
+            disValNum = disreteValues[id].index(disVal)
+            self.values[disValNum].append(item.GetZ())
+
+        #настройки графика
+        self.plotter = DisretePlotter(self.mode, pcount, floatdim, disreteValues, disreteName, id, self.subparameters, lb, rb)
+
+    def PaintObjectiveFunc(self, numpoints):
+        bestcombination = [[], []]
+        other = [[], []]
+        for x in self.allPoints:
+            if x.discreteVariables == self.optimum.discreteVariables:
+                bestcombination[0].append(x.floatVariables[self.subparameters[0] - 1])
+                bestcombination[1].append(x.floatVariables[self.subparameters[1] - 1])
+            else:
+                other[0].append(x.floatVariables[self.subparameters[0] - 1])
+                other[1].append(x.floatVariables[self.subparameters[1] - 1])
+        self.plotter.PlotByGrid(self.CalculateFunc, self.optimum, bestcombination, other, numpoints, 2)
+
+    def PaintPoints(self, currPoint: SearchDataItem = None):
+        self.plotter.PlotPoints(self.disretePoints, self.id, self.values, self.allPoints, self.allValues, self.optimum,
+                                self.Xs, self.CalculateFunc, 'blue', 'o', 2)
+
+    def PaintOptimum(self, solution: Solution = None):
+        pass
+
+    def SaveImage(self):
+        if not os.path.isdir(self.pathForSaves):
+            if self.pathForSaves == "":
+                plt.savefig(self.fileName)
+            else:
+                os.mkdir(self.pathForSaves)
+                plt.savefig(self.pathForSaves + "/" + self.fileName)
+        else:
+            plt.savefig(self.pathForSaves + "/" + self.fileName)
+        plt.show()
+
+    def CalculateFunc(self, x, d):
+        point = Point(x, d)
+        fv = FunctionValue()
+        fv = self.calculate(point, fv)
+        return fv.value
 class StaticPainter(Painter):
     def __init__(self, searchData: SearchData,
                  solution: Solution,
@@ -80,7 +157,7 @@ class StaticPainter(Painter):
         plt.show()
 
     def CalculateFunc(self, x):
-        point = Point(x, [])
+        point = Point(x)
         fv = FunctionValue()
         fv = self.objFunc(point, fv)
         return fv.value

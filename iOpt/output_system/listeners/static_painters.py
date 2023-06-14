@@ -1,8 +1,46 @@
 from iOpt.method.listener import Listener
-from iOpt.method.search_data import SearchData
+from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
 
-from iOpt.output_system.painters.static_painters import StaticPainter, StaticPainterND
+from iOpt.output_system.painters.static_painters import StaticPainter, StaticPainterND, DisretePainter
+
+import numpy as np
+
+class StaticDisreteListener(Listener):
+    """
+    """
+    def __init__(self, fileName: str, pathForSaves="", mode='analysis', var=0, subvars=[], numpoints=100):
+        """
+        """
+        self.fileName = fileName
+        self.pathForSaves = pathForSaves
+        self.parameter = var - 1
+        self.subparameters = subvars
+        self.mode = mode
+        self.numpoints = numpoints
+        self.sd = []
+    def OnEndIteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+        self.sd.append(savedNewPoints[0])
+    def OnMethodStop(self, searchData: SearchData,
+                     solution: Solution, status: bool):
+        painter = DisretePainter(self.sd,
+         solution.problem.numberOfDisreteVariables,
+         solution.problem.numberOfFloatVariables,
+         solution.bestTrials[0].point,
+         solution.problem.discreteVariableValues,
+         solution.problem.discreteVariableNames,
+         self.parameter, self.mode, self.subparameters,
+         solution.problem.lowerBoundOfFloatVariables, solution.problem.upperBoundOfFloatVariables,
+         self.fileName, self.pathForSaves, solution.problem.Calculate
+        )
+
+        if self.mode == 'analysis':
+            painter.PaintPoints()
+        elif self.mode == 'bestcombination':
+            painter.PaintPoints()
+            painter.PaintObjectiveFunc(self.numpoints)
+
+        painter.SaveImage()
 
 # mode: objective function, approximation, only points
 class StaticPainterListener(Listener):
