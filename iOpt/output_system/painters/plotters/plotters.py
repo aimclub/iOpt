@@ -105,7 +105,7 @@ class DisretePlotter:
                 combstrs.append(str)
             self.axes[self.count + 1].scatter([allvalues[0]]*len(self.comb), combstrs, alpha=0)
 
-    def PlotByGrid(self, calculate, optimum, bestcombination, other, pointsCount=100, mrkrs=3):
+    def PlotByGrid(self, calculate, optimum, bestcombination, other, pointsCount, mrkrs):
         if self.mode == 'bestcombination':
             if self.floatdim > 1:
                 # линии уровня
@@ -123,7 +123,7 @@ class DisretePlotter:
                         z_.append(calculate(fv, optimum.discreteVariables))
                     z.append(z_)
 
-                xx=self.ax.contour(x1, x2, z, linewidths=1, levels=10,cmap='plasma')
+                xx=self.ax.contour(x1, x2, z, linewidths=1, levels=10, cmap='plasma')
                 self.fig.colorbar(
                     ScalarMappable(norm=xx.norm, cmap=xx.cmap),
                 )

@@ -9,7 +9,7 @@ import numpy as np
 class StaticDisreteListener(Listener):
     """
     """
-    def __init__(self, fileName: str, pathForSaves="", mode='analysis', var=0, subvars=[], numpoints=100):
+    def __init__(self, fileName: str, pathForSaves="", mode='analysis', var=0, subvars=[], numpoints=150, mrkrs=3):
         """
         """
         self.fileName = fileName
@@ -18,6 +18,7 @@ class StaticDisreteListener(Listener):
         self.subparameters = subvars
         self.mode = mode
         self.numpoints = numpoints
+        self.mrkrs = mrkrs
         self.sd = []
     def OnEndIteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
         self.sd.append(savedNewPoints[0])
@@ -37,8 +38,7 @@ class StaticDisreteListener(Listener):
         if self.mode == 'analysis':
             painter.PaintPoints()
         elif self.mode == 'bestcombination':
-            painter.PaintPoints()
-            painter.PaintObjectiveFunc(self.numpoints)
+            painter.PaintObjectiveFunc(self.numpoints, self.mrkrs)
 
         painter.SaveImage()
 

@@ -49,7 +49,7 @@ class DisretePainter(Painter):
         #настройки графика
         self.plotter = DisretePlotter(self.mode, pcount, floatdim, disreteValues, disreteName, id, self.subparameters, lb, rb)
 
-    def PaintObjectiveFunc(self, numpoints):
+    def PaintObjectiveFunc(self, numpoints, mrkrs):
         bestcombination = [[], []]
         other = [[], []]
         for x in self.allPoints:
@@ -59,7 +59,7 @@ class DisretePainter(Painter):
             else:
                 other[0].append(x.floatVariables[self.subparameters[0] - 1])
                 other[1].append(x.floatVariables[self.subparameters[1] - 1])
-        self.plotter.PlotByGrid(self.CalculateFunc, self.optimum, bestcombination, other, numpoints, 2)
+        self.plotter.PlotByGrid(self.CalculateFunc, self.optimum, bestcombination, other, numpoints, mrkrs)
 
     def PaintPoints(self, currPoint: SearchDataItem = None):
         self.plotter.PlotPoints(self.disretePoints, self.id, self.values, self.allPoints, self.allValues, self.optimum,
