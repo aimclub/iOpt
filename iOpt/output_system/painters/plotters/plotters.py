@@ -7,7 +7,7 @@ from matplotlib.cm import ScalarMappable
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 class DisretePlotter:
-    def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, id, subparameters, lb, rb):
+    def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, id, subparameters, lb, rb, bestsvalues):
         plt.style.use('fivethirtyeight')
         plt.rcParams['contour.negative_linestyle'] = 'solid'
         plt.rcParams['figure.figsize'] = (12, 6)
@@ -20,6 +20,8 @@ class DisretePlotter:
 
         self.floatdim = floatdim
 
+        self.bestsvalues=bestsvalues
+
         self.comb = [list(x) for x in np.array(np.meshgrid(*parametersvals)).T.reshape(-1, len(parametersvals))]
         self.combcount = len(self.comb)
 
@@ -28,24 +30,29 @@ class DisretePlotter:
             self.fig.suptitle('Analysis optimization method work', fontsize=10)
             self.axes = []
 
-            self.count = 3
+            self.count = 4
             self.pcount = pcount
             if self.count > pcount: self.count = pcount
             for i in range(self.count):
-                self.axes.append(plt.subplot2grid((self.count, self.count + 1), (0, i), colspan=1, rowspan=1))
+                self.axes.append(plt.subplot2grid((self.count, self.count), (0, i), colspan=1, rowspan=1))
                 plt.tight_layout()
                 self.axes[i].set_xlabel('values of parameter ' + str(i + 1) + ' (p' + str(i + 1) + ') ' + parametersnames[i] + '')
                 self.axes[i].set_ylabel('objective function values')
             self.axes[0].set_title('Scatter of objective function values for different parameters values', loc='left', fontsize=8)
-
-            self.axes.append(plt.subplot2grid((self.count, self.count + 1), (0, self.count), colspan=2, rowspan=self.count))
+            self.axes.append(plt.subplot2grid((self.count, self.count), (1,(self.count)//2), colspan=(self.count)//2, rowspan=(self.count - 1)//2 + (self.count - 1)%2))
             self.axes[self.count].set_title('Iteration characteristic', fontsize=8)
-            self.axes[self.count].set_xlabel('objective function values')
-            self.axes[self.count].set_ylabel('iteration')
-            self.axes.append(plt.subplot2grid((self.count, self.count + 1), (1, 0), colspan=self.count, rowspan=self.count - 1))
+            self.axes[self.count].set_xlabel('iteration')
+            self.axes[self.count].set_ylabel('objective function values')
+
+            self.axes.append(plt.subplot2grid((self.count, self.count), (1, 0), colspan=(self.count)//2, rowspan=self.count - 1))
             self.axes[self.count + 1].set_title(str(self.combcount)+' combinations of parameters used at different iterations', fontsize=8)
             self.axes[self.count + 1].set_xlabel('iteration')
             self.axes[self.count + 1].set_ylabel('discrete parameters values')
+
+            self.axes.append(plt.subplot2grid((self.count, self.count), (3, (self.count)//2), colspan=(self.count)//2, rowspan=(self.count - 1)//2))
+            self.axes[self.count + 2].set_title('Current best value update', fontsize=8)
+            self.axes[self.count + 2].set_xlabel('iteration')
+            self.axes[self.count + 2].set_ylabel('best minimum value')
 
         if self.mode == 'bestcombination':
             self.fig, self.ax = plt.subplots(figsize=(8, 6))
@@ -65,8 +72,10 @@ class DisretePlotter:
                 y.append(x)
                 z.append(j)
                 j += 1
-            self.axes[self.count].plot(y, z, color='black', linewidth=1, alpha=1)
+            self.axes[self.count].plot(z, y, color='black', linewidth=1, alpha=1)
 
+            iters = list(range(1, len(self.bestsvalues) + 1))
+            self.axes[self.count + 2].plot(iters, self.bestsvalues, color='black', linewidth=1, alpha=1)
             '''
             z.clear()
             y.clear()

@@ -20,11 +20,14 @@ class StaticDisreteListener(Listener):
         self.numpoints = numpoints
         self.mrkrs = mrkrs
         self.sd = []
+        self.bp = []
     def OnEndIteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
         self.sd.append(savedNewPoints[0])
+        bestTrialValue = solution.bestTrials[0].functionValues[0].value
+        self.bp.append(bestTrialValue)
     def OnMethodStop(self, searchData: SearchData,
                      solution: Solution, status: bool):
-        painter = DisretePainter(self.sd,
+        painter = DisretePainter(self.sd,self.bp,
          solution.problem.numberOfDisreteVariables,
          solution.problem.numberOfFloatVariables,
          solution.bestTrials[0].point,

@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import os
 
 class DisretePainter(Painter):
-    def __init__(self, searchData, pcount, floatdim, optimumPoint, disreteValues, disreteName, id,
+    def __init__(self, searchData, bestsvalues, pcount, floatdim, optimumPoint, disreteValues, disreteName, id,
                  mode, subparameters, lb, rb, fileName, pathForSaves, calc):
         self.pathForSaves = pathForSaves
         self.fileName = fileName
@@ -47,7 +47,7 @@ class DisretePainter(Painter):
             self.values[disValNum].append(item.GetZ())
 
         #настройки графика
-        self.plotter = DisretePlotter(self.mode, pcount, floatdim, disreteValues, disreteName, id, self.subparameters, lb, rb)
+        self.plotter = DisretePlotter(self.mode, pcount, floatdim, disreteValues, disreteName, id, self.subparameters, lb, rb, bestsvalues)
 
     def PaintObjectiveFunc(self, numpoints, mrkrs):
         bestcombination = [[], []]
