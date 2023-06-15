@@ -27,9 +27,10 @@ if __name__ == "__main__":
     method_params = SolverParameters(itersLimit=100)
     solver = Solver(problem, parameters=method_params)
     # add needed listeners for solver
-    apl = StaticDiscreteListener("experiment.png", mode='analysis')
+    apl = StaticDiscreteListener("experiment1.png", mode='analysis')
     solver.AddListener(apl)
-
+    apl = StaticDiscreteListener("experiment2.png", mode='bestcombination', calc='interpolation', mrkrs=4)
+    solver.AddListener(apl)
     cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
 
