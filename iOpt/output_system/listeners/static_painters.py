@@ -1,6 +1,7 @@
 from iOpt.method.listener import Listener
 from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
+from iOpt.method.method import Method
 
 from iOpt.output_system.painters.static_painters import StaticPainter, StaticPainterND, DiscretePainter
 
@@ -13,6 +14,22 @@ class StaticDiscreteListener(Listener):
                  numpoints=150, mrkrs=3):
         """
         """
+        if mode != 'analysis' and mode != 'bestcombination':
+            raise Exception(
+                "StaticDiscreteListener mode is incorrect, mode can take values 'analysis' or 'bestcombination'")
+        if type != 'lines layers':
+            raise Exception(
+                "StaticDiscreteListener type is incorrect, type can take values 'lines layers'")
+        if calc != 'objective function' and calc != 'interpolation':
+            raise Exception(
+                "StaticDiscreteListener calc is incorrect, calc can take values 'objective function' or 'interpolation'")
+        if numpoints <= 0:
+            raise Exception(
+                "StaticDiscreteListener numpoints is incorrect, numpoints > 0")
+        if mrkrs <= 0:
+            raise Exception(
+                "StaticDiscreteListener mrkrs is incorrect, mrkrs > 0")
+
         self.fileName = fileName
         self.pathForSaves = pathForSaves
         self.subparameters = [1, 2]
@@ -23,6 +40,11 @@ class StaticDiscreteListener(Listener):
         self.mrkrs = mrkrs
         self.searchDataSorted = []
         self.bestValueSorted = []
+
+    def BeforeMethodStart(self, method: Method):
+        if method.task.problem.numberOfFloatVariables > 2 and self.calc == 'interpolation':
+            raise Exception(
+                "StaticDiscreteListener with calc 'interpolation' supported with dimension <= 2")
     def OnEndIteration(self, newPoint : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
         self.searchDataSorted.append(newPoint[0])
         self.bestValueSorted.append(solution.bestTrials[0].functionValues[0].value)
@@ -40,7 +62,6 @@ class StaticDiscreteListener(Listener):
                                   self.fileName, self.pathForSaves, solution.problem.Calculate,
                                   solution.bestTrials[0].functionValues[0].value,
                                   searchData)
-
         if self.mode == 'analysis':
             painter.PaintAnalisys(mrks=2)
         elif self.mode == 'bestcombination':
