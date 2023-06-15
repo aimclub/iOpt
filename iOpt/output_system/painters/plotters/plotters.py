@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.neural_network import MLPRegressor
 from scipy import interpolate
 from matplotlib.cm import ScalarMappable
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 class DisretePlotter:
     def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, id, subparameters, lb, rb, bestsvalues):
@@ -34,22 +33,23 @@ class DisretePlotter:
             self.pcount = pcount
             if self.count > pcount: self.count = pcount
             for i in range(self.count):
-                self.axes.append(plt.subplot2grid((self.count, self.count), (0, i), colspan=1, rowspan=1))
+                self.axes.append(plt.subplot2grid((4, 4), (0, i), colspan=1, rowspan=1))
                 plt.tight_layout()
                 self.axes[i].set_xlabel('values of parameter ' + str(i + 1) + ' (p' + str(i + 1) + ') ' + parametersnames[i] + '')
                 self.axes[i].set_ylabel('objective function values')
             self.axes[0].set_title('Scatter of objective function values for different parameters values', loc='left', fontsize=8)
-            self.axes.append(plt.subplot2grid((self.count, self.count), (1,(self.count)//2), colspan=(self.count)//2, rowspan=(self.count - 1)//2 + (self.count - 1)%2))
+
+            self.axes.append(plt.subplot2grid((4, 4), (1,2), colspan=2, rowspan=2))
             self.axes[self.count].set_title('Iteration characteristic', fontsize=8)
             self.axes[self.count].set_xlabel('iteration')
             self.axes[self.count].set_ylabel('objective function values')
 
-            self.axes.append(plt.subplot2grid((self.count, self.count), (1, 0), colspan=(self.count)//2, rowspan=self.count - 1))
+            self.axes.append(plt.subplot2grid((4, 4), (1, 0), colspan=2, rowspan=3))
             self.axes[self.count + 1].set_title(str(self.combcount)+' combinations of parameters used at different iterations', fontsize=8)
             self.axes[self.count + 1].set_xlabel('iteration')
             self.axes[self.count + 1].set_ylabel('discrete parameters values')
 
-            self.axes.append(plt.subplot2grid((self.count, self.count), (3, (self.count)//2), colspan=(self.count)//2, rowspan=(self.count - 1)//2))
+            self.axes.append(plt.subplot2grid((4, 4), (3, 2), colspan=2, rowspan=1))
             self.axes[self.count + 2].set_title('Current best value update', fontsize=8)
             self.axes[self.count + 2].set_xlabel('iteration')
             self.axes[self.count + 2].set_ylabel('best minimum value')
@@ -114,7 +114,7 @@ class DisretePlotter:
                 combstrs.append(str)
             self.axes[self.count + 1].scatter([allvalues[0]]*len(self.comb), combstrs, alpha=0)
 
-    def PlotByGrid(self, calculate, optimum, bestcombination, other, pointsCount, mrkrs):
+    def PlotByGrid(self, calculate, optimum, bestcombination, other, pointsCount, mrkrs, optVal):
         if self.mode == 'bestcombination':
             if self.floatdim > 1:
                 # линии уровня
@@ -143,7 +143,7 @@ class DisretePlotter:
 
                 # точки испытаний
                 self.ax.scatter(other[0], other[1], s=mrkrs ** 2, color='grey',
-                                              label='points with another disrete parameters combinations')
+                                              label='points with another discrete parameters combinations')
                 self.ax.scatter(bestcombination[0], bestcombination[1], s=mrkrs ** 2, color='blue',
                                               label='points with '+ str(optimum.discreteVariables))
                 self.ax.scatter([optimum.floatVariables[self.subparameters[0] - 1]],
@@ -160,9 +160,15 @@ class DisretePlotter:
                 z = []
                 fv = optimum.floatVariables.copy()
                 for i in range(pointsCount):
-                    fv[self.index] = x[i]
-                    z.append(calculate(fv))
+                    fv[0] = x[i]
+                    z.append(calculate(fv, optimum.discreteVariables))
                 self.ax.plot(x, z, linewidth=1, color='black', alpha=0.7)
+                self.ax.scatter(other[0], other[1], s=mrkrs ** 2, color='grey',
+                                label='points with another discrete parameters combinations')
+                self.ax.scatter(bestcombination[0], bestcombination[1], s=mrkrs ** 2, color='blue',
+                                label='points with ' + str(optimum.discreteVariables))
+                self.ax.scatter([optimum.floatVariables[0]], [optVal - 5],
+                                s=mrkrs ** 2, color='red', label='best trial point')
 
 class Plotter:
     """

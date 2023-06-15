@@ -2,11 +2,11 @@ from iOpt.method.listener import Listener
 from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
 
-from iOpt.output_system.painters.static_painters import StaticPainter, StaticPainterND, DisretePainter
+from iOpt.output_system.painters.static_painters import StaticPainter, StaticPainterND, DiscretePainter
 
 import numpy as np
 
-class StaticDisreteListener(Listener):
+class StaticDiscreteListener(Listener):
     """
     """
     def __init__(self, fileName: str, pathForSaves="", mode='analysis', var=0, subvars=[], numpoints=150, mrkrs=3):
@@ -27,16 +27,16 @@ class StaticDisreteListener(Listener):
         self.bp.append(bestTrialValue)
     def OnMethodStop(self, searchData: SearchData,
                      solution: Solution, status: bool):
-        painter = DisretePainter(self.sd,self.bp,
-         solution.problem.numberOfDisreteVariables,
-         solution.problem.numberOfFloatVariables,
-         solution.bestTrials[0].point,
-         solution.problem.discreteVariableValues,
-         solution.problem.discreteVariableNames,
-         self.parameter, self.mode, self.subparameters,
-         solution.problem.lowerBoundOfFloatVariables, solution.problem.upperBoundOfFloatVariables,
-         self.fileName, self.pathForSaves, solution.problem.Calculate
-        )
+        painter = DiscretePainter(self.sd, self.bp,
+                                  solution.problem.numberOfDiscreteVariables,
+                                  solution.problem.numberOfFloatVariables,
+                                  solution.bestTrials[0].point,
+                                  solution.problem.discreteVariableValues,
+                                  solution.problem.discreteVariableNames,
+                                  self.parameter, self.mode, self.subparameters,
+                                  solution.problem.lowerBoundOfFloatVariables, solution.problem.upperBoundOfFloatVariables,
+                                  self.fileName, self.pathForSaves, solution.problem.Calculate, solution.bestTrials[0].functionValues[0].value
+                                  )
 
         if self.mode == 'analysis':
             painter.PaintPoints()

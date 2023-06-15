@@ -9,9 +9,9 @@ from iOpt.output_system.painters.painter import Painter
 import matplotlib.pyplot as plt
 import os
 
-class DisretePainter(Painter):
-    def __init__(self, searchData, bestsvalues, pcount, floatdim, optimumPoint, disreteValues, disreteName, id,
-                 mode, subparameters, lb, rb, fileName, pathForSaves, calc):
+class DiscretePainter(Painter):
+    def __init__(self, searchData, bestsvalues, pcount, floatdim, optimumPoint, discreteValues, discreteName, id,
+                 mode, subparameters, lb, rb, fileName, pathForSaves, calc, optval):
         self.pathForSaves = pathForSaves
         self.fileName = fileName
 
@@ -20,9 +20,10 @@ class DisretePainter(Painter):
 
         # формируем массив точек итераций для графика
 
-        self.disretePoints = disreteValues
+        self.discretePoints = discreteValues
         self.calculate = calc
         self.optimum = optimumPoint
+        self.optimumVal = optval
         self.subparameters = subparameters
 
         self.values = []
@@ -32,7 +33,7 @@ class DisretePainter(Painter):
         self.allPoints = []
         self.Xs = []
 
-        for _ in range(len(disreteValues[id])):
+        for _ in range(len(discreteValues[id])):
             self.points.append([])
             self.values.append([])
 
@@ -43,26 +44,37 @@ class DisretePainter(Painter):
             self.allPoints.append(item.GetY())
             self.allValues.append(item.GetZ())
             disVal = item.GetY().discreteVariables[id]
-            disValNum = disreteValues[id].index(disVal)
+            disValNum = discreteValues[id].index(disVal)
             self.values[disValNum].append(item.GetZ())
-
+        self.floatdim = floatdim
         #настройки графика
-        self.plotter = DisretePlotter(self.mode, pcount, floatdim, disreteValues, disreteName, id, self.subparameters, lb, rb, bestsvalues)
+        self.plotter = DisretePlotter(self.mode, pcount, floatdim, discreteValues, discreteName, id, self.subparameters, lb, rb, bestsvalues)
 
     def PaintObjectiveFunc(self, numpoints, mrkrs):
         bestcombination = [[], []]
         other = [[], []]
-        for x in self.allPoints:
-            if x.discreteVariables == self.optimum.discreteVariables:
-                bestcombination[0].append(x.floatVariables[self.subparameters[0] - 1])
-                bestcombination[1].append(x.floatVariables[self.subparameters[1] - 1])
-            else:
-                other[0].append(x.floatVariables[self.subparameters[0] - 1])
-                other[1].append(x.floatVariables[self.subparameters[1] - 1])
-        self.plotter.PlotByGrid(self.CalculateFunc, self.optimum, bestcombination, other, numpoints, mrkrs)
+        if self.floatdim > 1:
+            for x in self.allPoints:
+                if x.discreteVariables == self.optimum.discreteVariables:
+                    bestcombination[0].append(x.floatVariables[self.subparameters[0] - 1])
+                    bestcombination[1].append(x.floatVariables[self.subparameters[1] - 1])
+                else:
+                    other[0].append(x.floatVariables[self.subparameters[0] - 1])
+                    other[1].append(x.floatVariables[self.subparameters[1] - 1])
+        else:
+            for x in self.allPoints:
+                if x.discreteVariables == self.optimum.discreteVariables:
+                    bestcombination[0].append(x.floatVariables[0])
+                    bestcombination[1].append(self.optimumVal - 5)
+                else:
+                    other[0].append(x.floatVariables[0])
+                    other[1].append(self.optimumVal- 5)
+
+        self.plotter.PlotByGrid(self.CalculateFunc, self.optimum, bestcombination, other, numpoints, mrkrs, self.optimumVal)
+
 
     def PaintPoints(self, currPoint: SearchDataItem = None):
-        self.plotter.PlotPoints(self.disretePoints, self.id, self.values, self.allPoints, self.allValues, self.optimum,
+        self.plotter.PlotPoints(self.discretePoints, self.id, self.values, self.allPoints, self.allValues, self.optimum,
                                 self.Xs, self.CalculateFunc, 'blue', 'o', 2)
 
     def PaintOptimum(self, solution: Solution = None):
