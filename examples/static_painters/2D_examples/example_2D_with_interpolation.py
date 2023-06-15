@@ -5,7 +5,7 @@ from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
 
 if __name__ == "__main__":
     # create the problem 2D dimension
-    problem = Rastrigin(4)
+    problem = Rastrigin(2)
 
     # add solver parameters
     params = SolverParameters(r=2.5, eps=0.01)
