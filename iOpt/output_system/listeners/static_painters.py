@@ -9,39 +9,44 @@ import numpy as np
 class StaticDiscreteListener(Listener):
     """
     """
-    def __init__(self, fileName: str, pathForSaves="", mode='analysis', var=0, subvars=[], numpoints=150, mrkrs=3):
+    def __init__(self, fileName: str, pathForSaves="", mode='analysis', calc='objective function', type='lines layers',
+                 numpoints=150, mrkrs=3):
         """
         """
         self.fileName = fileName
         self.pathForSaves = pathForSaves
-        self.parameter = var - 1
-        self.subparameters = subvars
+        self.subparameters = [1, 2]
         self.mode = mode
+        self.type = type
+        self.calc = calc
         self.numpoints = numpoints
         self.mrkrs = mrkrs
-        self.sd = []
-        self.bp = []
-    def OnEndIteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
-        self.sd.append(savedNewPoints[0])
-        bestTrialValue = solution.bestTrials[0].functionValues[0].value
-        self.bp.append(bestTrialValue)
+        self.searchDataSorted = []
+        self.bestValueSorted = []
+    def OnEndIteration(self, newPoint : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+        self.searchDataSorted.append(newPoint[0])
+        self.bestValueSorted.append(solution.bestTrials[0].functionValues[0].value)
     def OnMethodStop(self, searchData: SearchData,
                      solution: Solution, status: bool):
-        painter = DiscretePainter(self.sd, self.bp,
+        painter = DiscretePainter(self.searchDataSorted, self.bestValueSorted,
                                   solution.problem.numberOfDiscreteVariables,
                                   solution.problem.numberOfFloatVariables,
                                   solution.bestTrials[0].point,
                                   solution.problem.discreteVariableValues,
                                   solution.problem.discreteVariableNames,
-                                  self.parameter, self.mode, self.subparameters,
-                                  solution.problem.lowerBoundOfFloatVariables, solution.problem.upperBoundOfFloatVariables,
-                                  self.fileName, self.pathForSaves, solution.problem.Calculate, solution.bestTrials[0].functionValues[0].value
-                                  )
+                                  self.mode, self.calc, self.subparameters,
+                                  solution.problem.lowerBoundOfFloatVariables,
+                                  solution.problem.upperBoundOfFloatVariables,
+                                  self.fileName, self.pathForSaves, solution.problem.Calculate,
+                                  solution.bestTrials[0].functionValues[0].value,
+                                  searchData)
 
         if self.mode == 'analysis':
-            painter.PaintPoints()
+            painter.PaintAnalisys(mrks=2)
         elif self.mode == 'bestcombination':
-            painter.PaintObjectiveFunc(self.numpoints, self.mrkrs)
+            if self.type == 'lines layers':
+                painter.PaintObjectiveFunc(self.numpoints)
+                painter.PaintPoints(self.mrkrs)
 
         painter.SaveImage()
 

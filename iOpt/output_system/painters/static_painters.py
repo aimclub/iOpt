@@ -10,73 +10,98 @@ import matplotlib.pyplot as plt
 import os
 
 class DiscretePainter(Painter):
-    def __init__(self, searchData, bestsvalues, pcount, floatdim, optimumPoint, discreteValues, discreteName, id,
-                 mode, subparameters, lb, rb, fileName, pathForSaves, calc, optval):
+    def __init__(self, searchDataSorted, bestsvalues, pcount, floatdim, optimumPoint, discreteValues,
+                 discreteName, mode, calc, subparameters, lb, rb, fileName, pathForSaves, calculate, optimumValue, searchData):
         self.pathForSaves = pathForSaves
         self.fileName = fileName
-
-        self.mode = mode
-        self.id = id
-
-        # формируем массив точек итераций для графика
-
-        self.discretePoints = discreteValues
-        self.calculate = calc
+        self.calc = calc
+        self.calculate = calculate
         self.optimum = optimumPoint
-        self.optimumVal = optval
-        self.subparameters = subparameters
+        self.optimumVal = optimumValue
 
         self.values = []
         self.points = []
 
-        self.allValues = []
-        self.allPoints = []
-        self.Xs = []
+        self.combination = []
 
-        for _ in range(len(discreteValues[id])):
-            self.points.append([])
-            self.values.append([])
+        self.pointsWithBestComb = [[], []]
+        self.otherPoints = [[], []]
+        self.optimumPoint = [[], []]
 
-        for item in searchData:
-            if item.GetZ() > 1.7e+308:
-                continue
-            self.Xs.append(item.GetX())
-            self.allPoints.append(item.GetY())
-            self.allValues.append(item.GetZ())
-            disVal = item.GetY().discreteVariables[id]
-            disValNum = discreteValues[id].index(disVal)
-            self.values[disValNum].append(item.GetZ())
-        self.floatdim = floatdim
-        #настройки графика
-        self.plotter = DisretePlotter(self.mode, pcount, floatdim, discreteValues, discreteName, id, self.subparameters, lb, rb, bestsvalues)
-
-    def PaintObjectiveFunc(self, numpoints, mrkrs):
-        bestcombination = [[], []]
-        other = [[], []]
-        if self.floatdim > 1:
-            for x in self.allPoints:
-                if x.discreteVariables == self.optimum.discreteVariables:
-                    bestcombination[0].append(x.floatVariables[self.subparameters[0] - 1])
-                    bestcombination[1].append(x.floatVariables[self.subparameters[1] - 1])
+        if mode == 'bestcombination':
+            for x in searchData:
+                if x.GetZ() > 1.7e+308:
+                    continue
+                if x.GetY().discreteVariables != self.optimum.discreteVariables:
+                    if floatdim > 1:
+                        self.otherPoints[0].append(x.GetY().floatVariables[subparameters[0] - 1])
+                        self.otherPoints[1].append(x.GetY().floatVariables[subparameters[1] - 1])
+                    else:
+                        self.otherPoints[0].append(x.GetY().floatVariables[0])
+                        self.otherPoints[1].append(self.optimumVal - 5)
+                    continue
                 else:
-                    other[0].append(x.floatVariables[self.subparameters[0] - 1])
-                    other[1].append(x.floatVariables[self.subparameters[1] - 1])
-        else:
-            for x in self.allPoints:
-                if x.discreteVariables == self.optimum.discreteVariables:
-                    bestcombination[0].append(x.floatVariables[0])
-                    bestcombination[1].append(self.optimumVal - 5)
-                else:
-                    other[0].append(x.floatVariables[0])
-                    other[1].append(self.optimumVal- 5)
+                    if floatdim > 1:
+                        '''
+                        ok = True
+                        for k in range(floatdim):
+                            if (x.GetY().floatVariables[k] != self.optimum.floatVariables[k] and
+                            k != subparameters[0] - 1 and k != subparameters[1] - 1):
+                                ok = False
+                                break
+                        if ok:
+                            self.values2.append(x.GetZ())
+                            self.points2.append([x.GetY().floatVariables[subparameters[0] - 1],
+                                                 x.GetY().floatVariables[subparameters[1] - 1]])
+                        '''
+                        self.points.append([x.GetY().floatVariables[subparameters[0] - 1],
+                                       x.GetY().floatVariables[subparameters[1] - 1]])
+                        self.values.append(x.GetZ())
+                        self.pointsWithBestComb[0].append(x.GetY().floatVariables[subparameters[0] - 1])
+                        self.pointsWithBestComb[1].append(x.GetY().floatVariables[subparameters[1] - 1])
+                    else:
+                        self.points.append(x.GetY().floatVariables[0])
+                        self.values.append(x.GetZ())
+                        self.pointsWithBestComb[0].append(x.GetY().floatVariables[0])
+                        self.pointsWithBestComb[1].append(self.optimumVal - 5)
 
-        self.plotter.PlotByGrid(self.CalculateFunc, self.optimum, bestcombination, other, numpoints, mrkrs, self.optimumVal)
+            if floatdim > 1:
+                self.optimumPoint[0].append(self.optimum.floatVariables[subparameters[0] - 1])
+                self.optimumPoint[1].append(self.optimum.floatVariables[subparameters[1] - 1])
+            else:
+                self.optimumPoint[0].append(self.optimum.floatVariables[0])
+                self.optimumPoint[1].append(self.optimumVal - 5)
 
+        elif mode == 'analysis':
+            i = 0
+            for item in searchDataSorted:
+                i += 1
+                if item.GetZ() > 1.7e+308:
+                    continue
+                self.points.append(item.GetY())
+                self.values.append([item.GetZ(), i])
+                str = '['
+                for j in range(len(item.GetY().discreteVariables)):
+                    str += item.GetY().discreteVariables[j] + ', '
+                str = str[:-2]
+                str += ']'
+                self.combination.append([str, i])
 
-    def PaintPoints(self, currPoint: SearchDataItem = None):
-        self.plotter.PlotPoints(self.discretePoints, self.id, self.values, self.allPoints, self.allValues, self.optimum,
-                                self.Xs, self.CalculateFunc, 'blue', 'o', 2)
+        self.plotter = DisretePlotter(mode, pcount, floatdim, discreteValues, discreteName,
+                                      subparameters, lb, rb, bestsvalues)
 
+    def PaintObjectiveFunc(self, numpoints):
+        if self.calc == 'objective function':
+            section = self.optimum
+            self.plotter.PlotByGrid(self.CalculateFunc, section, numpoints)
+        elif self.calc == 'interpolation':
+            self.plotter.PlotInterpolation(self.points, self.values)
+
+    def PaintPoints(self, mrks):
+        self.plotter.PlotPoints(self.pointsWithBestComb, self.otherPoints, self.optimum, self.optimumPoint, mrks)
+
+    def PaintAnalisys(self, mrks):
+        self.plotter.PlotAnalisysSubplotsFigure(self.points, self.values,  self.combination, mrks)
     def PaintOptimum(self, solution: Solution = None):
         pass
 
