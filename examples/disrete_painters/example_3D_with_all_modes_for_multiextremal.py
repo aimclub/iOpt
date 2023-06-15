@@ -19,7 +19,6 @@ if __name__ == "__main__":
     solver.AddListener(apl)
     apl = StaticDiscreteListener("RastriginInt_5-2_2.1_0.01_2.png", mode='bestcombination', calc='objective function')
     solver.AddListener(apl)
-
     cfol = ConsoleOutputListener(mode="full")
     solver.AddListener(cfol)
 

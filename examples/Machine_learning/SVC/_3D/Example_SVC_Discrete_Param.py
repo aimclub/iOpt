@@ -1,4 +1,5 @@
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+from iOpt.output_system.listeners.static_painters import StaticDiscreteListener
 
 from sklearn.datasets import load_breast_cancer
 from iOpt.solver import Solver
@@ -25,6 +26,9 @@ if __name__ == "__main__":
 
     method_params = SolverParameters(itersLimit=100)
     solver = Solver(problem, parameters=method_params)
+    # add needed listeners for solver
+    apl = StaticDiscreteListener("experiment.png", mode='analysis')
+    solver.AddListener(apl)
 
     cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
