@@ -25,7 +25,7 @@ class Shekel4(Problem):
         self.name = Shekel4
         self.dimension = 4
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
         self.fn = function_number

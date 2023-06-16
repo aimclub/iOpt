@@ -27,7 +27,7 @@ class Grishagin(Problem):
         self.name = "Grishagin"
         self.dimension = 2
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
         self.floatVariableNames = np.ndarray(shape=(self.dimension,), dtype=str)

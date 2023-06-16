@@ -12,20 +12,21 @@ def SolveSingleGKLS():
     """
 
     # создание объекта задачи
-    problem = GKLS(2, 39)
+    problem = GKLS(dimension=2, functionNumber=39)
 
     # Формируем параметры решателя
     params = SolverParameters(r=3.5, eps=0.01, itersLimit=300, refineSolution=True, numberOfParallelPoints=4)
 
     # Создаем решатель
-    solver = Solver(problem, parameters=params)
+    solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод резултатов в консоль
     cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
 
     # Добавляем построение 3D визуализации после решения задачи
-    spl = StaticPainterNDListener("GKLS.png", "output", varsIndxs=[0, 1], mode="lines layers", calc="objective function")
+    spl = StaticPainterNDListener(fileName="GKLS.png", pathForSaves="output", varsIndxs=[0, 1], mode="lines layers",
+                                  calc="objective function")
     solver.AddListener(spl)
 
     # Решение задачи

@@ -42,7 +42,8 @@ class Solver:
         self.task = OptimizationTask(problem)
         self.method = SolverFactory.CreateMethod(parameters, self.task, self.evolvent, self.searchData)
         self.process = SolverFactory.CreateProcess(parameters=parameters, task=self.task, evolvent=self.evolvent,
-                                   searchData=self.searchData, method=self.method, listeners=self.__listeners)
+                                                   searchData=self.searchData, method=self.method,
+                                                   listeners=self.__listeners)
 
     def Solve(self) -> Solution:
         """
@@ -52,7 +53,7 @@ class Solver:
         :return: решение задачи оптимизации
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        sol:Solution = None;
+        sol: Solution = None;
         if self.parameters.timeout < 0:
             sol = self.process.Solve()
         else:
@@ -182,4 +183,13 @@ class Solver:
                     raise Exception("Discrete variable values not defined")
 
         if parameters.startPoint:
-            raise Exception("At the moment, the starting point is not used")
+            if len(parameters.startPoint.floatVariables) != problem.numberOfFloatVariables:
+                raise Exception("Incorrect start point size")
+            if parameters.startPoint.discreteVariables:
+                if len(parameters.startPoint.discreteVariables) != problem.numberOfDiscreteVariables:
+                    raise Exception("Incorrect start point discrete variables")
+            for lowerBound, upperBound, y in zip(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables,
+                                                 parameters.startPoint.floatVariables):
+                if y < lowerBound or y > upperBound:
+                    raise Exception("Incorrect start point coordinate")
+

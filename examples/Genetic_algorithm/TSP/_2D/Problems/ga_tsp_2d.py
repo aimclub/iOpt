@@ -28,7 +28,7 @@ class GA_TSP_2D(Problem):
         super(GA_TSP_2D, self).__init__()
         self.dimension = 2
         self.numberOfFloatVariables = 2
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
         self.costMatrix = cost_matrix

@@ -10,14 +10,14 @@ def SolveSingleGKLS():
     """
 
     # создание объекта задачи
-    problem = GKLS(6, 39)
+    problem = GKLS(dimension=6, functionNumber=39)
 
     # Формируем параметры решателя
     params = SolverParameters(r=7, eps=0.01, itersLimit=3000000,
                               numberOfParallelPoints=4, timeout=1)
 
     # Создаем решатель
-    solver = Solver(problem, parameters=params)
+    solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод резултатов в консоль
     cfol = ConsoleOutputListener(mode='result')

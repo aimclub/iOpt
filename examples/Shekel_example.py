@@ -10,20 +10,21 @@ if __name__ == "__main__":
     """
 
     # создание объекта задачи
-    problem = Shekel(0)
+    problem = Shekel(function_number=0)
 
     # Формируем параметры решателя
     params = SolverParameters(r=3, eps=0.01, itersLimit=300, refineSolution=True)
 
     # Создаем решатель
-    solver = Solver(problem, parameters=params)
+    solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод результатов в консоль
     cfol = ConsoleOutputListener(mode='full')
     solver.AddListener(cfol)
 
     # Добавляем построение визуализации после решения задачи
-    spl = StaticPainterListener("shekel.png", "output", indx=0, isPointsAtBottom=False, mode="objective function")
+    spl = StaticPainterListener(fileName="shekel.png", pathForSaves="output", indx=0, isPointsAtBottom=False,
+                                mode="objective function")
     solver.AddListener(spl)
 
     # Решение задачи

@@ -190,7 +190,7 @@ ____________________________________________________________________________
                   mutation_probability_bound: Dict[str, float]):
          self.dimension = 1
          self.numberOfFloatVariables = 1
-         self.numberOfDisreteVariables = 0
+         self.numberOfDiscreteVariables = 0
          self.numberOfObjectives = 1
          self.numberOfConstraints = 0
          self.costMatrix = cost_matrix
@@ -398,7 +398,7 @@ ________________________________________________________________________________
             
             self.dimension = 2
             self.numberOfFloatVariables = 2
-            self.numberOfDisreteVariables = 0
+            self.numberOfDiscreteVariables = 0
             self.numberOfObjectives = 1
             self.numberOfConstraints = 0
             if x_dataset.shape[0] != y_dataset.shape[0]:
