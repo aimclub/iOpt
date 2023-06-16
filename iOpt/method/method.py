@@ -99,15 +99,45 @@ class Method:
         right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0,
                                functionValues=[FunctionValue()] * self.numberOfAllFunctions)
 
-        h: float = 1.0 / (self.parameters.numberOfParallelPoints + 1)
         items: list[SearchDataItem] = []
 
-        for i in range(self.parameters.numberOfParallelPoints):
-            x = h * (i + 1)
-            y = Point(self.evolvent.GetImage(x), None)
-            item = SearchDataItem(y, x,
+        if self.parameters.startPoint:
+            numberOfPoint: int = self.parameters.numberOfParallelPoints - 1
+            h: float = 1.0 / (numberOfPoint + 1)
+
+            yStartPoint = Point(copy.copy(self.parameters.startPoint.floatVariables), None)
+            xStartPoint = self.evolvent.GetInverseImage(self.parameters.startPoint.floatVariables)
+
+            itemStartPoint = SearchDataItem(yStartPoint, xStartPoint,
                                   functionValues=[FunctionValue()] * self.numberOfAllFunctions)
-            items.append(item)
+
+            isAddStartPoint: bool = False
+
+            for i in range(numberOfPoint):
+                x = h * (i + 1)
+                y = Point(self.evolvent.GetImage(x), None)
+                item = SearchDataItem(y, x,
+                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                if x < xStartPoint < h * (i + 2):
+                    items.append(item)
+                    items.append(itemStartPoint)
+                    isAddStartPoint = True
+                else:
+                    items.append(item)
+
+            if not isAddStartPoint:
+                items.append(itemStartPoint)
+        else:
+
+            numberOfPoint: int = self.parameters.numberOfParallelPoints
+            h: float = 1.0 / (numberOfPoint + 1)
+
+            for i in range(numberOfPoint):
+                x = h * (i + 1)
+                y = Point(self.evolvent.GetImage(x), None)
+                item = SearchDataItem(y, x,
+                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                items.append(item)
 
         if calculator is None:
             for item in items:

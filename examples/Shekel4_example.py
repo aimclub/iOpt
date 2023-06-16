@@ -9,13 +9,13 @@ if __name__ == "__main__":
     """
 
     # создание объекта задачи
-    problem = Shekel4(1)
+    problem = Shekel4(function_number=1)
 
     # Формируем параметры решателя
     params = SolverParameters(r=2.5, eps=0.01, itersLimit=10000, refineSolution=True)
 
     # Создаем решатель
-    solver = Solver(problem, parameters=params)
+    solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод результатов в консоль
     cfol = ConsoleOutputListener(mode='full')

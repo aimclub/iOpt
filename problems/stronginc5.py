@@ -16,7 +16,7 @@ class Stronginc5(Problem):
         self.name = 'Stronginc5'
         self.dimension: int = 5
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 5
 

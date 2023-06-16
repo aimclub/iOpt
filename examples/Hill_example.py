@@ -10,13 +10,13 @@ if __name__ == "__main__":
     """
 
     # создание объекта задачи
-    problem = Hill(0)
+    problem = Hill(function_number=5)
 
     # Формируем параметры решателя
     params = SolverParameters(r=3, eps=0.01, itersLimit=300, refineSolution=True)
 
     # Создаем решатель
-    solver = Solver(problem, parameters=params)
+    solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод результатов в консоль
     cfol = ConsoleOutputListener(mode='full')
