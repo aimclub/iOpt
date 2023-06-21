@@ -91,7 +91,7 @@ class Method:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
-        self.iterationsCount = 1
+
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
         left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.,
@@ -99,15 +99,45 @@ class Method:
         right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0,
                                functionValues=[FunctionValue()] * self.numberOfAllFunctions)
 
-        h: float = 1.0 / (self.parameters.numberOfParallelPoints + 1)
         items: list[SearchDataItem] = []
 
-        for i in range(self.parameters.numberOfParallelPoints):
-            x = h * (i + 1)
-            y = Point(self.evolvent.GetImage(x), None)
-            item = SearchDataItem(y, x,
+        if self.parameters.startPoint:
+            numberOfPoint: int = self.parameters.numberOfParallelPoints - 1
+            h: float = 1.0 / (numberOfPoint + 1)
+
+            yStartPoint = Point(copy.copy(self.parameters.startPoint.floatVariables), None)
+            xStartPoint = self.evolvent.GetInverseImage(self.parameters.startPoint.floatVariables)
+
+            itemStartPoint = SearchDataItem(yStartPoint, xStartPoint,
                                   functionValues=[FunctionValue()] * self.numberOfAllFunctions)
-            items.append(item)
+
+            isAddStartPoint: bool = False
+
+            for i in range(numberOfPoint):
+                x = h * (i + 1)
+                y = Point(self.evolvent.GetImage(x), None)
+                item = SearchDataItem(y, x,
+                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                if x < xStartPoint < h * (i + 2):
+                    items.append(item)
+                    items.append(itemStartPoint)
+                    isAddStartPoint = True
+                else:
+                    items.append(item)
+
+            if not isAddStartPoint:
+                items.append(itemStartPoint)
+        else:
+
+            numberOfPoint: int = self.parameters.numberOfParallelPoints
+            h: float = 1.0 / (numberOfPoint + 1)
+
+            for i in range(numberOfPoint):
+                x = h * (i + 1)
+                y = Point(self.evolvent.GetImage(x), None)
+                item = SearchDataItem(y, x,
+                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                items.append(item)
 
         if calculator is None:
             for item in items:
@@ -117,17 +147,6 @@ class Method:
 
         for item in items:
             self.UpdateOptimum(item)
-
-        # # middle.delta = Method.CalculateDelta(left.GetX(), middle.GetX(), self.dimension)
-        # # right.delta = Method.CalculateDelta(middle.GetX(), right.GetX(), self.dimension)
-        #
-        # middle.delta = self.CalculateDelta(left, middle, self.dimension)
-        # right.delta = self.CalculateDelta(middle, right, self.dimension)
-
-        # # Вычисление характеристик
-        # self.CalculateGlobalR(left, None)
-        # self.CalculateGlobalR(middle, left)
-        # self.CalculateGlobalR(right, middle)
 
         left.delta = 0
         self.CalculateGlobalR(left, None)
@@ -152,6 +171,8 @@ class Method:
 
         self.recalcR = True
         self.recalcM = True
+
+        self.iterationsCount = len(items)
 
     def CheckStopCondition(self) -> bool:
         r"""

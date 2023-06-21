@@ -190,7 +190,7 @@ ____________________________________________________________________________
                   mutation_probability_bound: Dict[str, float]):
          self.dimension = 1
          self.numberOfFloatVariables = 1
-         self.numberOfDisreteVariables = 0
+         self.numberOfDiscreteVariables = 0
          self.numberOfObjectives = 1
          self.numberOfConstraints = 0
          self.costMatrix = cost_matrix
@@ -375,11 +375,12 @@ ________________________________________________________________________________
 Поиск оптимальных параметров средствами фреймворка iOpt
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Пример работы с фреймворком при варьировании двух непрерывных параметров
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
 Запустим фреймворк iOpt для поиска оптимальной точки на сетке, максимизируя f1-score. 
 Для этого необходимо объявить класс, являющийся наследником класса **Problem** с абстрактным методом **Calculate**.
 
 .. code-block:: 
-    :caption: Объявление класса SVC_2D
 
     import numpy as np
     from iOpt.trial import Point
@@ -397,7 +398,7 @@ ________________________________________________________________________________
             
             self.dimension = 2
             self.numberOfFloatVariables = 2
-            self.numberOfDisreteVariables = 0
+            self.numberOfDiscreteVariables = 0
             self.numberOfObjectives = 1
             self.numberOfConstraints = 0
             if x_dataset.shape[0] != y_dataset.shape[0]:
@@ -491,6 +492,67 @@ ________________________________________________________________________________
 Синими точками на графике представлены точки поисковых испытаний, красной точкой отмечен найденный оптимум, 
 соответствующий гиперпараметрам, при которых f1-score достигает максимума.
 
+Пример работы с фреймворком при варьировании двух непрерывных и одного дискретного параметра
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+Как и в двумерном случае необходимо объявить класс, являющийся наследником класса **Problem** с абстрактным методом **Calculate**. Код данного класса представлен ниже:
+
+.. code-block:: 
+
+   class SVC_3D(Problem):
+      def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray,
+                  regularization_bound: Dict[str, float],
+                  kernel_coefficient_bound: Dict[str, float],
+                  kernel_type: Dict[str, list[str]]
+                  ):
+         super(SVC_3D, self).__init__()
+         self.dimension = 3
+         self.numberOfFloatVariables = 2
+         self.numberOfDiscreteVariables = 1
+         self.numberOfObjectives = 1
+         self.numberOfConstraints = 0
+         if x_dataset.shape[0] != y_dataset.shape[0]:
+               raise ValueError('The input and output sample sizes do not match.')
+         self.x = x_dataset
+         self.y = y_dataset
+         self.floatVariableNames = np.array(["Regularization parameter", "Kernel coefficient"], dtype=str)
+         self.lowerBoundOfFloatVariables = np.array([regularization_bound['low'], kernel_coefficient_bound['low']],
+                                                      dtype=np.double)
+         self.upperBoundOfFloatVariables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
+                                                      dtype=np.double)
+         self.discreteVariableNames.append('kernel')
+         self.discreteVariableValues.append(kernel_type['kernel'])
+
+      def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+         cs, gammas = point.floatVariables[0], point.floatVariables[1]
+         kernel_type = point.discreteVariables[0]
+         clf = SVC(C=10 ** cs, gamma=10 ** gammas, kernel=kernel_type)
+         functionValue.value = -cross_val_score(clf, self.x, self.y, scoring='f1').mean()
+         return functionValue
+
+Класс SVC_3D принимает в аргументах конструктора следующие параметры:
+
+#. **x_dataset** – массив объектов и их признаков, обернутых в **np.ndarray**;
+#. **y_dataset** – целевые метки каждого из объектов **x_dataset** в формате **np.ndarray**;
+#. **regularization_bound** – максимальное и минимальное значения для **C** в виде словаря;
+#. **kernel_coefficient_bound** – максимальное и минимальное значениями для **gamma** в виде словаря.
+#. **kernel_type** – Тип ядра, используемый в алгоритме SVC.
+
+Метод **Calculate** реализует логику подсчета целевой функции в точке **Point**. Стоит отметить, что точка **Point**
+содержит в себе два вещественных параметра и один дискретный, которые используются для обучения классификатор SVC. 
+Для получения значения оптимизируемой функции вычисляется среднее значение f1-score по кросс-валидации.
+
+Чтобы запустить процесс оптимизации, необходимо создать объект класса **SVC_3D**, а также объект класса **Solver**
+с переданным объектом целевой функции. Для отслеживания процесса поиска оптимальных значений гиперпараметров 
+рекомендуется использовать **ConsoleOutputListener**, подключаемый к решателю фреймворка.
+
+При поиске оптимального сочетания дискретных и вещественных параметров были рассмотрены следующие области:
+
+* Параметр регуляризации **C**: [10\ :sup:`1`, 10\ :sup:`6`] 
+* Коэффициент ядра **gamma**: [10\ :sup:`-7`, 10\ :sup:`-3`] 
+* Тип ядра **kernel**: [rbf, sigmoid] 
+
+В ходе работы фреймворка был найден минимум показателя f1-score, равный **-0.94459615**. Количество
+итераций решателя **iterLimits**\=100.
 
 Поиск гиперпараметров метода опорных векторов для задачи классификации состояния системы воздушного давления агрегатов грузовых автомобилей
 ____________________________________________________________________________________________________________________________________________

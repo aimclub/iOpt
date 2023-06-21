@@ -15,7 +15,7 @@ class Romeijn2c(Problem):
         self.name = "Romeijn2c"
         self.dimension: int = 6
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 2
 

@@ -6,6 +6,8 @@ import copy
 import math
 from typing import Tuple
 
+import numpy as np
+
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.calculator import Calculator
 from iOpt.method.optim_task import OptimizationTask
@@ -52,29 +54,89 @@ class MixedIntegerMethod(IndexMethod):
         right: list[SearchDataItem] = []
 
         # [(x + y - 1)/y]
+
+        items: list[SearchDataItem] = []
+        image_x: list = []
+        is_init_image_x: bool = False
+
         numberOfPointsInOneInterval = \
             int(math.modf((self.parameters.numberOfParallelPoints + self.numberOfParameterCombinations - 1)
                           / self.numberOfParameterCombinations)[1])
 
         h: float = 1.0 / (numberOfPointsInOneInterval + 1)
-        items: list[SearchDataItem] = []
-        image_x: list = []
 
-        for id_comb in range(self.numberOfParameterCombinations):
-            for i in range(numberOfPointsInOneInterval):
-                x = (id_comb * numberOfPointsInOneInterval) + h * (i + 1)
-                if id_comb == 0:
-                    image_x.append(self.evolvent.GetImage(x))
+        if self.parameters.startPoint:
 
-                y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
-                item = SearchDataItem(y, x, discreteValueIndex=id_comb,
-                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
-                items.append(item)
+            for id_comb in range(self.numberOfParameterCombinations):
 
-            right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
-                                        float(id_comb + 1),
-                                        functionValues=[FunctionValue()] * self.numberOfAllFunctions,
-                                        discreteValueIndex=id_comb))
+                if np.array_equal(self.parameters.startPoint.discreteVariables, self.discreteParameters[id_comb]):
+                    numTemp = numberOfPointsInOneInterval - 1
+
+                    yStartPoint = Point(copy.copy(self.parameters.startPoint.floatVariables),
+                                        self.discreteParameters[id_comb])
+                    xStartPoint = id_comb + self.evolvent.GetInverseImage(self.parameters.startPoint.floatVariables)
+                    itemStartPoint = SearchDataItem(yStartPoint, xStartPoint, discreteValueIndex=id_comb,
+                                          functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+
+                    isAddStartPoint: bool = False
+
+                    for i in range(numTemp):
+                        x = id_comb + h * (i + 1)
+
+                        y_temp = self.evolvent.GetImage(x)
+
+                        y = Point(copy.copy(y_temp), self.discreteParameters[id_comb])
+                        item = SearchDataItem(y, x, discreteValueIndex=id_comb,
+                                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                        if x < xStartPoint < id_comb + h * (i + 1):
+                            items.append(item)
+                            items.append(itemStartPoint)
+                            isAddStartPoint = True
+                        else:
+                            items.append(item)
+
+                    if not isAddStartPoint:
+                        items.append(itemStartPoint)
+
+                else:
+
+                    for i in range(numberOfPointsInOneInterval):
+                        x = id_comb + h * (i + 1)
+                        if not is_init_image_x:
+                            image_x.append(self.evolvent.GetImage(x))
+
+                        y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
+                        item = SearchDataItem(y, x, discreteValueIndex=id_comb,
+                                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                        items.append(item)
+
+                right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
+                                            float(id_comb + 1),
+                                            functionValues=[FunctionValue()] * self.numberOfAllFunctions,
+                                            discreteValueIndex=id_comb))
+
+                if not is_init_image_x:
+                    is_init_image_x = True
+        else:
+            for id_comb in range(self.numberOfParameterCombinations):
+                for i in range(numberOfPointsInOneInterval):
+                    x = (id_comb * numberOfPointsInOneInterval) + h * (i + 1)
+                    if not is_init_image_x:
+                        image_x.append(self.evolvent.GetImage(x))
+
+                    y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
+                    item = SearchDataItem(y, x, discreteValueIndex=id_comb,
+                                          functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                    items.append(item)
+
+                right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
+                                            float(id_comb + 1),
+                                            functionValues=[FunctionValue()] * self.numberOfAllFunctions,
+                                            discreteValueIndex=id_comb))
+
+                if not is_init_image_x:
+                    is_init_image_x = True
+
         if calculator is None:
             for item in items:
                 self.CalculateFunctionals(item)
@@ -121,6 +183,8 @@ class MixedIntegerMethod(IndexMethod):
 
         self.recalcR = True
         self.recalcM = True
+
+        self.iterationsCount = len(items)
 
     def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""

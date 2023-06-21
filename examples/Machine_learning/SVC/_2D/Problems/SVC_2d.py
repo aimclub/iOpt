@@ -30,7 +30,7 @@ class SVC_2D(Problem):
         super(SVC_2D, self).__init__()
         self.dimension = 2
         self.numberOfFloatVariables = 2
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
         if x_dataset.shape[0] != y_dataset.shape[0]:
