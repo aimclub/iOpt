@@ -120,7 +120,7 @@ class MixedIntegerMethod(IndexMethod):
         else:
             for id_comb in range(self.numberOfParameterCombinations):
                 for i in range(numberOfPointsInOneInterval):
-                    x = (id_comb * numberOfPointsInOneInterval) + h * (i + 1)
+                    x = id_comb + h * (i + 1)
                     if not is_init_image_x:
                         image_x.append(self.evolvent.GetImage(x))
 
