@@ -4,7 +4,7 @@ from iOpt.trial import FunctionValue
 from iOpt.problem import Problem
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
-from typing import Dict
+from typing import Dict, List
 
 class SVC_3D(Problem):
     """
@@ -17,7 +17,7 @@ class SVC_3D(Problem):
     def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray,
                  regularization_bound: Dict[str, float],
                  kernel_coefficient_bound: Dict[str, float],
-                 kernel_type: Dict[str, list[str]]
+                 kernel_type: Dict[str, List[str]]
                  ):
         """
         Конструктор класса SVC_3D
