@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.neural_network import MLPRegressor
 from scipy import interpolate
 from matplotlib.cm import ScalarMappable
+from textwrap import wrap
 
 class DisretePlotter:
     def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, subparameters, lb, rb, bestsvalues):
@@ -33,10 +34,10 @@ class DisretePlotter:
             for i in range(self.count):
                 self.axes.append(plt.subplot2grid((4, 4), (0, i), colspan=1, rowspan=1))
                 plt.tight_layout()
-                self.axes[i].set_xlabel('values of parameter ' + str(i + 1)
-                                        + parametersnames[i] + '')
+                self.axes[i].set_xlabel('values of parameter ' +
+                                        parametersnames[i] + '')
                 self.axes[i].set_ylabel('objective function values')
-            self.axes[0].set_title('Scatter of objective function values for different parameters values',
+            self.axes[0].set_title('Scatter of objective function values for different parameters values\n',
                                    loc='left', fontsize=8)
 
             self.axes.append(plt.subplot2grid((4, 4), (1,2), colspan=2, rowspan=2))
@@ -61,7 +62,7 @@ class DisretePlotter:
 
         self.name = ['' + str(i + 1) + ' ' + parametersnames[i] + '' for i in range(len(parametersnames))]
 
-    def PlotAnalisysSubplotsFigure(self, allpoints, allvalues, combinations, mrkrs=3):
+    def PlotAnalisysSubplotsFigure(self, allpoints, allvalues, combinations, optimum, mrkrs=3):
             for j in range(self.count):
                 self.axes[j].scatter([x.discreteVariables[0] for x in allpoints],
                                      [item[0] for item in allvalues],
@@ -77,21 +78,37 @@ class DisretePlotter:
                                                    cmap ='plasma',s=mrkrs ** 2)
 
             self.fig.colorbar(sc, orientation='vertical')
-            plt.tight_layout()
+
 
             iters = list(range(1, len(self.bestsvalues) + 1))
+            id = -1
+            for i in range(1, len(self.bestsvalues)):
+                if self.bestsvalues[-1] > self.bestsvalues[-i]:
+                    id = i
+                    break
+            text = "value in best point " + str(optimum.floatVariables) + ' with ' + str(optimum.discreteVariables)
+            text = '\n'.join(wrap(text, 60))
+
             self.axes[self.count + 2].plot(iters, self.bestsvalues, color='black', linewidth=1, alpha=1)
+            self.axes[self.count + 2].scatter([len(self.bestsvalues)-id-1], [self.bestsvalues[-1]],label=text,
+                                              color='red', s=3)
 
             combinations = []
             for x in self.discreteParamsCombinations:
-                str = '['
+                str_ = '['
                 for i in x:
-                    str += i + ', '
-                str = str[:-2]
-                str += ']'
-                combinations.append(str)
+                    str_ += i + ', '
+                str_ = str_[:-2]
+                str_ += ']'
+                combinations.append(str_)
             self.axes[self.count + 1].scatter([allvalues[0][0]] * self.combcount, combinations, alpha=0)
 
+            #legend_obj = plt.legend(loc='upper right', numpoints=1, ncol=1, fontsize=6, bbox_to_anchor=(1, 1))
+            box = self.axes[self.count + 2].get_position()
+            self.axes[self.count + 2].set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
+            legend_obj = plt.legend(loc='upper left', bbox_to_anchor=(0, -0.4), fancybox=True, shadow=True, ncol=1)
+            legend_obj.set_draggable(True)
+            plt.tight_layout()
     def PlotPoints(self, best, other, optimum, optimumPoint, mrkrs):
             '''self.ax.scatter(other[0], other[1], s=mrkrs ** 2, color='grey',
                             label='points with another discrete parameters combinations')
@@ -100,7 +117,20 @@ class DisretePlotter:
                             label='points with ' + str(optimum.discreteVariables))
             self.ax.scatter(optimumPoint[0],
                             optimumPoint[1],
-                            s=mrkrs ** 2, color='red', label='best trial point')
+                            s=mrkrs ** 2, color='red', label='best trial point ')
+
+            if self.floatdim > 1:
+                self.ax.set_title(
+                'Lines layers of objective function in section of optimum point\n' +
+                str(optimum.floatVariables) + '\nwith best parameters combination\n'+
+                str(optimum.discreteVariables) +'\n',
+                fontsize=10)
+            else:
+                self.ax.set_title(
+                    'Objective function with optimum point in\n' +
+                    str(optimum.floatVariables) + '\n',
+                    fontsize=10)
+
             plt.tight_layout()
             legend_obj = plt.legend(loc='upper right', numpoints=1, ncol=1, fontsize=8, bbox_to_anchor=(1, 1))
             legend_obj.set_draggable(True)
@@ -124,9 +154,7 @@ class DisretePlotter:
                         z_.append(calculate(fv, section.discreteVariables))
                     z.append(z_)
 
-                self.ax.set_title(
-                    'Lines layers of objective function in section of optimum point with best parameters combination',
-                    fontsize=10)
+
                 self.ax.set_xlabel('x' + str(i))
                 self.ax.set_ylabel('x' + str(j))
 
@@ -142,9 +170,6 @@ class DisretePlotter:
                     fv[0] = x[k]
                     z.append(calculate(fv, section.discreteVariables))
 
-                self.ax.set_title(
-                    'Objective function with best discrete parameters combination',
-                    fontsize=10)
                 self.ax.set_xlabel('trial point')
                 self.ax.set_ylabel('objective function value')
 

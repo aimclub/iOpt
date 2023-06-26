@@ -101,7 +101,7 @@ class DiscretePainter(Painter):
         self.plotter.PlotPoints(self.pointsWithBestComb, self.otherPoints, self.optimum, self.optimumPoint, mrks)
 
     def PaintAnalisys(self, mrks):
-        self.plotter.PlotAnalisysSubplotsFigure(self.points, self.values,  self.combination, mrks)
+        self.plotter.PlotAnalisysSubplotsFigure(self.points, self.values,  self.combination, self.optimum, mrks)
     def PaintOptimum(self, solution: Solution = None):
         pass
 
