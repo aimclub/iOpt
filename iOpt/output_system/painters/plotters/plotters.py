@@ -389,7 +389,7 @@ class AnimatePlotter3D(Plotter3D):
         self.ax.set_ylim(self.leftBounds[1], self.rightBounds[1])
 
     def PlotPoints(self, points, values, clr='blue', mrkr='o', mrkrs=4):
-        self.ax.plot(points[0], points[1], color=clr, marker=mrkr, markersize=mrkrs)
+        self.ax.scatter(points[0], points[1], color=clr, marker=mrkr, s=mrkrs)
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()

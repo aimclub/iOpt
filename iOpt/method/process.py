@@ -91,13 +91,15 @@ class Process:
             for listener in self._listeners:
                 listener.BeforeMethodStart(self.method)
             self.method.FirstIteration()
-            savedNewPoints.append(self.searchData.GetLastItem())
+            for item in self.searchData.GetLastItems(self.parameters.numberOfParallelPoints):
+                savedNewPoints.append(item)
             self._first_iteration = False
             number = number - 1
 
         for _ in range(number):
             newpoint, oldpoint = self.method.CalculateIterationPoint()
-            savedNewPoints.append(newpoint)
+            for item in self.searchData.GetLastItems(self.parameters.numberOfParallelPoints):
+                savedNewPoints.append(item)
             self.method.CalculateFunctionals(newpoint)
             self.method.UpdateOptimum(newpoint)
             self.method.RenewSearchData(newpoint, oldpoint)

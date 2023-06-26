@@ -26,16 +26,20 @@ class ConsoleOutputer:
         )
 
     def PrintIterPointInfo(self, savedNewPoints: SearchDataItem):
-        point = savedNewPoints[0].GetY().floatVariables
-        dpoint = savedNewPoints[0].GetY().discreteVariables
-        value = savedNewPoints[0].GetZ()
+        isFirst = True
+        for i in range(len(savedNewPoints)):
+            point = savedNewPoints[i].GetY().floatVariables
+            dpoint = savedNewPoints[i].GetY().discreteVariables
+            value = savedNewPoints[i].GetZ()
 
-        self.__functions.printIter(
-            point,
-            dpoint,
-            value,
-            self.iterNum, self.ndv
-        )
+            self.__functions.printIter(
+                point,
+                dpoint,
+                value,
+                self.iterNum, self.ndv,
+                isFirst
+            )
+            isFirst = False
 
         self.iterNum += 1
 
@@ -108,7 +112,7 @@ class OutputFunctions:
         print("-" * (30 + size_max_one_output * dim + 2))
         print("|{:^{width}}|".format("", width=30 + size_max_one_output * dim))
 
-    def printIter(self, point, dpoint, value, iter, ndv):
+    def printIter(self, point, dpoint, value, iter, ndv, flag):
         size_max_one_output = 15
         dim1 = len(point)
         if dpoint:
@@ -117,7 +121,10 @@ class OutputFunctions:
             dim2 = 0
         print("|", end=' ')
         # print("\033[A|", end=' ')
-        print("{:>5}:".format(iter), end=' ')
+        if flag:
+            print("{:>5}:".format(iter), end=' ')
+        else:
+            print("{:>6}".format(''), end=' ')
         print("{:>19.8f}".format(value), end='   ')
         if ndv > 0:
             print("{:<{width}}|".format(str(point) + " with " + str(dpoint), width = size_max_one_output * (dim1 + dim2)))
