@@ -93,8 +93,9 @@ class DisretePlotter:
             self.axes[self.count + 1].scatter([allvalues[0][0]] * self.combcount, combinations, alpha=0)
 
     def PlotPoints(self, best, other, optimum, optimumPoint, mrkrs):
-            self.ax.scatter(other[0], other[1], s=mrkrs ** 2, color='grey',
+            '''self.ax.scatter(other[0], other[1], s=mrkrs ** 2, color='grey',
                             label='points with another discrete parameters combinations')
+            '''
             self.ax.scatter(best[0], best[1], s=mrkrs ** 2, color='blue',
                             label='points with ' + str(optimum.discreteVariables))
             self.ax.scatter(optimumPoint[0],
