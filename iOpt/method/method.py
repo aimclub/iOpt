@@ -128,7 +128,6 @@ class Method:
             if not isAddStartPoint:
                 items.append(itemStartPoint)
         else:
-
             numberOfPoint: int = self.parameters.numberOfParallelPoints
             h: float = 1.0 / (numberOfPoint + 1)
 

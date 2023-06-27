@@ -7,12 +7,13 @@ from matplotlib.cm import ScalarMappable
 from textwrap import wrap
 
 class DisretePlotter:
-    def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, subparameters, lb, rb, bestsvalues):
+    def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, subparameters, lb, rb, bestsvalues, numberOfParallelPoints):
         plt.style.use('fivethirtyeight')
         plt.rcParams['contour.negative_linestyle'] = 'solid'
         plt.rcParams['figure.figsize'] = (12, 6)
         plt.rcParams['font.size'] = 6
 
+        self.numberOfParallelPoints = numberOfParallelPoints
         self.subparameters = subparameters
         self.lb = lb
         self.rb = rb
@@ -83,24 +84,26 @@ class DisretePlotter:
                                      s=(mrkrs+2) ** 2, color='red', marker='*')
                 self.axes[j].set_xlim([self.axes[j].get_xlim()[0] - 1, self.axes[j].get_xlim()[1] + 1])
 
-
             id = -1
             for i in range(1, len(self.bestsvalues)):
                 if self.bestsvalues[-1] < self.bestsvalues[-i]:
                     id = i
                     break
+            best_iter = int(len(self.bestsvalues) - id + self.numberOfParallelPoints +
+                            (self.numberOfParallelPoints == 1))
 
             self.axes[self.count].plot([int(item[1]) for item in allvalues],
                                        [item[0] for item in allvalues],
                                        color='black', linewidth=1, alpha=1)
-            self.axes[self.count].scatter([int(len(self.bestsvalues) - id + 3)], [self.bestsvalues[-1]],
+            self.axes[self.count].scatter([best_iter], [self.bestsvalues[-1]],
                                           s=(mrkrs+2) ** 2, color='red', marker='*')
 
             sc = self.axes[self.count + 1].scatter([item[1] for item in combinations],
                                                    [item[0] for item in combinations],
                                                    c=[item[0] for item in allvalues],
                                                    cmap ='plasma',s=mrkrs ** 2)
-            self.fig.colorbar(sc, ax=self.axes[self.count + 1],orientation='vertical')
+
+            self.fig.colorbar(sc, ax=self.axes[self.count + 1], orientation='vertical')
 
             combinations = []
             for x in self.discreteParamsCombinations:
@@ -112,13 +115,14 @@ class DisretePlotter:
                 combinations.append(str_)
             self.axes[self.count + 1].scatter([allvalues[0][0]] * self.combcount, combinations, alpha=0)
 
-            text = "best value "+ str(self.bestsvalues[-1]) + " in point " + str(optimum.floatVariables) + ' with ' + str(optimum.discreteVariables)
+            text = "best value "+ str(self.bestsvalues[-1]) + " in point " + str(optimum.floatVariables)
+            text += ' with ' + str(optimum.discreteVariables)
             text = '\n'.join(wrap(text, 90))
 
-            iters = list(range(2, len(self.bestsvalues) + 2))
+            iters = list(range(1, len(self.bestsvalues) + 1))
             self.axes[self.count + 2].plot(iters, self.bestsvalues, color='black', linewidth=1, alpha=1)
-            l1 = self.axes[self.count + 2].scatter([int(len(self.bestsvalues) - id + 3)], [self.bestsvalues[-1]],label=text,
-                                              s=(mrkrs+2) ** 2, color='red', marker='*')
+            l1 = self.axes[self.count + 2].scatter([best_iter], [self.bestsvalues[-1]],
+                                                   label=text, s=(mrkrs+2) ** 2, color='red', marker='*')
 
             self.axes[self.count + 3].legend(handles =[l1] , labels=[text],
                                                           numpoints=1, ncol=1,
@@ -150,8 +154,9 @@ class DisretePlotter:
                     'Objective function with optimum point',
                     fontsize=12)
 
-            legend_obj = self.axes[1].legend(handles =[l1] , labels=[text], loc='upper left', prop={'size': 10}, bbox_to_anchor=(0, -0.4), fancybox=True,
-                                    shadow=True, ncol=1)
+            legend_obj = self.axes[1].legend(handles =[l1] , labels=[text], loc='upper left', prop={'size': 10},
+                                             bbox_to_anchor=(0, -0.4), fancybox=True,
+                                             shadow=True, ncol=1)
             legend_obj.set_draggable(True)
             plt.tight_layout()
 

@@ -85,28 +85,25 @@ class Process:
 
         :param number: Количество итераций глобального поиска
         """
-        savedNewPoints = []
+        number_ = number
 
         if self._first_iteration is True:
             for listener in self._listeners:
                 listener.BeforeMethodStart(self.method)
             self.method.FirstIteration()
-            for item in self.searchData.GetLastItems(self.parameters.numberOfParallelPoints):
-                savedNewPoints.append(item)
             self._first_iteration = False
             number = number - 1
 
         for _ in range(number):
             newpoint, oldpoint = self.method.CalculateIterationPoint()
-            for item in self.searchData.GetLastItems(self.parameters.numberOfParallelPoints):
-                savedNewPoints.append(item)
             self.method.CalculateFunctionals(newpoint)
             self.method.UpdateOptimum(newpoint)
             self.method.RenewSearchData(newpoint, oldpoint)
             self.method.FinalizeIteration()
 
         for listener in self._listeners:
-            listener.OnEndIteration(savedNewPoints, self.GetResults())
+            listener.OnEndIteration(self.searchData.GetLastItems(self.parameters.numberOfParallelPoints * number_),
+                                    self.GetResults())
 
     def problemCalculate(self, y):
         result = self.GetResults()

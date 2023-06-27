@@ -40,15 +40,19 @@ class StaticDiscreteListener(Listener):
         self.mrkrs = mrkrs
         self.searchDataSorted = []
         self.bestValueSorted = []
+        self.numberOfParallelPoints = 1
 
     def BeforeMethodStart(self, method: Method):
         if method.task.problem.numberOfFloatVariables > 2 and self.calc == 'interpolation':
             raise Exception(
                 "StaticDiscreteListener with calc 'interpolation' supported with dimension <= 2")
+        self.numberOfParallelPoints = method.parameters.numberOfParallelPoints
+
     def OnEndIteration(self, newPoints, solution: Solution):
         for newPoint in newPoints:
             self.searchDataSorted.append(newPoint)
-        self.bestValueSorted.append(solution.bestTrials[0].functionValues[0].value)
+            self.bestValueSorted.append(solution.bestTrials[0].functionValues[0].value)
+
     def OnMethodStop(self, searchData: SearchData,
                      solution: Solution, status: bool):
         painter = DiscretePainter(self.searchDataSorted, self.bestValueSorted,
@@ -62,7 +66,7 @@ class StaticDiscreteListener(Listener):
                                   solution.problem.upperBoundOfFloatVariables,
                                   self.fileName, self.pathForSaves, solution.problem.Calculate,
                                   solution.bestTrials[0].functionValues[0].value,
-                                  searchData)
+                                  searchData, self.numberOfParallelPoints)
         if self.mode == 'analysis':
             painter.PaintAnalisys(mrks=2)
         elif self.mode == 'bestcombination':
