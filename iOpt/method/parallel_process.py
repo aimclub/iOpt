@@ -46,10 +46,11 @@ class ParallelProcess(Process):
         :param number: Количество итераций глобального поиска
         """
         number_ = number
+        doneTrials = []
         if self._first_iteration is True:
             for listener in self._listeners:
                 listener.BeforeMethodStart(self.method)
-            self.method.FirstIteration(self.calculator)
+            doneTrials = self.method.FirstIteration(self.calculator)
             self._first_iteration = False
             number = number - 1
 
@@ -67,7 +68,7 @@ class ParallelProcess(Process):
                 self.method.UpdateOptimum(newpoint)
                 self.method.RenewSearchData(newpoint, oldpoint)
                 self.method.FinalizeIteration()
+                doneTrials = self.searchData.GetLastItems(self.parameters.numberOfParallelPoints * number_)
 
         for listener in self._listeners:
-            listener.OnEndIteration(self.searchData.GetLastItems(self.parameters.numberOfParallelPoints * number_),
-                                    self.GetResults())
+            listener.OnEndIteration(doneTrials, self.GetResults())

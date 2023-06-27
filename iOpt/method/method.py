@@ -87,7 +87,7 @@ class Method:
         """
         return pow(rPoint.GetX() - lPoint.GetX(), 1.0 / dimension)
 
-    def FirstIteration(self, calculator: Calculator = None) -> None:
+    def FirstIteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
@@ -128,6 +128,7 @@ class Method:
             if not isAddStartPoint:
                 items.append(itemStartPoint)
         else:
+
             numberOfPoint: int = self.parameters.numberOfParallelPoints
             h: float = 1.0 / (numberOfPoint + 1)
 
@@ -172,6 +173,9 @@ class Method:
         self.recalcM = True
 
         self.iterationsCount = len(items)
+        self.searchData.solution.numberOfGlobalTrials = len(items)
+
+        return items
 
     def CheckStopCondition(self) -> bool:
         r"""
