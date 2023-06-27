@@ -6,11 +6,11 @@ from iOpt.output_system.listeners.animate_painters import AnimatePainterNDListen
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 if __name__ == "__main__":
-    # create the problem 2D dimension
+    # create the problem 3D dimension
     problem = XSquared(2)
 
     # add solver parameters
-    params = SolverParameters(r=2.5, eps=0.01)
+    params = SolverParameters(r=2.1, eps=0.01, numberOfParallelPoints=8)
 
     # create solver
     solver = Solver(problem, parameters=params)

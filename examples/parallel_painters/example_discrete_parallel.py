@@ -6,10 +6,10 @@ from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 if __name__ == "__main__":
     # create the problem 3D dimension float vars
-    problem = RastriginInt(5, 2)
+    problem = RastriginInt(7, 4)
 
     # add solver parameters
-    params = SolverParameters(r=2.1, eps=0.01)
+    params = SolverParameters(r=2.1, eps=0.01, numberOfParallelPoints=8)
 
     # create solver
     solver = Solver(problem, parameters=params)
