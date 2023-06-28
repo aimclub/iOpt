@@ -1,3 +1,5 @@
+from typing import List
+
 from iOpt.method.search_data import SearchDataItem
 from iOpt.problem import Problem
 from iOpt.solution import Solution
@@ -26,7 +28,7 @@ class ConsoleOutputer:
             self.parameters.numberOfParallelPoints
         )
 
-    def PrintIterPointInfo(self, savedNewPoints: list[SearchDataItem]):
+    def PrintIterPointInfo(self, savedNewPoints: List[SearchDataItem]):
         if self.parameters.numberOfParallelPoints > 1:
             isFirst = True
         else:

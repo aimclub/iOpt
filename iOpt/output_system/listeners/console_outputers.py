@@ -1,3 +1,5 @@
+from typing import List
+
 from iOpt.method.listener import Listener
 from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
@@ -30,7 +32,7 @@ class ConsoleOutputListener(Listener):
         self.__outputer = ConsoleOutputer(method.task.problem, method.parameters)
         self.__outputer.PrintInitInfo()
 
-    def OnEndIteration(self, currPoints: list[SearchDataItem], currSolution: Solution):
+    def OnEndIteration(self, currPoints: List[SearchDataItem], currSolution: Solution):
         if self.mode == 'full':
             self.__outputer.PrintIterPointInfo(currPoints)
         elif self.mode == 'custom':
