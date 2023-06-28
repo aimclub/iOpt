@@ -41,7 +41,7 @@ class MixedIntegerMethod(IndexMethod):
         self.numberOfParameterCombinations = len(self.discreteParameters)
         # 0 0.5 1  1.5 2   2.5  3    3.5 4
 
-    def FirstIteration(self, calculator: Calculator = None) -> None:
+    def FirstIteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
@@ -183,8 +183,10 @@ class MixedIntegerMethod(IndexMethod):
 
         self.recalcR = True
         self.recalcM = True
-
         self.iterationsCount = len(items)
+        self.searchData.solution.numberOfGlobalTrials = len(items)
+
+        return items
 
     def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""

@@ -4,14 +4,16 @@ import numpy as np
 from sklearn.neural_network import MLPRegressor
 from scipy import interpolate
 from matplotlib.cm import ScalarMappable
+from textwrap import wrap
 
 class DisretePlotter:
-    def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, subparameters, lb, rb, bestsvalues):
+    def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, subparameters, lb, rb, bestsvalues, numberOfParallelPoints):
         plt.style.use('fivethirtyeight')
         plt.rcParams['contour.negative_linestyle'] = 'solid'
         plt.rcParams['figure.figsize'] = (12, 6)
         plt.rcParams['font.size'] = 6
 
+        self.numberOfParallelPoints = numberOfParallelPoints
         self.subparameters = subparameters
         self.lb = lb
         self.rb = rb
@@ -31,78 +33,132 @@ class DisretePlotter:
             self.pcount = pcount
             if self.count > pcount: self.count = pcount
             for i in range(self.count):
-                self.axes.append(plt.subplot2grid((4, 4), (0, i), colspan=1, rowspan=1))
+                self.axes.append(plt.subplot2grid((9, 4), (0, i), colspan=1, rowspan=2))
                 plt.tight_layout()
-                self.axes[i].set_xlabel('values of parameter ' + str(i + 1)
-                                        + parametersnames[i] + '')
+                self.axes[i].set_xlabel('values of parameter ' +
+                                        parametersnames[i] + '')
                 self.axes[i].set_ylabel('objective function values')
-            self.axes[0].set_title('Scatter of objective function values for different parameters values',
+            self.axes[0].set_title('Scatter of objective function values for different parameters values\n',
                                    loc='left', fontsize=8)
 
-            self.axes.append(plt.subplot2grid((4, 4), (1,2), colspan=2, rowspan=2))
+            self.axes.append(plt.subplot2grid((9, 4), (2,2), colspan=2, rowspan=4))
             self.axes[self.count].set_title('Iteration characteristic', fontsize=8)
             self.axes[self.count].set_xlabel('iteration')
             self.axes[self.count].set_ylabel('objective function values')
 
-            self.axes.append(plt.subplot2grid((4, 4), (1, 0), colspan=2, rowspan=3))
+            self.axes.append(plt.subplot2grid((9, 4), (2, 0), colspan=2, rowspan=6))
             self.axes[self.count + 1].set_title(str(self.combcount)+
                                                 ' combinations of parameters used at different iterations', fontsize=8)
             self.axes[self.count + 1].set_xlabel('iteration')
             self.axes[self.count + 1].set_ylabel('discrete parameters values')
 
-            self.axes.append(plt.subplot2grid((4, 4), (3, 2), colspan=2, rowspan=1))
+            self.axes.append(plt.subplot2grid((9, 4), (6, 2), colspan=2, rowspan=2))
             self.axes[self.count + 2].set_title('Current best value update', fontsize=8)
             self.axes[self.count + 2].set_xlabel('iteration')
             self.axes[self.count + 2].set_ylabel('best minimum value')
 
+            self.axes.append(plt.subplot2grid((9, 4), (8, 0), colspan=4, rowspan=1))
+            self.axes[self.count + 3].grid(False)
+            self.axes[self.count + 3].set_xticks([])
+            self.axes[self.count + 3].set_yticks([])
+
         elif mode == 'bestcombination':
             self.fig, self.ax = plt.subplots(figsize=(8, 6))
+            self.axes = []
+            self.axes.append(plt.subplot2grid((9, 1), (0, 0), colspan=1, rowspan=8))
+            self.axes.append(plt.subplot2grid((9, 1), (8, 0), colspan=1, rowspan=1))
+            self.axes[1].grid(False)
+            self.axes[1].set_xticks([])
+            self.axes[1].set_yticks([])
             plt.tight_layout()
 
-        self.name = ['' + str(i + 1) + ' ' + parametersnames[i] + '' for i in range(len(parametersnames))]
+        self.name = ['' + parametersnames[i] + '' for i in range(len(parametersnames))]
 
-    def PlotAnalisysSubplotsFigure(self, allpoints, allvalues, combinations, mrkrs=3):
+    def PlotAnalisysSubplotsFigure(self, allpoints, allvalues, combinations, optimum, mrkrs=3):
             for j in range(self.count):
                 self.axes[j].scatter([x.discreteVariables[0] for x in allpoints],
                                      [item[0] for item in allvalues],
                                      s=mrkrs ** 2, color='black')
+                self.axes[j].scatter([optimum.discreteVariables[j]],
+                                     [self.bestsvalues[-1]],
+                                     s=(mrkrs+2) ** 2, color='red', marker='*')
                 self.axes[j].set_xlim([self.axes[j].get_xlim()[0] - 1, self.axes[j].get_xlim()[1] + 1])
 
-            self.axes[self.count].plot([item[1] for item in allvalues],
+            id = -1
+            for i in range(1, len(self.bestsvalues)):
+                if self.bestsvalues[-1] < self.bestsvalues[-i]:
+                    id = i
+                    break
+            best_iter = int(len(self.bestsvalues) - id + self.numberOfParallelPoints +
+                            (self.numberOfParallelPoints == 1))
+
+            self.axes[self.count].plot([int(item[1]) for item in allvalues],
                                        [item[0] for item in allvalues],
                                        color='black', linewidth=1, alpha=1)
+            self.axes[self.count].scatter([best_iter], [self.bestsvalues[-1]],
+                                          s=(mrkrs+2) ** 2, color='red', marker='*')
+
             sc = self.axes[self.count + 1].scatter([item[1] for item in combinations],
                                                    [item[0] for item in combinations],
                                                    c=[item[0] for item in allvalues],
                                                    cmap ='plasma',s=mrkrs ** 2)
 
-            self.fig.colorbar(sc, orientation='vertical')
-            plt.tight_layout()
-
-            iters = list(range(1, len(self.bestsvalues) + 1))
-            self.axes[self.count + 2].plot(iters, self.bestsvalues, color='black', linewidth=1, alpha=1)
+            self.fig.colorbar(sc, ax=self.axes[self.count + 1], orientation='vertical')
 
             combinations = []
             for x in self.discreteParamsCombinations:
-                str = '['
+                str_ = '['
                 for i in x:
-                    str += i + ', '
-                str = str[:-2]
-                str += ']'
-                combinations.append(str)
+                    str_ += i + ', '
+                str_ = str_[:-2]
+                str_ += ']'
+                combinations.append(str_)
             self.axes[self.count + 1].scatter([allvalues[0][0]] * self.combcount, combinations, alpha=0)
 
+            text = "best value "+ str(self.bestsvalues[-1]) + " in point " + str(optimum.floatVariables)
+            text += ' with ' + str(optimum.discreteVariables)
+            text = '\n'.join(wrap(text, 90))
+
+            iters = list(range(1, len(self.bestsvalues) + 1))
+            self.axes[self.count + 2].plot(iters, self.bestsvalues, color='black', linewidth=1, alpha=1)
+            l1 = self.axes[self.count + 2].scatter([best_iter], [self.bestsvalues[-1]],
+                                                   label=text, s=(mrkrs+2) ** 2, color='red', marker='*')
+
+            self.axes[self.count + 3].legend(handles =[l1] , labels=[text],
+                                                          numpoints=1, ncol=1,
+                                                          fontsize=10, loc='lower left')
+            plt.tight_layout()
+
     def PlotPoints(self, best, other, optimum, optimumPoint, mrkrs):
+            '''
             self.ax.scatter(other[0], other[1], s=mrkrs ** 2, color='grey',
                             label='points with another discrete parameters combinations')
-            self.ax.scatter(best[0], best[1], s=mrkrs ** 2, color='blue',
-                            label='points with ' + str(optimum.discreteVariables))
-            self.ax.scatter(optimumPoint[0],
+            '''
+            self.axes[0].scatter(best[0], best[1], s=mrkrs ** 2, color='blue',
+                            label='points with discrete parameters combination ' + str(optimum.discreteVariables))
+
+            text = 'optimum point ' + str(optimum.floatVariables) + ' with '+ str(optimum.discreteVariables) + ' and optimum value ' + str(self.bestsvalues[-1])
+            text = '\n'.join(wrap(text, 90))
+
+            l1 = self.axes[0].scatter(optimumPoint[0],
                             optimumPoint[1],
-                            s=mrkrs ** 2, color='red', label='best trial point')
-            plt.tight_layout()
-            legend_obj = plt.legend(loc='upper right', numpoints=1, ncol=1, fontsize=8, bbox_to_anchor=(1, 1))
+                            s=mrkrs ** 2, color='red',
+                            label= text)
+
+            if self.floatdim > 1:
+                self.axes[0].set_title(
+                'Lines layers of objective function in section of optimum point',
+                fontsize=12)
+            else:
+                self.axes[0].set_title(
+                    'Objective function with optimum point',
+                    fontsize=12)
+
+            legend_obj = self.axes[1].legend(handles =[l1] , labels=[text], loc='upper left', prop={'size': 10},
+                                             bbox_to_anchor=(0, -0.4), fancybox=True,
+                                             shadow=True, ncol=1)
             legend_obj.set_draggable(True)
+            plt.tight_layout()
 
     def PlotByGrid(self, calculate, section, pointsCount):
             if self.floatdim > 1:
@@ -123,15 +179,13 @@ class DisretePlotter:
                         z_.append(calculate(fv, section.discreteVariables))
                     z.append(z_)
 
-                self.ax.set_title(
-                    'Lines layers of objective function in section of optimum point with best parameters combination',
-                    fontsize=10)
-                self.ax.set_xlabel('x' + str(i))
-                self.ax.set_ylabel('x' + str(j))
 
-                xx = self.ax.contour(xi, xj, z, linewidths=1, levels=10, cmap='plasma')
+                self.axes[0].set_xlabel('x' + str(i))
+                self.axes[0].set_ylabel('x' + str(j))
 
-                self.fig.colorbar(ScalarMappable(norm=xx.norm, cmap=xx.cmap))
+                xx = self.axes[0].contour(xi, xj, z, linewidths=1, levels=10, cmap='plasma')
+
+                self.fig.colorbar(ScalarMappable(norm=xx.norm, cmap=xx.cmap), ax=self.axes[0], orientation='vertical')
 
             else:
                 x = np.linspace(self.lb[0], self.rb[0], pointsCount)
@@ -141,13 +195,10 @@ class DisretePlotter:
                     fv[0] = x[k]
                     z.append(calculate(fv, section.discreteVariables))
 
-                self.ax.set_title(
-                    'Objective function with best discrete parameters combination',
-                    fontsize=10)
-                self.ax.set_xlabel('trial point')
-                self.ax.set_ylabel('objective function value')
+                self.axes[0].set_xlabel('trial point')
+                self.axes[0].set_ylabel('objective function value')
 
-                self.ax.plot(x, z, linewidth=1, color='black', alpha=0.7)
+                self.axes[0].plot(x, z, linewidth=1, color='black', alpha=0.7)
 
     def PlotInterpolation(self, points, values, pointsCount=100):
             if self.floatdim > 1:
@@ -158,7 +209,8 @@ class DisretePlotter:
                 x2 = np.linspace(self.lb[j], self.rb[j], pointsCount)
                 x1, x2 = np.meshgrid(x1, x2)
                 z = interp(x1, x2)
-                self.ax.contour(x1, x2, z, levels=10, linewidths=1, cmap='plasma')
+                xx=self.axes[0].contour(x1, x2, z, levels=10, linewidths=1, cmap='plasma')
+                self.fig.colorbar(ScalarMappable(norm=xx.norm, cmap=xx.cmap))
             else:
                 f = interpolate.interp1d(np.array(points), np.array(values), kind=3)
                 x_plot = np.linspace(min(np.array(points)), max(np.array(points)), pointsCount)
@@ -362,7 +414,7 @@ class AnimatePlotter3D(Plotter3D):
         self.ax.set_ylim(self.leftBounds[1], self.rightBounds[1])
 
     def PlotPoints(self, points, values, clr='blue', mrkr='o', mrkrs=4):
-        self.ax.plot(points[0], points[1], color=clr, marker=mrkr, markersize=mrkrs)
+        self.ax.scatter(points[0], points[1], color=clr, marker=mrkr, s=mrkrs)
         self.ax.relim()
         self.ax.autoscale_view()
         self.fig.canvas.draw()

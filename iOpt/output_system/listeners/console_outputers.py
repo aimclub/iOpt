@@ -30,9 +30,9 @@ class ConsoleOutputListener(Listener):
         self.__outputer = ConsoleOutputer(method.task.problem, method.parameters)
         self.__outputer.PrintInitInfo()
 
-    def OnEndIteration(self, currPoint: np.ndarray(shape=(1), dtype=SearchDataItem), currSolution: Solution):
+    def OnEndIteration(self, currPoints: list[SearchDataItem], currSolution: Solution):
         if self.mode == 'full':
-            self.__outputer.PrintIterPointInfo(currPoint)
+            self.__outputer.PrintIterPointInfo(currPoints)
         elif self.mode == 'custom':
             self.__outputer.PrintBestPointInfo(currSolution, self.iters)
         elif self.mode == 'result':

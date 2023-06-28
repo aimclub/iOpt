@@ -87,7 +87,7 @@ class Method:
         """
         return pow(rPoint.GetX() - lPoint.GetX(), 1.0 / dimension)
 
-    def FirstIteration(self, calculator: Calculator = None) -> None:
+    def FirstIteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
@@ -173,6 +173,9 @@ class Method:
         self.recalcM = True
 
         self.iterationsCount = len(items)
+        self.searchData.solution.numberOfGlobalTrials = len(items)
+
+        return items
 
     def CheckStopCondition(self) -> bool:
         r"""
