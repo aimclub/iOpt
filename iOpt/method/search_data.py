@@ -344,6 +344,17 @@ class SearchData:
         except Exception:
             print("GetLastItem: List is empty")
 
+    def GetLastItems(self, N: int = 1) -> list[SearchDataItem]:
+        """
+        Метод позволяет получить последние добавленные интервалы в список.
+
+        :return: Значения последней серии добавленных интервалов
+        """
+        try:
+            return self._allTrials[-N:]
+        except Exception:
+            print("GetLastItems: List is empty")
+
     def SaveProgress(self, fileName: str):
         """
         Сохранение процесса оптимизации в файл

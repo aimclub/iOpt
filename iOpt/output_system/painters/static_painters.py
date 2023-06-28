@@ -11,13 +11,14 @@ import os
 
 class DiscretePainter(Painter):
     def __init__(self, searchDataSorted, bestsvalues, pcount, floatdim, optimumPoint, discreteValues,
-                 discreteName, mode, calc, subparameters, lb, rb, fileName, pathForSaves, calculate, optimumValue, searchData):
+                 discreteName, mode, calc, subparameters, lb, rb, fileName, pathForSaves, calculate, optimumValue, searchData, numberOfParallelPoints):
         self.pathForSaves = pathForSaves
         self.fileName = fileName
         self.calc = calc
         self.calculate = calculate
         self.optimum = optimumPoint
         self.optimumVal = optimumValue
+        self.numberOfParallelPoints = numberOfParallelPoints
 
         self.values = []
         self.points = []
@@ -88,7 +89,7 @@ class DiscretePainter(Painter):
                 self.combination.append([str, i])
 
         self.plotter = DisretePlotter(mode, pcount, floatdim, discreteValues, discreteName,
-                                      subparameters, lb, rb, bestsvalues)
+                                      subparameters, lb, rb, bestsvalues, self.numberOfParallelPoints)
 
     def PaintObjectiveFunc(self, numpoints):
         if self.calc == 'objective function':
@@ -101,7 +102,7 @@ class DiscretePainter(Painter):
         self.plotter.PlotPoints(self.pointsWithBestComb, self.otherPoints, self.optimum, self.optimumPoint, mrks)
 
     def PaintAnalisys(self, mrks):
-        self.plotter.PlotAnalisysSubplotsFigure(self.points, self.values,  self.combination, mrks)
+        self.plotter.PlotAnalisysSubplotsFigure(self.points, self.values,  self.combination, self.optimum, mrks)
     def PaintOptimum(self, solution: Solution = None):
         pass
 

@@ -22,22 +22,31 @@ class ConsoleOutputer:
             self.problem.numberOfConstraints,
             self.problem.lowerBoundOfFloatVariables,
             self.problem.upperBoundOfFloatVariables,
-            self.problem.numberOfDiscreteVariables
+            self.problem.numberOfDiscreteVariables,
+            self.parameters.numberOfParallelPoints
         )
 
-    def PrintIterPointInfo(self, savedNewPoints: SearchDataItem):
-        point = savedNewPoints[0].GetY().floatVariables
-        dpoint = savedNewPoints[0].GetY().discreteVariables
-        value = savedNewPoints[0].GetZ()
+    def PrintIterPointInfo(self, savedNewPoints: list[SearchDataItem]):
+        if self.parameters.numberOfParallelPoints > 1:
+            isFirst = True
+        else:
+            isFirst = False
 
-        self.__functions.printIter(
-            point,
-            dpoint,
-            value,
-            self.iterNum, self.ndv
-        )
+        for i in range(len(savedNewPoints)):
+            point = savedNewPoints[i].GetY().floatVariables
+            dpoint = savedNewPoints[i].GetY().discreteVariables
+            value = savedNewPoints[i].GetZ()
 
-        self.iterNum += 1
+            self.__functions.printIter(
+                point,
+                dpoint,
+                value,
+                self.iterNum, self.ndv,
+                isFirst
+            )
+            isFirst = False
+
+            self.iterNum += 1
 
     def PrintBestPointInfo(self, solution, iters):
         if self.iterNum % iters != 0:
@@ -76,7 +85,8 @@ class ConsoleOutputer:
 class OutputFunctions:
 
     def printInit(self, eps, r, epsR, itersLimit, floatdim, numberOfObjectives, numberOfConstraints,
-                  lowerBoundOfFloatVariables, upperBoundOfFloatVariables, numberOfDiscreteVariables):
+                  lowerBoundOfFloatVariables, upperBoundOfFloatVariables, numberOfDiscreteVariables,
+                  numberOfParallelPoints):
         dim = floatdim + numberOfDiscreteVariables
         size_max_one_output = 15
         print()
@@ -103,12 +113,13 @@ class OutputFunctions:
         print("|{:>29} {:<{width}}|".format("r: ", r, width=size_max_one_output * dim))
         print("|{:>29} {:<{width}}|".format("epsR: ", epsR, width=size_max_one_output * dim))
         print("|{:>29} {:<{width}}|".format("itersLimit: ", itersLimit, width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("numberOfParallelPoints: ", numberOfParallelPoints, width=size_max_one_output * dim))
         print("-" * (30 + size_max_one_output * dim + 2))
         print("|{:^{width}}|".format("Iterations", width=30 + size_max_one_output * dim))
         print("-" * (30 + size_max_one_output * dim + 2))
         print("|{:^{width}}|".format("", width=30 + size_max_one_output * dim))
 
-    def printIter(self, point, dpoint, value, iter, ndv):
+    def printIter(self, point, dpoint, value, iter, ndv, flag):
         size_max_one_output = 15
         dim1 = len(point)
         if dpoint:
@@ -117,7 +128,10 @@ class OutputFunctions:
             dim2 = 0
         print("|", end=' ')
         # print("\033[A|", end=' ')
-        print("{:>5}:".format(iter), end=' ')
+        if flag:
+            print("*{:>4}:".format(iter), end=' ')
+        else:
+            print("{:>5}:".format(iter), end=' ')
         print("{:>19.8f}".format(value), end='   ')
         if ndv > 0:
             print("{:<{width}}|".format(str(point) + " with " + str(dpoint), width = size_max_one_output * (dim1 + dim2)))
