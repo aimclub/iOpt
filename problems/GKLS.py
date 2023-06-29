@@ -22,7 +22,7 @@ class GKLS(Problem):
         self.dimension = dimension
         self.name = "GKLS"
         self.numberOfFloatVariables = dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
 

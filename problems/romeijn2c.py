@@ -15,7 +15,7 @@ class Romeijn2c(Problem):
         self.name = "Romeijn2c"
         self.dimension: int = 6
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 2
 
@@ -25,11 +25,10 @@ class Romeijn2c(Problem):
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
         self.lowerBoundOfFloatVariables.fill(0)
-        self.upperBoundOfFloatVariables = np.ndarray( shape=(self.dimension), dtype=np.double)
+        self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
         self.upperBoundOfFloatVariables = [10, 10, 15, 15, 1, 1]
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
-
 
         pointfv = [10, 10, 15, 4.609, 0.78511, 0.384]
         KOpoint = Point(pointfv, [])

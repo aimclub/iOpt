@@ -30,7 +30,7 @@ class SVC_2D(Problem):
         super(SVC_2D, self).__init__()
         self.dimension = 2
         self.numberOfFloatVariables = 2
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
         if x_dataset.shape[0] != y_dataset.shape[0]:
@@ -43,6 +43,8 @@ class SVC_2D(Problem):
         self.upperBoundOfFloatVariables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
                                                    dtype=np.double)
 
+
+
     def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         """
         Метод расчёта значения целевой функции в точке
@@ -51,6 +53,6 @@ class SVC_2D(Problem):
         :param functionValue: объект хранения значения целевой функции в точке
         """
         cs, gammas = point.floatVariables[0], point.floatVariables[1]
-        clf = Pipeline([('scaler', StandardScaler()), ('model', SVC(C=10 ** cs, gamma=10 ** gammas))])
+        clf = SVC(C=10 ** cs, gamma=10 ** gammas)
         functionValue.value = -cross_val_score(clf, self.x, self.y, scoring='f1').mean()
         return functionValue

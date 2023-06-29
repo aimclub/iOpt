@@ -16,7 +16,7 @@ class Stronginc2(Problem):
         self.name = 'Stronginc2'
         self.dimension: int = 2
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 2
 

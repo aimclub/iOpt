@@ -1,5 +1,8 @@
+import sys
 from datetime import datetime
 from typing import List
+
+import traceback
 
 import scipy
 from scipy.optimize import Bounds
@@ -8,10 +11,10 @@ from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
 from iOpt.method.optim_task import OptimizationTask
-from iOpt.method.search_data import SearchData
+from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.trial import FunctionValue
+from iOpt.trial import FunctionValue, FunctionType
 from iOpt.trial import Point
 
 
@@ -43,9 +46,8 @@ class Process:
         self.evolvent = evolvent
         self.searchData = searchData
         self.method = method
-        self.__listeners = listeners
-        self.__first_iteration = True
-        self.localMethodIterationCount = 0
+        self._listeners = listeners
+        self._first_iteration = True
 
     def Solve(self) -> Solution:
         """
@@ -54,27 +56,24 @@ class Process:
 
         :return: Текущая оценка решения задачи оптимизации
         """
-        # if self.__first_iteration is False:
-        #     self.method.FirstIteration()
-        #     self.__first_iteration = True
+
         startTime = datetime.now()
 
         try:
             while not self.method.CheckStopCondition():
                 self.DoGlobalIteration()
-                # print(self.method.min_delta, self.method.parameters.eps)
-            # print(self.method.min_delta, self.method.parameters.eps)
-            # print(self.method.CheckStopCondition())
-        except BaseException:
+
+        except Exception:
             print('Exception was thrown')
+            print(traceback.format_exc())
 
         if self.parameters.refineSolution:
-            self.DoLocalRefinement(-1)
+            self.DoLocalRefinement(self.parameters.localMethodIterationCount)
 
         result = self.GetResults()
         result.solvingTime = (datetime.now() - startTime).total_seconds()
 
-        for listener in self.__listeners:
+        for listener in self._listeners:
             status = self.method.CheckStopCondition()
             listener.OnMethodStop(self.searchData, self.GetResults(), status)
 
@@ -86,29 +85,49 @@ class Process:
 
         :param number: Количество итераций глобального поиска
         """
-        savedNewPoints = []
-        for _ in range(number):
-            if self.__first_iteration is True:
-                for listener in self.__listeners:
-                    listener.BeforeMethodStart(self.method)
-                self.method.FirstIteration()
-                savedNewPoints.append(self.searchData.GetLastItem())
-                self.__first_iteration = False
-            else:
-                newpoint, oldpoint = self.method.CalculateIterationPoint()
-                savedNewPoints.append(newpoint)
-                self.method.CalculateFunctionals(newpoint)
-                self.method.UpdateOptimum(newpoint)
-                self.method.RenewSearchData(newpoint, oldpoint)
-                self.method.FinalizeIteration()
+        number_ = number
+        doneTrials = []
+        if self._first_iteration is True:
+            for listener in self._listeners:
+                listener.BeforeMethodStart(self.method)
+            doneTrials = self.method.FirstIteration()
+            self._first_iteration = False
+            number = number - 1
 
-        for listener in self.__listeners:
-            listener.OnEndIteration(savedNewPoints, self.GetResults())
+        for _ in range(number):
+            newpoint, oldpoint = self.method.CalculateIterationPoint()
+            self.method.CalculateFunctionals(newpoint)
+            self.method.UpdateOptimum(newpoint)
+            self.method.RenewSearchData(newpoint, oldpoint)
+            self.method.FinalizeIteration()
+            doneTrials = self.searchData.GetLastItems(self.parameters.numberOfParallelPoints * number_)
+
+        for listener in self._listeners:
+            listener.OnEndIteration(doneTrials, self.GetResults())
 
     def problemCalculate(self, y):
-        point = Point(y, [])
-        functionValue = FunctionValue()
-        functionValue = self.task.problem.Calculate(point, functionValue)
+        result = self.GetResults()
+        point = Point(y, result.bestTrials[0].point.discreteVariables)
+        functionValue = FunctionValue(FunctionType.OBJECTIV)
+
+        for i in range(self.task.problem.dimension):
+            if (y[i] < self.task.problem.lowerBoundOfFloatVariables[i]) \
+                    or (y[i] > self.task.problem.upperBoundOfFloatVariables[i]):
+                functionValue.value = sys.float_info.max
+                return functionValue.value
+
+        try:
+            for i in range(self.task.problem.numberOfConstraints):
+                functionConstraintValue = FunctionValue(FunctionType.CONSTRAINT, i)
+                functionConstraintValue = self.task.problem.Calculate(point, functionConstraintValue)
+                if functionConstraintValue.value > 0:
+                    functionValue.value = sys.float_info.max
+                    return functionValue.value
+
+            functionValue = self.task.problem.Calculate(point, functionValue)
+        except Exception:
+            functionValue.value = sys.float_info.max
+
         return functionValue.value
 
     def DoLocalRefinement(self, number: int = 1):
@@ -117,25 +136,48 @@ class Process:
 
         :param number: Количество итераций локального поиска
         """
-        self.localMethodIterationCount = number
-        if number == -1:
-            self.localMethodIterationCount = self.parameters.itersLimit * 0.05
+        try:
+            localMethodIterationCount = number
+            if number == -1:
+                localMethodIterationCount = self.parameters.localMethodIterationCount
 
-        result = self.GetResults()
-        startPoint = result.bestTrials[0].point.floatVariables
+            result = self.GetResults()
+            startPoint = result.bestTrials[0].point.floatVariables
 
-        bounds = Bounds(self.task.problem.lowerBoundOfFloatVariables, self.task.problem.upperBoundOfFloatVariables)
+            nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0=startPoint, method='Nelder-Mead',
+                                                  options={'maxiter': localMethodIterationCount})
 
-        # nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0 = startPoint, method='Nelder-Mead',
-        # options={'maxiter':self.localMethodIterationCount}, bounds=bounds)
+            if localMethodIterationCount > 0:
+                result.bestTrials[0].point.floatVariables = nelder_mead.x
 
-        nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0=startPoint, method='Nelder-Mead',
-                                              options={'maxiter': self.localMethodIterationCount})
+                point: SearchDataItem = SearchDataItem(result.bestTrials[0].point,
+                                                       self.evolvent.GetInverseImage(
+                                                           result.bestTrials[0].point.floatVariables),
+                                                       functionValues=[FunctionValue()] *
+                                                                      (self.task.problem.numberOfConstraints +
+                                                                       self.task.problem.numberOfObjectives)
+                                                       )
 
-        result.bestTrials[0].point.floatVariables = nelder_mead.x
-        result.bestTrials[0].functionValues[0].value = self.problemCalculate(result.bestTrials[0].point.floatVariables)
+                number_of_constraints = self.task.problem.numberOfConstraints
+                for i in range(number_of_constraints):
+                    point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)
+                    point.functionValues[i] = self.task.problem.Calculate(point.point, point.functionValues[i])
+                    point.SetZ(point.functionValues[i].value)
+                    point.SetIndex(i)
+                    if point.GetZ() > 0:
+                        break
+                point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV,
+                                                                            number_of_constraints)
+                point.functionValues[number_of_constraints] = \
+                    self.task.problem.Calculate(point.point, point.functionValues[number_of_constraints])
+                point.SetZ(point.functionValues[number_of_constraints].value)
+                point.SetIndex(number_of_constraints)
 
-        result.numberOfLocalTrials = nelder_mead.nfev
+                result.bestTrials[0].functionValues = point.functionValues
+
+            result.numberOfLocalTrials = nelder_mead.nfev
+        except Exception:
+            print("Local Refinement is not possible")
 
     def GetResults(self) -> Solution:
         """
@@ -146,6 +188,34 @@ class Process:
         # ДА, ЭТО КОСТЫЛЬ. т.к. solution хранит trial
         # self.searchData.solution.bestTrials[0] = self.method.GetOptimumEstimation()
         return self.searchData.solution
+
+    def SaveProgress(self, fileName: str) -> None:
+        """
+        Сохранение процесса оптимизации из файла
+
+        :param fileName: имя файла
+        """
+        self.searchData.SaveProgress(fileName=fileName)
+
+    def LoadProgress(self, fileName: str) -> None:
+        """
+        Загрузка процесса оптимизации из файла
+
+        :param fileName: имя файла
+        """
+        self.searchData.LoadProgress(fileName=fileName)
+        self.method.iterationsCount = self.searchData.GetCount() - 2
+
+        for ditem in self.searchData:
+            if ditem.GetIndex() >= 0:
+                self.method.UpdateOptimum(ditem)
+
+        self.method.RecalcM()
+        self.method.RecalcAllCharacteristics()
+        self._first_iteration = False
+
+        for listener in self._listeners:
+            listener.BeforeMethodStart(self.method)
 
     '''
     def RefreshListener(self):

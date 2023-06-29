@@ -15,7 +15,7 @@ class Romeijn1c(Problem):
         self.name = "Romeijn1c"
         self.dimension: int = 3
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 1
 
@@ -44,11 +44,11 @@ class Romeijn1c(Problem):
         x = point.floatVariables
 
         if functionValue.type == FunctionType.OBJECTIV:
-            result = -1 / (pow(x[0], 2)*x[1]*x[2])
+            result = -1 / (pow(x[0], 2) * x[1] * x[2])
         elif functionValue.functionID == 0:  # constraint 1
-            result = 0.44098*x[0] + 28.46*pow(x[0], 2) + 6158.4*pow(x[0], 2)*x[1] + 0.0037018*x[2] + \
-                     5.4474*pow(x[2], 2) + 0.032236*x[0] * x[2] + 2.92*x[1] * x[2] + 0.44712*x[1]\
-                     + 37.964*pow(x[1], 2) + 42.876 * x[0] * x[1] - 1
+            result = 0.44098 * x[0] + 28.46 * pow(x[0], 2) + 6158.4 * pow(x[0], 2) * x[1] + 0.0037018 * x[2] + \
+                     5.4474 * pow(x[2], 2) + 0.032236 * x[0] * x[2] + 2.92 * x[1] * x[2] + 0.44712 * x[1] \
+                     + 37.964 * pow(x[1], 2) + 42.876 * x[0] * x[1] - 1
 
         functionValue.value = result
         return functionValue

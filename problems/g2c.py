@@ -16,7 +16,7 @@ class g2c(Problem):
         self.name = "g2c"
         self.dimension: int = 20
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 2
 

@@ -29,7 +29,7 @@ class SVC_Fixed_Regularization(Problem):
         super(SVC_Fixed_Regularization, self).__init__()
         self.dimension = 1
         self.numberOfFloatVariables = 1
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
         if x_dataset.shape[0] != y_dataset.shape[0]:

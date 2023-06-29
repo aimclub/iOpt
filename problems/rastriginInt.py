@@ -13,7 +13,7 @@ class RastriginInt(Problem):
        где :math:`x\in [-2.2, 1.8], N` – размерность задачи.
     """
 
-    def __init__(self, dimension: int, numberOfDisreteVariables: int):
+    def __init__(self, dimension: int, numberOfDiscreteVariables: int):
         """
         Конструктор класса RastriginInt problem.
 
@@ -22,32 +22,32 @@ class RastriginInt(Problem):
         super(RastriginInt, self).__init__()
         self.name = "RastriginInt"
         self.dimension = dimension
-        self.numberOfFloatVariables = dimension - numberOfDisreteVariables
-        self.numberOfDisreteVariables = numberOfDisreteVariables
+        self.numberOfFloatVariables = dimension - numberOfDiscreteVariables
+        self.numberOfDiscreteVariables = numberOfDiscreteVariables
         self.numberOfObjectives = 1
         self.numberOfConstraints = 0
 
-        self.floatVariableNames = np.ndarray(shape=(self.numberOfFloatVariables), dtype=str)
+        self.floatVariableNames = np.ndarray(shape=(self.numberOfFloatVariables), dtype=object)
         for i in range(self.numberOfFloatVariables):
-            self.floatVariableNames[i] = i
+            self.floatVariableNames[i] = str(i)
 
-        self.discreteVariableNames = np.ndarray(shape=(self.numberOfDisreteVariables), dtype=str)
-        for i in range(self.numberOfDisreteVariables):
-            self.discreteVariableNames[i] = i
+        self.discreteVariableNames = np.ndarray(shape=(self.numberOfDiscreteVariables), dtype=object)
+        for i in range(self.numberOfDiscreteVariables):
+            self.discreteVariableNames[i] = str(i)
 
         self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.numberOfFloatVariables), dtype=np.double)
         self.lowerBoundOfFloatVariables.fill(-2.2)
         self.upperBoundOfFloatVariables = np.ndarray(shape=(self.numberOfFloatVariables), dtype=np.double)
         self.upperBoundOfFloatVariables.fill(1.8)
 
-        self.discreteVariableValues = [["A", "B"] for i in range(self.numberOfDisreteVariables)]
+        self.discreteVariableValues = [["A", "B"] for i in range(self.numberOfDiscreteVariables)]
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
         pointfv = np.ndarray(shape=(self.numberOfFloatVariables), dtype=np.double)
         pointfv.fill(0)
 
-        pointdv = np.ndarray(shape=(self.numberOfDisreteVariables), dtype=str)
+        pointdv = np.ndarray(shape=(self.numberOfDiscreteVariables), dtype=object)
         pointdv.fill("B")
 
         KOpoint = Point(pointfv, pointdv)
@@ -64,7 +64,7 @@ class RastriginInt(Problem):
 
         self.optPoint = np.ndarray(shape=(self.dimension), dtype=np.double)
         self.optPoint = np.append([[0] for i in range(self.numberOfFloatVariables)],
-                                  [[1.8] for i in range(self.numberOfDisreteVariables)])
+                                  [[1.8] for i in range(self.numberOfDiscreteVariables)])
 
         self.multKoef = 0
 
@@ -93,7 +93,7 @@ class RastriginInt(Problem):
             sum += x[i] * x[i] - 10 * math.cos(2 * math.pi * x[i]) + 10
 
         dx = point.discreteVariables
-        for i in range(self.numberOfDisreteVariables):
+        for i in range(self.numberOfDiscreteVariables):
             if dx[i] == "A":
                 sum += 2.2
             elif dx[i] == "B":
@@ -113,7 +113,7 @@ class RastriginInt(Problem):
         for i in range(0, self.numberOfFloatVariables):
             arr[i] = point.floatVariables[i]
 
-        for i in range(0, self.numberOfDisreteVariables):
+        for i in range(0, self.numberOfDiscreteVariables):
             if point.discreteVariables[i] == "A":
                 arr[self.numberOfFloatVariables+i] = -2.2
             elif point.discreteVariables[i] == "B":

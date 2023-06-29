@@ -5,9 +5,8 @@ from iOpt.trial import FunctionValue
 from iOpt.trial import Trial
 from iOpt.problem import Problem
 
-
-a = np.array([0.5, 0.25, 1.0, 1.0/12.0, 2])
-c = np.array([0.125, 0.25, 0.1, 0.2, 1.0/12.0])
+a = np.array([0.5, 0.25, 1.0, 1.0 / 12.0, 2])
+c = np.array([0.125, 0.25, 0.1, 0.2, 1.0 / 12.0])
 p = np.array([[0, 5], [2, 5], [3, 2], [4, 4], [5, 1]])
 
 
@@ -20,7 +19,7 @@ class Romeijn3c(Problem):
         self.name = "Romeijn3c"
         self.dimension: int = 2
         self.numberOfFloatVariables = self.dimension
-        self.numberOfDisreteVariables = 0
+        self.numberOfDiscreteVariables = 0
         self.numberOfObjectives = 1
         self.numberOfConstraints = 3
 
@@ -28,11 +27,10 @@ class Romeijn3c(Problem):
         for i in range(self.dimension):
             self.floatVariableNames[i] = i
 
-        self.lowerBoundOfFloatVariables = np.ndarray( shape=(1, self.dimension),  dtype=np.double)
+        self.lowerBoundOfFloatVariables = np.ndarray(shape=(1, self.dimension), dtype=np.double)
         self.lowerBoundOfFloatVariables = [-3, -4]
         self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
         self.upperBoundOfFloatVariables = [10, 7]
-
 
         self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
 
@@ -62,11 +60,11 @@ class Romeijn3c(Problem):
                 temp = a[i] * temp + c[i]
                 result += 1 / temp
         elif functionValue.functionID == 0:  # constraint 1
-            result = np.double(x[0]+x[1]-5)
+            result = np.double(x[0] + x[1] - 5)
         elif functionValue.functionID == 1:  # constraint 2
-            result = np.double(x[0]-pow(x[1], 2))
+            result = np.double(x[0] - pow(x[1], 2))
         elif functionValue.functionID == 2:  # constraint 3
-            result = np.double(5*pow(x[0], 3)-8/5*pow(x[1], 2))
+            result = np.double(5 * pow(x[0], 3) - 8 / 5 * pow(x[1], 2))
 
         functionValue.value = result
         return functionValue

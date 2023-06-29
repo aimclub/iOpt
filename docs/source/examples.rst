@@ -190,7 +190,7 @@ ____________________________________________________________________________
                   mutation_probability_bound: Dict[str, float]):
          self.dimension = 1
          self.numberOfFloatVariables = 1
-         self.numberOfDisreteVariables = 0
+         self.numberOfDiscreteVariables = 0
          self.numberOfObjectives = 1
          self.numberOfConstraints = 0
          self.costMatrix = cost_matrix
@@ -375,11 +375,12 @@ ________________________________________________________________________________
 Поиск оптимальных параметров средствами фреймворка iOpt
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Пример работы с фреймворком при варьировании двух непрерывных параметров
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
 Запустим фреймворк iOpt для поиска оптимальной точки на сетке, максимизируя f1-score. 
 Для этого необходимо объявить класс, являющийся наследником класса **Problem** с абстрактным методом **Calculate**.
 
 .. code-block:: 
-    :caption: Объявление класса SVC_2D
 
     import numpy as np
     from iOpt.trial import Point
@@ -397,7 +398,7 @@ ________________________________________________________________________________
             
             self.dimension = 2
             self.numberOfFloatVariables = 2
-            self.numberOfDisreteVariables = 0
+            self.numberOfDiscreteVariables = 0
             self.numberOfObjectives = 1
             self.numberOfConstraints = 0
             if x_dataset.shape[0] != y_dataset.shape[0]:
@@ -491,6 +492,169 @@ ________________________________________________________________________________
 Синими точками на графике представлены точки поисковых испытаний, красной точкой отмечен найденный оптимум, 
 соответствующий гиперпараметрам, при которых f1-score достигает максимума.
 
+Пример работы с фреймворком при варьировании двух непрерывных и одного дискретного параметра
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+Ранее, при поиске оптимального набора параметров, был рассмотрен пример с варьированием двух непрерывных параметров метода SVC. 
+В качестве целевого дискретного параметра выберем тип ядра алгоритма: kernel. Данный категориальный параметр принимает одно из 5 значений: linear, poly, rbf, sigmoid, precomputed.
+Однако, в случае рассмотрения параметров C и gamma, доступны лишь три из них: poly, rbf, sigmoid. 
+
+Рассмотрим поведение метрики качества F1 score на каждом указанном ядре в отдельности. Установим следующие области для параметров:
+
+* Параметр регуляризации **C**: [10\ :sup:`1`, 10\ :sup:`10`] 
+* Коэффициент ядра **gamma**: [10\ :sup:`-9`, 10\ :sup:`-6.7`]
+
+При запуске на равномерной сетке размера 40 на 40 точек с типом ядра rbf, видно, что график имеет несколько локальных минимумов.
+При таком поиске найдено оптимальное значение метрики, равное -0.949421. 
+
+.. figure:: images/rbf_kernel.JPG
+   :width: 500
+   :align: center
+
+   График значений метрики F1 score на указанной области с ядром kernel = rbf
+
+При смене типа ядра с rbf на sigmoid график претерпел изменения, однако по прежнему имеет многоэкстримальную природу.
+Минимальное значение метрики на указанной сетке равно -0.93832.
+
+.. figure:: images/sigmoid_kernel.JPG
+   :width: 500
+   :align: center
+
+   График значений метрики F1 score на указанной области с ядром kernel = sigmoid
+
+При исследовании поведения графика метрики на равномерной сетке с ядром poly, наблюдается слабая многоэкстримальность.
+При этом минимум значения метрики найден не был, и метод остановился на значении -0.9337763.
+
+.. figure:: images/poly_kernel.JPG
+   :width: 500
+   :align: center
+
+   График значений метрики F1 score на указанной области с ядром kernel = poly
+
+При варьировании типа ядра для алгоритма SVC, наблюдается разное значение метрики. Таким образом, появляется возможность исследовать исследовать поведение метрики срадствами фреймворка iOpt, 
+варьируя параметры C, gamma и kernel в указанной области.
+
+Подготовим проблему для решения поставленной задачи. Для этого, как и в двумерном случае необходимо объявить класс, 
+являющийся наследником класса **Problem** с абстрактным методом **Calculate**. Код данного класса представлен ниже:
+
+.. code-block:: 
+
+   class SVC_3D(Problem):
+      def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray,
+                  regularization_bound: Dict[str, float],
+                  kernel_coefficient_bound: Dict[str, float],
+                  kernel_type: Dict[str, List[str]]
+                  ):
+         super(SVC_3D, self).__init__()
+         self.dimension = 3
+         self.numberOfFloatVariables = 2
+         self.numberOfDiscreteVariables = 1
+         self.numberOfObjectives = 1
+         self.numberOfConstraints = 0
+         if x_dataset.shape[0] != y_dataset.shape[0]:
+               raise ValueError('The input and output sample sizes do not match.')
+         self.x = x_dataset
+         self.y = y_dataset
+         self.floatVariableNames = np.array(["Regularization parameter", "Kernel coefficient"], dtype=str)
+         self.lowerBoundOfFloatVariables = np.array([regularization_bound['low'], kernel_coefficient_bound['low']],
+                                                      dtype=np.double)
+         self.upperBoundOfFloatVariables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
+                                                      dtype=np.double)
+         self.discreteVariableNames.append('kernel')
+         self.discreteVariableValues.append(kernel_type['kernel'])
+
+      def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+         cs, gammas = point.floatVariables[0], point.floatVariables[1]
+         kernel_type = point.discreteVariables[0]
+         clf = SVC(C=10 ** cs, gamma=10 ** gammas, kernel=kernel_type)
+         functionValue.value = -cross_val_score(clf, self.x, self.y, scoring='f1').mean()
+         return functionValue
+
+Класс SVC_3D принимает в аргументах конструктора следующие параметры:
+
+#. **x_dataset** – массив объектов и их признаков, обернутых в **np.ndarray**;
+#. **y_dataset** – целевые метки каждого из объектов **x_dataset** в формате **np.ndarray**;
+#. **regularization_bound** – максимальное и минимальное значения для **C** в виде словаря;
+#. **kernel_coefficient_bound** – максимальное и минимальное значениями для **gamma** в виде словаря.
+#. **kernel_type** – Тип ядра, используемый в алгоритме SVC.
+
+Метод **Calculate** реализует логику подсчета целевой функции в точке **Point**. Стоит отметить, что точка **Point**
+содержит в себе два вещественных параметра и один дискретный, которые используются для обучения классификатор SVC. 
+Для получения значения оптимизируемой функции вычисляется среднее значение f1-score по кросс-валидации.
+
+Чтобы запустить процесс оптимизации, необходимо создать объект класса **SVC_3D**, а также объект класса **Solver**
+с переданным объектом целевой функции. 
+
+При поиске оптимального сочетания дискретных и вещественных параметров были рассмотрены следующие области:
+
+* Параметр регуляризации **C**: [10\ :sup:`1`, 10\ :sup:`10`] 
+* Коэффициент ядра **gamma**: [10\ :sup:`-9`, 10\ :sup:`-6.7`] 
+* Тип ядра **kernel**: [rbf, sigmoid, poly]
+
+Для выполнения подготовленной проблемы разработан скрипт, в котором устанавливается указанная ранее область для поиска
+оптимального сочетания гиперпараметр. В рамках скрипта производится загрузка данных, на которых
+анализируется работа алгоритма SVC. В скрипт добавлены слушатели (Listener), которые предоставляют дополнительную 
+информацию о процессе поиска. Так, **ConsoleOutputListener** позволяет отслеживать процесс 
+поиска оптимального набора гиперпараметров, визуализируя в консоле точки испытания и значения метрики в данной точке.
+**StaticDiscreteListener**, с флагом mode='analysis' предоставляет в графическом виде суммарную статистику 
+по исследованию, в которой отображено:
+
+* График зависимости значения целевой функции с ростом числа испытаний
+* Значение метрики на каждой итерации в зависимости от выбранного значения дискретного параметра
+* График минимальных значений целевой функции на каждой итерации
+* Значения целевой функции в при использовании конкретного значения дискретного параметра
+
+.. figure:: images/statictic.JPG
+   :width: 500
+   :align: center
+
+   Статистика по поиску оптимального сочетания параметров средствами iOpt. 
+
+**StaticDiscreteListener**, с флагом mode='bestcombination' визуализирует линии уровня, которые соответствуют графику с тем значением
+дискретного параметра, на котором был найден оптимум для метрики. Синими точками на графике обозначены точки испытаний решателя для лучшего
+значения дискретного параметра, а серым цветом - все остальные. Красная точка - найденный минимум значения целевой функции. 
+
+.. figure:: images/best_solve.JPG
+   :width: 500
+   :align: center
+
+   Линии уровня графика, соответствующего функции с "лучшим" значением дискретного параметра 
+
+.. code-block:: 
+   
+   from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+   from iOpt.output_system.listeners.static_painters import StaticDiscreteListener
+   from sklearn.datasets import load_breast_cancer
+   from iOpt.solver import Solver
+   from iOpt.solver_parametrs import SolverParameters
+   from examples.Machine_learning.SVC._3D.Problem import SVC_3D
+   from sklearn.utils import shuffle
+
+   def load_breast_cancer_data():
+      dataset = load_breast_cancer()
+      x_raw, y_raw = dataset['data'], dataset['target']
+      inputs, outputs = shuffle(x_raw, y_raw ^ 1, random_state=42)
+      return inputs, outputs
+
+   if __name__ == "__main__":
+      x, y = load_breast_cancer_data()
+      regularization_value_bound = {'low': 1, 'up': 10}
+      kernel_coefficient_bound = {'low': -9, 'up': -6.7}
+      kernel_type = {'kernel': ['rbf', 'sigmoid', 'poly']}
+      problem = SVC_3D.SVC_3D(x, y, regularization_value_bound, kernel_coefficient_bound, kernel_type)
+      method_params = SolverParameters(itersLimit=400)
+      solver = Solver(problem, parameters=method_params)
+      apl = StaticDiscreteListener("experiment1.png", mode='analysis')
+      solver.AddListener(apl)
+      apl = StaticDiscreteListener("experiment2.png", mode='bestcombination', calc='interpolation', mrkrs=4)
+      solver.AddListener(apl)
+      cfol = ConsoleOutputListener(mode='full')
+      solver.AddListener(cfol)
+      solver_info = solver.Solve()
+
+Код скрипта для запуска процедуры поиска оптимального сочетания гиперпараметров. 
+
+В ходе работы фреймворка был найден минимум показателя f1-score, равный **-0.95157487**. Количество
+итераций решателя **iterLimits**\=400.
 
 Поиск гиперпараметров метода опорных векторов для задачи классификации состояния системы воздушного давления агрегатов грузовых автомобилей
 ____________________________________________________________________________________________________________________________________________

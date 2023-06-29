@@ -1,12 +1,127 @@
+import numpy as np
+
 from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.trial import Point, FunctionValue
 from iOpt.solution import Solution
-from iOpt.output_system.painters.plotters.plotters import Plotter2D, Plotter3D
+from iOpt.output_system.painters.plotters.plotters import Plotter2D, Plotter3D, DisretePlotter
 from iOpt.output_system.painters.painter import Painter
 
 import matplotlib.pyplot as plt
 import os
 
+class DiscretePainter(Painter):
+    def __init__(self, searchDataSorted, bestsvalues, pcount, floatdim, optimumPoint, discreteValues,
+                 discreteName, mode, calc, subparameters, lb, rb, fileName, pathForSaves, calculate, optimumValue, searchData, numberOfParallelPoints):
+        self.pathForSaves = pathForSaves
+        self.fileName = fileName
+        self.calc = calc
+        self.calculate = calculate
+        self.optimum = optimumPoint
+        self.optimumVal = optimumValue
+        self.numberOfParallelPoints = numberOfParallelPoints
+
+        self.values = []
+        self.points = []
+
+        self.combination = []
+
+        self.pointsWithBestComb = [[], []]
+        self.otherPoints = [[], []]
+        self.optimumPoint = [[], []]
+
+        if mode == 'bestcombination':
+            for x in searchData:
+                if x.GetZ() > 1.7e+308:
+                    continue
+                if x.GetY().discreteVariables != self.optimum.discreteVariables:
+                    if floatdim > 1:
+                        self.otherPoints[0].append(x.GetY().floatVariables[subparameters[0] - 1])
+                        self.otherPoints[1].append(x.GetY().floatVariables[subparameters[1] - 1])
+                    else:
+                        self.otherPoints[0].append(x.GetY().floatVariables[0])
+                        self.otherPoints[1].append(self.optimumVal - 5)
+                    continue
+                else:
+                    if floatdim > 1:
+                        '''
+                        ok = True
+                        for k in range(floatdim):
+                            if (x.GetY().floatVariables[k] != self.optimum.floatVariables[k] and
+                            k != subparameters[0] - 1 and k != subparameters[1] - 1):
+                                ok = False
+                                break
+                        if ok:
+                            self.values2.append(x.GetZ())
+                            self.points2.append([x.GetY().floatVariables[subparameters[0] - 1],
+                                                 x.GetY().floatVariables[subparameters[1] - 1]])
+                        '''
+                        self.points.append([x.GetY().floatVariables[subparameters[0] - 1],
+                                       x.GetY().floatVariables[subparameters[1] - 1]])
+                        self.values.append(x.GetZ())
+                        self.pointsWithBestComb[0].append(x.GetY().floatVariables[subparameters[0] - 1])
+                        self.pointsWithBestComb[1].append(x.GetY().floatVariables[subparameters[1] - 1])
+                    else:
+                        self.points.append(x.GetY().floatVariables[0])
+                        self.values.append(x.GetZ())
+                        self.pointsWithBestComb[0].append(x.GetY().floatVariables[0])
+                        self.pointsWithBestComb[1].append(self.optimumVal - 5)
+
+            if floatdim > 1:
+                self.optimumPoint[0].append(self.optimum.floatVariables[subparameters[0] - 1])
+                self.optimumPoint[1].append(self.optimum.floatVariables[subparameters[1] - 1])
+            else:
+                self.optimumPoint[0].append(self.optimum.floatVariables[0])
+                self.optimumPoint[1].append(self.optimumVal - 5)
+
+        elif mode == 'analysis':
+            i = 0
+            for item in searchDataSorted:
+                i += 1
+                if item.GetZ() > 1.7e+308:
+                    continue
+                self.points.append(item.GetY())
+                self.values.append([item.GetZ(), i])
+                str = '['
+                for j in range(len(item.GetY().discreteVariables)):
+                    str += item.GetY().discreteVariables[j] + ', '
+                str = str[:-2]
+                str += ']'
+                self.combination.append([str, i])
+
+        self.plotter = DisretePlotter(mode, pcount, floatdim, discreteValues, discreteName,
+                                      subparameters, lb, rb, bestsvalues, self.numberOfParallelPoints)
+
+    def PaintObjectiveFunc(self, numpoints):
+        if self.calc == 'objective function':
+            section = self.optimum
+            self.plotter.PlotByGrid(self.CalculateFunc, section, numpoints)
+        elif self.calc == 'interpolation':
+            self.plotter.PlotInterpolation(self.points, self.values)
+
+    def PaintPoints(self, mrks):
+        self.plotter.PlotPoints(self.pointsWithBestComb, self.otherPoints, self.optimum, self.optimumPoint, mrks)
+
+    def PaintAnalisys(self, mrks):
+        self.plotter.PlotAnalisysSubplotsFigure(self.points, self.values,  self.combination, self.optimum, mrks)
+    def PaintOptimum(self, solution: Solution = None):
+        pass
+
+    def SaveImage(self):
+        if not os.path.isdir(self.pathForSaves):
+            if self.pathForSaves == "":
+                plt.savefig(self.fileName)
+            else:
+                os.mkdir(self.pathForSaves)
+                plt.savefig(self.pathForSaves + "/" + self.fileName)
+        else:
+            plt.savefig(self.pathForSaves + "/" + self.fileName)
+        plt.show()
+
+    def CalculateFunc(self, x, d):
+        point = Point(x, d)
+        fv = FunctionValue()
+        fv = self.calculate(point, fv)
+        return fv.value
 class StaticPainter(Painter):
     def __init__(self, searchData: SearchData,
                  solution: Solution,
@@ -80,7 +195,7 @@ class StaticPainter(Painter):
         plt.show()
 
     def CalculateFunc(self, x):
-        point = Point(x, [])
+        point = Point(x)
         fv = FunctionValue()
         fv = self.objFunc(point, fv)
         return fv.value
