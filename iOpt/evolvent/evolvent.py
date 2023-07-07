@@ -38,10 +38,10 @@ class Evolvent:
 
     # Установка границ
     # ----------------
-    def SetBounds(self,
-                  lower_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = [],
-                  upper_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = []
-                  ):
+    def set_bounds(self,
+                   lower_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = [],
+                   upper_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = []
+                   ):
         """Установка граничных значений
 
         :param lower_bound_of_float_variables: массив для левых (нижних) границ, А.
@@ -53,9 +53,9 @@ class Evolvent:
         self.lower_bound_of_float_variables = np.copy(lower_bound_of_float_variables)
         self.upper_bound_of_float_variables = np.copy(upper_bound_of_float_variables)
 
-    def GetImage(self,
-                 x: np.double
-                 ) -> np.ndarray(shape=(1), dtype=np.double):
+    def get_image(self,
+                  x: np.double
+                  ) -> np.ndarray(shape=(1), dtype=np.double):
         """Получить образ (x->y)
 
         :param x: значение x.
@@ -65,13 +65,13 @@ class Evolvent:
 
         """
 
-        self.__GetYonX(x)
-        self.__TransformP2D()
+        self.__get_y_on_x(x)
+        self.__transform_p_2_d()
         return np.copy(self.yValues)
 
-    def GetInverseImage(self,
-                        y: np.ndarray(shape=(1), dtype=np.double)
-                        ) -> np.double:
+    def get_inverse_image(self,
+                          y: np.ndarray(shape=(1), dtype=np.double)
+                          ) -> np.double:
         """Получить обратное значение образа (y->x)
 
         :param y: значение y.
@@ -81,14 +81,14 @@ class Evolvent:
 
         """
         self.yValues = np.copy(y)
-        self.__TransformD2P()
-        x = self.__GetXonY()
+        self.__transform_d_2_p()
+        x = self.__get_x_on_y()
         return x
 
     # ----------------------
-    def GetPreimages(self,
-                     y: np.ndarray(shape=(1), dtype=np.double),
-                     ) -> np.double:
+    def get_preimages(self,
+                      y: np.ndarray(shape=(1), dtype=np.double),
+                      ) -> np.double:
         """Получить обратное значение образа (y->x)
 
         :param y: значение y.
@@ -98,13 +98,13 @@ class Evolvent:
 
         """
         self.yValues = np.copy(y)
-        self.__TransformD2P()
-        x = self.__GetXonY()
+        self.__transform_d_2_p()
+        x = self.__get_x_on_y()
         return x
 
     # Преобразование
     # --------------------------------
-    def __TransformP2D(self):
+    def __transform_p_2_d(self):
         for i in range(0, self.number_of_float_variables):
             self.yValues[i] = self.yValues[i] * (
                         self.upper_bound_of_float_variables[i] - self.lower_bound_of_float_variables[i]) + \
@@ -112,7 +112,7 @@ class Evolvent:
 
     # Преобразование
     # --------------------------------
-    def __TransformD2P(self):
+    def __transform_d_2_p(self):
         for i in range(0, self.number_of_float_variables):
             self.yValues[i] = (self.yValues[i] - (
                         self.upper_bound_of_float_variables[i] + self.lower_bound_of_float_variables[i]) / 2) / \
@@ -120,7 +120,7 @@ class Evolvent:
 
     # ---------------------------------
 
-    def __GetYonX(self, _x: np.double) -> np.ndarray(shape=(1), dtype=np.double):
+    def __get_y_on_x(self, _x: np.double) -> np.ndarray(shape=(1), dtype=np.double):
         if self.number_of_float_variables == 1:
             self.yValues[0] = _x - 0.5
             return self.yValues
@@ -158,7 +158,7 @@ class Evolvent:
                 d -= iis
 
                 # print(iis, self.number_of_float_variables)
-            node = self.__CalculateNode(iis, self.number_of_float_variables, iu, iv)
+            node = self.__calculate_node(iis, self.number_of_float_variables, iu, iv)
             # print(j, node)
 
             # заменить на () = () !
@@ -184,7 +184,7 @@ class Evolvent:
         return np.copy(self.yValues)
 
     # ---------------------------------
-    def __GetXonY(self) -> np.double:
+    def __get_x_on_y(self) -> np.double:
         x: np.double
         if self.number_of_float_variables == 1:
             x = self.yValues[0] + 0.5
@@ -223,7 +223,7 @@ class Evolvent:
             u[0] = u[it]
             u[it] = i
 
-            iis, node, v = self.__CalculateNumbr(u, v)
+            iis, node, v = self.__calculate_numbr(u, v)
             # print(u)
             # print(v)
             # print(iis, node)
@@ -247,10 +247,10 @@ class Evolvent:
         return x
 
     # -----------------------------------------------------------------------------------------
-    def __CalculateNumbr(self,
-                         u: np.ndarray(shape=(1), dtype=np.int32),
-                         v: np.ndarray(shape=(1), dtype=np.int32)
-                         ):
+    def __calculate_numbr(self,
+                          u: np.ndarray(shape=(1), dtype=np.int32),
+                          v: np.ndarray(shape=(1), dtype=np.int32)
+                          ):
         i = 0
         k1 = -1
         k2 = 0
@@ -289,12 +289,12 @@ class Evolvent:
         return s, node, v
 
     # -----------------------------------------------------------------------------------------
-    def __CalculateNode(self,
-                        iis: np.double,
-                        n: int,
-                        u: np.ndarray(shape=(1), dtype=np.int32),
-                        v: np.ndarray(shape=(1), dtype=np.int32),
-                        ):
+    def __calculate_node(self,
+                         iis: np.double,
+                         n: int,
+                         u: np.ndarray(shape=(1), dtype=np.int32),
+                         v: np.ndarray(shape=(1), dtype=np.int32),
+                         ):
 
         iq = 1
         n1 = n - 1

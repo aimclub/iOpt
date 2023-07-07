@@ -48,9 +48,9 @@ class MixedIntegerMethod(IndexMethod):
         self.iterationsCount = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-        left = SearchDataItem(Point(self.evolvent.GetImage(0.0), self.discreteParameters[0]), 0.0,
+        left = SearchDataItem(Point(self.evolvent.get_image(0.0), self.discreteParameters[0]), 0.0,
                               function_values=[FunctionValue()] * self.numberOfAllFunctions)
-        image_right = self.evolvent.GetImage(1.0)
+        image_right = self.evolvent.get_image(1.0)
         right: list[SearchDataItem] = []
 
         # [(x + y - 1)/y]
@@ -74,7 +74,7 @@ class MixedIntegerMethod(IndexMethod):
 
                     ystart_point = Point(copy.copy(self.parameters.start_point.float_variables),
                                         self.discreteParameters[id_comb])
-                    xstart_point = id_comb + self.evolvent.GetInverseImage(self.parameters.start_point.float_variables)
+                    xstart_point = id_comb + self.evolvent.get_inverse_image(self.parameters.start_point.float_variables)
                     itemstart_point = SearchDataItem(ystart_point, xstart_point, discrete_value_index=id_comb,
                                                     function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
@@ -83,7 +83,7 @@ class MixedIntegerMethod(IndexMethod):
                     for i in range(numTemp):
                         x = id_comb + h * (i + 1)
 
-                        y_temp = self.evolvent.GetImage(x)
+                        y_temp = self.evolvent.get_image(x)
 
                         y = Point(copy.copy(y_temp), self.discreteParameters[id_comb])
                         item = SearchDataItem(y, x, discrete_value_index=id_comb,
@@ -103,7 +103,7 @@ class MixedIntegerMethod(IndexMethod):
                     for i in range(numberOfPointsInOneInterval):
                         x = id_comb + h * (i + 1)
                         if not is_init_image_x:
-                            image_x.append(self.evolvent.GetImage(x))
+                            image_x.append(self.evolvent.get_image(x))
 
                         y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
                         item = SearchDataItem(y, x, discrete_value_index=id_comb,
@@ -122,7 +122,7 @@ class MixedIntegerMethod(IndexMethod):
                 for i in range(numberOfPointsInOneInterval):
                     x = id_comb + h * (i + 1)
                     if not is_init_image_x:
-                        image_x.append(self.evolvent.GetImage(x))
+                        image_x.append(self.evolvent.get_image(x))
 
                     y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
                     item = SearchDataItem(y, x, discrete_value_index=id_comb,
@@ -204,7 +204,7 @@ class MixedIntegerMethod(IndexMethod):
         old = self.search_data.get_data_item_with_max_global_r()
         self.min_delta = min(old.delta, self.min_delta)
         newx = self.calculate_next_point_coordinate(old)
-        newy = self.evolvent.GetImage(newx - math.modf(newx)[1])
+        newy = self.evolvent.get_image(newx - math.modf(newx)[1])
         new = copy.deepcopy(SearchDataItem(Point(newy, old.point.discrete_variables),
                                            newx, discrete_value_index=old.get_discrete_value_index(),
                                            function_values=[FunctionValue()] * self.numberOfAllFunctions))

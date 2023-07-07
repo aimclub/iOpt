@@ -21,16 +21,16 @@ class TestMethod(unittest.TestCase):
     @mock.patch('iOpt.method.optim_task.OptimizationTask')
     @mock.patch('iOpt.method.search_data.SearchData')
     def setUp(self, mock_evolvent, mock_task, mock_searchData):
-        mock_evolvent.GetImage.return_value = Mock(side_effect=self.GetImage)
+        mock_evolvent.get_image.return_value = Mock(side_effect=self.GetImage)
 
         self.method = Method(evolvent=mock_evolvent, parameters=SolverParameters(),
                              task=mock_task, search_data=mock_searchData)
 
     def test_mockev(self):
-        self.method.evolvent.GetImage = Mock(side_effect=self.GetImage)
-        self.assertEqual(self.method.evolvent.GetImage(0.0), 0.0)
-        self.assertEqual(self.method.evolvent.GetImage(0.5), 0.5)
-        self.assertEqual(self.method.evolvent.GetImage(1.0), 1.0)
+        self.method.evolvent.get_image = Mock(side_effect=self.GetImage)
+        self.assertEqual(self.method.evolvent.get_image(0.0), 0.0)
+        self.assertEqual(self.method.evolvent.get_image(0.5), 0.5)
+        self.assertEqual(self.method.evolvent.get_image(1.0), 1.0)
 
     def test_CalculateM_easy(self):
         left = SearchDataItem(x=0.0, y=Point(float_variables=[5.0], discrete_variables=[]))

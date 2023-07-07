@@ -67,7 +67,7 @@ class TestProcess(unittest.TestCase):
 
     @mock.patch('iOpt.output_system.listeners.static_painters.StaticPainterListener.on_method_stop')
     def test_Solverefine_solutionAndCallListener(self, mock_OnMethodStop):
-        self.process.method.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
+        self.process.method.evolvent.get_image = Mock(side_effect=self.mock_GetImage)
         self.process.task.calculate = Mock(side_effect=self.mock_CalculateTask)
         self.process.task.problem.calculate = Mock(side_effect=self.mock_Calculate)
         self.process.method.check_stop_condition = Mock(side_effect=self.mock_CheckStopCondition)
@@ -78,7 +78,7 @@ class TestProcess(unittest.TestCase):
             mock_OnMethodStop.assert_called_once()
             self.assertEqual(1, self.process.search_data.solution.number_of_global_trials)
             self.assertEqual(2, self.process.search_data.solution.number_of_local_trials)
-            self.process.method.evolvent.GetImage.assert_called()
+            self.process.method.evolvent.get_image.assert_called()
             self.process.task.calculate.assert_called()
             self.process.task.problem.calculate.assert_called()
             self.process.method.check_stop_condition.assert_called()
@@ -114,14 +114,14 @@ class TestProcess(unittest.TestCase):
     @mock.patch('iOpt.output_system.listeners.static_painters.StaticPainterListener.before_method_start')
     @mock.patch('iOpt.output_system.listeners.static_painters.StaticPainterListener.on_end_iteration')
     def test_DoGlobalIterationAndListener(self, mock_OnEndIteration, mock_BeforeMethodStart):
-        self.process.method.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
+        self.process.method.evolvent.get_image = Mock(side_effect=self.mock_GetImage)
         self.process.task.calculate = Mock(side_effect=self.mock_CalculateTask)
         try:
             self.process.do_global_iteration(1)
             mock_BeforeMethodStart.assert_called_once()
             mock_OnEndIteration.assert_called_once()
             self.assertEqual(1, self.process.search_data.solution.number_of_global_trials)
-            self.process.method.evolvent.GetImage.assert_called()
+            self.process.method.evolvent.get_image.assert_called()
             self.process.task.calculate.assert_called()
         except Exception:
             self.fail("test_DoGlobalIteration is failed")

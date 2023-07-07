@@ -59,21 +59,21 @@ class TestMixedIntegerMethod(unittest.TestCase):
 
     def test_FirstIteration(self):
         self.mixedIntegerMethod.calculate_functionals = Mock(side_effect=self.mock_CalculateFunctionals)
-        self.mixedIntegerMethod.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
+        self.mixedIntegerMethod.evolvent.get_image = Mock(side_effect=self.mock_GetImage)
         self.mixedIntegerMethod.first_iteration()
         self.assertEqual(self.mixedIntegerMethod.search_data.get_count(), 9)
         self.mixedIntegerMethod.calculate_functionals.assert_called()
-        self.mixedIntegerMethod.evolvent.GetImage.assert_called()
+        self.mixedIntegerMethod.evolvent.get_image.assert_called()
 
     def test_FirstIterationParallel(self):
         self.mixedIntegerMethod.parameters.number_of_parallel_points = 5
-        self.mixedIntegerMethod.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
+        self.mixedIntegerMethod.evolvent.get_image = Mock(side_effect=self.mock_GetImage)
         calculator = Calculator(None, self.mixedIntegerMethod.parameters)
         calculator.calculate_functionals_for_items = Mock(side_effect=self.mock_CalculateFunctionalsForItems)
         self.mixedIntegerMethod.first_iteration(calculator)
         self.assertEqual(self.mixedIntegerMethod.search_data.get_count(), 13)
         calculator.calculate_functionals_for_items.assert_called()
-        self.mixedIntegerMethod.evolvent.GetImage.assert_called()
+        self.mixedIntegerMethod.evolvent.get_image.assert_called()
 
     @mock.patch('iOpt.method.index_method.IndexMethod.calculate_global_r')
     def test_CalculateIterationPoint(self, mock_calculate_global_r):
@@ -86,7 +86,7 @@ class TestMixedIntegerMethod(unittest.TestCase):
         self.mixedIntegerMethod.search_data.insert_data_item(midl, last)
         # 0.0 3.5 4.0
         new = SearchDataItem(Point([0.75], ["B", "B"]), 1.75, discrete_value_index=3)
-        self.mixedIntegerMethod.evolvent.GetImage = Mock(side_effect=self.mock_GetImage)
+        self.mixedIntegerMethod.evolvent.get_image = Mock(side_effect=self.mock_GetImage)
 
         self.mixedIntegerMethod.best = midl
 
@@ -99,7 +99,7 @@ class TestMixedIntegerMethod(unittest.TestCase):
         self.assertEqual(midl.get_discrete_value_index(), get_old.get_discrete_value_index())
         self.assertEqual(2, self.mixedIntegerMethod.search_data.solution.number_of_global_trials)
         mock_calculate_global_r.assert_called()
-        self.mixedIntegerMethod.evolvent.GetImage.assert_called()
+        self.mixedIntegerMethod.evolvent.get_image.assert_called()
 
     def test_RastriginInt_Solve_Dimension_3_Discrete_2_p_1(self):
         epsVal = 0.01

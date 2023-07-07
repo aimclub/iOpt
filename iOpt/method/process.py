@@ -151,7 +151,7 @@ class Process:
                 result.best_trials[0].point.float_variables = nelder_mead.x
 
                 point: SearchDataItem = SearchDataItem(result.best_trials[0].point,
-                                                       self.evolvent.GetInverseImage(
+                                                       self.evolvent.get_inverse_image(
                                                            result.best_trials[0].point.float_variables),
                                                        function_values=[FunctionValue()] *
                                                                        (self.task.problem.number_of_constraints +

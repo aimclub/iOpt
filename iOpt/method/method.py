@@ -94,9 +94,9 @@ class Method:
 
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-        left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.,
+        left = SearchDataItem(Point(self.evolvent.get_image(0.0), None), 0.,
                               function_values=[FunctionValue()] * self.numberOfAllFunctions)
-        right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0,
+        right = SearchDataItem(Point(self.evolvent.get_image(1.0), None), 1.0,
                                function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
         items: list[SearchDataItem] = []
@@ -106,7 +106,7 @@ class Method:
             h: float = 1.0 / (number_of_point + 1)
 
             ystart_point = Point(copy.copy(self.parameters.start_point.float_variables), None)
-            xstart_point = self.evolvent.GetInverseImage(self.parameters.start_point.float_variables)
+            xstart_point = self.evolvent.get_inverse_image(self.parameters.start_point.float_variables)
 
             itemstart_point = SearchDataItem(ystart_point, xstart_point,
                                             function_values=[FunctionValue()] * self.numberOfAllFunctions)
@@ -115,7 +115,7 @@ class Method:
 
             for i in range(number_of_point):
                 x = h * (i + 1)
-                y = Point(self.evolvent.GetImage(x), None)
+                y = Point(self.evolvent.get_image(x), None)
                 item = SearchDataItem(y, x,
                                       function_values=[FunctionValue()] * self.numberOfAllFunctions)
                 if x < xstart_point < h * (i + 2):
@@ -134,7 +134,7 @@ class Method:
 
             for i in range(number_of_point):
                 x = h * (i + 1)
-                y = Point(self.evolvent.GetImage(x), None)
+                y = Point(self.evolvent.get_image(x), None)
                 item = SearchDataItem(y, x,
                                       function_values=[FunctionValue()] * self.numberOfAllFunctions)
                 items.append(item)
@@ -263,7 +263,7 @@ class Method:
         old = self.search_data.get_data_item_with_max_global_r()
         self.min_delta = min(old.delta, self.min_delta)
         newx = self.calculate_next_point_coordinate(old)
-        newy = self.evolvent.GetImage(newx)
+        newy = self.evolvent.get_image(newx)
         new = copy.deepcopy(SearchDataItem(Point(newy, []), newx,
                                            function_values=[FunctionValue()] * self.numberOfAllFunctions))
 
