@@ -189,10 +189,10 @@ ____________________________________________________________________________
                   population_size: int,
                   mutation_probability_bound: Dict[str, float]):
          self.dimension = 1
-         self.numberOfFloatVariables = 1
-         self.numberOfDiscreteVariables = 0
-         self.numberOfObjectives = 1
-         self.numberOfConstraints = 0
+         self.number_of_float_variables = 1
+         self.number_of_discrete_variables = 0
+         self.number_of_objectives = 1
+         self.number_of_constraints = 0
          self.costMatrix = cost_matrix
          if num_iteration <= 0:
                raise ValueError('The number of iterations cannot be zero or negative.')
@@ -200,11 +200,11 @@ ____________________________________________________________________________
                raise ValueError('Population size cannot be negative or zero')
          self.populationSize = population_size
          self.numberOfIterations = num_iteration
-         self.floatVariableNames = np.array(["Mutation probability"],
+         self.float_variable_names = np.array(["Mutation probability"],
                dtype=str)
-         self.lowerBoundOfFloatVariables = 
+         self.lower_bound_of_float_variables =
                np.array([mutation_probability_bound['low']], dtype=np.double)
-         self.upperBoundOfFloatVariables = 
+         self.upper_bound_of_float_variables =
                np.array([mutation_probability_bound['up']], dtype=np.double)
          self.n_dim = cost_matrix.shape[0]
 
@@ -215,7 +215,7 @@ ____________________________________________________________________________
 
       def Calculate(self, point: Point, 
                      functionValue: FunctionValue) -> FunctionValue:
-         mutation_prob = point.floatVariables[0]
+         mutation_prob = point.float_variables[0]
          ga_tsp = GA_TSP(func=self.calc_total_distance,
                          n_dim=self.n_dim, size_pop=self.populationSize,
                          max_iter=self.numberOfIterations, 
@@ -258,7 +258,7 @@ ____________________________________________________________________________
       mutation_probability_bound = {'low': 0.0, 'up': 1.0}
       problem = ga_tsp_vary_mutation.GA_TSP_Vary_Mutation(tsp_matrix,
          num_iteration, population_size, mutation_probability_bound)
-      method_params = SolverParameters(r=np.double(3.0), itersLimit=20)
+      method_params = SolverParameters(r=np.double(3.0), iters_limit=20)
       solver = Solver(problem, parameters=method_params)
 
       solver_info = solver.Solve()
@@ -397,26 +397,26 @@ ________________________________________________________________________________
                     kernel_coefficient_bound: Dict[str, float]):
             
             self.dimension = 2
-            self.numberOfFloatVariables = 2
-            self.numberOfDiscreteVariables = 0
-            self.numberOfObjectives = 1
-            self.numberOfConstraints = 0
+            self.number_of_float_variables = 2
+            self.number_of_discrete_variables = 0
+            self.number_of_objectives = 1
+            self.number_of_constraints = 0
             if x_dataset.shape[0] != y_dataset.shape[0]:
                 raise ValueError('The input and output sample sizes do not match.')
             self.x = x_dataset
             self.y = y_dataset
-            self.floatVariableNames = np.array(["Regularization parameter", 
+            self.float_variable_names = np.array(["Regularization parameter",
                 "Kernel coefficient"], dtype=str)
-            self.lowerBoundOfFloatVariables = 
+            self.lower_bound_of_float_variables =
                 np.array([regularization_bound['low'], 
                 kernel_coefficient_bound['low']], dtype=np.double)
-            self.upperBoundOfFloatVariables = 
+            self.upper_bound_of_float_variables =
                 np.array([regularization_bound['up'], 
                 kernel_coefficient_bound['up']], dtype=np.double)
 
         def Calculate(self, point: Point, 
                       functionValue: FunctionValue) -> FunctionValue:
-            cs, gammas = point.floatVariables[0], point.floatVariables[1]
+            cs, gammas = point.float_variables[0], point.float_variables[1]
             clf = SVC(C=10**cs, gamma=10**gammas)
             clf.fit(self.x, self.y)
             functionValue.value = -cross_val_score(clf, self.x, self.y,
@@ -456,7 +456,7 @@ ________________________________________________________________________________
         problem = SVC_2d.SVC_2D(x, y, regularization_value_bound, 
             kernel_coefficient_bound)
 
-        method_params = SolverParameters(r=np.double(3.0), itersLimit=10)
+        method_params = SolverParameters(r=np.double(3.0), iters_limit=10)
         solver = Solver(problem, parameters=method_params)
 
         apl = AnimationNDPaintListener("svc2d_anim.png", "output", 
@@ -468,12 +468,12 @@ ________________________________________________________________________________
         solver.AddListener(spl)
 
         solver_info = solver.Solve()
-        print(solver_info.numberOfGlobalTrials)
-        print(solver_info.numberOfLocalTrials)
-        print(solver_info.solvingTime)
+        print(solver_info.number_of_global_trials)
+        print(solver_info.number_of_local_trials)
+        print(solver_info.solving_time)
 
-        print(solver_info.bestTrials[0].point.floatVariables)
-        print(solver_info.bestTrials[0].functionValues[0].value)
+        print(solver_info.best_trials[0].point.float_variables)
+        print(solver_info.best_trials[0].function_values[0].value)
 
 После проведения эксперимента программа выводит общее время поиска оптимума, точку на сетке, в которой достигается 
 оптимум, найденное максимальное значение метрики f1-score, а также интерполирует график целевой функции.
@@ -546,25 +546,25 @@ ________________________________________________________________________________
                   ):
          super(SVC_3D, self).__init__()
          self.dimension = 3
-         self.numberOfFloatVariables = 2
-         self.numberOfDiscreteVariables = 1
-         self.numberOfObjectives = 1
-         self.numberOfConstraints = 0
+         self.number_of_float_variables = 2
+         self.number_of_discrete_variables = 1
+         self.number_of_objectives = 1
+         self.number_of_constraints = 0
          if x_dataset.shape[0] != y_dataset.shape[0]:
                raise ValueError('The input and output sample sizes do not match.')
          self.x = x_dataset
          self.y = y_dataset
-         self.floatVariableNames = np.array(["Regularization parameter", "Kernel coefficient"], dtype=str)
-         self.lowerBoundOfFloatVariables = np.array([regularization_bound['low'], kernel_coefficient_bound['low']],
+         self.float_variable_names = np.array(["Regularization parameter", "Kernel coefficient"], dtype=str)
+         self.lower_bound_of_float_variables = np.array([regularization_bound['low'], kernel_coefficient_bound['low']],
                                                       dtype=np.double)
-         self.upperBoundOfFloatVariables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
+         self.upper_bound_of_float_variables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
                                                       dtype=np.double)
-         self.discreteVariableNames.append('kernel')
-         self.discreteVariableValues.append(kernel_type['kernel'])
+         self.discrete_variable_names.append('kernel')
+         self.discrete_variable_values.append(kernel_type['kernel'])
 
       def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
-         cs, gammas = point.floatVariables[0], point.floatVariables[1]
-         kernel_type = point.discreteVariables[0]
+         cs, gammas = point.float_variables[0], point.float_variables[1]
+         kernel_type = point.discrete_variables[0]
          clf = SVC(C=10 ** cs, gamma=10 ** gammas, kernel=kernel_type)
          functionValue.value = -cross_val_score(clf, self.x, self.y, scoring='f1').mean()
          return functionValue
@@ -641,7 +641,7 @@ ________________________________________________________________________________
       kernel_coefficient_bound = {'low': -9, 'up': -6.7}
       kernel_type = {'kernel': ['rbf', 'sigmoid', 'poly']}
       problem = SVC_3D.SVC_3D(x, y, regularization_value_bound, kernel_coefficient_bound, kernel_type)
-      method_params = SolverParameters(itersLimit=400)
+      method_params = SolverParameters(iters_limit=400)
       solver = Solver(problem, parameters=method_params)
       apl = StaticDiscreteListener("experiment1.png", mode='analysis')
       solver.AddListener(apl)
@@ -794,7 +794,7 @@ ________________________________________________________________________________
       regularization_value_bound = {'low': 1, 'up': 10}
       kernel_coefficient_bound = {'low': -8, 'up': -1}
       problem = SVC_2d.SVC_2D(x, y, regularization_value_bound, kernel_coefficient_bound)
-      method_params = SolverParameters(r=np.double(2.0), itersLimit=200)
+      method_params = SolverParameters(r=np.double(2.0), iters_limit=200)
       solver = Solver(problem, parameters=method_params)
       apl = AnimationNDPaintListener(varsIndxs=[0, 1], toPaintObjFunc=False)
       solver.AddListener(apl)

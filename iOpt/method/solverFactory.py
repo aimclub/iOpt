@@ -36,9 +36,9 @@ class SolverFactory:
         :return: созданный метод
         """
 
-        if task.problem.numberOfDiscreteVariables > 0:
+        if task.problem.number_of_discrete_variables > 0:
             return MixedIntegerMethod(parameters, task, evolvent, searchData)
-        elif task.problem.numberOfConstraints > 0:
+        elif task.problem.number_of_constraints > 0:
             return IndexMethod(parameters, task, evolvent, searchData)
         else:
             return Method(parameters, task, evolvent, searchData)
@@ -62,7 +62,7 @@ class SolverFactory:
 
         :return: созданный процесс
         """
-        if parameters.numberOfParallelPoints == 1:
+        if parameters.number_of_parallel_points == 1:
             return Process(parameters=parameters, task=task, evolvent=evolvent,
                            searchData=searchData, method=method, listeners=listeners)
         else:

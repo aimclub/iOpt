@@ -15,45 +15,45 @@ class TestSearchDataItem(unittest.TestCase):
     # setUp method is overridden from the parent class SearchDataItem
     def setUp(self):
         self.point = Point([0.1, 0.5], ["a", "b"])
-        self.searchDataItem = SearchDataItem(self.point, 0.3, None, 0)
+        self.search_dataItem = SearchDataItem(self.point, 0.3, None, 0)
 
     def test_Init(self):
-        self.assertEqual(self.searchDataItem.point.floatVariables, [0.1, 0.5])
+        self.assertEqual(self.search_dataItem.point.float_variables, [0.1, 0.5])
 
     def test_GetX(self):
-        self.assertEqual(self.searchDataItem.GetX(), 0.3)
+        self.assertEqual(self.search_dataItem.GetX(), 0.3)
 
     def test_GetY(self):
-        self.assertEqual((self.searchDataItem.GetY().floatVariables,
-                          self.searchDataItem.GetY().discreteVariables),
+        self.assertEqual((self.search_dataItem.GetY().float_variables,
+                          self.search_dataItem.GetY().discrete_variables),
                          ([0.1, 0.5], ['a', 'b']))
 
     def test_GetDiscreteValueIndex(self):
-        self.assertEqual(self.searchDataItem.GetDiscreteValueIndex(), 0)
+        self.assertEqual(self.search_dataItem.GetDiscreteValueIndex(), 0)
 
     def test_SetIndex(self):
-        self.searchDataItem.SetIndex(1)
-        self.assertEqual(self.searchDataItem.GetIndex(), 1)
+        self.search_dataItem.SetIndex(1)
+        self.assertEqual(self.search_dataItem.GetIndex(), 1)
 
     def test_SetZ(self):
-        self.searchDataItem.SetZ(-4.0)
-        self.assertEqual(self.searchDataItem.GetZ(), -4.0)
+        self.search_dataItem.SetZ(-4.0)
+        self.assertEqual(self.search_dataItem.GetZ(), -4.0)
 
     def test_SetLeft(self):
         leftDataItem = SearchDataItem(([0.3, 0.78], ["c", "d"]), 0.6, None, 1)
-        self.searchDataItem.SetLeft(leftDataItem)
+        self.search_dataItem.SetLeft(leftDataItem)
 
-        self.assertEqual(self.searchDataItem.GetLeft().GetX(), 0.6)
-        self.assertEqual(self.searchDataItem.GetLeft().GetDiscreteValueIndex(), 1)
-        self.assertEqual(self.searchDataItem.GetLeft().GetY(), ([0.3, 0.78], ['c', 'd']))
+        self.assertEqual(self.search_dataItem.GetLeft().GetX(), 0.6)
+        self.assertEqual(self.search_dataItem.GetLeft().GetDiscreteValueIndex(), 1)
+        self.assertEqual(self.search_dataItem.GetLeft().GetY(), ([0.3, 0.78], ['c', 'd']))
 
     def test_SetRigth(self):
         rightDataItem = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0.16, None, 0)
-        self.searchDataItem.SetRight(rightDataItem)
+        self.search_dataItem.SetRight(rightDataItem)
 
-        self.assertEqual(self.searchDataItem.GetRight().GetX(), 0.16)
-        self.assertEqual(self.searchDataItem.GetRight().GetDiscreteValueIndex(), 0)
-        self.assertEqual(self.searchDataItem.GetRight().GetY(), ([-0.3, 0.78], ['e', 'f']))
+        self.assertEqual(self.search_dataItem.GetRight().GetX(), 0.16)
+        self.assertEqual(self.search_dataItem.GetRight().GetDiscreteValueIndex(), 0)
+        self.assertEqual(self.search_dataItem.GetRight().GetY(), ([-0.3, 0.78], ['e', 'f']))
 
 
 class TestCharacteristicsQueue(unittest.TestCase):
@@ -205,13 +205,13 @@ class TestCharacteristicsQueue(unittest.TestCase):
 
 class TestSearchData(unittest.TestCase):
     def setUp(self):
-        self.searchData = SearchData(None)
+        self.search_data = SearchData(None)
 
     def test_ClearQueue(self):
         try:
-            self.searchData.ClearQueue()
+            self.search_data.ClearQueue()
         except Exception as exc:
-            assert False, f"'self.searchData.ClearQueue' raised an exception{exc}"
+            assert False, f"'self.search_data.ClearQueue' raised an exception{exc}"
 
     def test_InsertDataItemFirst(self):
         leftdataItem = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -220,9 +220,9 @@ class TestSearchData(unittest.TestCase):
         rightdataItem.globalR = -3.2
 
         try:
-            self.searchData.InsertFirstDataItem(leftdataItem, rightdataItem)
+            self.search_data.InsertFirstDataItem(leftdataItem, rightdataItem)
         except Exception as exc:
-            assert False, f"' self.searchData.InsertDataItemFirst' raised an exception{exc}"
+            assert False, f"' self.search_data.InsertDataItemFirst' raised an exception{exc}"
 
     def test_InsertDataItemWithRight(self):
         leftdataItem = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -233,12 +233,12 @@ class TestSearchData(unittest.TestCase):
         rightdataItem = SearchDataItem(([-0.3, 0.78], ["a", "b"]), 1, None, 1)
         rightdataItem.globalR = -3.2
 
-        self.searchData.InsertFirstDataItem(leftdataItem, rightdataItem)
+        self.search_data.InsertFirstDataItem(leftdataItem, rightdataItem)
 
         try:
-            self.searchData.InsertDataItem(dataItem, rightdataItem)
+            self.search_data.InsertDataItem(dataItem, rightdataItem)
         except Exception as exc:
-            assert False, f"'self.searchData.InsertDataItem' raised an exception{exc}"
+            assert False, f"'self.search_data.InsertDataItem' raised an exception{exc}"
 
     def test_CanUseIteration(self):
         leftdataItem = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -247,17 +247,17 @@ class TestSearchData(unittest.TestCase):
 
         rightdataItem = SearchDataItem(([0.93, -2.0], ["e", "a"]), 1, None, 1)
 
-        self.searchData.InsertFirstDataItem(leftdataItem, rightdataItem)
-        self.searchData.InsertDataItem(dataItem, rightdataItem)
+        self.search_data.InsertFirstDataItem(leftdataItem, rightdataItem)
+        self.search_data.InsertDataItem(dataItem, rightdataItem)
 
         getData = []
         try:
-            for item in self.searchData:
+            for item in self.search_data:
                 getData.append(item.GetX())
         except Exception as exc:
             assert False, f"'item.GetX' raised an exception{exc}"
 
-        self.assertEqual(self.searchData.GetCount(), 3)
+        self.assertEqual(self.search_data.GetCount(), 3)
         self.assertEqual(getData[0], leftdataItem.GetX())
         self.assertEqual(getData[1], dataItem.GetX())
         self.assertEqual(getData[2], rightdataItem.GetX())
@@ -268,12 +268,12 @@ class TestSearchData(unittest.TestCase):
         rightdataItem = SearchDataItem(([-0.3, 0.78], ["a", "b"]), 1, None, 1)
         rightdataItem.globalR = 1.0
 
-        self.searchData.InsertFirstDataItem(leftdataItem, rightdataItem)
+        self.search_data.InsertFirstDataItem(leftdataItem, rightdataItem)
 
         try:
-            findRightDataItem = self.searchData.FindDataItemByOneDimensionalPoint(0.2)
+            findRightDataItem = self.search_data.FindDataItemByOneDimensionalPoint(0.2)
         except Exception as exc:
-            assert False, f"'self.searchData.InsertDataItem' raised an exception{exc}"
+            assert False, f"'self.search_data.InsertDataItem' raised an exception{exc}"
 
         self.assertEqual(findRightDataItem.GetX(), rightdataItem.GetX())
         self.assertEqual(findRightDataItem.GetY(), rightdataItem.GetY())
@@ -291,12 +291,12 @@ class TestSearchData(unittest.TestCase):
         dataItem4 = SearchDataItem(([2.09, 1.15], ["l", "l"]), 0.16, None, 1)
         dataItem4.globalR = -3.6
 
-        self.searchData.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchData.InsertDataItem(dataItem3)
+        self.search_data.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_data.InsertDataItem(dataItem3)
         try:
-            self.searchData.InsertDataItem(dataItem4)
+            self.search_data.InsertDataItem(dataItem4)
         except Exception as exc:
-            assert False, f"'self.searchData.InsertDataItem' raised an exception{exc}"
+            assert False, f"'self.search_data.InsertDataItem' raised an exception{exc}"
 
     def test_InsertDataItemWithEqualCharactiristics(self):
         dataItemFirst = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -307,12 +307,12 @@ class TestSearchData(unittest.TestCase):
         dataItemThird = SearchDataItem(([0.13, -0.2], ["e", "c"]), 0.5, None, 1)
         dataItemThird.globalR = 4.76
 
-        self.searchData.InsertFirstDataItem(dataItemFirst, dataItemSecond)
+        self.search_data.InsertFirstDataItem(dataItemFirst, dataItemSecond)
         try:
-            self.searchData.InsertDataItem(dataItemThird, dataItemSecond)
+            self.search_data.InsertDataItem(dataItemThird, dataItemSecond)
         except Exception as exc:
-            assert False, f"'self.searchData.InsertFirstDataItem'," \
-                          f"'self.searchData.InsertDataItem' raised an exception{exc}"
+            assert False, f"'self.search_data.InsertFirstDataItem'," \
+                          f"'self.search_data.InsertDataItem' raised an exception{exc}"
 
     def test_RefillQueue(self):
         dataItemFirst = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -320,12 +320,12 @@ class TestSearchData(unittest.TestCase):
         dataItemSecond = SearchDataItem(([-0.5, 0.02], ["e", "c"]), 1, None, 1)
         dataItemSecond.globalR = 1.0
 
-        self.searchData.InsertFirstDataItem(dataItemFirst, dataItemSecond)
+        self.search_data.InsertFirstDataItem(dataItemFirst, dataItemSecond)
 
         try:
-            self.searchData.RefillQueue()
+            self.search_data.RefillQueue()
         except Exception as exc:
-            assert False, f"'self.searchData.RefillQueue' raised an exception{exc}"
+            assert False, f"'self.search_data.RefillQueue' raised an exception{exc}"
 
     def test_GetDataItemWithMaxGlobalR(self):
         dataItem1 = SearchDataItem(([-0.6, 0.7], ["a", "f"]), 0.05, None, 2)
@@ -337,10 +337,10 @@ class TestSearchData(unittest.TestCase):
         dataItem3 = SearchDataItem(([1.4, 3.7], ["a", "f"]), 0.8, None, 1)
         dataItem3.globalR = 2.6
 
-        self.searchData.InsertFirstDataItem(dataItem1, dataItem3)
-        self.searchData.InsertDataItem(dataItem2)
+        self.search_data.InsertFirstDataItem(dataItem1, dataItem3)
+        self.search_data.InsertDataItem(dataItem2)
 
-        getDataItem = self.searchData.GetDataItemWithMaxGlobalR()
+        getDataItem = self.search_data.GetDataItemWithMaxGlobalR()
 
         self.assertEqual(getDataItem.GetX(), 0.2)
         self.assertEqual(getDataItem.GetDiscreteValueIndex(), 1)
@@ -356,11 +356,11 @@ class TestSearchData(unittest.TestCase):
         dataItem4 = SearchDataItem(([2.15, -4.17], ["b", "k"]), 0.7, None, 1)
         dataItem4.globalR = 5.0
 
-        self.searchData.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchData.InsertDataItem(dataItem3, dataItem2)
-        self.searchData.InsertDataItem(dataItem4)
+        self.search_data.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_data.InsertDataItem(dataItem3, dataItem2)
+        self.search_data.InsertDataItem(dataItem4)
 
-        getDataItem = self.searchData.GetDataItemWithMaxGlobalR()
+        getDataItem = self.search_data.GetDataItemWithMaxGlobalR()
 
         self.assertEqual(getDataItem.GetX(), 0.078)
         self.assertEqual(getDataItem.GetDiscreteValueIndex(), 2)
@@ -376,11 +376,11 @@ class TestSearchData(unittest.TestCase):
         dataItem3 = SearchDataItem(([1.4, 3.7], ["a", "f"]), 0.8, None, 1)
         dataItem3.globalR = 2.6
 
-        self.searchData.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchData.InsertDataItem(dataItem3, dataItem2)
+        self.search_data.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_data.InsertDataItem(dataItem3, dataItem2)
 
-        getDataItemGlob = self.searchData.GetDataItemWithMaxGlobalR()
-        getDataItemGlob2 = self.searchData.GetDataItemWithMaxGlobalR()
+        getDataItemGlob = self.search_data.GetDataItemWithMaxGlobalR()
+        getDataItemGlob2 = self.search_data.GetDataItemWithMaxGlobalR()
 
         self.assertEqual(getDataItemGlob.GetX(), 0.8)
         self.assertEqual(getDataItemGlob.globalR, 2.6)
@@ -393,9 +393,9 @@ class TestSearchData(unittest.TestCase):
 
         dataItemSecond = SearchDataItem(([-0.5, 0.02], ["e", "c"]), 1, 1)
 
-        self.searchData.InsertFirstDataItem(dataItemFirst, dataItemSecond)
+        self.search_data.InsertFirstDataItem(dataItemFirst, dataItemSecond)
 
-        self.assertEqual(self.searchData.GetCount(), 2)
+        self.assertEqual(self.search_data.GetCount(), 2)
 
     def test_GetLastItem(self):
         dataItem1 = SearchDataItem(([-0.6, 0.7], ["a", "f"]), 0.0, None, 2)
@@ -406,10 +406,10 @@ class TestSearchData(unittest.TestCase):
         dataItem3 = SearchDataItem(([1.4, 3.7], ["a", "f"]), 0.8, None, 1)
         dataItem3.globalR = 2.6
 
-        self.searchData.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchData.InsertDataItem(dataItem3, dataItem2)
+        self.search_data.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_data.InsertDataItem(dataItem3, dataItem2)
 
-        getLastItem = self.searchData.GetLastItem()
+        getLastItem = self.search_data.GetLastItem()
         self.assertEqual(getLastItem.GetX(), dataItem3.GetX())
 
     def test_GetLastItemExcept(self):
@@ -418,20 +418,20 @@ class TestSearchData(unittest.TestCase):
         dataItem2 = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 1.0, None, 1)
         dataItem2.globalR = 1.0
         try:
-            getLastItem = self.searchData.GetLastItem()
+            getLastItem = self.search_data.GetLastItem()
         except Exception as exc:
-            assert True, f"'self.searchData.GetLastItem()' raised an exception{exc}"
+            assert True, f"'self.search_data.GetLastItem()' raised an exception{exc}"
 
 
 class TestSearchDataDualQueue(unittest.TestCase):
     def setUp(self):
-        self.searchDataDual = SearchDataDualQueue(None, maxlen=3)
+        self.search_dataDual = SearchDataDualQueue(None, maxlen=3)
 
     def test_ClearQueue(self):
         try:
-            self.searchDataDual.ClearQueue()
+            self.search_dataDual.ClearQueue()
         except Exception as exc:
-            assert False, f"'self.searchDataDual.ClearQueue' raised an exception{exc}"
+            assert False, f"'self.search_dataDual.ClearQueue' raised an exception{exc}"
 
     def test_InsertDataItemWithRight(self):
         leftdataItem = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -444,12 +444,12 @@ class TestSearchDataDualQueue(unittest.TestCase):
         rightdataItem.globalR = -3.2
         rightdataItem.localR = 2.03
 
-        self.searchDataDual.InsertFirstDataItem(leftdataItem, rightdataItem)
+        self.search_dataDual.InsertFirstDataItem(leftdataItem, rightdataItem)
 
         try:
-            self.searchDataDual.InsertDataItem(dataItem, rightdataItem)
+            self.search_dataDual.InsertDataItem(dataItem, rightdataItem)
         except Exception as exc:
-            assert False, f"'self.searchDataDual.InsertDataItem' raised an exception{exc}"
+            assert False, f"'self.search_dataDual.InsertDataItem' raised an exception{exc}"
 
     def test_InsertDataItemWithoutRight(self):
         dataItem1 = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -467,12 +467,12 @@ class TestSearchDataDualQueue(unittest.TestCase):
         dataItem4.globalR = 3.6
         dataItem4.localR = -0.67
 
-        self.searchDataDual.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem3)
+        self.search_dataDual.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem3)
         try:
-            self.searchDataDual.InsertDataItem(dataItem4)
+            self.search_dataDual.InsertDataItem(dataItem4)
         except Exception as exc:
-            assert False, f"'self.searchDataDual.InsertDataItem' raised an exception{exc}"
+            assert False, f"'self.search_dataDual.InsertDataItem' raised an exception{exc}"
 
     def test_InsertDataItemWithEqualCharactiristics(self):
         dataItemFirst = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -486,12 +486,12 @@ class TestSearchDataDualQueue(unittest.TestCase):
         dataItemThird.globalR = 4.76
         dataItemThird.localR = 0.67
 
-        self.searchDataDual.InsertFirstDataItem(dataItemFirst, dataItemSecond)
+        self.search_dataDual.InsertFirstDataItem(dataItemFirst, dataItemSecond)
         try:
-            self.searchDataDual.InsertDataItem(dataItemThird, dataItemSecond)
+            self.search_dataDual.InsertDataItem(dataItemThird, dataItemSecond)
         except Exception as exc:
-            assert False, f"'self.searchDataDual.InsertFirstDataItem'," \
-                          f"'self.searchDataDual.InsertDataItem' raised an exception{exc}"
+            assert False, f"'self.search_dataDual.InsertFirstDataItem'," \
+                          f"'self.search_dataDual.InsertDataItem' raised an exception{exc}"
 
     def test_RefillQueue(self):
         dataItemFirst = SearchDataItem(([-0.3, 0.78], ["e", "f"]), 0, None, 1)
@@ -500,12 +500,12 @@ class TestSearchDataDualQueue(unittest.TestCase):
         dataItemSecond.globalR = 1.0
         dataItemSecond.localR = 1.0
 
-        self.searchDataDual.InsertFirstDataItem(dataItemFirst, dataItemSecond)
+        self.search_dataDual.InsertFirstDataItem(dataItemFirst, dataItemSecond)
 
         try:
-            self.searchDataDual.RefillQueue()
+            self.search_dataDual.RefillQueue()
         except Exception as exc:
-            assert False, f"'self.searchDataDual.RefillQueue' raised an exception{exc}"
+            assert False, f"'self.search_dataDual.RefillQueue' raised an exception{exc}"
 
     def test_GetDataItemWithMaxGlobalR(self):
         dataItem1 = SearchDataItem(([-0.6, 0.7], ["a", "f"]), 0.0, None, 2)
@@ -519,11 +519,11 @@ class TestSearchDataDualQueue(unittest.TestCase):
         dataItem4 = SearchDataItem(([-3.2, 0.7], ["k", "s"]), 0.34, None, 2)
         dataItem4.globalR = 2.8
 
-        self.searchDataDual.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem3, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem4)
+        self.search_dataDual.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem3, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem4)
 
-        getDataItem = self.searchDataDual.GetDataItemWithMaxGlobalR()
+        getDataItem = self.search_dataDual.GetDataItemWithMaxGlobalR()
 
         self.assertEqual(getDataItem.GetX(), 0.8)
         self.assertEqual(getDataItem.GetDiscreteValueIndex(), 1)
@@ -542,11 +542,11 @@ class TestSearchDataDualQueue(unittest.TestCase):
         dataItem4 = SearchDataItem(([-3.2, 0.7], ["k", "s"]), 0.34, None, 2)
         dataItem4.localR = 2.8
 
-        self.searchDataDual.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem3, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem4)
+        self.search_dataDual.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem3, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem4)
 
-        getDataItem = self.searchDataDual.GetDataItemWithMaxLocalR()
+        getDataItem = self.search_dataDual.GetDataItemWithMaxLocalR()
 
         self.assertEqual(getDataItem.GetX(), 0.8)
         self.assertEqual(getDataItem.GetDiscreteValueIndex(), 1)
@@ -565,11 +565,11 @@ class TestSearchDataDualQueue(unittest.TestCase):
         dataItem4 = SearchDataItem(([-3.2, 0.7], ["k", "s"]), 0.34, None, 2)
         dataItem4.globalR = 3.6
 
-        self.searchDataDual.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem3, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem4)
+        self.search_dataDual.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem3, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem4)
 
-        getDataItem = self.searchDataDual.GetDataItemWithMaxGlobalR()
+        getDataItem = self.search_dataDual.GetDataItemWithMaxGlobalR()
 
         self.assertEqual(getDataItem.GetX(), 0.8)
         self.assertEqual(getDataItem.GetDiscreteValueIndex(), 1)
@@ -588,11 +588,11 @@ class TestSearchDataDualQueue(unittest.TestCase):
         dataItem4 = SearchDataItem(([-3.2, 0.7], ["k", "s"]), 0.34, None, 2)
         dataItem4.localR = 3.6
 
-        self.searchDataDual.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem3, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem4)
+        self.search_dataDual.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem3, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem4)
 
-        getDataItem = self.searchDataDual.GetDataItemWithMaxLocalR()
+        getDataItem = self.search_dataDual.GetDataItemWithMaxLocalR()
 
         self.assertEqual(getDataItem.GetX(), 0.8)
         self.assertEqual(getDataItem.GetDiscreteValueIndex(), 1)
@@ -618,26 +618,26 @@ class TestSearchDataDualQueue(unittest.TestCase):
         dataItem5.globalR = -0.134
         dataItem5.localR = 0.082
 
-        self.searchDataDual.InsertFirstDataItem(dataItem1, dataItem2)
-        self.searchDataDual.InsertDataItem(dataItem3, dataItem2)
-        getDataItemGlob = self.searchDataDual.GetDataItemWithMaxGlobalR()
+        self.search_dataDual.InsertFirstDataItem(dataItem1, dataItem2)
+        self.search_dataDual.InsertDataItem(dataItem3, dataItem2)
+        getDataItemGlob = self.search_dataDual.GetDataItemWithMaxGlobalR()
 
         self.assertEqual(getDataItemGlob.GetX(), 0.5)
         self.assertEqual(getDataItemGlob.globalR, 2.6)
 
         getDataItemGlob.globalR = -1.89
         getDataItemGlob.localR = -1.37
-        self.searchDataDual.InsertDataItem(dataItem4, getDataItemGlob)
+        self.search_dataDual.InsertDataItem(dataItem4, getDataItemGlob)
 
-        getDataItemGlob2 = self.searchDataDual.GetDataItemWithMaxGlobalR()
+        getDataItemGlob2 = self.search_dataDual.GetDataItemWithMaxGlobalR()
         self.assertEqual(getDataItemGlob2.GetX(), 1.0)
         self.assertEqual(getDataItemGlob2.globalR, 1.0)
 
         getDataItemGlob2.globalR = 0.5
         getDataItemGlob2.localR = 0.5
-        self.searchDataDual.InsertDataItem(dataItem5, getDataItemGlob2)
+        self.search_dataDual.InsertDataItem(dataItem5, getDataItemGlob2)
 
-        getDataItemLocal = self.searchDataDual.GetDataItemWithMaxLocalR()
+        getDataItemLocal = self.search_dataDual.GetDataItemWithMaxLocalR()
         self.assertEqual(getDataItemLocal.GetX(), 1.0)
         self.assertEqual(getDataItemLocal.localR, 0.5)
 

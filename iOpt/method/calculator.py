@@ -29,7 +29,7 @@ class Calculator:
         """
         self.evaluateMethod = evaluateMethod
         self.parameters = parameters
-        Calculator.pool = Pool(parameters.numberOfParallelPoints,
+        Calculator.pool = Pool(parameters.number_of_parallel_points,
                                initializer=Calculator.worker_init,
                                initargs=(self.evaluateMethod,))
 
@@ -71,7 +71,7 @@ class Calculator:
         points_copy = []
         for point in points:
             sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.GetX()),
-                                functionValues=copy.deepcopy(point.functionValues),
+                                function_values=copy.deepcopy(point.function_values),
                                 discreteValueIndex=point.GetDiscreteValueIndex())
             points_copy.append(sd)
 

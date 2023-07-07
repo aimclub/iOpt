@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     # add needed listeners for solver
     apl = StaticPainterListener("xsquared_1_2.5_0.01.png", isPointsAtBottom=True)
-    solver.AddListener(apl)
+    solver.add_listener(apl)
 
     # solve the problem
-    sol = solver.Solve()
+    sol = solver.solve()

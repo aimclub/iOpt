@@ -38,35 +38,35 @@ class StaticDiscreteListener(Listener):
         self.calc = calc
         self.numpoints = numpoints
         self.mrkrs = mrkrs
-        self.searchDataSorted = []
+        self.search_dataSorted = []
         self.bestValueSorted = []
-        self.numberOfParallelPoints = 1
+        self.number_of_parallel_points = 1
 
     def BeforeMethodStart(self, method: Method):
-        if method.task.problem.numberOfFloatVariables > 2 and self.calc == 'interpolation':
+        if method.task.problem.number_of_float_variables > 2 and self.calc == 'interpolation':
             raise Exception(
                 "StaticDiscreteListener with calc 'interpolation' supported with dimension <= 2")
-        self.numberOfParallelPoints = method.parameters.numberOfParallelPoints
+        self.number_of_parallel_points = method.parameters.number_of_parallel_points
 
     def OnEndIteration(self, newPoints, solution: Solution):
         for newPoint in newPoints:
-            self.searchDataSorted.append(newPoint)
-            self.bestValueSorted.append(solution.bestTrials[0].functionValues[0].value)
+            self.search_dataSorted.append(newPoint)
+            self.bestValueSorted.append(solution.best_trials[0].function_values[0].value)
 
     def OnMethodStop(self, searchData: SearchData,
                      solution: Solution, status: bool):
-        painter = DiscretePainter(self.searchDataSorted, self.bestValueSorted,
-                                  solution.problem.numberOfDiscreteVariables,
-                                  solution.problem.numberOfFloatVariables,
-                                  solution.bestTrials[0].point,
-                                  solution.problem.discreteVariableValues,
-                                  solution.problem.discreteVariableNames,
+        painter = DiscretePainter(self.search_dataSorted, self.bestValueSorted,
+                                  solution.problem.number_of_discrete_variables,
+                                  solution.problem.number_of_float_variables,
+                                  solution.best_trials[0].point,
+                                  solution.problem.discrete_variable_values,
+                                  solution.problem.discrete_variable_names,
                                   self.mode, self.calc, self.subparameters,
-                                  solution.problem.lowerBoundOfFloatVariables,
-                                  solution.problem.upperBoundOfFloatVariables,
-                                  self.fileName, self.pathForSaves, solution.problem.Calculate,
-                                  solution.bestTrials[0].functionValues[0].value,
-                                  searchData, self.numberOfParallelPoints)
+                                  solution.problem.lower_bound_of_float_variables,
+                                  solution.problem.upper_bound_of_float_variables,
+                                  self.fileName, self.pathForSaves, solution.problem.calculate,
+                                  solution.best_trials[0].function_values[0].value,
+                                  searchData, self.number_of_parallel_points)
         if self.mode == 'analysis':
             painter.PaintAnalisys(mrks=2)
         elif self.mode == 'bestcombination':

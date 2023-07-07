@@ -7,13 +7,13 @@ from matplotlib.cm import ScalarMappable
 from textwrap import wrap
 
 class DisretePlotter:
-    def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, subparameters, lb, rb, bestsvalues, numberOfParallelPoints):
+    def __init__(self, mode, pcount, floatdim, parametersvals, parametersnames, subparameters, lb, rb, bestsvalues, number_of_parallel_points):
         plt.style.use('fivethirtyeight')
         plt.rcParams['contour.negative_linestyle'] = 'solid'
         plt.rcParams['figure.figsize'] = (12, 6)
         plt.rcParams['font.size'] = 6
 
-        self.numberOfParallelPoints = numberOfParallelPoints
+        self.number_of_parallel_points = number_of_parallel_points
         self.subparameters = subparameters
         self.lb = lb
         self.rb = rb
@@ -76,10 +76,10 @@ class DisretePlotter:
 
     def PlotAnalisysSubplotsFigure(self, allpoints, allvalues, combinations, optimum, mrkrs=3):
             for j in range(self.count):
-                self.axes[j].scatter([x.discreteVariables[0] for x in allpoints],
+                self.axes[j].scatter([x.discrete_variables[0] for x in allpoints],
                                      [item[0] for item in allvalues],
                                      s=mrkrs ** 2, color='black')
-                self.axes[j].scatter([optimum.discreteVariables[j]],
+                self.axes[j].scatter([optimum.discrete_variables[j]],
                                      [self.bestsvalues[-1]],
                                      s=(mrkrs+2) ** 2, color='red', marker='*')
                 self.axes[j].set_xlim([self.axes[j].get_xlim()[0] - 1, self.axes[j].get_xlim()[1] + 1])
@@ -89,8 +89,8 @@ class DisretePlotter:
                 if self.bestsvalues[-1] < self.bestsvalues[-i]:
                     id = i
                     break
-            best_iter = int(len(self.bestsvalues) - id + self.numberOfParallelPoints +
-                            (self.numberOfParallelPoints == 1))
+            best_iter = int(len(self.bestsvalues) - id + self.number_of_parallel_points +
+                            (self.number_of_parallel_points == 1))
 
             self.axes[self.count].plot([int(item[1]) for item in allvalues],
                                        [item[0] for item in allvalues],
@@ -115,8 +115,8 @@ class DisretePlotter:
                 combinations.append(str_)
             self.axes[self.count + 1].scatter([allvalues[0][0]] * self.combcount, combinations, alpha=0)
 
-            text = "best value "+ str(self.bestsvalues[-1]) + " in point " + str(optimum.floatVariables)
-            text += ' with ' + str(optimum.discreteVariables)
+            text = "best value "+ str(self.bestsvalues[-1]) + " in point " + str(optimum.float_variables)
+            text += ' with ' + str(optimum.discrete_variables)
             text = '\n'.join(wrap(text, 90))
 
             iters = list(range(1, len(self.bestsvalues) + 1))
@@ -135,9 +135,9 @@ class DisretePlotter:
                             label='points with another discrete parameters combinations')
             '''
             self.axes[0].scatter(best[0], best[1], s=mrkrs ** 2, color='blue',
-                            label='points with discrete parameters combination ' + str(optimum.discreteVariables))
+                            label='points with discrete parameters combination ' + str(optimum.discrete_variables))
 
-            text = 'optimum point ' + str(optimum.floatVariables) + ' with '+ str(optimum.discreteVariables) + ' and optimum value ' + str(self.bestsvalues[-1])
+            text = 'optimum point ' + str(optimum.float_variables) + ' with '+ str(optimum.discrete_variables) + ' and optimum value ' + str(self.bestsvalues[-1])
             text = '\n'.join(wrap(text, 90))
 
             l1 = self.axes[0].scatter(optimumPoint[0],
@@ -170,13 +170,13 @@ class DisretePlotter:
                 xv, yv = np.meshgrid(xi, xj)
 
                 z = []
-                fv = section.floatVariables.copy()
+                fv = section.float_variables.copy()
                 for k in range(pointsCount):
                     z_ = []
                     for t in range(pointsCount):
                         fv[i - 1] = xv[k, t]
                         fv[j - 1] = yv[k, t]
-                        z_.append(calculate(fv, section.discreteVariables))
+                        z_.append(calculate(fv, section.discrete_variables))
                     z.append(z_)
 
 
@@ -190,10 +190,10 @@ class DisretePlotter:
             else:
                 x = np.linspace(self.lb[0], self.rb[0], pointsCount)
                 z = []
-                fv = section.floatVariables.copy()
+                fv = section.float_variables.copy()
                 for k in range(pointsCount):
                     fv[0] = x[k]
-                    z.append(calculate(fv, section.discreteVariables))
+                    z.append(calculate(fv, section.discrete_variables))
 
                 self.axes[0].set_xlabel('trial point')
                 self.axes[0].set_ylabel('objective function value')

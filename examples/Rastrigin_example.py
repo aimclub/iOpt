@@ -13,18 +13,18 @@ if __name__ == "__main__":
     # Создание тестовой задачи
     problem = Rastrigin(dimension=2)
     # Начальная точка
-    startPoint: Point = Point(floatVariables=[0.5, 0.5], discreteVariables=None)
+    start_point: Point = Point(float_variables=[0.5, 0.5], discrete_variables=None)
     # Параметры решателя
-    params = SolverParameters(r=2.5, eps=0.01, itersLimit=300, refineSolution=True, startPoint=startPoint)
+    params = SolverParameters(r=2.5, eps=0.01, iters_limit=300, refine_solution=True, start_point=start_point)
     # Создание решателя
     solver = Solver(problem=problem, parameters=params)
     # Вывод результатов в консоль в процессе решения задачи
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
     # 3D визуализация по окончании решения задачи
     spl = StaticPainterNDListener(fileName="rastrigin.png", pathForSaves="output", varsIndxs=[0, 1], mode="surface",
                                   calc="interpolation")
-    solver.AddListener(spl)
+    solver.add_listener(spl)
     # Запуск решения задачи
-    sol = solver.Solve()
+    sol = solver.solve()
 

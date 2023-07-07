@@ -27,10 +27,10 @@ class GA_TSP_2D(Problem):
         """
         super(GA_TSP_2D, self).__init__()
         self.dimension = 2
-        self.numberOfFloatVariables = 2
-        self.numberOfDiscreteVariables = 0
-        self.numberOfObjectives = 1
-        self.numberOfConstraints = 0
+        self.number_of_float_variables = 2
+        self.number_of_discrete_variables = 0
+        self.number_of_objectives = 1
+        self.number_of_constraints = 0
         self.costMatrix = cost_matrix
         # Проверка корректности числа итераций метода
         if num_iteration <= 0:
@@ -47,9 +47,9 @@ class GA_TSP_2D(Problem):
             raise ValueError('Incorrect population sizes were established')
 
         self.numberOfIterations = num_iteration
-        self.floatVariableNames = np.array(["mutation probability", "population size"], dtype=str)
-        self.lowerBoundOfFloatVariables = np.array([mutation_probability_bound['low'], population_size_bound['low']])
-        self.upperBoundOfFloatVariables = np.array([mutation_probability_bound['up'], population_size_bound['up'] / 2])
+        self.float_variable_names = np.array(["mutation probability", "population size"], dtype=str)
+        self.lower_bound_of_float_variables = np.array([mutation_probability_bound['low'], population_size_bound['low']])
+        self.upper_bound_of_float_variables = np.array([mutation_probability_bound['up'], population_size_bound['up'] / 2])
         self.n_dim = cost_matrix.shape[0]
 
     def calc_total_distance(self, routine):
@@ -61,14 +61,14 @@ class GA_TSP_2D(Problem):
         num_points, = routine.shape
         return sum([self.costMatrix[routine[i % num_points], routine[(i + 1) % num_points]] for i in range(num_points)])
 
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
         Метод расчёта значения целевой функции в точке
 
         :param point: Точка испытания
-        :param functionValue: объект хранения значения целевой функции в точке
+        :param function_value: объект хранения значения целевой функции в точке
         """
-        mutation_prob, num_population = point.floatVariables[0], int(point.floatVariables[1])
+        mutation_prob, num_population = point.float_variables[0], int(point.float_variables[1])
         # Контроль чётности осыбей популяции
         if num_population % 2 != 0:
             num_population -= 1
@@ -77,6 +77,6 @@ class GA_TSP_2D(Problem):
                         n_dim=self.n_dim, size_pop=num_population,
                         max_iter=int(self.numberOfIterations), prob_mut=mutation_prob)
         best_points, best_distance = ga_tsp.run()
-        functionValue.value = best_distance[0]
+        function_value.value = best_distance[0]
         print(best_distance[0])
-        return functionValue
+        return function_value

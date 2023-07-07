@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     # add needed listeners for solver
     apl = StaticPainterNDListener("xsquared_2_2.5_0.01.png", mode='lines layers')
-    solver.AddListener(apl)
+    solver.add_listener(apl)
 
     # solve the problem
-    sol = solver.Solve()
+    sol = solver.solve()

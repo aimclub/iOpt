@@ -5,53 +5,53 @@ import math
 class Evolvent:
     """Класс разверток
 
-    :param lowerBoundOfFloatVariables: массив для левых (нижних) границ, А.
-    :type  lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
-    :param upperBoundOfFloatVariables: массив для правых (верхних) границ, В.
-    :type  upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
-    :param numberOfFloatVariables: размерность задачи (N).
-    :type  numberOfFloatVariables: int
-    :param evolventDensity: плотность развертки (m).
-    :type  evolventDensity: int
+    :param lower_bound_of_float_variables: массив для левых (нижних) границ, А.
+    :type  lower_bound_of_float_variables: np.ndarray(shape = (1), dtype = np.double).
+    :param upper_bound_of_float_variables: массив для правых (верхних) границ, В.
+    :type  upper_bound_of_float_variables: np.ndarray(shape = (1), dtype = np.double).
+    :param number_of_float_variables: размерность задачи (N).
+    :type  number_of_float_variables: int
+    :param evolvent_density: плотность развертки (m).
+    :type  evolvent_density: int
     """
 
     def __init__(self,
-                 lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
-                 upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
-                 numberOfFloatVariables: int = 1,
-                 evolventDensity: int = 10
+                 lower_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = [],
+                 upper_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = [],
+                 number_of_float_variables: int = 1,
+                 evolvent_density: int = 10
                  ):
 
-        self.numberOfFloatVariables = numberOfFloatVariables
-        self.lowerBoundOfFloatVariables = np.copy(lowerBoundOfFloatVariables)
-        self.upperBoundOfFloatVariables = np.copy(upperBoundOfFloatVariables)
-        self.evolventDensity = evolventDensity
+        self.number_of_float_variables = number_of_float_variables
+        self.lower_bound_of_float_variables = np.copy(lower_bound_of_float_variables)
+        self.upper_bound_of_float_variables = np.copy(upper_bound_of_float_variables)
+        self.evolvent_density = evolvent_density
 
         self.nexpValue = 0  # nexpExtended
         self.nexpExtended: np.double = 1.0
 
         # инициализируем массив y нулями
-        self.yValues = np.zeros(self.numberOfFloatVariables, dtype=np.double)
+        self.yValues = np.zeros(self.number_of_float_variables, dtype=np.double)
         # np.ndarray(shape = (1), dtype = np.double) = [0,0] # y
-        for i in range(0, self.numberOfFloatVariables):
+        for i in range(0, self.number_of_float_variables):
             self.nexpExtended += self.nexpExtended
 
     # Установка границ
     # ----------------
     def SetBounds(self,
-                  lowerBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = [],
-                  upperBoundOfFloatVariables: np.ndarray(shape=(1), dtype=np.double) = []
+                  lower_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = [],
+                  upper_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = []
                   ):
         """Установка граничных значений
 
-        :param lowerBoundOfFloatVariables: массив для левых (нижних) границ, А.
-        :type  lowerBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
-        :param upperBoundOfFloatVariables: массив для правых (верхних) границ, В.
-        :type  upperBoundOfFloatVariables: np.ndarray(shape = (1), dtype = np.double).
+        :param lower_bound_of_float_variables: массив для левых (нижних) границ, А.
+        :type  lower_bound_of_float_variables: np.ndarray(shape = (1), dtype = np.double).
+        :param upper_bound_of_float_variables: массив для правых (верхних) границ, В.
+        :type  upper_bound_of_float_variables: np.ndarray(shape = (1), dtype = np.double).
         """
 
-        self.lowerBoundOfFloatVariables = np.copy(lowerBoundOfFloatVariables)
-        self.upperBoundOfFloatVariables = np.copy(upperBoundOfFloatVariables)
+        self.lower_bound_of_float_variables = np.copy(lower_bound_of_float_variables)
+        self.upper_bound_of_float_variables = np.copy(upper_bound_of_float_variables)
 
     def GetImage(self,
                  x: np.double
@@ -105,23 +105,23 @@ class Evolvent:
     # Преобразование
     # --------------------------------
     def __TransformP2D(self):
-        for i in range(0, self.numberOfFloatVariables):
+        for i in range(0, self.number_of_float_variables):
             self.yValues[i] = self.yValues[i] * (
-                        self.upperBoundOfFloatVariables[i] - self.lowerBoundOfFloatVariables[i]) + \
-                        (self.upperBoundOfFloatVariables[i] + self.lowerBoundOfFloatVariables[i]) / 2
+                        self.upper_bound_of_float_variables[i] - self.lower_bound_of_float_variables[i]) + \
+                        (self.upper_bound_of_float_variables[i] + self.lower_bound_of_float_variables[i]) / 2
 
     # Преобразование
     # --------------------------------
     def __TransformD2P(self):
-        for i in range(0, self.numberOfFloatVariables):
+        for i in range(0, self.number_of_float_variables):
             self.yValues[i] = (self.yValues[i] - (
-                        self.upperBoundOfFloatVariables[i] + self.lowerBoundOfFloatVariables[i]) / 2) / \
-                        (self.upperBoundOfFloatVariables[i] - self.lowerBoundOfFloatVariables[i])
+                        self.upper_bound_of_float_variables[i] + self.lower_bound_of_float_variables[i]) / 2) / \
+                        (self.upper_bound_of_float_variables[i] - self.lower_bound_of_float_variables[i])
 
     # ---------------------------------
 
     def __GetYonX(self, _x: np.double) -> np.ndarray(shape=(1), dtype=np.double):
-        if self.numberOfFloatVariables == 1:
+        if self.number_of_float_variables == 1:
             self.yValues[0] = _x - 0.5
             return self.yValues
 
@@ -141,14 +141,14 @@ class Evolvent:
         r = 0.5
         it = 0
 
-        # mn = self.evolventDensity * self.numberOfFloatVariables
+        # mn = self.evolvent_density * self.number_of_float_variables
 
-        iw = np.ones(self.numberOfFloatVariables, dtype=np.int32)
-        self.yValues = np.zeros(self.numberOfFloatVariables, dtype=np.double)
-        iu = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
-        iv = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
+        iw = np.ones(self.number_of_float_variables, dtype=np.int32)
+        self.yValues = np.zeros(self.number_of_float_variables, dtype=np.double)
+        iu = np.zeros(self.number_of_float_variables, dtype=np.int32)
+        iv = np.zeros(self.number_of_float_variables, dtype=np.int32)
 
-        for j in range(0, self.evolventDensity):
+        for j in range(0, self.evolvent_density):
             if math.isclose(_x, 1.0):
                 iis = self.nexpExtended - 1.0
                 d = 0.0
@@ -157,8 +157,8 @@ class Evolvent:
                 iis = int(d)
                 d -= iis
 
-                # print(iis, self.numberOfFloatVariables)
-            node = self.__CalculateNode(iis, self.numberOfFloatVariables, iu, iv)
+                # print(iis, self.number_of_float_variables)
+            node = self.__CalculateNode(iis, self.number_of_float_variables, iu, iv)
             # print(j, node)
 
             # заменить на () = () !
@@ -176,7 +176,7 @@ class Evolvent:
 
             r *= 0.5
             it = node
-            for i in range(0, self.numberOfFloatVariables):
+            for i in range(0, self.number_of_float_variables):
                 iu[i] *= iw[i]
                 iw[i] *= -iv[i]
                 self.yValues[i] += r * iu[i]
@@ -186,7 +186,7 @@ class Evolvent:
     # ---------------------------------
     def __GetXonY(self) -> np.double:
         x: np.double
-        if self.numberOfFloatVariables == 1:
+        if self.number_of_float_variables == 1:
             x = self.yValues[0] + 0.5
             return x
 
@@ -200,17 +200,17 @@ class Evolvent:
         node: np.int32
         r1: np.double
         iis: np.double
-        w = np.ones(self.numberOfFloatVariables, dtype=np.int32)
-        u = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
-        v = np.zeros(self.numberOfFloatVariables, dtype=np.int32)
+        w = np.ones(self.number_of_float_variables, dtype=np.int32)
+        u = np.zeros(self.number_of_float_variables, dtype=np.int32)
+        v = np.zeros(self.number_of_float_variables, dtype=np.int32)
         r = 0.5
         r1 = 1.0
         x = 0.0
         it = 0
 
-        for j in range(0, self.evolventDensity):
+        for j in range(0, self.evolvent_density):
             r *= 0.5
-            for i in range(0, self.numberOfFloatVariables):
+            for i in range(0, self.number_of_float_variables):
                 if self.yValues[i] < 0:
                     u[i] = -1
                 else:
@@ -232,7 +232,7 @@ class Evolvent:
             v[0] = v[it]
             v[it] = i
 
-            for i in range(0, self.numberOfFloatVariables):
+            for i in range(0, self.number_of_float_variables):
                 w[i] *= -v[i]
 
             if node == 0:
@@ -262,7 +262,7 @@ class Evolvent:
         iff = self.nexpExtended
         iis = 0.0
 
-        for i in range(0, self.numberOfFloatVariables):
+        for i in range(0, self.number_of_float_variables):
             iff /= 2
             k2 = -k1 * u[i]
             v[i] = u[i]
@@ -274,13 +274,13 @@ class Evolvent:
                 node = i
 
         if math.isclose(iis, 0.0):
-            node = self.numberOfFloatVariables - 1
+            node = self.number_of_float_variables - 1
         else:
-            v[self.numberOfFloatVariables - 1] = -v[self.numberOfFloatVariables - 1]
+            v[self.number_of_float_variables - 1] = -v[self.number_of_float_variables - 1]
             if math.isclose(iis, self.nexpExtended - 1.0):
-                node = self.numberOfFloatVariables - 1
+                node = self.number_of_float_variables - 1
             else:
-                if node1 == self.numberOfFloatVariables - 1:
+                if node1 == self.number_of_float_variables - 1:
                     v[node] = -v[node]
                 else:
                     node = node1

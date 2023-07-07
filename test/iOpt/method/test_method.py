@@ -33,8 +33,8 @@ class TestMethod(unittest.TestCase):
         self.assertEqual(self.method.evolvent.GetImage(1.0), 1.0)
 
     def test_CalculateM_easy(self):
-        left = SearchDataItem(x=0.0, y=Point(floatVariables=[5.0], discreteVariables=[]))
-        curr = SearchDataItem(x=1.0, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        left = SearchDataItem(x=0.0, y=Point(float_variables=[5.0], discrete_variables=[]))
+        curr = SearchDataItem(x=1.0, y=Point(float_variables=[10.0], discrete_variables=[]))
         curr.SetLeft(left)
         self.method.M[0] = 1.0
         assert (self.method.M[0] == 1.0)
@@ -62,9 +62,9 @@ class TestMethod(unittest.TestCase):
         self.assertFalse(self.method.recalcR)
 
     def test_CalculateM_hard(self):
-        left = SearchDataItem(x=0.1, y=Point(floatVariables=[6.0], discreteVariables=[]))
-        curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
-        right = SearchDataItem(x=1.0, y=Point(floatVariables=[15.0], discreteVariables=[]))
+        left = SearchDataItem(x=0.1, y=Point(float_variables=[6.0], discrete_variables=[]))
+        curr = SearchDataItem(x=0.5, y=Point(float_variables=[10.0], discrete_variables=[]))
+        right = SearchDataItem(x=1.0, y=Point(float_variables=[15.0], discrete_variables=[]))
         curr.SetLeft(left)
         assert (self.method.M[0] == 1.0)
         curr.delta = 0.4
@@ -92,7 +92,7 @@ class TestMethod(unittest.TestCase):
         self.assertFalse(self.method.recalcR)
 
     def test_CalculateM_dont_throws(self):
-        curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        curr = SearchDataItem(x=0.5, y=Point(float_variables=[10.0], discrete_variables=[]))
 
         try:
             self.method.CalculateM(curr, None)
@@ -100,7 +100,7 @@ class TestMethod(unittest.TestCase):
             self.fail("exception was raised!")
 
     def test_CalculateM_throws(self):
-        curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        curr = SearchDataItem(x=0.5, y=Point(float_variables=[10.0], discrete_variables=[]))
         with self.assertRaises(Exception):
             self.method.CalculateM(None, curr)
 
@@ -110,8 +110,8 @@ class TestMethod(unittest.TestCase):
         self.assertEqual(self.method.GetIterationsCount(), itcount + 1)
 
     def test_CalculateGlobalR(self):
-        left = SearchDataItem(x=0.0, y=Point(floatVariables=[5.0], discreteVariables=[]))
-        curr = SearchDataItem(x=1.0, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        left = SearchDataItem(x=0.0, y=Point(float_variables=[5.0], discrete_variables=[]))
+        curr = SearchDataItem(x=1.0, y=Point(float_variables=[10.0], discrete_variables=[]))
         curr.SetLeft(left)
         curr.delta = 1.0
         left.SetZ(5.0)
@@ -144,7 +144,7 @@ class TestMethod(unittest.TestCase):
         self.assertEqual(curr.globalR, 1.25)
 
     def test_CalculateGlobalR_throws(self):
-        left = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        left = SearchDataItem(x=0.5, y=Point(float_variables=[10.0], discrete_variables=[]))
 
         left.SetZ(15.0)
         self.method.M[0] = 10.0
@@ -152,9 +152,9 @@ class TestMethod(unittest.TestCase):
             self.method.CalculateGlobalR(None, left)
 
     def test_CalculateNextPointCoordinate(self):
-        self.method.task.problem.numberOfFloatVariables = 1
-        left = SearchDataItem(x=0.0, y=Point(floatVariables=[5.0], discreteVariables=[]))
-        curr = SearchDataItem(x=1.0, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        self.method.task.problem.number_of_float_variables = 1
+        left = SearchDataItem(x=0.0, y=Point(float_variables=[5.0], discrete_variables=[]))
+        curr = SearchDataItem(x=1.0, y=Point(float_variables=[10.0], discrete_variables=[]))
 
         curr.delta = 1.0
         left.SetZ(5.0)
@@ -173,8 +173,8 @@ class TestMethod(unittest.TestCase):
         self.assertEqual(0.5, self.method.CalculateNextPointCoordinate(curr))
 
     def test_CalculateNextPointCoordinate_throws(self):
-        self.method.task.problem.numberOfFloatVariables = 1
-        curr = SearchDataItem(x=0.5, y=Point(floatVariables=[10.0], discreteVariables=[]))
+        self.method.task.problem.number_of_float_variables = 1
+        curr = SearchDataItem(x=0.5, y=Point(float_variables=[10.0], discrete_variables=[]))
 
         curr.SetZ(15.0)
         self.method.M[0] = 10.0

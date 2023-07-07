@@ -36,17 +36,17 @@ class IndexMethod(Method):
         :return: точка, в которой сохранены результаты испытания.
         """
         try:
-            number_of_constraints = self.task.problem.numberOfConstraints
+            number_of_constraints = self.task.problem.number_of_constraints
             for i in range(number_of_constraints):
-                point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)  # ???
+                point.function_values[i] = FunctionValue(FunctionType.CONSTRAINT, i)  # ???
                 point = self.task.Calculate(point, i)
-                point.SetZ(point.functionValues[i].value)
+                point.SetZ(point.function_values[i].value)
                 point.SetIndex(i)
                 if point.GetZ() > 0:
                     return point
-            point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, number_of_constraints)
+            point.function_values[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, number_of_constraints)
             point = self.task.Calculate(point, number_of_constraints)
-            point.SetZ(point.functionValues[number_of_constraints].value)
+            point.SetZ(point.function_values[number_of_constraints].value)
             point.SetIndex(number_of_constraints)
         except Exception:
             point.SetZ(sys.float_info.max)
@@ -81,7 +81,7 @@ class IndexMethod(Method):
                 other_point = other_point.GetLeft()
             if other_point is not None and other_point.GetIndex() >= 0:
                 # print(index)
-                m = abs(other_point.functionValues[index].value - curr_point.GetZ()) / \
+                m = abs(other_point.function_values[index].value - curr_point.GetZ()) / \
                     self.CalculateDelta(other_point, curr_point, self.dimension)
             # Ищем справа
             other_point = left_point.GetRight()
@@ -90,7 +90,7 @@ class IndexMethod(Method):
             while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
                 other_point = other_point.GetRight()
             if other_point is not None and other_point.GetIndex() >= 0:
-                m = max(m, abs(curr_point.GetZ() - other_point.functionValues[index].value) / \
+                m = max(m, abs(curr_point.GetZ() - other_point.function_values[index].value) / \
                         self.CalculateDelta(curr_point, other_point, self.dimension))
 
         if m > self.M[index] or (self.M[index] == 1.0 and m > 1e-12):
@@ -133,13 +133,13 @@ class IndexMethod(Method):
 
     def UpdateZ(self, point: SearchDataItem) -> None:
         for i in range(point.GetIndex()):
-            if self.Z[i] > point.functionValues[i].value:
-                self.Z[i] = point.functionValues[i].value
+            if self.Z[i] > point.function_values[i].value:
+                self.Z[i] = point.function_values[i].value
                 self.recalcR = True
 
     def RecalcAllCharacteristics(self) -> None:
         for i in range(self.best.GetIndex()):
-            self.Z[i] = -self.M[i] * self.parameters.epsR
+            self.Z[i] = -self.M[i] * self.parameters.eps_r
         self.Z[self.best.GetIndex()] = self.best.GetZ()
         super().RecalcAllCharacteristics()
 
@@ -156,4 +156,4 @@ class IndexMethod(Method):
             self.recalcR = True
             self.Z[point.GetIndex()] = point.GetZ()
         # self.UpdateZ(point)
-        self.searchData.solution.bestTrials[0] = self.best
+        self.search_data.solution.best_trials[0] = self.best

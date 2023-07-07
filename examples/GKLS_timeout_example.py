@@ -13,18 +13,18 @@ def SolveSingleGKLS():
     problem = GKLS(dimension=6, functionNumber=39)
 
     # Формируем параметры решателя
-    params = SolverParameters(r=7, eps=0.01, itersLimit=3000000,
-                              numberOfParallelPoints=4, timeout=1)
+    params = SolverParameters(r=7, eps=0.01, iters_limit=3000000,
+                              number_of_parallel_points=4, timeout=1)
 
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод резултатов в консоль
     cfol = ConsoleOutputListener(mode='result')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
     # Решение задачи
-    sol = solver.Solve()
+    sol = solver.solve()
 
 
 if __name__ == "__main__":

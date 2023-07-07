@@ -44,21 +44,21 @@ class Method:
         self.parameters = parameters
         self.task = task
         self.evolvent = evolvent
-        self.searchData = searchData
+        self.search_data = searchData
         # change to np.array, but indexing np is slower
-        self.M = [1.0 for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
-        self.Z = [np.infty for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
-        self.dimension = task.problem.numberOfFloatVariables  # А ДЛЯ ДИСКРЕТНЫХ?
-        self.searchData.solution.solutionAccuracy = np.infty
-        self.numberOfAllFunctions = task.problem.numberOfObjectives + task.problem.numberOfConstraints
+        self.M = [1.0 for _ in range(task.problem.number_of_objectives + task.problem.number_of_constraints)]
+        self.Z = [np.infty for _ in range(task.problem.number_of_objectives + task.problem.number_of_constraints)]
+        self.dimension = task.problem.number_of_float_variables  # А ДЛЯ ДИСКРЕТНЫХ?
+        self.search_data.solution.solution_accuracy = np.infty
+        self.numberOfAllFunctions = task.problem.number_of_objectives + task.problem.number_of_constraints
 
     @property
     def min_delta(self):
-        return self.searchData.solution.solutionAccuracy
+        return self.search_data.solution.solution_accuracy
 
     @min_delta.setter
     def min_delta(self, val):
-        self.searchData.solution.solutionAccuracy = val
+        self.search_data.solution.solution_accuracy = val
 
     # @staticmethod
     # def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
@@ -95,48 +95,48 @@ class Method:
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
         left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.,
-                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                              function_values=[FunctionValue()] * self.numberOfAllFunctions)
         right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0,
-                               functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                               function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
         items: list[SearchDataItem] = []
 
-        if self.parameters.startPoint:
-            numberOfPoint: int = self.parameters.numberOfParallelPoints - 1
+        if self.parameters.start_point:
+            numberOfPoint: int = self.parameters.number_of_parallel_points - 1
             h: float = 1.0 / (numberOfPoint + 1)
 
-            yStartPoint = Point(copy.copy(self.parameters.startPoint.floatVariables), None)
-            xStartPoint = self.evolvent.GetInverseImage(self.parameters.startPoint.floatVariables)
+            ystart_point = Point(copy.copy(self.parameters.start_point.float_variables), None)
+            xstart_point = self.evolvent.GetInverseImage(self.parameters.start_point.float_variables)
 
-            itemStartPoint = SearchDataItem(yStartPoint, xStartPoint,
-                                  functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+            itemstart_point = SearchDataItem(ystart_point, xstart_point,
+                                            function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
-            isAddStartPoint: bool = False
+            isAddstart_point: bool = False
 
             for i in range(numberOfPoint):
                 x = h * (i + 1)
                 y = Point(self.evolvent.GetImage(x), None)
                 item = SearchDataItem(y, x,
-                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
-                if x < xStartPoint < h * (i + 2):
+                                      function_values=[FunctionValue()] * self.numberOfAllFunctions)
+                if x < xstart_point < h * (i + 2):
                     items.append(item)
-                    items.append(itemStartPoint)
-                    isAddStartPoint = True
+                    items.append(itemstart_point)
+                    isAddstart_point = True
                 else:
                     items.append(item)
 
-            if not isAddStartPoint:
-                items.append(itemStartPoint)
+            if not isAddstart_point:
+                items.append(itemstart_point)
         else:
 
-            numberOfPoint: int = self.parameters.numberOfParallelPoints
+            numberOfPoint: int = self.parameters.number_of_parallel_points
             h: float = 1.0 / (numberOfPoint + 1)
 
             for i in range(numberOfPoint):
                 x = h * (i + 1)
                 y = Point(self.evolvent.GetImage(x), None)
                 item = SearchDataItem(y, x,
-                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                                      function_values=[FunctionValue()] * self.numberOfAllFunctions)
                 items.append(item)
 
         if calculator is None:
@@ -163,17 +163,17 @@ class Method:
         self.CalculateGlobalR(right, items[-1])
 
         # вставить left  и right, потом middle
-        self.searchData.InsertFirstDataItem(left, right)
-        # self.searchData.InsertDataItem(middle, right)
+        self.search_data.InsertFirstDataItem(left, right)
+        # self.search_data.InsertDataItem(middle, right)
 
         for item in items:
-            self.searchData.InsertDataItem(item, right)
+            self.search_data.InsertDataItem(item, right)
 
         self.recalcR = True
         self.recalcM = True
 
         self.iterationsCount = len(items)
-        self.searchData.solution.numberOfGlobalTrials = len(items)
+        self.search_data.solution.number_of_global_trials = len(items)
 
         return items
 
@@ -184,7 +184,7 @@ class Method:
 
         :return: True, если выполнен критерий остановки; False - в противном случае.
         """
-        if self.min_delta < self.parameters.eps or self.iterationsCount >= self.parameters.globalMethodIterationCount:
+        if self.min_delta < self.parameters.eps or self.iterationsCount >= self.parameters.global_method_iteration_count:
             self.stop = True
         else:
             self.stop = False
@@ -197,7 +197,7 @@ class Method:
         """
         if self.recalcM is not True:
             return
-        for item in self.searchData:
+        for item in self.search_data:
             self.CalculateM(item, item.GetLeft())
         self.recalcM = False
 
@@ -207,11 +207,11 @@ class Method:
         """
         if self.recalcR is not True:
             return
-        self.searchData.ClearQueue()
-        for item in self.searchData:  # Должно работать...
+        self.search_data.ClearQueue()
+        for item in self.search_data:  # Должно работать...
             self.CalculateGlobalR(item, item.GetLeft())
             # self.CalculateLocalR(item)
-        self.searchData.RefillQueue()
+        self.search_data.RefillQueue()
         self.recalcR = False
 
     def CalculateNextPointCoordinate(self, point: SearchDataItem) -> float:
@@ -239,7 +239,7 @@ class Method:
                 dg = 1.0
 
             x = 0.5 * (xl + xr)
-            x -= 0.5 * dg * pow(abs(dif) / self.M[v], self.task.problem.numberOfFloatVariables) / self.parameters.r
+            x -= 0.5 * dg * pow(abs(dif) / self.M[v], self.task.problem.number_of_float_variables) / self.parameters.r
 
         else:
             x = 0.5 * (xl + xr)
@@ -260,15 +260,15 @@ class Method:
         if self.recalcR is True:
             self.RecalcAllCharacteristics()
 
-        old = self.searchData.GetDataItemWithMaxGlobalR()
+        old = self.search_data.GetDataItemWithMaxGlobalR()
         self.min_delta = min(old.delta, self.min_delta)
         newx = self.CalculateNextPointCoordinate(old)
         newy = self.evolvent.GetImage(newx)
         new = copy.deepcopy(SearchDataItem(Point(newy, []), newx,
-                                           functionValues=[FunctionValue()] * self.numberOfAllFunctions))
+                                           function_values=[FunctionValue()] * self.numberOfAllFunctions))
 
         # Обновление числа испытаний
-        self.searchData.solution.numberOfGlobalTrials += 1
+        self.search_data.solution.number_of_global_trials += 1
 
         return new, old
 
@@ -282,7 +282,7 @@ class Method:
         """
         try:
             point = self.task.Calculate(point, 0)
-            point.SetZ(point.functionValues[0].value)
+            point.SetZ(point.function_values[0].value)
             point.SetIndex(0)
         except Exception:
             point.SetZ(sys.float_info.max)
@@ -365,7 +365,7 @@ class Method:
         self.CalculateGlobalR(newpoint, oldpoint.GetLeft())
         self.CalculateGlobalR(oldpoint, newpoint)
 
-        self.searchData.InsertDataItem(newpoint, oldpoint)
+        self.search_data.InsertDataItem(newpoint, oldpoint)
 
     def UpdateOptimum(self, point: SearchDataItem) -> None:
         r"""
@@ -381,7 +381,7 @@ class Method:
             self.best = point
             self.recalcR = True
             self.Z[point.GetIndex()] = point.GetZ()
-        self.searchData.solution.bestTrials[0] = self.best
+        self.search_data.solution.best_trials[0] = self.best
 
     def FinalizeIteration(self) -> None:
         r"""

@@ -92,26 +92,25 @@ if __name__ == "__main__":
     """
     Minimization of the Rastrigin test function with visualization
     """
-    #Create a test task
+    # Create a test task
     problem = Rastrigin(2)
-    #Setup a solver options
-    params = SolverParameters(r=2.5, eps=0.01, itersLimit=300, refineSolution=True)
-    #Create the solver
+    # Setup a solver options
+    params = SolverParameters(r=2.5, eps=0.01, iters_limit=300, refine_solution=True)
+    # Create the solver
     solver = Solver(problem, parameters=params)
-    #Print results to console while solving
+    # Print results to console while solving
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
-    #3D visualization at the end of the solution
-    spl = StaticPainterNDListener("rastrigin.png", "output", varsIndxs=[0,1], mode="surface", calc="interpolation")
-    solver.AddListener(spl)
-    #Run problem solution
-    sol = solver.Solve()
+    solver.add_listener(cfol)
+    # 3D visualization at the end of the solution
+    spl = StaticPainterNDListener("rastrigin.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
+    solver.add_listener(spl)
+    # Run problem solution
+    sol = solver.solve()
 ```
 
 # **Examples**
 
 Let’s demonstrate the use of the iOpt framework when tuning the hyperparameters of one of the machine learning methods. In the support vector machine ([SVC](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html)), we find the optimal hyperparameters (the regularization parameter **C**, the kernel coefficient **gamma**) in the problem of breast cancer classification ([detailed description of the data](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic))).
-
 
 ```python
 import numpy as np
@@ -140,19 +139,19 @@ if __name__ == "__main__":
 
     problem = SVC_2d.SVC_2D(x, y, regularization_value_bound, kernel_coefficient_bound)
 
-    method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
+    method_params = SolverParameters(r=np.double(3.0), iters_limit=100)
     solver = Solver(problem, parameters=method_params)
 
     apl = AnimatePainterNDListener("svc2d_anim.png", "output", varsIndxs=[0, 1], toPaintObjFunc=False)
-    solver.AddListener(apl)
+    solver.add_listener(apl)
 
     spl = StaticPainterNDListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
-    solver.AddListener(spl)
-    
-    cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
+    solver.add_listener(spl)
 
-    solver_info = solver.Solve()
+    cfol = ConsoleOutputListener(mode='full')
+    solver.add_listener(cfol)
+
+    solver_info = solver.solve()
 
 ```
 

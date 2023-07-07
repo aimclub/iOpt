@@ -26,15 +26,15 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=method_params)
 
     apl = AnimatePainterListener("svc1d_anim.png", "output", toPaintObjFunc=True)
-    solver.AddListener(apl)
+    solver.add_listener(apl)
 
     spl = StaticPainterListener("svc1d_stat.png", "output", mode="interpolation")
-    solver.AddListener(spl)
+    solver.add_listener(spl)
 
-    solver_info = solver.Solve()
-    print(solver_info.numberOfGlobalTrials)
-    print(solver_info.numberOfLocalTrials)
-    print(solver_info.solvingTime)
+    solver_info = solver.solve()
+    print(solver_info.number_of_global_trials)
+    print(solver_info.number_of_local_trials)
+    print(solver_info.solving_time)
 
-    print(solver_info.bestTrials[0].point.floatVariables)
-    print(solver_info.bestTrials[0].functionValues[0].value)
+    print(solver_info.best_trials[0].point.float_variables)
+    print(solver_info.best_trials[0].function_values[0].value)

@@ -21,20 +21,20 @@ class AnimatePainter(Painter):
         self.plotter = AnimatePlotter2D(parameterInNDProblem, 0, 1)
 
     def SetProblem(self, problem: Problem):
-        self.objFunc = problem.Calculate
+        self.objFunc = problem.calculate
 
-        for i in range(problem.numberOfFloatVariables):
-            self.section.append(float(problem.upperBoundOfFloatVariables[i]) - float(problem.lowerBoundOfFloatVariables[i]))
+        for i in range(problem.number_of_float_variables):
+            self.section.append(float(problem.upper_bound_of_float_variables[i]) - float(problem.lower_bound_of_float_variables[i]))
 
         # настройки графика
-        self.plotter.SetBounds(float(problem.lowerBoundOfFloatVariables[self.parameterInNDProblem]),
-                                 float(problem.upperBoundOfFloatVariables[self.parameterInNDProblem]))
+        self.plotter.SetBounds(float(problem.lower_bound_of_float_variables[self.parameterInNDProblem]),
+                                 float(problem.upper_bound_of_float_variables[self.parameterInNDProblem]))
 
     def PaintObjectiveFunc(self):
         self.plotter.PlotByGrid(self.CalculateFunc, self.section.copy(), pointsCount=150)
 
     def PaintPoints(self, currPoints):
-        x = [currPoint.GetY().floatVariables[self.parameterInNDProblem] for currPoint in currPoints]
+        x = [currPoint.GetY().float_variables[self.parameterInNDProblem] for currPoint in currPoints]
         fv = [currPoint.GetZ() for currPoint in currPoints]
         if self.isPointsAtBottom:
             fv = [currPoint.GetZ() * 0.7 for currPoint in currPoints]
@@ -43,8 +43,8 @@ class AnimatePainter(Painter):
         self.plotter.PlotPoints(x, fv, 'blue', 'o', 4)
 
     def PaintOptimum(self, solution: Solution):
-        optimum = solution.bestTrials[0].point.floatVariables[self.parameterInNDProblem]
-        optimumVal = solution.bestTrials[0].functionValues[0].value
+        optimum = solution.best_trials[0].point.float_variables[self.parameterInNDProblem]
+        optimumVal = solution.best_trials[0].function_values[0].value
 
         value = optimumVal
 
@@ -84,26 +84,26 @@ class AnimatePainterND(Painter):
         self.plotter = AnimatePlotter3D(parametersInNDProblem)
 
     def SetProblem(self, problem: Problem):
-        self.objFunc = problem.Calculate
+        self.objFunc = problem.calculate
 
         # настройки графика
-        self.plotter.SetBounds([float(problem.lowerBoundOfFloatVariables[self.parametersInNDProblem[0]]),
-                               float(problem.lowerBoundOfFloatVariables[self.parametersInNDProblem[1]])],
-                               [float(problem.upperBoundOfFloatVariables[self.parametersInNDProblem[0]]),
-                               float(problem.upperBoundOfFloatVariables[self.parametersInNDProblem[1]])])
+        self.plotter.SetBounds([float(problem.lower_bound_of_float_variables[self.parametersInNDProblem[0]]),
+                               float(problem.lower_bound_of_float_variables[self.parametersInNDProblem[1]])],
+                               [float(problem.upper_bound_of_float_variables[self.parametersInNDProblem[0]]),
+                               float(problem.upper_bound_of_float_variables[self.parametersInNDProblem[1]])])
 
     def PaintObjectiveFunc(self):
         self.plotter.PlotByGrid(self.CalculateFunc, self.section, pointsCount=150)
 
     def PaintPoints(self, currPoints):
-        x = [[currPoint.GetY().floatVariables[self.parametersInNDProblem[0]] for currPoint in currPoints],
-        [currPoint.GetY().floatVariables[self.parametersInNDProblem[1]] for currPoint in currPoints]]
+        x = [[currPoint.GetY().float_variables[self.parametersInNDProblem[0]] for currPoint in currPoints],
+        [currPoint.GetY().float_variables[self.parametersInNDProblem[1]] for currPoint in currPoints]]
         self.plotter.PlotPoints(x, [], 'blue', 'o', 4)
 
     def PaintOptimum(self, solution: Solution):
-        optimum = [solution.bestTrials[0].point.floatVariables[self.parametersInNDProblem[0]],
-                   solution.bestTrials[0].point.floatVariables[self.parametersInNDProblem[1]]]
-        optimumVal = solution.bestTrials[0].functionValues[0].value
+        optimum = [solution.best_trials[0].point.float_variables[self.parametersInNDProblem[0]],
+                   solution.best_trials[0].point.float_variables[self.parametersInNDProblem[1]]]
+        optimumVal = solution.best_trials[0].function_values[0].value
 
         self.plotter.PlotPoints(optimum, [], 'red', 'o', 4)
 

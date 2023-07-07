@@ -17,7 +17,7 @@ class TestRomeijn5c(unittest.TestCase):
         for i in range(0, 99):
             point = Point([], [])
             for j in range(0, self.problem.dimension):
-                point.floatVariables = np.append(point.floatVariables, Sample.test_points[i][j])
+                point.float_variables = np.append(point.float_variables, Sample.test_points[i][j])
             functionValue = FunctionValue()
             if Sample.test_points[i][self.problem.dimension] == 1:
                 functionValue.type = FunctionType.OBJECTIV
@@ -25,7 +25,7 @@ class TestRomeijn5c(unittest.TestCase):
                 functionValue.type = FunctionType.CONSTRAINT
                 functionValue.functionID = Sample.test_points[i][self.problem.dimension] - 2
 
-            functionValue = self.problem.Calculate(point, functionValue)
+            functionValue = self.problem.calculate(point, functionValue)
             self.assertAlmostEqual(functionValue.value, Sample.test_points[i][self.problem.dimension + 1], 7)
 
 

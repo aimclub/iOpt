@@ -25,17 +25,17 @@ class SearchDataItem(Trial):
     """
 
     def __init__(self, y: Point, x: np.double,
-                 functionValues: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
+                 function_values: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
                  discreteValueIndex: int = 0):
         """
         Конструктор класса SearchDataItem
 
         :param y: Точка испытания в исходной N-мерной области поиска
         :param x: Отображении точки испытания y на отрезок [0, 1]
-        :param functionValues: Вектор значений функций (целевой функции и функций ограничений)
+        :param function_values: Вектор значений функций (целевой функции и функций ограничений)
         :param discreteValueIndex: Дискретный параметр
         """
-        super().__init__(point=y, functionValues=copy.deepcopy(functionValues))
+        super().__init__(point=y, function_values=copy.deepcopy(function_values))
         self.point = y
         self.__x = x
         self.__discreteValueIndex = discreteValueIndex
@@ -366,7 +366,7 @@ class SearchData:
         for dataItem in self._allTrials:
 
             fvs = []
-            for fv in dataItem.functionValues:
+            for fv in dataItem.function_values:
                 fvs.append({
                     'value': fv.value,
                     'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
@@ -374,10 +374,10 @@ class SearchData:
                 })
 
             data['SearchDataItem'].append({
-                'floatVariables': list(dataItem.GetY().floatVariables),
-                'discreteVariables': [] if dataItem.GetY().discreteVariables is None else list(
-                    dataItem.GetY().discreteVariables),
-                'functionValues': list(fvs),
+                'float_variables': list(dataItem.GetY().float_variables),
+                'discrete_variables': [] if dataItem.GetY().discrete_variables is None else list(
+                    dataItem.GetY().discrete_variables),
+                'function_values': list(fvs),
                 'x': dataItem.GetX(),
                 'delta': dataItem.delta,
                 'globalR': dataItem.globalR,
@@ -387,21 +387,21 @@ class SearchData:
                 '__z': dataItem.GetZ()
             })
 
-        data['BestTrials'] = []  # создаем список
-        dataItem = self.solution.bestTrials[0]
+        data['best_trials'] = []  # создаем список
+        dataItem = self.solution.best_trials[0]
         fvs = []  # пустой список для словарей со значениями функций
-        for fv in dataItem.functionValues:
+        for fv in dataItem.function_values:
             fvs.append({
                 'value': fv.value,
                 'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
                 'functionID': str(fv.functionID),
             })
 
-        data['BestTrials'].append({
-            'floatVariables': list(dataItem.GetY().floatVariables),
-            'discreteVariables': [] if dataItem.GetY().discreteVariables is None else list(
-                dataItem.GetY().discreteVariables),
-            'functionValues': list(fvs),
+        data['best_trials'].append({
+            'float_variables': list(dataItem.GetY().float_variables),
+            'discrete_variables': [] if dataItem.GetY().discrete_variables is None else list(
+                dataItem.GetY().discrete_variables),
+            'function_values': list(fvs),
             'x': dataItem.GetX(),
             'delta': dataItem.delta,
             'globalR': dataItem.globalR,
@@ -424,16 +424,16 @@ class SearchData:
         with open(fileName) as json_file:
             data = json.load(json_file)
 
-            functionValues = []
-            for p in data['BestTrials']:
+            function_values = []
+            for p in data['best_trials']:
 
-                for fv in p['functionValues']:
-                    functionValues.append(FunctionValue(
+                for fv in p['function_values']:
+                    function_values.append(FunctionValue(
                         (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
                         str(fv['functionID'])))
-                    functionValues[-1].value = np.double(fv['value'])
+                    function_values[-1].value = np.double(fv['value'])
 
-                dataItem = SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
+                dataItem = SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
                                           p['discreteValueIndex'])
                 dataItem.delta = p['delta']  # [-1] - обращение к последнему элементу
                 dataItem.globalR = p['globalR']
@@ -441,21 +441,21 @@ class SearchData:
                 dataItem.SetZ(p['__z'])
                 dataItem.SetIndex(p['index'])
 
-                self.solution.bestTrials[0] = dataItem
+                self.solution.best_trials[0] = dataItem
 
             firstDataItem = []
 
             for p in data['SearchDataItem'][:2]:
-                functionValues = []
+                function_values = []
 
-                for fv in p['functionValues']:
-                    functionValues.append(FunctionValue(
+                for fv in p['function_values']:
+                    function_values.append(FunctionValue(
                         (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
                         str(fv['functionID'])))
-                    functionValues[-1].value = np.double(fv['value'])
+                    function_values[-1].value = np.double(fv['value'])
 
                 firstDataItem.append(
-                    SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
+                    SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
                                    p['discreteValueIndex']))
                 firstDataItem[-1].delta = p['delta']
                 firstDataItem[-1].globalR = p['globalR']
@@ -465,15 +465,15 @@ class SearchData:
             self.InsertFirstDataItem(firstDataItem[0], firstDataItem[1])
 
             for p in data['SearchDataItem'][2:]:
-                functionValues = []
+                function_values = []
 
-                for fv in p['functionValues']:
-                    functionValues.append(FunctionValue(
+                for fv in p['function_values']:
+                    function_values.append(FunctionValue(
                         (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
                         str(fv['functionID'])))
-                    functionValues[-1].value = np.double(fv['value'])
+                    function_values[-1].value = np.double(fv['value'])
 
-                dataItem = SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
+                dataItem = SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
                                           p['discreteValueIndex'])
                 dataItem.delta = p['delta']
                 dataItem.globalR = p['globalR']

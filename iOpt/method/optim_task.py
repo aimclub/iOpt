@@ -19,7 +19,7 @@ class OptimizationTask:
         self.problem = problem
 
         if perm is None:
-            self.perm = np.ndarray(shape=(self.problem.numberOfObjectives + self.problem.numberOfConstraints),
+            self.perm = np.ndarray(shape=(self.problem.number_of_objectives + self.problem.number_of_constraints),
                                    dtype=int)
             for i in range(self.perm.size):
                 self.perm[i] = i
@@ -33,10 +33,10 @@ class OptimizationTask:
                   ) -> SearchDataItem:
         """Compute selected function by number."""
         # ???
-        dataItem.functionValues[self.perm[functionIndex]] = self.problem.Calculate(dataItem.point,
-                                                                                   dataItem.functionValues[
+        dataItem.function_values[self.perm[functionIndex]] = self.problem.calculate(dataItem.point,
+                                                                                    dataItem.function_values[
                                                                                        self.perm[functionIndex]])
-        if not(np.isfinite(dataItem.functionValues[self.perm[functionIndex]].value)):
+        if not(np.isfinite(dataItem.function_values[self.perm[functionIndex]].value)):
             raise Exception("Infinity values")
 
         return dataItem

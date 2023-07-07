@@ -15,22 +15,22 @@ def SolveSingleGKLS():
     problem = GKLS(dimension=2, functionNumber=39)
 
     # Формируем параметры решателя
-    params = SolverParameters(r=3.5, eps=0.01, itersLimit=300, refineSolution=True, numberOfParallelPoints=4)
+    params = SolverParameters(r=3.5, eps=0.01, iters_limit=300, refine_solution=True, number_of_parallel_points=4)
 
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод резултатов в консоль
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
     # Добавляем построение 3D визуализации после решения задачи
     spl = StaticPainterNDListener(fileName="GKLS.png", pathForSaves="output", varsIndxs=[0, 1], mode="lines layers",
                                   calc="objective function")
-    solver.AddListener(spl)
+    solver.add_listener(spl)
 
     # Решение задачи
-    sol = solver.Solve()
+    sol = solver.solve()
 
 
 if __name__ == "__main__":

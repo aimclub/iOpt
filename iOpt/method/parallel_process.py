@@ -58,7 +58,7 @@ class ParallelProcess(Process):
             list_newpoint: list[SearchDataItem] = []
             list_oldpoint: list[SearchDataItem] = []
 
-            for _ in range(self.parameters.numberOfParallelPoints):
+            for _ in range(self.parameters.number_of_parallel_points):
                 newpoint, oldpoint = self.method.CalculateIterationPoint()
                 list_newpoint.append(newpoint)
                 list_oldpoint.append(oldpoint)
@@ -68,7 +68,7 @@ class ParallelProcess(Process):
                 self.method.UpdateOptimum(newpoint)
                 self.method.RenewSearchData(newpoint, oldpoint)
                 self.method.FinalizeIteration()
-                doneTrials = self.searchData.GetLastItems(self.parameters.numberOfParallelPoints * number_)
+                doneTrials = self.search_data.GetLastItems(self.parameters.number_of_parallel_points * number_)
 
         for listener in self._listeners:
             listener.OnEndIteration(doneTrials, self.GetResults())

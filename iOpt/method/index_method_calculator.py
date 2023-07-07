@@ -24,17 +24,17 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
 
         :return: точка, в которой сохранены результаты испытания.
         """
-        number_of_constraints = self.task.problem.numberOfConstraints
+        number_of_constraints = self.task.problem.number_of_constraints
         for i in range(number_of_constraints):
-            point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)
+            point.function_values[i] = FunctionValue(FunctionType.CONSTRAINT, i)
             point = self.task.Calculate(point, i)
-            point.SetZ(point.functionValues[i].value)
+            point.SetZ(point.function_values[i].value)
             point.SetIndex(i)
             if point.GetZ() < 0:
                 return point
-        point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
+        point.function_values[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
         point = self.task.Calculate(point, number_of_constraints)
-        point.SetZ(point.functionValues[number_of_constraints].value)
+        point.SetZ(point.function_values[number_of_constraints].value)
         point.SetIndex(number_of_constraints)
         return point
 
@@ -46,6 +46,6 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
         :param src_point: точка c результатами испытаний.
         """
 
-        dist_point.functionValues = copy.deepcopy(src_point.functionValues)
+        dist_point.function_values = copy.deepcopy(src_point.function_values)
         dist_point.SetZ(src_point.GetZ())
         dist_point.SetIndex(src_point.GetIndex())

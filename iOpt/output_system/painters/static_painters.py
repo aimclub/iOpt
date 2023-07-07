@@ -11,14 +11,14 @@ import os
 
 class DiscretePainter(Painter):
     def __init__(self, searchDataSorted, bestsvalues, pcount, floatdim, optimumPoint, discreteValues,
-                 discreteName, mode, calc, subparameters, lb, rb, fileName, pathForSaves, calculate, optimumValue, searchData, numberOfParallelPoints):
+                 discreteName, mode, calc, subparameters, lb, rb, fileName, pathForSaves, calculate, optimumValue, searchData, number_of_parallel_points):
         self.pathForSaves = pathForSaves
         self.fileName = fileName
         self.calc = calc
         self.calculate = calculate
         self.optimum = optimumPoint
         self.optimumVal = optimumValue
-        self.numberOfParallelPoints = numberOfParallelPoints
+        self.number_of_parallel_points = number_of_parallel_points
 
         self.values = []
         self.points = []
@@ -33,12 +33,12 @@ class DiscretePainter(Painter):
             for x in searchData:
                 if x.GetZ() > 1.7e+308:
                     continue
-                if x.GetY().discreteVariables != self.optimum.discreteVariables:
+                if x.GetY().discrete_variables != self.optimum.discrete_variables:
                     if floatdim > 1:
-                        self.otherPoints[0].append(x.GetY().floatVariables[subparameters[0] - 1])
-                        self.otherPoints[1].append(x.GetY().floatVariables[subparameters[1] - 1])
+                        self.otherPoints[0].append(x.GetY().float_variables[subparameters[0] - 1])
+                        self.otherPoints[1].append(x.GetY().float_variables[subparameters[1] - 1])
                     else:
-                        self.otherPoints[0].append(x.GetY().floatVariables[0])
+                        self.otherPoints[0].append(x.GetY().float_variables[0])
                         self.otherPoints[1].append(self.optimumVal - 5)
                     continue
                 else:
@@ -46,31 +46,31 @@ class DiscretePainter(Painter):
                         '''
                         ok = True
                         for k in range(floatdim):
-                            if (x.GetY().floatVariables[k] != self.optimum.floatVariables[k] and
+                            if (x.GetY().float_variables[k] != self.optimum.float_variables[k] and
                             k != subparameters[0] - 1 and k != subparameters[1] - 1):
                                 ok = False
                                 break
                         if ok:
                             self.values2.append(x.GetZ())
-                            self.points2.append([x.GetY().floatVariables[subparameters[0] - 1],
-                                                 x.GetY().floatVariables[subparameters[1] - 1]])
+                            self.points2.append([x.GetY().float_variables[subparameters[0] - 1],
+                                                 x.GetY().float_variables[subparameters[1] - 1]])
                         '''
-                        self.points.append([x.GetY().floatVariables[subparameters[0] - 1],
-                                       x.GetY().floatVariables[subparameters[1] - 1]])
+                        self.points.append([x.GetY().float_variables[subparameters[0] - 1],
+                                       x.GetY().float_variables[subparameters[1] - 1]])
                         self.values.append(x.GetZ())
-                        self.pointsWithBestComb[0].append(x.GetY().floatVariables[subparameters[0] - 1])
-                        self.pointsWithBestComb[1].append(x.GetY().floatVariables[subparameters[1] - 1])
+                        self.pointsWithBestComb[0].append(x.GetY().float_variables[subparameters[0] - 1])
+                        self.pointsWithBestComb[1].append(x.GetY().float_variables[subparameters[1] - 1])
                     else:
-                        self.points.append(x.GetY().floatVariables[0])
+                        self.points.append(x.GetY().float_variables[0])
                         self.values.append(x.GetZ())
-                        self.pointsWithBestComb[0].append(x.GetY().floatVariables[0])
+                        self.pointsWithBestComb[0].append(x.GetY().float_variables[0])
                         self.pointsWithBestComb[1].append(self.optimumVal - 5)
 
             if floatdim > 1:
-                self.optimumPoint[0].append(self.optimum.floatVariables[subparameters[0] - 1])
-                self.optimumPoint[1].append(self.optimum.floatVariables[subparameters[1] - 1])
+                self.optimumPoint[0].append(self.optimum.float_variables[subparameters[0] - 1])
+                self.optimumPoint[1].append(self.optimum.float_variables[subparameters[1] - 1])
             else:
-                self.optimumPoint[0].append(self.optimum.floatVariables[0])
+                self.optimumPoint[0].append(self.optimum.float_variables[0])
                 self.optimumPoint[1].append(self.optimumVal - 5)
 
         elif mode == 'analysis':
@@ -82,14 +82,14 @@ class DiscretePainter(Painter):
                 self.points.append(item.GetY())
                 self.values.append([item.GetZ(), i])
                 str = '['
-                for j in range(len(item.GetY().discreteVariables)):
-                    str += item.GetY().discreteVariables[j] + ', '
+                for j in range(len(item.GetY().discrete_variables)):
+                    str += item.GetY().discrete_variables[j] + ', '
                 str = str[:-2]
                 str += ']'
                 self.combination.append([str, i])
 
         self.plotter = DisretePlotter(mode, pcount, floatdim, discreteValues, discreteName,
-                                      subparameters, lb, rb, bestsvalues, self.numberOfParallelPoints)
+                                      subparameters, lb, rb, bestsvalues, self.number_of_parallel_points)
 
     def PaintObjectiveFunc(self, numpoints):
         if self.calc == 'objective function':
@@ -137,27 +137,27 @@ class StaticPainter(Painter):
         self.objectFunctionPainterType = mode
         self.isPointsAtBottom = isPointsAtBottom
 
-        self.objFunc = solution.problem.Calculate
+        self.objFunc = solution.problem.calculate
 
         # формируем массив точек итераций для графика
         self.points = []
         self.values = []
 
         for item in searchData:
-            self.points.append(item.GetY().floatVariables[parameterInNDProblem])
+            self.points.append(item.GetY().float_variables[parameterInNDProblem])
             self.values.append(item.GetZ())
 
         self.points = self.points[1:-1]
         self.values = self.values[1:-1]
 
-        self.optimum = solution.bestTrials[0].point.floatVariables
-        self.optimumC = solution.bestTrials[0].point.floatVariables[parameterInNDProblem]
-        self.optimumValue = solution.bestTrials[0].functionValues[0].value
+        self.optimum = solution.best_trials[0].point.float_variables
+        self.optimumC = solution.best_trials[0].point.float_variables[parameterInNDProblem]
+        self.optimumValue = solution.best_trials[0].function_values[0].value
 
         # настройки графика
         self.plotter = Plotter2D(parameterInNDProblem,
-                        float(solution.problem.lowerBoundOfFloatVariables[parameterInNDProblem]),
-                        float(solution.problem.upperBoundOfFloatVariables[parameterInNDProblem]))
+                        float(solution.problem.lower_bound_of_float_variables[parameterInNDProblem]),
+                        float(solution.problem.upper_bound_of_float_variables[parameterInNDProblem]))
 
     def PaintObjectiveFunc(self):
         if self.objectFunctionPainterType == 'objective function':
@@ -208,29 +208,29 @@ class StaticPainterND(Painter):
         self.objectFunctionPainterType = mode
         self.objectFunctionCalculatorType = calc
 
-        self.objFunc = solution.problem.Calculate
+        self.objFunc = solution.problem.calculate
 
         # формируем массив точек итераций для графика
         self.points = []
         self.values = []
 
         for item in searchData:
-            self.points.append([item.GetY().floatVariables[parameters[0]], item.GetY().floatVariables[parameters[1]]])
+            self.points.append([item.GetY().float_variables[parameters[0]], item.GetY().float_variables[parameters[1]]])
             self.values.append(item.GetZ())
 
         self.points = self.points[1:-1]
         self.values = self.values[1:-1]
 
-        self.optimum = solution.bestTrials[0].point.floatVariables
-        self.optimumValue = solution.bestTrials[0].functionValues[0].value
+        self.optimum = solution.best_trials[0].point.float_variables
+        self.optimumValue = solution.best_trials[0].function_values[0].value
 
-        self.leftBounds = [float(solution.problem.lowerBoundOfFloatVariables[parameters[0]]),
-                           float(solution.problem.lowerBoundOfFloatVariables[parameters[1]])]
-        self.rightBounds = [float(solution.problem.upperBoundOfFloatVariables[parameters[0]]),
-                            float(solution.problem.upperBoundOfFloatVariables[parameters[1]])]
+        self.leftBounds = [float(solution.problem.lower_bound_of_float_variables[parameters[0]]),
+                           float(solution.problem.lower_bound_of_float_variables[parameters[1]])]
+        self.rightBounds = [float(solution.problem.upper_bound_of_float_variables[parameters[0]]),
+                            float(solution.problem.upper_bound_of_float_variables[parameters[1]])]
 
         # настройки графика
-        self.plotter = Plotter3D(parameters, self.leftBounds, self.rightBounds, solution.problem.Calculate, self.objectFunctionPainterType)
+        self.plotter = Plotter3D(parameters, self.leftBounds, self.rightBounds, solution.problem.calculate, self.objectFunctionPainterType)
 
     def PaintObjectiveFunc(self):
         if self.objectFunctionPainterType == 'lines layers':

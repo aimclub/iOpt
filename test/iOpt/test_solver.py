@@ -15,10 +15,10 @@ class TestSolveRastrigin(unittest.TestCase):
         self.solver = Solver(self.problem, parameters=params)
 
     def test_solve(self):
-        sol = self.solver.Solve()
-        # print(sol.bestTrials)
-        self.assertAlmostEqual(sol.bestTrials[0].point.floatVariables[0],
-                               self.problem.knownOptimum[0].point.floatVariables[0], delta=0.05)
+        sol = self.solver.solve()
+        # print(sol.best_trials)
+        self.assertAlmostEqual(sol.best_trials[0].point.float_variables[0],
+                               self.problem.known_optimum[0].point.float_variables[0], delta=0.05)
 
 
 class TestSolveParaboloid(unittest.TestCase):
@@ -28,7 +28,7 @@ class TestSolveParaboloid(unittest.TestCase):
         self.solver = Solver(self.problem, parameters=params)
 
     def test_solve(self):
-        sol = self.solver.Solve()
-        # print(sol.bestTrials)
-        self.assertAlmostEqual(sol.bestTrials[0].point.floatVariables[0],
-                               self.problem.knownOptimum[0].point.floatVariables[0], delta=0.05)
+        sol = self.solver.solve()
+        # print(sol.best_trials)
+        self.assertAlmostEqual(sol.best_trials[0].point.float_variables[0],
+                               self.problem.known_optimum[0].point.float_variables[0], delta=0.05)

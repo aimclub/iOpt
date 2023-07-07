@@ -28,16 +28,16 @@ if __name__ == "__main__":
     problem = ga_tsp_vary_mutation.GA_TSP_Vary_Mutation(tsp_matrix, num_iteration,
                                                         population_size, mutation_probability_bound)
 
-    method_params = SolverParameters(r=np.double(3.0), itersLimit=40)
+    method_params = SolverParameters(r=np.double(3.0), iters_limit=40)
     solver = Solver(problem, parameters=method_params)
 
     apl = AnimatePainterListener("gatsp_1d_anim_vary_mutation.png", "output", toPaintObjFunc=False)
-    solver.AddListener(apl)
+    solver.add_listener(apl)
 
     spl = StaticPainterListener("gatsp_1d_stat_vary_mutation.png", "output", mode="interpolation")
-    solver.AddListener(spl)
+    solver.add_listener(spl)
 
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
-    solver_info = solver.Solve()
+    solver_info = solver.solve()

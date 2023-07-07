@@ -13,7 +13,7 @@ class RastriginInt(Problem):
        где :math:`x\in [-2.2, 1.8], N` – размерность задачи.
     """
 
-    def __init__(self, dimension: int, numberOfDiscreteVariables: int):
+    def __init__(self, dimension: int, number_of_discrete_variables: int):
         """
         Конструктор класса RastriginInt problem.
 
@@ -22,39 +22,39 @@ class RastriginInt(Problem):
         super(RastriginInt, self).__init__()
         self.name = "RastriginInt"
         self.dimension = dimension
-        self.numberOfFloatVariables = dimension - numberOfDiscreteVariables
-        self.numberOfDiscreteVariables = numberOfDiscreteVariables
-        self.numberOfObjectives = 1
-        self.numberOfConstraints = 0
+        self.number_of_float_variables = dimension - number_of_discrete_variables
+        self.number_of_discrete_variables = number_of_discrete_variables
+        self.number_of_objectives = 1
+        self.number_of_constraints = 0
 
-        self.floatVariableNames = np.ndarray(shape=(self.numberOfFloatVariables), dtype=object)
-        for i in range(self.numberOfFloatVariables):
-            self.floatVariableNames[i] = str(i)
+        self.float_variable_names = np.ndarray(shape=(self.number_of_float_variables), dtype=object)
+        for i in range(self.number_of_float_variables):
+            self.float_variable_names[i] = str(i)
 
-        self.discreteVariableNames = np.ndarray(shape=(self.numberOfDiscreteVariables), dtype=object)
-        for i in range(self.numberOfDiscreteVariables):
-            self.discreteVariableNames[i] = str(i)
+        self.discrete_variable_names = np.ndarray(shape=(self.number_of_discrete_variables), dtype=object)
+        for i in range(self.number_of_discrete_variables):
+            self.discrete_variable_names[i] = str(i)
 
-        self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.numberOfFloatVariables), dtype=np.double)
-        self.lowerBoundOfFloatVariables.fill(-2.2)
-        self.upperBoundOfFloatVariables = np.ndarray(shape=(self.numberOfFloatVariables), dtype=np.double)
-        self.upperBoundOfFloatVariables.fill(1.8)
+        self.lower_bound_of_float_variables = np.ndarray(shape=(self.number_of_float_variables), dtype=np.double)
+        self.lower_bound_of_float_variables.fill(-2.2)
+        self.upper_bound_of_float_variables = np.ndarray(shape=(self.number_of_float_variables), dtype=np.double)
+        self.upper_bound_of_float_variables.fill(1.8)
 
-        self.discreteVariableValues = [["A", "B"] for i in range(self.numberOfDiscreteVariables)]
+        self.discrete_variable_values = [["A", "B"] for i in range(self.number_of_discrete_variables)]
 
-        self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
+        self.known_optimum = np.ndarray(shape=(1), dtype=Trial)
 
-        pointfv = np.ndarray(shape=(self.numberOfFloatVariables), dtype=np.double)
+        pointfv = np.ndarray(shape=(self.number_of_float_variables), dtype=np.double)
         pointfv.fill(0)
 
-        pointdv = np.ndarray(shape=(self.numberOfDiscreteVariables), dtype=object)
+        pointdv = np.ndarray(shape=(self.number_of_discrete_variables), dtype=object)
         pointdv.fill("B")
 
         KOpoint = Point(pointfv, pointdv)
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
         KOfunV[0].value = 0
-        self.knownOptimum[0] = Trial(KOpoint, KOfunV)
+        self.known_optimum[0] = Trial(KOpoint, KOfunV)
 
         self.A = np.ndarray(shape=(self.dimension), dtype=np.double)
         self.A.fill(-2.2)
@@ -63,8 +63,8 @@ class RastriginInt(Problem):
         self.B.fill(1.8)
 
         self.optPoint = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.optPoint = np.append([[0] for i in range(self.numberOfFloatVariables)],
-                                  [[1.8] for i in range(self.numberOfDiscreteVariables)])
+        self.optPoint = np.append([[0] for i in range(self.number_of_float_variables)],
+                                  [[1.8] for i in range(self.number_of_discrete_variables)])
 
         self.multKoef = 0
 
@@ -79,21 +79,21 @@ class RastriginInt(Problem):
         self.multKoef += 4
         self.optMultKoef = (self.MultFunc(self.optPoint)+self.multKoef)
 
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
         Вычисление значения выбранной функции в заданной точке.
 
         :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
+        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
         """
         sum: np.double = 0
-        x = point.floatVariables
-        for i in range(self.numberOfFloatVariables):
+        x = point.float_variables
+        for i in range(self.number_of_float_variables):
             sum += x[i] * x[i] - 10 * math.cos(2 * math.pi * x[i]) + 10
 
-        dx = point.discreteVariables
-        for i in range(self.numberOfDiscreteVariables):
+        dx = point.discrete_variables
+        for i in range(self.number_of_discrete_variables):
             if dx[i] == "A":
                 sum += 2.2
             elif dx[i] == "B":
@@ -104,20 +104,20 @@ class RastriginInt(Problem):
         x_arr = self.PointToArray(point)
         sum = sum * (self.MultFunc(x_arr)+self.multKoef)
 
-        functionValue.value = sum
-        return functionValue
+        function_value.value = sum
+        return function_value
 
     def PointToArray(self, point: Point) -> np.ndarray:
         arr = np.ndarray(shape=(self.dimension), dtype=np.double)
 
-        for i in range(0, self.numberOfFloatVariables):
-            arr[i] = point.floatVariables[i]
+        for i in range(0, self.number_of_float_variables):
+            arr[i] = point.float_variables[i]
 
-        for i in range(0, self.numberOfDiscreteVariables):
-            if point.discreteVariables[i] == "A":
-                arr[self.numberOfFloatVariables+i] = -2.2
-            elif point.discreteVariables[i] == "B":
-                arr[self.numberOfFloatVariables+i] = 1.8
+        for i in range(0, self.number_of_discrete_variables):
+            if point.discrete_variables[i] == "A":
+                arr[self.number_of_float_variables+i] = -2.2
+            elif point.discrete_variables[i] == "B":
+                arr[self.number_of_float_variables+i] = 1.8
         return arr
 
     def MultFunc(self, x: np.ndarray) -> np.double:

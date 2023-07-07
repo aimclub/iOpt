@@ -32,27 +32,27 @@ class Solver:
         self.problem = problem
         self.parameters = parameters
 
-        Solver.ChackParameters(self.problem, self.parameters)
+        Solver.chack_parameters(self.problem, self.parameters)
 
         self.__listeners: List[Listener] = []
 
-        self.searchData = SearchData(problem)
-        self.evolvent = Evolvent(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables,
-                                 problem.numberOfFloatVariables)
+        self.search_data = SearchData(problem)
+        self.evolvent = Evolvent(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables,
+                                 problem.number_of_float_variables)
         self.task = OptimizationTask(problem)
-        self.method = SolverFactory.CreateMethod(parameters, self.task, self.evolvent, self.searchData)
+        self.method = SolverFactory.CreateMethod(parameters, self.task, self.evolvent, self.search_data)
         self.process = SolverFactory.CreateProcess(parameters=parameters, task=self.task, evolvent=self.evolvent,
-                                                   searchData=self.searchData, method=self.method,
+                                                   searchData=self.search_data, method=self.method,
                                                    listeners=self.__listeners)
 
-    def Solve(self) -> Solution:
+    def solve(self) -> Solution:
         """
         Метод позволяет решить задачу оптимизации. Остановка поиска выполняется согласно критерию,
         заданному при создании класса Solver.
 
         :return: решение задачи оптимизации
         """
-        Solver.ChackParameters(self.problem, self.parameters)
+        Solver.chack_parameters(self.problem, self.parameters)
         sol: Solution = None;
         if self.parameters.timeout < 0:
             sol = self.process.Solve()
@@ -62,34 +62,34 @@ class Solver:
                 solv_with_timeout()
             except Exception as exc:
                 print(exc)
-                sol = self.GetResults()
-                sol.solvingTime = self.parameters.timeout * 60
+                sol = self.get_results()
+                sol.solving_time = self.parameters.timeout * 60
                 self.method.recalcR = True
                 self.method.recalcM = True
                 status = self.method.CheckStopCondition()
                 for listener in self.__listeners:
-                    listener.OnMethodStop(self.searchData, self.GetResults(), status)
+                    listener.OnMethodStop(self.search_data, self.get_results(), status)
         return sol
 
-    def DoGlobalIteration(self, number: int = 1):
+    def do_global_iteration(self, number: int = 1):
         """
         Метод позволяет выполнить несколько итераций глобального поиска
 
         :param number: число итераций глобального поиска
         """
-        Solver.ChackParameters(self.problem, self.parameters)
+        Solver.chack_parameters(self.problem, self.parameters)
         self.process.DoGlobalIteration(number)
 
-    def DoLocalRefinement(self, number: int = 1):
+    def do_local_refinement(self, number: int = 1):
         """
         Метод позволяет выполнить несколько итераций локального поиска
 
         :param number: число итераций локального поиска
         """
-        Solver.ChackParameters(self.problem, self.parameters)
+        Solver.chack_parameters(self.problem, self.parameters)
         self.process.DoLocalRefinement(number)
 
-    def GetResults(self) -> Solution:
+    def get_results(self) -> Solution:
         """
         Метод позволяет получить текущую оценку решения задачи оптимизации
 
@@ -97,31 +97,31 @@ class Solver:
         """
         return self.process.GetResults()
 
-    def SaveProgress(self, fileName: str) -> None:
+    def save_progress(self, file_name: str) -> None:
         """
         Сохранение процесса оптимизации в файл
 
-        :param fileName: имя файла
+        :param file_name: имя файла
         """
-        self.process.SaveProgress(fileName=fileName)
+        self.process.SaveProgress(fileName=file_name)
 
-    def LoadProgress(self, fileName: str) -> None:
+    def load_progress(self, file_name: str) -> None:
         """
         Загрузка процесса оптимизации из файла
 
-        :param fileName: имя файла
+        :param file_name: имя файла
         """
-        Solver.ChackParameters(self.problem, self.parameters)
-        self.process.LoadProgress(fileName=fileName)
+        Solver.chack_parameters(self.problem, self.parameters)
+        self.process.LoadProgress(fileName=file_name)
 
-    def RefreshListener(self) -> None:
+    def refresh_listener(self) -> None:
         """
         Метод оповещения наблюдателей о произошедшем событии
         """
 
         pass
 
-    def AddListener(self, listener: Listener) -> None:
+    def add_listener(self, listener: Listener) -> None:
         """
         Добавления наблюдателя за процессом оптимизации
 
@@ -131,8 +131,8 @@ class Solver:
         self.__listeners.append(listener)
 
     @staticmethod
-    def ChackParameters(problem: Problem,
-                        parameters: SolverParameters = SolverParameters()) -> None:
+    def chack_parameters(problem: Problem,
+                         parameters: SolverParameters = SolverParameters()) -> None:
         """
         Проверяет параметры решателя
 
@@ -145,51 +145,51 @@ class Solver:
             raise Exception("search precision is incorrect, parameters.eps <= 0")
         if parameters.r <= 1:
             raise Exception("The reliability parameter should be greater 1. r>1")
-        if parameters.itersLimit < 1:
-            raise Exception("The number of iterations must not be negative. itersLimit>0")
-        if parameters.evolventDensity < 2 or parameters.evolventDensity > 20:
+        if parameters.iters_limit < 1:
+            raise Exception("The number of iterations must not be negative. iters_limit>0")
+        if parameters.evolvent_density < 2 or parameters.evolvent_density > 20:
             raise Exception("Evolvent density should be within [2,20]")
-        if parameters.epsR < 0 or parameters.epsR >= 1:
+        if parameters.eps_r < 0 or parameters.eps_r >= 1:
             raise Exception("The epsilon redundancy parameter must be within [0, 1)")
 
-        if problem.numberOfFloatVariables < 1:
+        if problem.number_of_float_variables < 1:
             raise Exception("Must have at least one float variable")
-        if problem.numberOfDiscreteVariables < 0:
+        if problem.number_of_discrete_variables < 0:
             raise Exception("The number of discrete parameters must not be negative")
-        if problem.numberOfObjectives < 1:
+        if problem.number_of_objectives < 1:
             raise Exception("At least one criterion must be defined")
-        if problem.numberOfConstraints < 0:
+        if problem.number_of_constraints < 0:
             raise Exception("The number of сonstraints must not be negative")
 
-        if len(problem.floatVariableNames) != problem.numberOfFloatVariables:
+        if len(problem.float_variable_names) != problem.number_of_float_variables:
             raise Exception("Floaf parameter names are not defined")
 
-        if len(problem.lowerBoundOfFloatVariables) != problem.numberOfFloatVariables:
+        if len(problem.lower_bound_of_float_variables) != problem.number_of_float_variables:
             raise Exception("List of lower bounds for float search variables defined incorrectly")
-        if len(problem.upperBoundOfFloatVariables) != problem.numberOfFloatVariables:
+        if len(problem.upper_bound_of_float_variables) != problem.number_of_float_variables:
             raise Exception("List of upper bounds for float search variables defined incorrectly")
 
-        for lowerBound, upperBound in zip(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables):
+        for lowerBound, upperBound in zip(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables):
             if lowerBound >= upperBound:
                 raise Exception("For floating point search variables, "
                                 "the upper search bound must be greater than the lower.")
 
-        if problem.numberOfDiscreteVariables > 0:
-            if len(problem.discreteVariableNames) != problem.numberOfDiscreteVariables:
+        if problem.number_of_discrete_variables > 0:
+            if len(problem.discrete_variable_names) != problem.number_of_discrete_variables:
                 raise Exception("Discrete parameter names are not defined")
 
-            for discreteValues in problem.discreteVariableValues:
+            for discreteValues in problem.discrete_variable_values:
                 if len(discreteValues) < 1:
                     raise Exception("Discrete variable values not defined")
 
-        if parameters.startPoint:
-            if len(parameters.startPoint.floatVariables) != problem.numberOfFloatVariables:
+        if parameters.start_point:
+            if len(parameters.start_point.float_variables) != problem.number_of_float_variables:
                 raise Exception("Incorrect start point size")
-            if parameters.startPoint.discreteVariables:
-                if len(parameters.startPoint.discreteVariables) != problem.numberOfDiscreteVariables:
+            if parameters.start_point.discrete_variables:
+                if len(parameters.start_point.discrete_variables) != problem.number_of_discrete_variables:
                     raise Exception("Incorrect start point discrete variables")
-            for lowerBound, upperBound, y in zip(problem.lowerBoundOfFloatVariables, problem.upperBoundOfFloatVariables,
-                                                 parameters.startPoint.floatVariables):
+            for lowerBound, upperBound, y in zip(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables,
+                                                 parameters.start_point.float_variables):
                 if y < lowerBound or y > upperBound:
                     raise Exception("Incorrect start point coordinate")
 
