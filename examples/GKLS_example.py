@@ -25,7 +25,7 @@ def SolveSingleGKLS():
     solver.add_listener(cfol)
 
     # Добавляем построение 3D визуализации после решения задачи
-    spl = StaticPainterNDListener(fileName="GKLS.png", pathForSaves="output", varsIndxs=[0, 1], mode="lines layers",
+    spl = StaticPainterNDListener(file_name="GKLS.png", path_for_saves="output", vars_indxs=[0, 1], mode="lines layers",
                                   calc="objective function")
     solver.add_listener(spl)
 

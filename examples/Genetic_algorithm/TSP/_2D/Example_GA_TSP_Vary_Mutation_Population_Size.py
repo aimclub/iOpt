@@ -8,8 +8,8 @@ import numpy as np
 import xml.etree.ElementTree as ET
 
 
-def load_TSPs_matrix(filename):
-    root = ET.parse(filename).getroot()
+def load_TSPs_matrix(file_name):
+    root = ET.parse(file_name).getroot()
     columns = root.findall('graph/vertex')
     num_cols = len(columns)
     trans_matrix = np.zeros((num_cols, num_cols))
@@ -31,10 +31,10 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(2.0), iters_limit=300)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimatePainterNDListener("gatsp_2d_anim_vary_mutation.png", "output",  varsIndxs=[0, 1], toPaintObjFunc=True)
+    apl = AnimatePainterNDListener("gatsp_2d_anim_vary_mutation.png", "output",  vars_indxs=[0, 1], to_paint_obj_func=True)
     solver.add_listener(apl)
 
-    spl = StaticPainterNDListener("gatsp_2d_stat_vary_mutation.png", "output", varsIndxs=[0, 1], mode="interpolation")
+    spl = StaticPainterNDListener("gatsp_2d_stat_vary_mutation.png", "output", vars_indxs=[0, 1], mode="interpolation")
     solver.add_listener(spl)
 
     solver_info = solver.solve()

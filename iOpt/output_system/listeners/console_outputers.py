@@ -30,15 +30,15 @@ class ConsoleOutputListener(Listener):
 
     def before_method_start(self, method: Method):
         self.__outputer = ConsoleOutputer(method.task.problem, method.parameters)
-        self.__outputer.PrintInitInfo()
+        self.__outputer.print_init_info()
 
     def on_end_iteration(self, curr_points: List[SearchDataItem], currSolution: Solution):
         if self.mode == 'full':
-            self.__outputer.PrintIterPointInfo(curr_points)
+            self.__outputer.print_iter_point_info(curr_points)
         elif self.mode == 'custom':
-            self.__outputer.PrintBestPointInfo(currSolution, self.iters)
+            self.__outputer.print_best_point_info(currSolution, self.iters)
         elif self.mode == 'result':
             pass
 
     def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):
-        self.__outputer.PrintFinalResultInfo(solution, status)
+        self.__outputer.print_final_result_info(solution, status)

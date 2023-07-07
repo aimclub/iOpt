@@ -23,7 +23,7 @@ if __name__ == "__main__":
     solver.add_listener(cfol)
 
     # Добавляем построение визуализации после решения задачи
-    spl = StaticPainterListener(fileName="shekel.png", pathForSaves="output", indx=0, isPointsAtBottom=False,
+    spl = StaticPainterListener(file_name="shekel.png", path_for_saves="output", indx=0, is_points_at_bottom=False,
                                 mode="objective function")
     solver.add_listener(spl)
 

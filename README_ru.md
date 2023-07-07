@@ -77,7 +77,7 @@ if __name__ == "__main__":
  cfol = ConsoleFullOutputListener(mode='full')
  solver.add_listener(cfol)
  # 3D визуализация по окончании решения
- spl = StaticNDPaintListener("rastrigin.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
+ spl = StaticNDPaintListener("rastrigin.png", "output", vars_indxs=[0, 1], mode="surface", calc="interpolation")
  solver.add_listener(spl)
  # Запуск решения задачи
  sol = solver.solve()
@@ -118,10 +118,10 @@ if __name__ == "__main__":
  method_params = SolverParameters(r=np.double(3.0), iters_limit=100)
  solver = Solver(problem, parameters=method_params)
 
- apl = AnimationNDPaintListener("svc2d_anim.png", "output", varsIndxs=[0, 1], toPaintObjFunc=False)
+ apl = AnimationNDPaintListener("svc2d_anim.png", "output", vars_indxs=[0, 1], to_paint_obj_func=False)
  solver.add_listener(apl)
 
- spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1], mode="surface", calc="interpolation")
+ spl = StaticNDPaintListener("svc2d_stat.png", "output", vars_indxs=[0, 1], mode="surface", calc="interpolation")
  solver.add_listener(spl)
 
  cfol = ConsoleFullOutputListener(mode='full')

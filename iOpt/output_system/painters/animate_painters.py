@@ -9,63 +9,63 @@ import matplotlib.pyplot as plt
 import os
 
 class AnimatePainter(Painter):
-    def __init__(self, isPointsAtBottom, parameterInNDProblem, pathForSaves, fileName):
-        self.pathForSaves = pathForSaves
-        self.fileName = fileName
-        self.isPointsAtBottom = isPointsAtBottom
+    def __init__(self, is_points_at_bottom, parameter_in_nd_problem, path_for_saves, file_name):
+        self.path_for_saves = path_for_saves
+        self.file_name = file_name
+        self.is_points_at_bottom = is_points_at_bottom
         self.objFunc = None
-        self.parameterInNDProblem = parameterInNDProblem
+        self.parameterInNDProblem = parameter_in_nd_problem
         self.section = []
 
         # настройки графика
-        self.plotter = AnimatePlotter2D(parameterInNDProblem, 0, 1)
+        self.plotter = AnimatePlotter2D(parameter_in_nd_problem, 0, 1)
 
-    def SetProblem(self, problem: Problem):
+    def set_problem(self, problem: Problem):
         self.objFunc = problem.calculate
 
         for i in range(problem.number_of_float_variables):
             self.section.append(float(problem.upper_bound_of_float_variables[i]) - float(problem.lower_bound_of_float_variables[i]))
 
         # настройки графика
-        self.plotter.SetBounds(float(problem.lower_bound_of_float_variables[self.parameterInNDProblem]),
-                                 float(problem.upper_bound_of_float_variables[self.parameterInNDProblem]))
+        self.plotter.set_bounds(float(problem.lower_bound_of_float_variables[self.parameterInNDProblem]),
+                                float(problem.upper_bound_of_float_variables[self.parameterInNDProblem]))
 
-    def PaintObjectiveFunc(self):
-        self.plotter.PlotByGrid(self.CalculateFunc, self.section.copy(), pointsCount=150)
+    def paint_objective_func(self):
+        self.plotter.plot_by_grid(self.calculate_func, self.section.copy(), points_count=150)
 
-    def PaintPoints(self, currPoints):
-        x = [currPoint.get_y().float_variables[self.parameterInNDProblem] for currPoint in currPoints]
-        fv = [currPoint.get_z() for currPoint in currPoints]
-        if self.isPointsAtBottom:
-            fv = [currPoint.get_z() * 0.7 for currPoint in currPoints]
+    def paint_points(self, curr_points):
+        x = [currPoint.get_y().float_variables[self.parameterInNDProblem] for currPoint in curr_points]
+        fv = [currPoint.get_z() for currPoint in curr_points]
+        if self.is_points_at_bottom:
+            fv = [currPoint.get_z() * 0.7 for currPoint in curr_points]
         else:
-            fv = [currPoint.get_z() for currPoint in currPoints]
-        self.plotter.PlotPoints(x, fv, 'blue', 'o', 4)
+            fv = [currPoint.get_z() for currPoint in curr_points]
+        self.plotter.plot_points(x, fv, 'blue', 'o', 4)
 
-    def PaintOptimum(self, solution: Solution):
+    def paint_optimum(self, solution: Solution):
         optimum = solution.best_trials[0].point.float_variables[self.parameterInNDProblem]
         optimumVal = solution.best_trials[0].function_values[0].value
 
         value = optimumVal
 
-        if self.isPointsAtBottom:
+        if self.is_points_at_bottom:
             value = value * 0.7
 
-        self.plotter.PlotPoints([optimum], [value], 'red', 'o', 4)
+        self.plotter.plot_points([optimum], [value], 'red', 'o', 4)
 
-    def SaveImage(self):
-        if not os.path.isdir(self.pathForSaves):
-            if self.pathForSaves == "":
-                plt.savefig(self.fileName)
+    def save_image(self):
+        if not os.path.isdir(self.path_for_saves):
+            if self.path_for_saves == "":
+                plt.savefig(self.file_name)
             else:
-                os.mkdir(self.pathForSaves)
-                plt.savefig(self.pathForSaves + "/" + self.fileName)
+                os.mkdir(self.path_for_saves)
+                plt.savefig(self.path_for_saves + "/" + self.file_name)
         else:
-            plt.savefig(self.pathForSaves + "/" + self.fileName)
+            plt.savefig(self.path_for_saves + "/" + self.file_name)
         plt.ioff()
         plt.show()
 
-    def CalculateFunc(self, x):
+    def calculate_func(self, x):
         point = Point(x, [])
         fv = FunctionValue()
         fv = self.objFunc(point, fv)
@@ -73,55 +73,55 @@ class AnimatePainter(Painter):
 
 
 class AnimatePainterND(Painter):
-    def __init__(self, parametersInNDProblem, pathForSaves, fileName):
-        self.pathForSaves = pathForSaves
-        self.fileName = fileName
+    def __init__(self, parameters_in_nd_problem, path_for_saves, file_name):
+        self.path_for_saves = path_for_saves
+        self.file_name = file_name
         self.objFunc = None
-        self.parametersInNDProblem = parametersInNDProblem
+        self.parametersInNDProblem = parameters_in_nd_problem
         self.section = []
 
         # настройки графика
-        self.plotter = AnimatePlotter3D(parametersInNDProblem)
+        self.plotter = AnimatePlotter3D(parameters_in_nd_problem)
 
-    def SetProblem(self, problem: Problem):
+    def set_problem(self, problem: Problem):
         self.objFunc = problem.calculate
 
         # настройки графика
-        self.plotter.SetBounds([float(problem.lower_bound_of_float_variables[self.parametersInNDProblem[0]]),
-                               float(problem.lower_bound_of_float_variables[self.parametersInNDProblem[1]])],
-                               [float(problem.upper_bound_of_float_variables[self.parametersInNDProblem[0]]),
+        self.plotter.set_bounds([float(problem.lower_bound_of_float_variables[self.parametersInNDProblem[0]]),
+                                 float(problem.lower_bound_of_float_variables[self.parametersInNDProblem[1]])],
+                                [float(problem.upper_bound_of_float_variables[self.parametersInNDProblem[0]]),
                                float(problem.upper_bound_of_float_variables[self.parametersInNDProblem[1]])])
 
-    def PaintObjectiveFunc(self):
-        self.plotter.PlotByGrid(self.CalculateFunc, self.section, pointsCount=150)
+    def paint_objective_func(self):
+        self.plotter.plot_by_grid(self.calculate_func, self.section, points_count=150)
 
-    def PaintPoints(self, currPoints):
-        x = [[currPoint.get_y().float_variables[self.parametersInNDProblem[0]] for currPoint in currPoints],
-             [currPoint.get_y().float_variables[self.parametersInNDProblem[1]] for currPoint in currPoints]]
-        self.plotter.PlotPoints(x, [], 'blue', 'o', 4)
+    def paint_points(self, curr_points):
+        x = [[currPoint.get_y().float_variables[self.parametersInNDProblem[0]] for currPoint in curr_points],
+             [currPoint.get_y().float_variables[self.parametersInNDProblem[1]] for currPoint in curr_points]]
+        self.plotter.plot_points(x, [], 'blue', 'o', 4)
 
-    def PaintOptimum(self, solution: Solution):
+    def paint_optimum(self, solution: Solution):
         optimum = [solution.best_trials[0].point.float_variables[self.parametersInNDProblem[0]],
                    solution.best_trials[0].point.float_variables[self.parametersInNDProblem[1]]]
         optimumVal = solution.best_trials[0].function_values[0].value
 
-        self.plotter.PlotPoints(optimum, [], 'red', 'o', 4)
+        self.plotter.plot_points(optimum, [], 'red', 'o', 4)
 
         self.section = optimum
 
-    def SaveImage(self):
-        if not os.path.isdir(self.pathForSaves):
-            if self.pathForSaves == "":
-                plt.savefig(self.fileName)
+    def save_image(self):
+        if not os.path.isdir(self.path_for_saves):
+            if self.path_for_saves == "":
+                plt.savefig(self.file_name)
             else:
-                os.mkdir(self.pathForSaves)
-                plt.savefig(self.pathForSaves + "/" + self.fileName)
+                os.mkdir(self.path_for_saves)
+                plt.savefig(self.path_for_saves + "/" + self.file_name)
         else:
-            plt.savefig(self.pathForSaves + "/" + self.fileName)
+            plt.savefig(self.path_for_saves + "/" + self.file_name)
         plt.ioff()
         plt.show()
 
-    def CalculateFunc(self, x):
+    def calculate_func(self, x):
         point = Point(x, [])
         fv = FunctionValue()
         fv = self.objFunc(point, fv)

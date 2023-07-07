@@ -93,8 +93,8 @@ ____________________________________________________________________________
    import xml.etree.ElementTree as ET
    import numpy as np
 
-   def load_TSPs_matrix(filename):
-      root = ET.parse(filename).getroot()
+   def load_TSPs_matrix(file_name):
+      root = ET.parse(file_name).getroot()
       columns = root.findall('graph/vertex')
       num_cols = len(columns)
       trans_matrix = np.zeros((num_cols, num_cols))
@@ -139,8 +139,8 @@ ____________________________________________________________________________
    import numpy as np
    from sko.GA import GA_TSP
 
-   def load_TSPs_matrix(filename):
-      root = ET.parse(filename).getroot()
+   def load_TSPs_matrix(file_name):
+      root = ET.parse(file_name).getroot()
       columns = root.findall('graph/vertex')
       num_cols = len(columns)
       trans_matrix = np.zeros((num_cols, num_cols))
@@ -240,8 +240,8 @@ ____________________________________________________________________________
    import numpy as np
    import xml.etree.ElementTree as ET
 
-   def load_TSPs_matrix(filename):
-      root = ET.parse(filename).getroot()
+   def load_TSPs_matrix(file_name):
+      root = ET.parse(file_name).getroot()
       columns = root.findall('graph/vertex')
       num_cols = len(columns)
       trans_matrix = np.zeros((num_cols, num_cols))
@@ -460,10 +460,10 @@ ________________________________________________________________________________
         solver = Solver(problem, parameters=method_params)
 
         apl = AnimationNDPaintListener("svc2d_anim.png", "output", 
-            varsIndxs=[0, 1], toPaintObjFunc=False)
+            vars_indxs=[0, 1], to_paint_obj_func=False)
         solver.AddListener(apl)
 
-        spl = StaticNDPaintListener("svc2d_stat.png", "output", varsIndxs=[0, 1],
+        spl = StaticNDPaintListener("svc2d_stat.png", "output", vars_indxs=[0, 1],
             mode="surface", calc="interpolation")
         solver.AddListener(spl)
 
@@ -796,9 +796,9 @@ ________________________________________________________________________________
       problem = SVC_2d.SVC_2D(x, y, regularization_value_bound, kernel_coefficient_bound)
       method_params = SolverParameters(r=np.double(2.0), iters_limit=200)
       solver = Solver(problem, parameters=method_params)
-      apl = AnimationNDPaintListener(varsIndxs=[0, 1], toPaintObjFunc=False)
+      apl = AnimationNDPaintListener(vars_indxs=[0, 1], to_paint_obj_func=False)
       solver.AddListener(apl)
-      spl = StaticNDPaintListener(varsIndxs=[0, 1], mode="surface", calc="interpolation")
+      spl = StaticNDPaintListener(vars_indxs=[0, 1], mode="surface", calc="interpolation")
       solver.AddListener(spl)
       cfol = ConsoleFullOutputListener(mode='full')
       solver.AddListener(cfol)

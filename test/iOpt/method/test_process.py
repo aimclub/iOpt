@@ -35,7 +35,7 @@ class TestProcess(unittest.TestCase):
                         task=mock_task, search_data=searchData)
         method.stop = True
         method.dimension = 1
-        listener = StaticPainterListener(fileName="Output.txt")
+        listener = StaticPainterListener(file_name="Output.txt")
         self.process = Process(parameters=SolverParameters(), task=mock_task, evolvent=mock_evolvent,
                                search_data=searchData, method=method, listeners=[listener])
 

@@ -24,7 +24,7 @@ if __name__ == "__main__":
     solver.add_listener(cfol)
 
     # Добавляем построение 3D визуализации после решения задачи
-    spl = StaticPainterNDListener("grishagin.png", "output", varsIndxs=[0, 1], mode="lines layers",
+    spl = StaticPainterNDListener("grishagin.png", "output", vars_indxs=[0, 1], mode="lines layers",
                                 calc="objective function")
     solver.add_listener(spl)
 

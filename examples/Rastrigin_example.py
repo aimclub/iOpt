@@ -22,7 +22,7 @@ if __name__ == "__main__":
     cfol = ConsoleOutputListener(mode='full')
     solver.add_listener(cfol)
     # 3D визуализация по окончании решения задачи
-    spl = StaticPainterNDListener(fileName="rastrigin.png", pathForSaves="output", varsIndxs=[0, 1], mode="surface",
+    spl = StaticPainterNDListener(file_name="rastrigin.png", path_for_saves="output", vars_indxs=[0, 1], mode="surface",
                                   calc="interpolation")
     solver.add_listener(spl)
     # Запуск решения задачи

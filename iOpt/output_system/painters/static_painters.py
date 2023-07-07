@@ -10,14 +10,15 @@ import matplotlib.pyplot as plt
 import os
 
 class DiscretePainter(Painter):
-    def __init__(self, searchDataSorted, bestsvalues, pcount, floatdim, optimumPoint, discreteValues,
-                 discreteName, mode, calc, subparameters, lb, rb, fileName, pathForSaves, calculate, optimumValue, searchData, number_of_parallel_points):
-        self.pathForSaves = pathForSaves
-        self.fileName = fileName
+    def __init__(self, search_data_sorted, bestsvalues, pcount, floatdim, optimumPoint, discreteValues,
+                 discrete_name, mode, calc, subparameters, lb, rb, file_name, path_for_saves, calculate,
+                 optimum_value, search_data, number_of_parallel_points):
+        self.path_for_saves = path_for_saves
+        self.file_name = file_name
         self.calc = calc
         self.calculate = calculate
         self.optimum = optimumPoint
-        self.optimumVal = optimumValue
+        self.optimumVal = optimum_value
         self.number_of_parallel_points = number_of_parallel_points
 
         self.values = []
@@ -30,7 +31,7 @@ class DiscretePainter(Painter):
         self.optimumPoint = [[], []]
 
         if mode == 'bestcombination':
-            for x in searchData:
+            for x in search_data:
                 if x.get_z() > 1.7e+308:
                     continue
                 if x.get_y().discrete_variables != self.optimum.discrete_variables:
@@ -75,7 +76,7 @@ class DiscretePainter(Painter):
 
         elif mode == 'analysis':
             i = 0
-            for item in searchDataSorted:
+            for item in search_data_sorted:
                 i += 1
                 if item.get_z() > 1.7e+308:
                     continue
@@ -88,54 +89,54 @@ class DiscretePainter(Painter):
                 str += ']'
                 self.combination.append([str, i])
 
-        self.plotter = DisretePlotter(mode, pcount, floatdim, discreteValues, discreteName,
+        self.plotter = DisretePlotter(mode, pcount, floatdim, discreteValues, discrete_name,
                                       subparameters, lb, rb, bestsvalues, self.number_of_parallel_points)
 
-    def PaintObjectiveFunc(self, numpoints):
+    def paint_objective_func(self, numpoints):
         if self.calc == 'objective function':
             section = self.optimum
-            self.plotter.PlotByGrid(self.CalculateFunc, section, numpoints)
+            self.plotter.plot_by_grid(self.calculate_func, section, numpoints)
         elif self.calc == 'interpolation':
-            self.plotter.PlotInterpolation(self.points, self.values)
+            self.plotter.plot_interpolation(self.points, self.values)
 
-    def PaintPoints(self, mrks):
-        self.plotter.PlotPoints(self.pointsWithBestComb, self.otherPoints, self.optimum, self.optimumPoint, mrks)
+    def paint_points(self, mrks):
+        self.plotter.plot_points(self.pointsWithBestComb, self.otherPoints, self.optimum, self.optimumPoint, mrks)
 
-    def PaintAnalisys(self, mrks):
-        self.plotter.PlotAnalisysSubplotsFigure(self.points, self.values,  self.combination, self.optimum, mrks)
-    def PaintOptimum(self, solution: Solution = None):
+    def paint_analisys(self, mrks):
+        self.plotter.plot_analisys_subplots_figure(self.points, self.values, self.combination, self.optimum, mrks)
+    def paint_optimum(self, solution: Solution = None):
         pass
 
-    def SaveImage(self):
-        if not os.path.isdir(self.pathForSaves):
-            if self.pathForSaves == "":
-                plt.savefig(self.fileName)
+    def save_image(self):
+        if not os.path.isdir(self.path_for_saves):
+            if self.path_for_saves == "":
+                plt.savefig(self.file_name)
             else:
-                os.mkdir(self.pathForSaves)
-                plt.savefig(self.pathForSaves + "/" + self.fileName)
+                os.mkdir(self.path_for_saves)
+                plt.savefig(self.path_for_saves + "/" + self.file_name)
         else:
-            plt.savefig(self.pathForSaves + "/" + self.fileName)
+            plt.savefig(self.path_for_saves + "/" + self.file_name)
         plt.show()
 
-    def CalculateFunc(self, x, d):
+    def calculate_func(self, x, d):
         point = Point(x, d)
         fv = FunctionValue()
         fv = self.calculate(point, fv)
         return fv.value
 class StaticPainter(Painter):
-    def __init__(self, searchData: SearchData,
+    def __init__(self, search_data: SearchData,
                  solution: Solution,
                  mode,
-                 isPointsAtBottom,
-                 parameterInNDProblem,
-                 pathForSaves,
-                 fileName
-    ):
-        self.pathForSaves = pathForSaves
-        self.fileName = fileName
+                 is_points_at_bottom,
+                 parameter_in_nd_problem,
+                 path_for_saves,
+                 file_name
+                 ):
+        self.path_for_saves = path_for_saves
+        self.file_name = file_name
 
         self.objectFunctionPainterType = mode
-        self.isPointsAtBottom = isPointsAtBottom
+        self.is_points_at_bottom = is_points_at_bottom
 
         self.objFunc = solution.problem.calculate
 
@@ -143,67 +144,67 @@ class StaticPainter(Painter):
         self.points = []
         self.values = []
 
-        for item in searchData:
-            self.points.append(item.get_y().float_variables[parameterInNDProblem])
+        for item in search_data:
+            self.points.append(item.get_y().float_variables[parameter_in_nd_problem])
             self.values.append(item.get_z())
 
         self.points = self.points[1:-1]
         self.values = self.values[1:-1]
 
         self.optimum = solution.best_trials[0].point.float_variables
-        self.optimumC = solution.best_trials[0].point.float_variables[parameterInNDProblem]
+        self.optimumC = solution.best_trials[0].point.float_variables[parameter_in_nd_problem]
         self.optimumValue = solution.best_trials[0].function_values[0].value
 
         # настройки графика
-        self.plotter = Plotter2D(parameterInNDProblem,
-                        float(solution.problem.lower_bound_of_float_variables[parameterInNDProblem]),
-                        float(solution.problem.upper_bound_of_float_variables[parameterInNDProblem]))
+        self.plotter = Plotter2D(parameter_in_nd_problem,
+                                 float(solution.problem.lower_bound_of_float_variables[parameter_in_nd_problem]),
+                                 float(solution.problem.upper_bound_of_float_variables[parameter_in_nd_problem]))
 
-    def PaintObjectiveFunc(self):
+    def paint_objective_func(self):
         if self.objectFunctionPainterType == 'objective function':
             section = self.optimum.copy()
-            self.plotter.PlotByGrid(self.CalculateFunc, section, pointsCount=150)
+            self.plotter.plot_by_grid(self.calculate_func, section, points_count=150)
         elif self.objectFunctionPainterType == 'approximation':
-            self.plotter.PlotApproximation(self.points, self.values, pointsCount=100)
+            self.plotter.plot_approximation(self.points, self.values, points_count=100)
         elif self.objectFunctionPainterType == 'interpolation':
-            self.plotter.PlotInterpolation(self.points, self.values, pointsCount=100)
+            self.plotter.plot_interpolation(self.points, self.values, points_count=100)
         elif self.objectFunctionPainterType == 'only points':
             pass
 
-    def PaintPoints(self, currPoint: SearchDataItem = None):
-        if self.isPointsAtBottom:
+    def paint_points(self, curr_point: SearchDataItem = None):
+        if self.is_points_at_bottom:
             values = [self.optimumValue - (max(self.values) - min(self.values)) * 0.3] * len(self.values)
-            self.plotter.PlotPoints(self.points, values, 'blue', 'o', 4)
+            self.plotter.plot_points(self.points, values, 'blue', 'o', 4)
         else:
-            self.plotter.PlotPoints(self.points, self.values, 'blue', 'o', 4)
+            self.plotter.plot_points(self.points, self.values, 'blue', 'o', 4)
 
-    def PaintOptimum(self, solution: Solution = None):
+    def paint_optimum(self, solution: Solution = None):
         value = self.optimumValue
-        if self.isPointsAtBottom:
+        if self.is_points_at_bottom:
             value = value - (max(self.values) - min(self.values)) * 0.3
-        self.plotter.PlotPoints([self.optimumC], [value], 'red', 'o', 4)
+        self.plotter.plot_points([self.optimumC], [value], 'red', 'o', 4)
 
-    def SaveImage(self):
-        if not os.path.isdir(self.pathForSaves):
-            if self.pathForSaves == "":
-                plt.savefig(self.fileName)
+    def save_image(self):
+        if not os.path.isdir(self.path_for_saves):
+            if self.path_for_saves == "":
+                plt.savefig(self.file_name)
             else:
-                os.mkdir(self.pathForSaves)
-                plt.savefig(self.pathForSaves + "/" + self.fileName)
+                os.mkdir(self.path_for_saves)
+                plt.savefig(self.path_for_saves + "/" + self.file_name)
         else:
-            plt.savefig(self.pathForSaves + "/" + self.fileName)
+            plt.savefig(self.path_for_saves + "/" + self.file_name)
         plt.show()
 
-    def CalculateFunc(self, x):
+    def calculate_func(self, x):
         point = Point(x)
         fv = FunctionValue()
         fv = self.objFunc(point, fv)
         return fv.value
 
 class StaticPainterND(Painter):
-    def __init__(self, searchData, solution, parameters, mode, calc, fileName, pathForSaves):
-        self.pathForSaves = pathForSaves
-        self.fileName = fileName
+    def __init__(self, search_data, solution, parameters, mode, calc, file_name, path_for_saves):
+        self.path_for_saves = path_for_saves
+        self.file_name = file_name
 
         self.objectFunctionPainterType = mode
         self.objectFunctionCalculatorType = calc
@@ -214,7 +215,7 @@ class StaticPainterND(Painter):
         self.points = []
         self.values = []
 
-        for item in searchData:
+        for item in search_data:
             self.points.append([item.get_y().float_variables[parameters[0]], item.get_y().float_variables[parameters[1]]])
             self.values.append(item.get_z())
 
@@ -232,40 +233,40 @@ class StaticPainterND(Painter):
         # настройки графика
         self.plotter = Plotter3D(parameters, self.leftBounds, self.rightBounds, solution.problem.calculate, self.objectFunctionPainterType)
 
-    def PaintObjectiveFunc(self):
+    def paint_objective_func(self):
         if self.objectFunctionPainterType == 'lines layers':
             if self.objectFunctionCalculatorType == 'objective function':
-                self.plotter.PlotByGrid(self.CalculateFunc, self.optimum, pointsCount=100)
+                self.plotter.plot_by_grid(self.calculate_func, self.optimum, points_count=100)
             elif self.objectFunctionCalculatorType == 'interpolation':
-                self.plotter.PlotInterpolation(self.points, self.values, pointsCount=100)
+                self.plotter.plot_interpolation(self.points, self.values, points_count=100)
             elif self.objectFunctionCalculatorType == "approximation":
                 pass
         elif self.objectFunctionPainterType == 'surface':
             if self.objectFunctionCalculatorType == 'approximation':
-                self.plotter.PlotApproximation(self.points, self.values, pointsCount=50)
+                self.plotter.plot_approximation(self.points, self.values, points_count=50)
             elif self.objectFunctionCalculatorType == 'interpolation':
-                self.plotter.PlotInterpolation(self.points, self.values, pointsCount=50)
+                self.plotter.plot_interpolation(self.points, self.values, points_count=50)
             elif self.objectFunctionCalculatorType == "objective function":
                 pass
 
-    def PaintPoints(self, currPoint: SearchDataItem = None):
-        self.plotter.PlotPoints(self.points, self.values, 'blue', 'o', 4)
+    def paint_points(self, curr_point: SearchDataItem = None):
+        self.plotter.plot_points(self.points, self.values, 'blue', 'o', 4)
 
-    def PaintOptimum(self, solution: Solution = None):
-        self.plotter.PlotPoints([self.optimum], [self.optimumValue], 'red', 'o', 4)
+    def paint_optimum(self, solution: Solution = None):
+        self.plotter.plot_points([self.optimum], [self.optimumValue], 'red', 'o', 4)
 
-    def SaveImage(self):
-        if not os.path.isdir(self.pathForSaves):
-            if self.pathForSaves == "":
-                plt.savefig(self.fileName)
+    def save_image(self):
+        if not os.path.isdir(self.path_for_saves):
+            if self.path_for_saves == "":
+                plt.savefig(self.file_name)
             else:
-                os.mkdir(self.pathForSaves)
-                plt.savefig(self.pathForSaves + "/" + self.fileName)
+                os.mkdir(self.path_for_saves)
+                plt.savefig(self.path_for_saves + "/" + self.file_name)
         else:
-            plt.savefig(self.pathForSaves + "/" + self.fileName)
+            plt.savefig(self.path_for_saves + "/" + self.file_name)
         plt.show()
 
-    def CalculateFunc(self, x):
+    def calculate_func(self, x):
         point = Point(x, [])
         fv = FunctionValue()
         fv = self.objFunc(point, fv)

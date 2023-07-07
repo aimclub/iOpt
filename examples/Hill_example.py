@@ -23,7 +23,7 @@ if __name__ == "__main__":
     solver.add_listener(cfol)
 
     # Добавляем построение визуализации после решения задачи
-    spl = StaticPainterListener("hill.png", "output", indx=0, isPointsAtBottom=False, mode="objective function")
+    spl = StaticPainterListener("hill.png", "output", indx=0, is_points_at_bottom=False, mode="objective function")
     solver.add_listener(spl)
 
     # Решение задачи

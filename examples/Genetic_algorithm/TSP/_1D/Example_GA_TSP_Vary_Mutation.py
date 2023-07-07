@@ -8,8 +8,8 @@ from examples.Genetic_algorithm.TSP._1D.Problems import ga_tsp_vary_mutation
 import numpy as np
 import xml.etree.ElementTree as ET
 
-def load_TSPs_matrix(filename):
-    root = ET.parse(filename).getroot()
+def load_TSPs_matrix(file_name):
+    root = ET.parse(file_name).getroot()
     columns = root.findall('graph/vertex')
     num_cols = len(columns)
     trans_matrix = np.zeros((num_cols, num_cols))
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(3.0), iters_limit=40)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimatePainterListener("gatsp_1d_anim_vary_mutation.png", "output", toPaintObjFunc=False)
+    apl = AnimatePainterListener("gatsp_1d_anim_vary_mutation.png", "output", to_paint_obj_func=False)
     solver.add_listener(apl)
 
     spl = StaticPainterListener("gatsp_1d_stat_vary_mutation.png", "output", mode="interpolation")
