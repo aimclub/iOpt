@@ -16,7 +16,7 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
                  ):
         self.task = task
 
-    def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
+    def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
         Проведение поискового испытания в заданной точке.
 
@@ -27,18 +27,18 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
         number_of_constraints = self.task.problem.number_of_constraints
         for i in range(number_of_constraints):
             point.function_values[i] = FunctionValue(FunctionType.CONSTRAINT, i)
-            point = self.task.Calculate(point, i)
-            point.SetZ(point.function_values[i].value)
-            point.SetIndex(i)
-            if point.GetZ() < 0:
+            point = self.task.calculate(point, i)
+            point.set_z(point.function_values[i].value)
+            point.set_index(i)
+            if point.get_z() < 0:
                 return point
         point.function_values[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
-        point = self.task.Calculate(point, number_of_constraints)
-        point.SetZ(point.function_values[number_of_constraints].value)
-        point.SetIndex(number_of_constraints)
+        point = self.task.calculate(point, number_of_constraints)
+        point.set_z(point.function_values[number_of_constraints].value)
+        point.set_index(number_of_constraints)
         return point
 
-    def CopyFunctionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
+    def copy_functionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
         r"""
         Копирование поискового испытания.
 
@@ -47,5 +47,5 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
         """
 
         dist_point.function_values = copy.deepcopy(src_point.function_values)
-        dist_point.SetZ(src_point.GetZ())
-        dist_point.SetIndex(src_point.GetIndex())
+        dist_point.set_z(src_point.get_z())
+        dist_point.set_index(src_point.get_index())

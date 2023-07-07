@@ -31,14 +31,14 @@ class DiscretePainter(Painter):
 
         if mode == 'bestcombination':
             for x in searchData:
-                if x.GetZ() > 1.7e+308:
+                if x.get_z() > 1.7e+308:
                     continue
-                if x.GetY().discrete_variables != self.optimum.discrete_variables:
+                if x.get_y().discrete_variables != self.optimum.discrete_variables:
                     if floatdim > 1:
-                        self.otherPoints[0].append(x.GetY().float_variables[subparameters[0] - 1])
-                        self.otherPoints[1].append(x.GetY().float_variables[subparameters[1] - 1])
+                        self.otherPoints[0].append(x.get_y().float_variables[subparameters[0] - 1])
+                        self.otherPoints[1].append(x.get_y().float_variables[subparameters[1] - 1])
                     else:
-                        self.otherPoints[0].append(x.GetY().float_variables[0])
+                        self.otherPoints[0].append(x.get_y().float_variables[0])
                         self.otherPoints[1].append(self.optimumVal - 5)
                     continue
                 else:
@@ -55,15 +55,15 @@ class DiscretePainter(Painter):
                             self.points2.append([x.GetY().float_variables[subparameters[0] - 1],
                                                  x.GetY().float_variables[subparameters[1] - 1]])
                         '''
-                        self.points.append([x.GetY().float_variables[subparameters[0] - 1],
-                                       x.GetY().float_variables[subparameters[1] - 1]])
-                        self.values.append(x.GetZ())
-                        self.pointsWithBestComb[0].append(x.GetY().float_variables[subparameters[0] - 1])
-                        self.pointsWithBestComb[1].append(x.GetY().float_variables[subparameters[1] - 1])
+                        self.points.append([x.get_y().float_variables[subparameters[0] - 1],
+                                            x.get_y().float_variables[subparameters[1] - 1]])
+                        self.values.append(x.get_z())
+                        self.pointsWithBestComb[0].append(x.get_y().float_variables[subparameters[0] - 1])
+                        self.pointsWithBestComb[1].append(x.get_y().float_variables[subparameters[1] - 1])
                     else:
-                        self.points.append(x.GetY().float_variables[0])
-                        self.values.append(x.GetZ())
-                        self.pointsWithBestComb[0].append(x.GetY().float_variables[0])
+                        self.points.append(x.get_y().float_variables[0])
+                        self.values.append(x.get_z())
+                        self.pointsWithBestComb[0].append(x.get_y().float_variables[0])
                         self.pointsWithBestComb[1].append(self.optimumVal - 5)
 
             if floatdim > 1:
@@ -77,13 +77,13 @@ class DiscretePainter(Painter):
             i = 0
             for item in searchDataSorted:
                 i += 1
-                if item.GetZ() > 1.7e+308:
+                if item.get_z() > 1.7e+308:
                     continue
-                self.points.append(item.GetY())
-                self.values.append([item.GetZ(), i])
+                self.points.append(item.get_y())
+                self.values.append([item.get_z(), i])
                 str = '['
-                for j in range(len(item.GetY().discrete_variables)):
-                    str += item.GetY().discrete_variables[j] + ', '
+                for j in range(len(item.get_y().discrete_variables)):
+                    str += item.get_y().discrete_variables[j] + ', '
                 str = str[:-2]
                 str += ']'
                 self.combination.append([str, i])
@@ -144,8 +144,8 @@ class StaticPainter(Painter):
         self.values = []
 
         for item in searchData:
-            self.points.append(item.GetY().float_variables[parameterInNDProblem])
-            self.values.append(item.GetZ())
+            self.points.append(item.get_y().float_variables[parameterInNDProblem])
+            self.values.append(item.get_z())
 
         self.points = self.points[1:-1]
         self.values = self.values[1:-1]
@@ -215,8 +215,8 @@ class StaticPainterND(Painter):
         self.values = []
 
         for item in searchData:
-            self.points.append([item.GetY().float_variables[parameters[0]], item.GetY().float_variables[parameters[1]]])
-            self.values.append(item.GetZ())
+            self.points.append([item.get_y().float_variables[parameters[0]], item.get_y().float_variables[parameters[1]]])
+            self.values.append(item.get_z())
 
         self.points = self.points[1:-1]
         self.values = self.values[1:-1]

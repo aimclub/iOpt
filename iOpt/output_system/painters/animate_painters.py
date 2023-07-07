@@ -34,12 +34,12 @@ class AnimatePainter(Painter):
         self.plotter.PlotByGrid(self.CalculateFunc, self.section.copy(), pointsCount=150)
 
     def PaintPoints(self, currPoints):
-        x = [currPoint.GetY().float_variables[self.parameterInNDProblem] for currPoint in currPoints]
-        fv = [currPoint.GetZ() for currPoint in currPoints]
+        x = [currPoint.get_y().float_variables[self.parameterInNDProblem] for currPoint in currPoints]
+        fv = [currPoint.get_z() for currPoint in currPoints]
         if self.isPointsAtBottom:
-            fv = [currPoint.GetZ() * 0.7 for currPoint in currPoints]
+            fv = [currPoint.get_z() * 0.7 for currPoint in currPoints]
         else:
-            fv = [currPoint.GetZ() for currPoint in currPoints]
+            fv = [currPoint.get_z() for currPoint in currPoints]
         self.plotter.PlotPoints(x, fv, 'blue', 'o', 4)
 
     def PaintOptimum(self, solution: Solution):
@@ -96,8 +96,8 @@ class AnimatePainterND(Painter):
         self.plotter.PlotByGrid(self.CalculateFunc, self.section, pointsCount=150)
 
     def PaintPoints(self, currPoints):
-        x = [[currPoint.GetY().float_variables[self.parametersInNDProblem[0]] for currPoint in currPoints],
-        [currPoint.GetY().float_variables[self.parametersInNDProblem[1]] for currPoint in currPoints]]
+        x = [[currPoint.get_y().float_variables[self.parametersInNDProblem[0]] for currPoint in currPoints],
+             [currPoint.get_y().float_variables[self.parametersInNDProblem[1]] for currPoint in currPoints]]
         self.plotter.PlotPoints(x, [], 'blue', 'o', 4)
 
     def PaintOptimum(self, solution: Solution):

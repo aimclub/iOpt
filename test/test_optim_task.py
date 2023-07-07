@@ -34,7 +34,7 @@ class TestOptimizationTask(unittest.TestCase):
         sdi = SearchDataItem(point, -1, 0)
         sdi.function_values = np.ndarray(shape=(1), dtype=FunctionValue)
         sdi.function_values[0] = FunctionValue()
-        sdi = self.optimizationTask.Calculate(sdi, 0)
+        sdi = self.optimizationTask.calculate(sdi, 0)
 
         sum: np.double = 0
         for i in range(self.problem.dimension):

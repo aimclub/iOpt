@@ -20,7 +20,7 @@ class ParallelProcess(Process):
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 searchData: SearchData,
+                 search_data: SearchData,
                  method: Method,
                  listeners: List[Listener]
                  ):
@@ -30,16 +30,16 @@ class ParallelProcess(Process):
         :param parameters: Параметры решения задачи оптимизации.
         :param task: Обёртка решаемой задачи.
         :param evolvent: Развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param searchData: Структура данных для хранения накопленной поисковой информации.
+        :param search_data: Структура данных для хранения накопленной поисковой информации.
         :param method: Метод оптимизации, проводящий поисковые испытания по заданным правилам.
         :param listeners: Список "наблюдателей" (используется для вывода текущей информации).
         """
-        super(ParallelProcess, self).__init__(parameters, task, evolvent, searchData, method, listeners)
+        super(ParallelProcess, self).__init__(parameters, task, evolvent, search_data, method, listeners)
 
-        self.indexMethodCalculator = IndexMethodCalculator(task)
-        self.calculator = Calculator(self.indexMethodCalculator, parameters)
+        self.index_method_calculator = IndexMethodCalculator(task)
+        self.calculator = Calculator(self.index_method_calculator, parameters)
 
-    def DoGlobalIteration(self, number: int = 1):
+    def do_global_iteration(self, number: int = 1):
         """
         Метод позволяет выполнить несколько итераций глобального поиска
 
@@ -49,8 +49,8 @@ class ParallelProcess(Process):
         doneTrials = []
         if self._first_iteration is True:
             for listener in self._listeners:
-                listener.BeforeMethodStart(self.method)
-            doneTrials = self.method.FirstIteration(self.calculator)
+                listener.before_method_start(self.method)
+            doneTrials = self.method.first_iteration(self.calculator)
             self._first_iteration = False
             number = number - 1
 
@@ -59,16 +59,16 @@ class ParallelProcess(Process):
             list_oldpoint: list[SearchDataItem] = []
 
             for _ in range(self.parameters.number_of_parallel_points):
-                newpoint, oldpoint = self.method.CalculateIterationPoint()
+                newpoint, oldpoint = self.method.calculate_iteration_point()
                 list_newpoint.append(newpoint)
                 list_oldpoint.append(oldpoint)
-            self.calculator.CalculateFunctionalsForItems(list_newpoint)
+            self.calculator.calculate_functionals_for_items(list_newpoint)
 
             for newpoint, oldpoint in zip(list_newpoint, list_oldpoint):
-                self.method.UpdateOptimum(newpoint)
-                self.method.RenewSearchData(newpoint, oldpoint)
-                self.method.FinalizeIteration()
-                doneTrials = self.search_data.GetLastItems(self.parameters.number_of_parallel_points * number_)
+                self.method.update_optimum(newpoint)
+                self.method.renew_search_data(newpoint, oldpoint)
+                self.method.finalize_iteration()
+                doneTrials = self.search_data.get_last_items(self.parameters.number_of_parallel_points * number_)
 
         for listener in self._listeners:
-            listener.OnEndIteration(doneTrials, self.GetResults())
+            listener.on_end_iteration(doneTrials, self.get_results())

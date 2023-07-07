@@ -29,9 +29,9 @@ class MixedIntegerMethod(IndexMethod):
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 searchData: SearchData
+                 search_data: SearchData
                  ):
-        super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, searchData)
+        super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, search_data)
 
         # u = {i, j, k}, i = {0, 1, 2}, j = {0, 1}, k = {0, 1, 2, 3, 4} -> 3*2*4=24
 
@@ -41,7 +41,7 @@ class MixedIntegerMethod(IndexMethod):
         self.numberOfParameterCombinations = len(self.discreteParameters)
         # 0 0.5 1  1.5 2   2.5  3    3.5 4
 
-    def FirstIteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
+    def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
@@ -75,7 +75,7 @@ class MixedIntegerMethod(IndexMethod):
                     ystart_point = Point(copy.copy(self.parameters.start_point.float_variables),
                                         self.discreteParameters[id_comb])
                     xstart_point = id_comb + self.evolvent.GetInverseImage(self.parameters.start_point.float_variables)
-                    itemstart_point = SearchDataItem(ystart_point, xstart_point, discreteValueIndex=id_comb,
+                    itemstart_point = SearchDataItem(ystart_point, xstart_point, discrete_value_index=id_comb,
                                                     function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
                     isAddstart_point: bool = False
@@ -86,7 +86,7 @@ class MixedIntegerMethod(IndexMethod):
                         y_temp = self.evolvent.GetImage(x)
 
                         y = Point(copy.copy(y_temp), self.discreteParameters[id_comb])
-                        item = SearchDataItem(y, x, discreteValueIndex=id_comb,
+                        item = SearchDataItem(y, x, discrete_value_index=id_comb,
                                               function_values=[FunctionValue()] * self.numberOfAllFunctions)
                         if x < xstart_point < id_comb + h * (i + 1):
                             items.append(item)
@@ -106,14 +106,14 @@ class MixedIntegerMethod(IndexMethod):
                             image_x.append(self.evolvent.GetImage(x))
 
                         y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
-                        item = SearchDataItem(y, x, discreteValueIndex=id_comb,
+                        item = SearchDataItem(y, x, discrete_value_index=id_comb,
                                               function_values=[FunctionValue()] * self.numberOfAllFunctions)
                         items.append(item)
 
                 right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
                                             float(id_comb + 1),
                                             function_values=[FunctionValue()] * self.numberOfAllFunctions,
-                                            discreteValueIndex=id_comb))
+                                            discrete_value_index=id_comb))
 
                 if not is_init_image_x:
                     is_init_image_x = True
@@ -125,61 +125,61 @@ class MixedIntegerMethod(IndexMethod):
                         image_x.append(self.evolvent.GetImage(x))
 
                     y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
-                    item = SearchDataItem(y, x, discreteValueIndex=id_comb,
+                    item = SearchDataItem(y, x, discrete_value_index=id_comb,
                                           function_values=[FunctionValue()] * self.numberOfAllFunctions)
                     items.append(item)
 
                 right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
                                             float(id_comb + 1),
                                             function_values=[FunctionValue()] * self.numberOfAllFunctions,
-                                            discreteValueIndex=id_comb))
+                                            discrete_value_index=id_comb))
 
                 if not is_init_image_x:
                     is_init_image_x = True
 
         if calculator is None:
             for item in items:
-                self.CalculateFunctionals(item)
+                self.calculate_functionals(item)
         else:
-            calculator.CalculateFunctionalsForItems(items)
+            calculator.calculate_functionals_for_items(items)
 
         for item in items:
-            self.UpdateOptimum(item)
+            self.update_optimum(item)
 
         left.delta = 0
         # left надо для всех считать
-        self.CalculateGlobalR(left, None)
+        self.calculate_global_r(left, None)
 
-        items[0].delta = self.CalculateDelta(left, items[0], self.dimension)
-        self.CalculateGlobalR(items[0], left)
+        items[0].delta = self.calculate_delta(left, items[0], self.dimension)
+        self.calculate_global_r(items[0], left)
 
         for id_comb in range(self.numberOfParameterCombinations):
             if id_comb > 0:
                 # вычисление left
                 index = id_comb * numberOfPointsInOneInterval
-                items[index].delta = self.CalculateDelta(right[id_comb - 1], items[index], self.dimension)
-                self.CalculateGlobalR(items[index], right[id_comb - 1])
+                items[index].delta = self.calculate_delta(right[id_comb - 1], items[index], self.dimension)
+                self.calculate_global_r(items[index], right[id_comb - 1])
 
             for id_item in range(1, numberOfPointsInOneInterval):
                 index = id_comb * numberOfPointsInOneInterval + id_item
-                items[index].delta = self.CalculateDelta(items[index - 1], items[index], self.dimension)
-                self.CalculateGlobalR(items[index], items[index - 1])
-                self.CalculateM(items[index], items[index - 1])
+                items[index].delta = self.calculate_delta(items[index - 1], items[index], self.dimension)
+                self.calculate_global_r(items[index], items[index - 1])
+                self.calculate_m(items[index], items[index - 1])
 
             left_index = id_comb * numberOfPointsInOneInterval + numberOfPointsInOneInterval - 1
-            right[id_comb].delta = self.CalculateDelta(items[left_index], right[id_comb], self.dimension)
-            self.CalculateGlobalR(right[id_comb], items[left_index])
+            right[id_comb].delta = self.calculate_delta(items[left_index], right[id_comb], self.dimension)
+            self.calculate_global_r(right[id_comb], items[left_index])
 
         # вставить left  и right, потом middle
-        self.search_data.InsertFirstDataItem(left, right[-1])
+        self.search_data.insert_first_data_item(left, right[-1])
 
         for right_item in range(self.numberOfParameterCombinations):
             if right_item < self.numberOfParameterCombinations - 1:
-                self.search_data.InsertDataItem(right[right_item], right[-1])
+                self.search_data.insert_data_item(right[right_item], right[-1])
 
             for id_item in range(numberOfPointsInOneInterval):
                 index = right_item * numberOfPointsInOneInterval + id_item
-                self.search_data.InsertDataItem(items[index], right[right_item])
+                self.search_data.insert_data_item(items[index], right[right_item])
 
         self.recalcR = True
         self.recalcM = True
@@ -188,7 +188,7 @@ class MixedIntegerMethod(IndexMethod):
 
         return items
 
-    def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
+    def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
         Вычисление точки нового испытания :math:`x^{k+1}`.
 
@@ -197,16 +197,16 @@ class MixedIntegerMethod(IndexMethod):
         """
 
         if self.recalcM is True:
-            self.RecalcM()
+            self.recalc_m()
         if self.recalcR is True:
-            self.RecalcAllCharacteristics()
+            self.recalc_all_characteristics()
 
-        old = self.search_data.GetDataItemWithMaxGlobalR()
+        old = self.search_data.get_data_item_with_max_global_r()
         self.min_delta = min(old.delta, self.min_delta)
-        newx = self.CalculateNextPointCoordinate(old)
+        newx = self.calculate_next_point_coordinate(old)
         newy = self.evolvent.GetImage(newx - math.modf(newx)[1])
         new = copy.deepcopy(SearchDataItem(Point(newy, old.point.discrete_variables),
-                                           newx, discreteValueIndex=old.GetDiscreteValueIndex(),
+                                           newx, discrete_value_index=old.get_discrete_value_index(),
                                            function_values=[FunctionValue()] * self.numberOfAllFunctions))
         # Обновление числа испытаний
         self.search_data.solution.number_of_global_trials += 1
@@ -218,7 +218,7 @@ class MixedIntegerMethod(IndexMethod):
         list_discreteValues = list(problem.discrete_variable_values)
         return list(itertools.product(*list_discreteValues))
 
-    def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+    def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
         Вычисление оценки константы Гельдера между между curr_point и left_point.
 
@@ -231,40 +231,40 @@ class MixedIntegerMethod(IndexMethod):
             raise RuntimeError("CalculateM: curr_point is None")
         if left_point is None:
             return
-        index = curr_point.GetIndex()
+        index = curr_point.get_index()
         if index < 0:
             return
         m = 0.0
-        if left_point.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
-            m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
+        if left_point.get_index() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+            m = abs(left_point.get_z() - curr_point.get_z()) / curr_point.delta
         else:
             # Ищем слева
             other_point = left_point
-            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
-                if other_point.GetDiscreteValueIndex() == curr_point.GetDiscreteValueIndex():
-                    other_point = other_point.GetLeft()
+            while (other_point is not None) and (other_point.get_index() < curr_point.get_index()):
+                if other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
+                    other_point = other_point.get_left()
                 else:
                     other_point = None
                     break
-            if other_point is not None and other_point.GetIndex() >= 0:
+            if other_point is not None and other_point.get_index() >= 0:
                 # print(index)
-                m = abs(other_point.function_values[index].value - curr_point.GetZ()) / \
-                    self.CalculateDelta(other_point, curr_point, self.dimension)
+                m = abs(other_point.function_values[index].value - curr_point.get_z()) / \
+                    self.calculate_delta(other_point, curr_point, self.dimension)
 
             # Ищем справа
-            other_point = left_point.GetRight()
+            other_point = left_point.get_right()
             if other_point is not None and other_point is curr_point:  # возможно только при пересчёте M
-                other_point = other_point.GetRight()
-            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
-                if other_point.GetDiscreteValueIndex() == curr_point.GetDiscreteValueIndex():
-                    other_point = other_point.GetRight()
+                other_point = other_point.get_right()
+            while (other_point is not None) and (other_point.get_index() < curr_point.get_index()):
+                if other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
+                    other_point = other_point.get_right()
                 else:
                     other_point = None
                     break
 
-            if other_point is not None and other_point.GetIndex() >= 0:
-                m = max(m, abs(curr_point.GetZ() - other_point.function_values[index].value) / \
-                        self.CalculateDelta(curr_point, other_point, self.dimension))
+            if other_point is not None and other_point.get_index() >= 0:
+                m = max(m, abs(curr_point.get_z() - other_point.function_values[index].value) / \
+                        self.calculate_delta(curr_point, other_point, self.dimension))
 
         if m > self.M[index] or (self.M[index] == 1.0 and m > 1e-12):
             self.M[index] = m

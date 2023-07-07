@@ -35,9 +35,9 @@ class ConsoleOutputer:
             isFirst = False
 
         for i in range(len(savedNewPoints)):
-            point = savedNewPoints[i].GetY().float_variables
-            dpoint = savedNewPoints[i].GetY().discrete_variables
-            value = savedNewPoints[i].GetZ()
+            point = savedNewPoints[i].get_y().float_variables
+            dpoint = savedNewPoints[i].get_y().discrete_variables
+            value = savedNewPoints[i].get_z()
 
             self.__functions.printIter(
                 point,

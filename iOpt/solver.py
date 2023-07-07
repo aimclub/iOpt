@@ -40,10 +40,10 @@ class Solver:
         self.evolvent = Evolvent(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables,
                                  problem.number_of_float_variables)
         self.task = OptimizationTask(problem)
-        self.method = SolverFactory.CreateMethod(parameters, self.task, self.evolvent, self.search_data)
-        self.process = SolverFactory.CreateProcess(parameters=parameters, task=self.task, evolvent=self.evolvent,
-                                                   searchData=self.search_data, method=self.method,
-                                                   listeners=self.__listeners)
+        self.method = SolverFactory.create_method(parameters, self.task, self.evolvent, self.search_data)
+        self.process = SolverFactory.create_process(parameters=parameters, task=self.task, evolvent=self.evolvent,
+                                                    search_data=self.search_data, method=self.method,
+                                                    listeners=self.__listeners)
 
     def solve(self) -> Solution:
         """
@@ -55,9 +55,9 @@ class Solver:
         Solver.chack_parameters(self.problem, self.parameters)
         sol: Solution = None;
         if self.parameters.timeout < 0:
-            sol = self.process.Solve()
+            sol = self.process.solve()
         else:
-            solv_with_timeout = timeout(seconds=self.parameters.timeout * 60)(self.process.Solve)
+            solv_with_timeout = timeout(seconds=self.parameters.timeout * 60)(self.process.solve)
             try:
                 solv_with_timeout()
             except Exception as exc:
@@ -66,9 +66,9 @@ class Solver:
                 sol.solving_time = self.parameters.timeout * 60
                 self.method.recalcR = True
                 self.method.recalcM = True
-                status = self.method.CheckStopCondition()
+                status = self.method.check_stop_condition()
                 for listener in self.__listeners:
-                    listener.OnMethodStop(self.search_data, self.get_results(), status)
+                    listener.on_method_stop(self.search_data, self.get_results(), status)
         return sol
 
     def do_global_iteration(self, number: int = 1):
@@ -78,7 +78,7 @@ class Solver:
         :param number: число итераций глобального поиска
         """
         Solver.chack_parameters(self.problem, self.parameters)
-        self.process.DoGlobalIteration(number)
+        self.process.do_global_iteration(number)
 
     def do_local_refinement(self, number: int = 1):
         """
@@ -87,7 +87,7 @@ class Solver:
         :param number: число итераций локального поиска
         """
         Solver.chack_parameters(self.problem, self.parameters)
-        self.process.DoLocalRefinement(number)
+        self.process.do_local_refinement(number)
 
     def get_results(self) -> Solution:
         """
@@ -95,7 +95,7 @@ class Solver:
 
         :return: решение задачи оптимизации
         """
-        return self.process.GetResults()
+        return self.process.get_results()
 
     def save_progress(self, file_name: str) -> None:
         """
@@ -103,7 +103,7 @@ class Solver:
 
         :param file_name: имя файла
         """
-        self.process.SaveProgress(fileName=file_name)
+        self.process.save_progress(file_name=file_name)
 
     def load_progress(self, file_name: str) -> None:
         """
@@ -112,7 +112,7 @@ class Solver:
         :param file_name: имя файла
         """
         Solver.chack_parameters(self.problem, self.parameters)
-        self.process.LoadProgress(fileName=file_name)
+        self.process.load_progress(file_name=file_name)
 
     def refresh_listener(self) -> None:
         """

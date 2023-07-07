@@ -31,15 +31,15 @@ class AnimatePainterListener(Listener):
         self.toPaintObjFunc = toPaintObjFunc
         self.__painter = AnimatePainter(self.isPointsAtBottom, 0, self.pathForSaves, self.fileName)
 
-    def BeforeMethodStart(self, method: Method):
+    def before_method_start(self, method: Method):
         self.__painter.SetProblem(method.task.problem)
         if self.toPaintObjFunc:
             self.__painter.PaintObjectiveFunc()
 
-    def OnEndIteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+    def on_end_iteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
         self.__painter.PaintPoints(savedNewPoints)
 
-    def OnMethodStop(self, searchData: SearchData, solution: Solution, status: bool):
+    def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):
         self.__painter.PaintOptimum(solution)
         self.__painter.SaveImage()
 
@@ -65,13 +65,13 @@ class AnimatePainterNDListener(Listener):
         self.toPaintObjFunc = toPaintObjFunc
         self.__painter = AnimatePainterND(varsIndxs, self.pathForSaves, self.fileName)
 
-    def BeforeMethodStart(self, method: Method):
+    def before_method_start(self, method: Method):
         self.__painter.SetProblem(method.task.problem)
 
-    def OnEndIteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+    def on_end_iteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
         self.__painter.PaintPoints(savedNewPoints)
 
-    def OnMethodStop(self, searchData: SearchData, solution: Solution, status: bool):
+    def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):
         self.__painter.PaintOptimum(solution)
         if self.toPaintObjFunc:
             self.__painter.PaintObjectiveFunc()
