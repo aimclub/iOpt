@@ -101,13 +101,13 @@ class RastriginInt(Problem):
             else:
                 raise ValueError
 
-        x_arr = self.PointToArray(point)
+        x_arr = self.point_to_array(point)
         sum = sum * (self.MultFunc(x_arr)+self.multKoef)
 
         function_value.value = sum
         return function_value
 
-    def PointToArray(self, point: Point) -> np.ndarray:
+    def point_to_array(self, point: Point) -> np.ndarray:
         arr = np.ndarray(shape=(self.dimension), dtype=np.double)
 
         for i in range(0, self.number_of_float_variables):

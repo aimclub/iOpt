@@ -73,11 +73,11 @@ class RastriginIntHiddenConstraint(Problem):
         for i in range(int(count)):
             for j in range(self.dimension):
                 x[j] = self.A[j] if (((i >> j) & 1) == 0) else self.B[j]
-            v = abs(self.MultFunc(x))
+            v = abs(self.mult_func(x))
             if v > self.multKoef:  self.multKoef = v
 
         self.multKoef += 4
-        self.optMultKoef = (self.MultFunc(self.optPoint)+self.multKoef)
+        self.optMultKoef = (self.mult_func(self.optPoint) + self.multKoef)
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
@@ -110,13 +110,13 @@ class RastriginIntHiddenConstraint(Problem):
             else:
                 raise ValueError
 
-        x_arr = self.PointToArray(point)
-        sum = sum * (self.MultFunc(x_arr)+self.multKoef)
+        x_arr = self.point_to_array(point)
+        sum = sum * (self.mult_func(x_arr) + self.multKoef)
 
         function_value.value = sum
         return function_value
 
-    def PointToArray(self, point: Point) -> np.ndarray:
+    def point_to_array(self, point: Point) -> np.ndarray:
         arr = np.ndarray(shape=(self.dimension), dtype=np.double)
 
         for i in range(0, self.number_of_float_variables):
@@ -129,7 +129,7 @@ class RastriginIntHiddenConstraint(Problem):
                 arr[self.number_of_float_variables+i] = 1.8
         return arr
 
-    def MultFunc(self, x: np.ndarray) -> np.double:
+    def mult_func(self, x: np.ndarray) -> np.double:
         result: np.double = 0
         a: np.double
         d: np.double
