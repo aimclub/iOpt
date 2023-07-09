@@ -50,11 +50,11 @@ class TestProcess(unittest.TestCase):
         self.process.task.problem.numberOfConstraints = 0
         self.process.task.problem.numberOfObjectives = 1
         self.process.parameters.itersLimit = 40
-        self.process.parameters.localMethodIterationCount = 40 * 0.05
+        self.process.parameters.localMethodIterationCount = int(40 * 0.05)
         try:
             self.process.DoLocalRefinement(-1)
-            self.assertEqual(4, self.process.searchData.solution.numberOfLocalTrials)
-            self.assertEqual(0.45, self.process.searchData.solution.bestTrials[0].point.floatVariables)
+            self.assertEqual(2, self.process.searchData.solution.numberOfLocalTrials)
+            self.assertEqual([0.45], self.process.searchData.solution.bestTrials[0].point.floatVariables)
             self.assertEqual(-10.25, self.process.searchData.solution.bestTrials[0].functionValues[0].value)
             self.process.task.problem.Calculate.assert_called()
         except Exception:
@@ -72,12 +72,13 @@ class TestProcess(unittest.TestCase):
         self.process.task.problem.Calculate = Mock(side_effect=self.mock_Calculate)
         self.process.method.CheckStopCondition = Mock(side_effect=self.mock_CheckStopCondition)
         self.process.parameters.refineSolution = True
-        self.process.parameters.itersLimit = 20  # localMethodIterationCount = 20 * 0.05 = 2
+        self.process.parameters.globalMethodIterationCount = 1
+        self.process.parameters.localMethodIterationCount = 5
         try:
             self.process.Solve()
             mock_OnMethodStop.assert_called_once()
             self.assertEqual(1, self.process.searchData.solution.numberOfGlobalTrials)
-            self.assertEqual(2, self.process.searchData.solution.numberOfLocalTrials)
+            self.assertEqual(5, self.process.searchData.solution.numberOfLocalTrials)
             self.process.method.evolvent.GetImage.assert_called()
             self.process.task.Calculate.assert_called()
             self.process.task.problem.Calculate.assert_called()
@@ -89,11 +90,6 @@ class TestProcess(unittest.TestCase):
     def mock_Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
         functionValue.value = (point.floatVariables[0] - 0.45)**2 - 10.25
         return functionValue
-
-    def test_problemCalculate(self):
-        self.process.task.problem.Calculate = Mock(side_effect=self.mock_Calculate)
-        self.assertEqual(-10.25, self.process.problemCalculate([0.45]))
-        self.process.task.problem.Calculate.assert_called_once()
 
     def test_GetResult(self):
         self.assertEqual(1, len(self.process.searchData.solution.bestTrials))

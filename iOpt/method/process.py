@@ -9,6 +9,7 @@ from scipy.optimize import Bounds
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.listener import Listener
+from iOpt.method.local_optimizer import LocalOptimize
 from iOpt.method.method import Method
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData, SearchDataItem
@@ -105,31 +106,6 @@ class Process:
         for listener in self._listeners:
             listener.OnEndIteration(doneTrials, self.GetResults())
 
-    def problemCalculate(self, y):
-        result = self.GetResults()
-        point = Point(y, result.bestTrials[0].point.discreteVariables)
-        functionValue = FunctionValue(FunctionType.OBJECTIV)
-
-        for i in range(self.task.problem.dimension):
-            if (y[i] < self.task.problem.lowerBoundOfFloatVariables[i]) \
-                    or (y[i] > self.task.problem.upperBoundOfFloatVariables[i]):
-                functionValue.value = sys.float_info.max
-                return functionValue.value
-
-        try:
-            for i in range(self.task.problem.numberOfConstraints):
-                functionConstraintValue = FunctionValue(FunctionType.CONSTRAINT, i)
-                functionConstraintValue = self.task.problem.Calculate(point, functionConstraintValue)
-                if functionConstraintValue.value > 0:
-                    functionValue.value = sys.float_info.max
-                    return functionValue.value
-
-            functionValue = self.task.problem.Calculate(point, functionValue)
-        except Exception:
-            functionValue.value = sys.float_info.max
-
-        return functionValue.value
-
     def DoLocalRefinement(self, number: int = 1):
         """
         Метод позволяет выполнить несколько итераций локального поиска
@@ -137,18 +113,27 @@ class Process:
         :param number: Количество итераций локального поиска
         """
         try:
-            localMethodIterationCount = number
+            local_method_iteration_count = number
             if number == -1:
-                localMethodIterationCount = self.parameters.localMethodIterationCount
+                local_method_iteration_count = int(self.parameters.localMethodIterationCount)
 
             result = self.GetResults()
-            startPoint = result.bestTrials[0].point.floatVariables
+            # start_point = result.bestTrials[0].point.floatVariables
 
-            nelder_mead = scipy.optimize.minimize(self.problemCalculate, x0=startPoint, method='Nelder-Mead',
-                                                  options={'maxiter': localMethodIterationCount})
+            local_solution = LocalOptimize(self.task,
+                                           method="Hooke-Jeeves", start_point=result.bestTrials[0].point,
+                                           max_calcs=local_method_iteration_count,
+                                           args={"eps": self.parameters.eps / 100, "step_mult": 2,
+                                                 "max_iter": local_method_iteration_count}
+                                           )
+            # scipy.optimize.minimize(self.problemCalculate, x0=start_point, method='Nelder-Mead',
+            #                        options={'maxiter': local_method_iteration_count})
+            # local_solution = LocalOptimize(LocalTaskWrapper(self.task, result.bestTrials[0].point.discreteVariables),
+            #                               method="Nelder-Mead", start_point=start_point,
+            #                               args={"options": {'maxiter': local_method_iteration_count}})
 
-            if localMethodIterationCount > 0:
-                result.bestTrials[0].point.floatVariables = nelder_mead.x
+            if local_method_iteration_count > 0:
+                result.bestTrials[0].point.floatVariables = local_solution["x"]
 
                 point: SearchDataItem = SearchDataItem(result.bestTrials[0].point,
                                                        self.evolvent.GetInverseImage(
@@ -175,7 +160,7 @@ class Process:
 
                 result.bestTrials[0].functionValues = point.functionValues
 
-            result.numberOfLocalTrials = nelder_mead.nfev
+            result.numberOfLocalTrials = local_solution["fev"]
         except Exception:
             print("Local Refinement is not possible")
 
@@ -185,8 +170,6 @@ class Process:
 
         :return: Решение задачи оптимизации
         """
-        # ДА, ЭТО КОСТЫЛЬ. т.к. solution хранит trial
-        # self.searchData.solution.bestTrials[0] = self.method.GetOptimumEstimation()
         return self.searchData.solution
 
     def SaveProgress(self, fileName: str) -> None:

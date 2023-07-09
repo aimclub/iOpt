@@ -32,7 +32,7 @@ class Solver:
         self.problem = problem
         self.parameters = parameters
 
-        Solver.ChackParameters(self.problem, self.parameters)
+        Solver.CheckParameters(self.problem, self.parameters)
 
         self.__listeners: List[Listener] = []
 
@@ -52,8 +52,8 @@ class Solver:
 
         :return: решение задачи оптимизации
         """
-        Solver.ChackParameters(self.problem, self.parameters)
-        sol: Solution = None;
+        Solver.CheckParameters(self.problem, self.parameters)
+        sol: Solution = None
         if self.parameters.timeout < 0:
             sol = self.process.Solve()
         else:
@@ -77,7 +77,7 @@ class Solver:
 
         :param number: число итераций глобального поиска
         """
-        Solver.ChackParameters(self.problem, self.parameters)
+        Solver.CheckParameters(self.problem, self.parameters)
         self.process.DoGlobalIteration(number)
 
     def DoLocalRefinement(self, number: int = 1):
@@ -86,7 +86,7 @@ class Solver:
 
         :param number: число итераций локального поиска
         """
-        Solver.ChackParameters(self.problem, self.parameters)
+        Solver.CheckParameters(self.problem, self.parameters)
         self.process.DoLocalRefinement(number)
 
     def GetResults(self) -> Solution:
@@ -111,7 +111,7 @@ class Solver:
 
         :param fileName: имя файла
         """
-        Solver.ChackParameters(self.problem, self.parameters)
+        Solver.CheckParameters(self.problem, self.parameters)
         self.process.LoadProgress(fileName=fileName)
 
     def RefreshListener(self) -> None:
@@ -131,7 +131,7 @@ class Solver:
         self.__listeners.append(listener)
 
     @staticmethod
-    def ChackParameters(problem: Problem,
+    def CheckParameters(problem: Problem,
                         parameters: SolverParameters = SolverParameters()) -> None:
         """
         Проверяет параметры решателя
