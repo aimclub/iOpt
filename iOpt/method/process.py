@@ -4,11 +4,9 @@ from typing import List
 
 import traceback
 
-import scipy
-from scipy.optimize import Bounds
-
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.listener import Listener
+from iOpt.method.local_optimizer import local_optimize
 from iOpt.method.method import Method
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData, SearchDataItem
@@ -57,7 +55,7 @@ class Process:
         :return: Текущая оценка решения задачи оптимизации
         """
 
-        startTime = datetime.now()
+        start_time = datetime.now()
 
         try:
             while not self.method.check_stop_condition():
@@ -71,7 +69,7 @@ class Process:
             self.do_local_refinement(self.parameters.local_method_iteration_count)
 
         result = self.get_results()
-        result.solving_time = (datetime.now() - startTime).total_seconds()
+        result.solving_time = (datetime.now() - start_time).total_seconds()
 
         for listener in self._listeners:
             status = self.method.check_stop_condition()
@@ -86,11 +84,11 @@ class Process:
         :param number: Количество итераций глобального поиска
         """
         number_ = number
-        doneTrials = []
+        done_trials = []
         if self._first_iteration is True:
             for listener in self._listeners:
                 listener.before_method_start(self.method)
-            doneTrials = self.method.first_iteration()
+            done_trials = self.method.first_iteration()
             self._first_iteration = False
             number = number - 1
 
@@ -100,35 +98,10 @@ class Process:
             self.method.update_optimum(newpoint)
             self.method.renew_search_data(newpoint, oldpoint)
             self.method.finalize_iteration()
-            doneTrials = self.search_data.get_last_items(self.parameters.number_of_parallel_points * number_)
+            done_trials = self.search_data.get_last_items(self.parameters.number_of_parallel_points * number_)
 
         for listener in self._listeners:
-            listener.on_end_iteration(doneTrials, self.get_results())
-
-    def problem_calculate(self, y):
-        result = self.get_results()
-        point = Point(y, result.best_trials[0].point.discrete_variables)
-        functionValue = FunctionValue(FunctionType.OBJECTIV)
-
-        for i in range(self.task.problem.dimension):
-            if (y[i] < self.task.problem.lower_bound_of_float_variables[i]) \
-                    or (y[i] > self.task.problem.upper_bound_of_float_variables[i]):
-                functionValue.value = sys.float_info.max
-                return functionValue.value
-
-        try:
-            for i in range(self.task.problem.number_of_constraints):
-                functionConstraintValue = FunctionValue(FunctionType.CONSTRAINT, i)
-                functionConstraintValue = self.task.problem.calculate(point, functionConstraintValue)
-                if functionConstraintValue.value > 0:
-                    functionValue.value = sys.float_info.max
-                    return functionValue.value
-
-            functionValue = self.task.problem.calculate(point, functionValue)
-        except Exception:
-            functionValue.value = sys.float_info.max
-
-        return functionValue.value
+            listener.on_end_iteration(done_trials, self.get_results())
 
     def do_local_refinement(self, number: int = 1):
         """
@@ -139,23 +112,32 @@ class Process:
         try:
             local_method_iteration_count = number
             if number == -1:
-                local_method_iteration_count = self.parameters.local_method_iteration_count
+                local_method_iteration_count = int(self.parameters.local_method_iteration_count)
 
             result = self.get_results()
-            start_point = result.best_trials[0].point.float_variables
+            # start_point = result.bestTrials[0].point.floatVariables
 
-            nelder_mead = scipy.optimize.minimize(self.problem_calculate, x0=start_point, method='Nelder-Mead',
-                                                  options={'maxiter': local_method_iteration_count})
+            local_solution = local_optimize(self.task,
+                                            method="Hooke-Jeeves", start_point=result.best_trials[0].point,
+                                            max_calcs=local_method_iteration_count,
+                                            args={"eps": self.parameters.eps / 100, "step_mult": 2,
+                                                  "max_iter": local_method_iteration_count}
+                                            )
+            # scipy.optimize.minimize(self.problemCalculate, x0=start_point, method='Nelder-Mead',
+            #                        options={'maxiter': local_method_iteration_count})
+            # local_solution = LocalOptimize(LocalTaskWrapper(self.task, result.bestTrials[0].point.discreteVariables),
+            #                               method="Nelder-Mead", start_point=start_point,
+            #                               args={"options": {'maxiter': local_method_iteration_count}})
 
             if local_method_iteration_count > 0:
-                result.best_trials[0].point.float_variables = nelder_mead.x
+                result.best_trials[0].point.float_variables = local_solution["x"]
 
                 point: SearchDataItem = SearchDataItem(result.best_trials[0].point,
                                                        self.evolvent.get_inverse_image(
                                                            result.best_trials[0].point.float_variables),
                                                        function_values=[FunctionValue()] *
                                                                        (self.task.problem.number_of_constraints +
-                                                                       self.task.problem.number_of_objectives)
+                                                                        self.task.problem.number_of_objectives)
                                                        )
 
                 number_of_constraints = self.task.problem.number_of_constraints
@@ -167,7 +149,7 @@ class Process:
                     if point.get_z() > 0:
                         break
                 point.function_values[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV,
-                                                                            number_of_constraints)
+                                                                             number_of_constraints)
                 point.function_values[number_of_constraints] = \
                     self.task.problem.calculate(point.point, point.function_values[number_of_constraints])
                 point.set_z(point.function_values[number_of_constraints].value)
@@ -175,7 +157,7 @@ class Process:
 
                 result.best_trials[0].function_values = point.function_values
 
-            result.number_of_local_trials = nelder_mead.nfev
+            result.number_of_local_trials = local_solution["fev"]
         except Exception:
             print("Local Refinement is not possible")
 
@@ -185,8 +167,6 @@ class Process:
 
         :return: Решение задачи оптимизации
         """
-        # ДА, ЭТО КОСТЫЛЬ. т.к. solution хранит trial
-        # self.search_data.solution.best_trials[0] = self.method.GetOptimumEstimation()
         return self.search_data.solution
 
     def save_progress(self, file_name: str) -> None:

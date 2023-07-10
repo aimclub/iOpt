@@ -32,7 +32,7 @@ class Solver:
         self.problem = problem
         self.parameters = parameters
 
-        Solver.chack_parameters(self.problem, self.parameters)
+        Solver.check_parameters(self.problem, self.parameters)
 
         self.__listeners: List[Listener] = []
 
@@ -52,8 +52,8 @@ class Solver:
 
         :return: решение задачи оптимизации
         """
-        Solver.chack_parameters(self.problem, self.parameters)
-        sol: Solution = None;
+        Solver.check_parameters(self.problem, self.parameters)
+        sol: Solution = None
         if self.parameters.timeout < 0:
             sol = self.process.solve()
         else:
@@ -77,7 +77,7 @@ class Solver:
 
         :param number: число итераций глобального поиска
         """
-        Solver.chack_parameters(self.problem, self.parameters)
+        Solver.check_parameters(self.problem, self.parameters)
         self.process.do_global_iteration(number)
 
     def do_local_refinement(self, number: int = 1):
@@ -86,7 +86,7 @@ class Solver:
 
         :param number: число итераций локального поиска
         """
-        Solver.chack_parameters(self.problem, self.parameters)
+        Solver.check_parameters(self.problem, self.parameters)
         self.process.do_local_refinement(number)
 
     def get_results(self) -> Solution:
@@ -111,7 +111,7 @@ class Solver:
 
         :param file_name: имя файла
         """
-        Solver.chack_parameters(self.problem, self.parameters)
+        Solver.check_parameters(self.problem, self.parameters)
         self.process.load_progress(file_name=file_name)
 
     def refresh_listener(self) -> None:
@@ -131,7 +131,7 @@ class Solver:
         self.__listeners.append(listener)
 
     @staticmethod
-    def chack_parameters(problem: Problem,
+    def check_parameters(problem: Problem,
                          parameters: SolverParameters = SolverParameters()) -> None:
         """
         Проверяет параметры решателя
@@ -169,8 +169,9 @@ class Solver:
         if len(problem.upper_bound_of_float_variables) != problem.number_of_float_variables:
             raise Exception("List of upper bounds for float search variables defined incorrectly")
 
-        for lowerBound, upperBound in zip(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables):
-            if lowerBound >= upperBound:
+        for lower_bound, upper_bound in zip(problem.lower_bound_of_float_variables,
+                                            problem.upper_bound_of_float_variables):
+            if lower_bound >= upper_bound:
                 raise Exception("For floating point search variables, "
                                 "the upper search bound must be greater than the lower.")
 
@@ -188,8 +189,8 @@ class Solver:
             if parameters.start_point.discrete_variables:
                 if len(parameters.start_point.discrete_variables) != problem.number_of_discrete_variables:
                     raise Exception("Incorrect start point discrete variables")
-            for lowerBound, upperBound, y in zip(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables,
-                                                 parameters.start_point.float_variables):
-                if y < lowerBound or y > upperBound:
+            for lower_bound, upper_bound, y in zip(problem.lower_bound_of_float_variables,
+                                                   problem.upper_bound_of_float_variables,
+                                                   parameters.start_point.float_variables):
+                if y < lower_bound or y > upper_bound:
                     raise Exception("Incorrect start point coordinate")
-
