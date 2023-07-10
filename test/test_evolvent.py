@@ -11,28 +11,28 @@ class TestEvolvent(unittest.TestCase):
 
     def test_Preimages_N1(self):
         y = [0]
-        self.assertEqual(self.ev1.GetPreimages(y), 0.5)
+        self.assertEqual(self.ev1.get_preimages(y), 0.5)
 
     def test_XtoYandBack_N1(self):
         x1 = 0.5
-        y = self.ev1.GetImage(x1)
-        x2 = self.ev1.GetInverseImage(y)
+        y = self.ev1.get_image(x1)
+        x2 = self.ev1.get_inverse_image(y)
         self.assertEqual(x1, x2)
 
     def test_Preimages_N2(self):
         y = [0.5, 0.5]
-        self.assertEqual(self.ev2.GetPreimages(y), 0.625)
+        self.assertEqual(self.ev2.get_preimages(y), 0.625)
 
     def test_XtoYandBack_N2(self):
         x1 = 0.625
-        y = self.ev2.GetImage(x1)
-        x2 = self.ev2.GetInverseImage(y)
+        y = self.ev2.get_image(x1)
+        x2 = self.ev2.get_inverse_image(y)
         self.assertEqual(x1, x2)
 
     def test_YtoXandBack_N2(self):
         y1 = np.array([0.5, 0.5])
-        x = self.ev2.GetInverseImage(y1)
-        y2 = self.ev2.GetImage(x)
+        x = self.ev2.get_inverse_image(y1)
+        y2 = self.ev2.get_image(x)
         np.testing.assert_array_almost_equal(y1, y2, decimal=3)
         # self.assertAlmostEqual(y1.tolist(), y2.tolist())
 
@@ -64,7 +64,7 @@ class TestEvolvent(unittest.TestCase):
                     upper = np.ones(N, dtype=np.int32) / 2
 
                     evolvent = Evolvent(lower, upper, N, m)
-                    xx = evolvent.GetInverseImage(y)
+                    xx = evolvent.get_inverse_image(y)
 
                     self.assertAlmostEqual(x, xx, 5)
 
@@ -96,7 +96,7 @@ class TestEvolvent(unittest.TestCase):
                     upper = np.ones(N, dtype=np.int32) / 2
 
                     evolvent = Evolvent(lower, upper, N, m)
-                    yy = evolvent.GetImage(x)
+                    yy = evolvent.get_image(x)
 
                     np.testing.assert_array_almost_equal(y, yy, decimal=10)
 

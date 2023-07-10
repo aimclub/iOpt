@@ -18,26 +18,26 @@ class TestLoadProgress(unittest.TestCase):
 
     def test_Rastrigin2(self):
         self.problem = Rastrigin(2)
-        self.params = SolverParameters(r=2.5, eps=0.01, itersLimit=50, refineSolution=False)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=50, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol50 = self.solver.Solve()
-        self.solver.SaveProgress('Rastrigin2_50.json')
+        self.sol50 = self.solver.solve()
+        self.solver.save_progress('Rastrigin2_50.json')
 
-        self.params = SolverParameters(r=2.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.solver.LoadProgress('Rastrigin2_50.json')
-        self.sol50_100 = self.solver.Solve()
-        self.solver.SaveProgress('Rastrigin2_50_100.json')
+        self.solver.load_progress('Rastrigin2_50.json')
+        self.sol50_100 = self.solver.solve()
+        self.solver.save_progress('Rastrigin2_50_100.json')
 
 
-        self.params = SolverParameters(r=2.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol100 = self.solver.Solve()
-        self.solver.SaveProgress('Rastrigin2_100.json')
+        self.sol100 = self.solver.solve()
+        self.solver.save_progress('Rastrigin2_100.json')
 
-        self.params = SolverParameters(r=2.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol100_ns = self.solver.Solve()
+        self.sol100_ns = self.solver.solve()
 
         with open('Rastrigin2_50_100.json') as json_file:
             data1 = json.load(json_file)
@@ -45,7 +45,7 @@ class TestLoadProgress(unittest.TestCase):
         with open('Rastrigin2_100.json') as json_file:
             data2 = json.load(json_file)
 
-        self.assertEqual(self.sol50_100.bestTrials, self.sol100_ns.bestTrials)
+        self.assertEqual(self.sol50_100.best_trials, self.sol100_ns.best_trials)
         self.assertEqual(data1, data2)
 
         pathlist = ['Rastrigin2_50.json', 'Rastrigin2_50_100.json', 'Rastrigin2_100.json']
@@ -56,26 +56,26 @@ class TestLoadProgress(unittest.TestCase):
 
     def test_GKLS(self):
         self.problem = GKLS(3, 2)
-        self.params = SolverParameters(r=3.5, eps=0.01, itersLimit=50, refineSolution=False)
+        self.params = SolverParameters(r=3.5, eps=0.01, iters_limit=50, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol50 = self.solver.Solve()
-        self.solver.SaveProgress('GKLS_50.json')
+        self.sol50 = self.solver.solve()
+        self.solver.save_progress('GKLS_50.json')
 
-        self.params = SolverParameters(r=3.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=3.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.solver.LoadProgress('GKLS_50.json')
-        self.sol50_100 = self.solver.Solve()
-        self.solver.SaveProgress('GKLS_50_100.json')
+        self.solver.load_progress('GKLS_50.json')
+        self.sol50_100 = self.solver.solve()
+        self.solver.save_progress('GKLS_50_100.json')
 
 
-        self.params = SolverParameters(r=3.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=3.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol100 = self.solver.Solve()
-        self.solver.SaveProgress('GKLS_100.json')
+        self.sol100 = self.solver.solve()
+        self.solver.save_progress('GKLS_100.json')
 
-        self.params = SolverParameters(r=3.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=3.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol100_ns = self.solver.Solve()
+        self.sol100_ns = self.solver.solve()
 
         with open('GKLS_50_100.json') as json_file:
             data1 = json.load(json_file)
@@ -83,7 +83,7 @@ class TestLoadProgress(unittest.TestCase):
         with open('GKLS_100.json') as json_file:
             data2 = json.load(json_file)
 
-        self.assertEqual(self.sol50_100.bestTrials, self.sol100_ns.bestTrials)
+        self.assertEqual(self.sol50_100.best_trials, self.sol100_ns.best_trials)
         self.assertEqual(data1, data2)
 
         pathlist = ['GKLS_50.json', 'GKLS_50_100.json', 'GKLS_100.json']
@@ -93,26 +93,26 @@ class TestLoadProgress(unittest.TestCase):
 
     def test_Stronginc2(self):
         self.problem = Stronginc2()
-        self.params = SolverParameters(r=2.5, eps=0.01, itersLimit=50, refineSolution=False)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=50, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol50 = self.solver.Solve()
-        self.solver.SaveProgress('Stronginc2_50.json')
+        self.sol50 = self.solver.solve()
+        self.solver.save_progress('Stronginc2_50.json')
 
-        self.params = SolverParameters(r=2.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.solver.LoadProgress('Stronginc2_50.json')
-        self.sol50_100 = self.solver.Solve()
-        self.solver.SaveProgress('Stronginc2_50_100.json')
+        self.solver.load_progress('Stronginc2_50.json')
+        self.sol50_100 = self.solver.solve()
+        self.solver.save_progress('Stronginc2_50_100.json')
 
 
-        self.params = SolverParameters(r=2.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol100 = self.solver.Solve()
-        self.solver.SaveProgress('Stronginc2_100.json')
+        self.sol100 = self.solver.solve()
+        self.solver.save_progress('Stronginc2_100.json')
 
-        self.params = SolverParameters(r=2.5, eps=0.01, itersLimit=100, refineSolution=False)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
         self.solver = Solver(self.problem, parameters=self.params)
-        self.sol100_ns = self.solver.Solve()
+        self.sol100_ns = self.solver.solve()
 
         with open('Stronginc2_50_100.json') as json_file:
             data1 = json.load(json_file)
@@ -120,7 +120,7 @@ class TestLoadProgress(unittest.TestCase):
         with open('Stronginc2_100.json') as json_file:
             data2 = json.load(json_file)
 
-        self.assertEqual(self.sol50_100.bestTrials, self.sol100_ns.bestTrials)
+        self.assertEqual(self.sol50_100.best_trials, self.sol100_ns.best_trials)
         self.assertEqual(data1, data2)
 
         pathlist = ['Stronginc2_50.json', 'Stronginc2_50_100.json', 'Stronginc2_100.json']

@@ -16,7 +16,7 @@ class TestOptimizationTask(unittest.TestCase):
         self.optimizationTask = OptimizationTask(self.problem)
 
         self.problemPerm = Rastrigin(3)
-        self.perm = np.ndarray(shape=(self.problemPerm.numberOfObjectives + self.problemPerm.numberOfConstraints),
+        self.perm = np.ndarray(shape=(self.problemPerm.number_of_objectives + self.problemPerm.number_of_constraints),
                                dtype=np.int32)
         for i in range(self.perm.size):
             self.perm[i] = self.perm.size - 1 - i
@@ -32,16 +32,16 @@ class TestOptimizationTask(unittest.TestCase):
     def test_CalculateRastrigin3(self):
         point = Point([0.5, 0.1, 0.3], [])
         sdi = SearchDataItem(point, -1, 0)
-        sdi.functionValues = np.ndarray(shape=(1), dtype=FunctionValue)
-        sdi.functionValues[0] = FunctionValue()
-        sdi = self.optimizationTask.Calculate(sdi, 0)
+        sdi.function_values = np.ndarray(shape=(1), dtype=FunctionValue)
+        sdi.function_values[0] = FunctionValue()
+        sdi = self.optimizationTask.calculate(sdi, 0)
 
         sum: np.double = 0
         for i in range(self.problem.dimension):
-            sum += point.floatVariables[i] * point.floatVariables[i] - 10 * math.cos(
-                2 * math.pi * point.floatVariables[i]) + 10
+            sum += point.float_variables[i] * point.float_variables[i] - 10 * math.cos(
+                2 * math.pi * point.float_variables[i]) + 10
 
-        self.assertEqual(sdi.functionValues[0].value, sum)
+        self.assertEqual(sdi.function_values[0].value, sum)
 
 
 """Executing the tests in the above test case class"""

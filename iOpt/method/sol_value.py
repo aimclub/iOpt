@@ -4,8 +4,8 @@ from iOpt.trial import FunctionValue
 
 class SolutionValue(FunctionValue):
     def __init__(self,
-                 calculationsNumber: int = -1,
-                 holderConstantsEstimations: np.double = -1.0
+                 calculations_number: int = -1,
+                 holder_constants_estimations: np.double = -1.0
                  ):
-        self.calculationsNumber = calculationsNumber
-        self.holderConstantsEstimations = holderConstantsEstimations
+        self.calculationsNumber = calculations_number
+        self.holder_constants_estimations = holder_constants_estimations

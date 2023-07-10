@@ -6,9 +6,9 @@ from iOpt.method.search_data import SearchDataItem
 class ICriterionEvaluateMethod (ABC):
 
     @abstractmethod
-    def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
+    def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         pass
 
     @abstractmethod
-    def CopyFunctionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
+    def copy_functionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
         pass

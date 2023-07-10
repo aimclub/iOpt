@@ -17,7 +17,7 @@ class TestRastriginInt(unittest.TestCase):
             point = Point([np.double(Sample.test_points[i][0])], [Sample.test_points[i][1], Sample.test_points[i][2]])
 
             functionValue = FunctionValue()
-            functionValue = self.problem.Calculate(point, functionValue)
+            functionValue = self.problem.calculate(point, functionValue)
             self.assertAlmostEqual(functionValue.value, np.double(Sample.test_points[i][3]), 6)
 
 

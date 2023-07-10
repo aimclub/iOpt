@@ -9,17 +9,17 @@ if __name__ == "__main__":
     problem = RastriginInt(7, 4)
 
     # add solver parameters
-    params = SolverParameters(r=2.1, eps=0.01, numberOfParallelPoints=8)
+    params = SolverParameters(r=2.1, eps=0.01, number_of_parallel_points=8)
 
     # create solver
     solver = Solver(problem, parameters=params)
 
     # add needed listeners for solver
     apl = StaticDiscreteListener("RastriginInt_5-2_2.1_0.01_1.png", mode='analysis')
-    solver.AddListener(apl)
+    solver.add_listener(apl)
     apl = StaticDiscreteListener("RastriginInt_5-2_2.1_0.01_2.png", mode='bestcombination', calc='objective function')
-    solver.AddListener(apl)
+    solver.add_listener(apl)
     cfol = ConsoleOutputListener(mode="full")
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
-    solver.Solve()
+    solver.solve()

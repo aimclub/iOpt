@@ -15,32 +15,32 @@ sys.setrecursionlimit(10000)
 
 class Calculator:
     pool: Pool = None
-    evaluateMethod: ICriterionEvaluateMethod = None
+    evaluate_method: ICriterionEvaluateMethod = None
 
     def __init__(self,
-                 evaluateMethod: ICriterionEvaluateMethod,
+                 evaluate_method: ICriterionEvaluateMethod,
                  parameters: SolverParameters
                  ):
         r"""
         Конструктор класса Calculator
 
-        :param evaluateMethod: метод вычислений, проводящий поисковые испытания по заданным правилам.
+        :param evaluate_method: метод вычислений, проводящий поисковые испытания по заданным правилам.
         :param parameters: параметры решения задачи оптимизации.
         """
-        self.evaluateMethod = evaluateMethod
+        self.evaluate_method = evaluate_method
         self.parameters = parameters
-        Calculator.pool = Pool(parameters.numberOfParallelPoints,
+        Calculator.pool = Pool(parameters.number_of_parallel_points,
                                initializer=Calculator.worker_init,
-                               initargs=(self.evaluateMethod,))
+                               initargs=(self.evaluate_method,))
 
     r"""
     Инициализация метода вычислений в каждом процессе из пула процессов Calculator.Pool
 
-    :param evaluateMethod: метод вычислений, проводящий поисковые испытания по заданным правилам.
+    :param evaluate_method: метод вычислений, проводящий поисковые испытания по заданным правилам.
     """
     @staticmethod
-    def worker_init(evaluateMethod: ICriterionEvaluateMethod):
-        Calculator.evaluateMethod = evaluateMethod
+    def worker_init(evaluate_method: ICriterionEvaluateMethod):
+        Calculator.evaluate_method = evaluate_method
 
     r"""
     Метод проведения испытаний в процессе из пула процессов Calculator.Pool
@@ -50,10 +50,10 @@ class Calculator:
     @staticmethod
     def worker(point: SearchDataItem) -> SearchDataItem:
         try:
-            Calculator.evaluateMethod.CalculateFunctionals(point)
+            Calculator.evaluate_method.calculate_functionals(point)
         except Exception:
-            point.SetZ(sys.float_info.max)
-            point.SetIndex(-10)
+            point.set_z(sys.float_info.max)
+            point.set_index(-10)
         return point
 
     r"""
@@ -62,7 +62,7 @@ class Calculator:
     :param points: точки проведения испытаний
     """
 
-    def CalculateFunctionalsForItems(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
+    def calculate_functionals_for_items(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
         # пока оставленно на случай отладки
         # for point in points:
         #     self.worker(point, self.method)
@@ -70,15 +70,15 @@ class Calculator:
         # Ниже реализация цикла через пулл процессов
         points_copy = []
         for point in points:
-            sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.GetX()),
-                                functionValues=copy.deepcopy(point.functionValues),
-                                discreteValueIndex=point.GetDiscreteValueIndex())
+            sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.get_x()),
+                                function_values=copy.deepcopy(point.function_values),
+                                discrete_value_index=point.get_discrete_value_index())
             points_copy.append(sd)
 
         points_res = Calculator.pool.map(Calculator.worker, points_copy)
 
         for point, point_r in zip(points, points_res):
-            self.evaluateMethod.CopyFunctionals(point, point_r)
+            self.evaluate_method.copy_functionals(point, point_r)
 
         return points
 

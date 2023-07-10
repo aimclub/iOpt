@@ -18,12 +18,12 @@ if __name__ == "__main__":
     kernel_coefficient_bound = {'low': -9, 'up': -6.7}
     kernel_type = {'kernel': ['rbf', 'sigmoid', 'poly']}
     problem = SVC_3D.SVC_3D(x, y, regularization_value_bound, kernel_coefficient_bound, kernel_type)
-    method_params = SolverParameters(itersLimit=400)
+    method_params = SolverParameters(iters_limit=400)
     solver = Solver(problem, parameters=method_params)
     apl = StaticDiscreteListener("experiment1.png", mode='analysis')
-    solver.AddListener(apl)
+    solver.add_listener(apl)
     apl = StaticDiscreteListener("experiment2.png", mode='bestcombination', calc='interpolation', mrkrs=4)
-    solver.AddListener(apl)
+    solver.add_listener(apl)
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
-    solver_info = solver.Solve()
+    solver.add_listener(cfol)
+    solver_info = solver.solve()
