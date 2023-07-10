@@ -15,11 +15,11 @@ class TestRastrigin(unittest.TestCase):
         for i in range(0, 99):
             point = Point([Sample.test_points[i][0], Sample.test_points[i][1]], [])
             functionValue = FunctionValue()
-            functionValue = self.problem.Calculate(point, functionValue)
+            functionValue = self.problem.calculate(point, functionValue)
             self.assertAlmostEqual(functionValue.value, Sample.test_points[i][2], 7)
 
     def test_OptimumValue(self):
-        self.assertEqual(self.problem.knownOptimum[0].functionValues[0].value, 0.0)
+        self.assertEqual(self.problem.known_optimum[0].function_values[0].value, 0.0)
 
 
 """Executing the tests in the above test case class"""

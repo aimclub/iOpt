@@ -12,14 +12,14 @@ if __name__ == "__main__":
     problem = Shekel4(function_number=1)
 
     # Формируем параметры решателя
-    params = SolverParameters(r=2.5, eps=0.01, itersLimit=10000, refineSolution=True)
+    params = SolverParameters(r=2.5, eps=0.01, iters_limit=10000, refine_solution=True)
 
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод результатов в консоль
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
     # Решение задачи
-    sol = solver.Solve()
+    sol = solver.solve()

@@ -21,50 +21,50 @@ class SolverFactory:
         pass
 
     @staticmethod
-    def CreateMethod(parameters: SolverParameters,
-                     task: OptimizationTask,
-                     evolvent: Evolvent,
-                     searchData: SearchData) -> Method:
+    def create_method(parameters: SolverParameters,
+                      task: OptimizationTask,
+                      evolvent: Evolvent,
+                      search_data: SearchData) -> Method:
         """
         Создает подходящий класс метода решения по заданным параметрам
 
         :param parameters: параметры решения задачи оптимизации.
         :param task: обёртка решаемой задачи.
         :param evolvent: развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param searchData: структура данных для хранения накопленной поисковой информации.
+        :param search_data: структура данных для хранения накопленной поисковой информации.
 
         :return: созданный метод
         """
 
-        if task.problem.numberOfDiscreteVariables > 0:
-            return MixedIntegerMethod(parameters, task, evolvent, searchData)
-        elif task.problem.numberOfConstraints > 0:
-            return IndexMethod(parameters, task, evolvent, searchData)
+        if task.problem.number_of_discrete_variables > 0:
+            return MixedIntegerMethod(parameters, task, evolvent, search_data)
+        elif task.problem.number_of_constraints > 0:
+            return IndexMethod(parameters, task, evolvent, search_data)
         else:
-            return Method(parameters, task, evolvent, searchData)
+            return Method(parameters, task, evolvent, search_data)
 
     @staticmethod
-    def CreateProcess(parameters: SolverParameters,
-                      task: OptimizationTask,
-                      evolvent: Evolvent,
-                      searchData: SearchData,
-                      method: Method,
-                      listeners: List[Listener]) -> Process:
+    def create_process(parameters: SolverParameters,
+                       task: OptimizationTask,
+                       evolvent: Evolvent,
+                       search_data: SearchData,
+                       method: Method,
+                       listeners: List[Listener]) -> Process:
         """
         Создает подходящий класс процесса по заданным параметрам
 
         :param parameters: Параметры решения задачи оптимизации.
         :param task: Обёртка решаемой задачи.
         :param evolvent: Развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param searchData: Структура данных для хранения накопленной поисковой информации.
+        :param search_data: Структура данных для хранения накопленной поисковой информации.
         :param method: Метод оптимизации, проводящий поисковые испытания по заданным правилам.
         :param listeners: Список "наблюдателей" (используется для вывода текущей информации).
 
         :return: созданный процесс
         """
-        if parameters.numberOfParallelPoints == 1:
+        if parameters.number_of_parallel_points == 1:
             return Process(parameters=parameters, task=task, evolvent=evolvent,
-                           searchData=searchData, method=method, listeners=listeners)
+                           search_data=search_data, method=method, listeners=listeners)
         else:
             return ParallelProcess(parameters=parameters, task=task, evolvent=evolvent,
-                                   searchData=searchData, method=method, listeners=listeners)
+                                   search_data=search_data, method=method, listeners=listeners)

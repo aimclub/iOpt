@@ -9,11 +9,11 @@ class FunctionType(Enum):
 
 class Point:
     def __init__(self,
-                 floatVariables: np.ndarray(shape=(1), dtype=np.double),
-                 discreteVariables: np.ndarray(shape=(1), dtype=str)=None,
+                 float_variables: np.ndarray(shape=(1), dtype=np.double),
+                 discrete_variables: np.ndarray(shape=(1), dtype=str)=None,
                  ):
-        self.floatVariables = floatVariables
-        self.discreteVariables = discreteVariables
+        self.float_variables = float_variables
+        self.discrete_variables = discrete_variables
 
 
 class FunctionValue:
@@ -29,7 +29,7 @@ class FunctionValue:
 class Trial:
     def __init__(self,
                  point: Point,
-                 functionValues: np.ndarray(shape=(1), dtype=FunctionValue)
+                 function_values: np.ndarray(shape=(1), dtype=FunctionValue)
                  ):
         self.point = point
-        self.functionValues = functionValues
+        self.function_values = function_values

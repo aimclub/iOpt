@@ -11,11 +11,11 @@ if __name__ == "__main__":
     # Создание тестовой задачи
     problem = RastriginHiddenConstraint(2)
     # Параметры решателя
-    params = SolverParameters(r=2.5, eps=0.01, itersLimit=3000, refineSolution=True)
+    params = SolverParameters(r=2.5, eps=0.01, iters_limit=3000, refine_solution=True)
     # Создание решателя
     solver = Solver(problem, parameters=params)
     # Вывод результатов в консоль в процессе решения задачи
     cfol = ConsoleOutputListener(mode='result')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
     # Запуск решения задачи
-    sol = solver.Solve()
+    sol = solver.solve()

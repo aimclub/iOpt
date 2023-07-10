@@ -15,14 +15,14 @@ class TestXSquared(unittest.TestCase):
         point = Point([1.0, 0.5, 0.3], [])
         sum: np.double = 0
         for i in range(self.xsquared.dimension):
-            sum += point.floatVariables[i] * point.floatVariables[i]
+            sum += point.float_variables[i] * point.float_variables[i]
 
         functionValue = FunctionValue()
-        functionValue = self.xsquared.Calculate(point, functionValue)
+        functionValue = self.xsquared.calculate(point, functionValue)
         self.assertEqual(functionValue.value, sum)
 
     def test_OptimumValue(self):
-        self.assertEqual(self.xsquared.knownOptimum[0].functionValues[0].value, 0.0)
+        self.assertEqual(self.xsquared.known_optimum[0].function_values[0].value, 0.0)
 
 
 """Executing the tests in the above test case class"""

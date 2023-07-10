@@ -21,15 +21,15 @@ class GKLS(Problem):
         super(GKLS, self).__init__()
         self.dimension = dimension
         self.name = "GKLS"
-        self.numberOfFloatVariables = dimension
-        self.numberOfDiscreteVariables = 0
-        self.numberOfObjectives = 1
-        self.numberOfConstraints = 0
+        self.number_of_float_variables = dimension
+        self.number_of_discrete_variables = 0
+        self.number_of_objectives = 1
+        self.number_of_constraints = 0
 
-        self.floatVariableNames = [str(x) for x in range(self.dimension)]
+        self.float_variable_names = [str(x) for x in range(self.dimension)]
 
-        self.lowerBoundOfFloatVariables = dimension * [-1]
-        self.upperBoundOfFloatVariables = dimension * [1]
+        self.lower_bound_of_float_variables = dimension * [-1]
+        self.upper_bound_of_float_variables = dimension * [1]
 
         self.function: GKLSFunction = GKLSFunction()
 
@@ -61,16 +61,16 @@ class GKLS(Problem):
 
         KOpoint = Point(self.function.GetOptimumPoint(), [])
 
-        self.knownOptimum = [Trial(KOpoint, [KOfunV])]
+        self.known_optimum = [Trial(KOpoint, [KOfunV])]
 
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
         Вычисление значения функции в заданной точке
 
         :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
+        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
 
         :return: Вычисленное значение функции в точке point
         """
-        functionValue.value = self.function.Calculate(point.floatVariables)
-        return functionValue
+        function_value.value = self.function.Calculate(point.float_variables)
+        return function_value

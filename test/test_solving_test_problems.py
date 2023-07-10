@@ -26,18 +26,18 @@ class TestSolvingProblems(unittest.TestCase):
         solver = Solver(problem, parameters=params)
 
         # Решение задачи
-        sol = solver.Solve()
+        sol = solver.solve()
 
         # Проверяем что найденный АГП минимумом соответствуйте априори известному, для этой задачи, с точностью eps
         for j in range(problem.dimension):
-            fabsx = np.abs(problem.knownOptimum[0].point.floatVariables[j] -
-                           sol.bestTrials[0].point.floatVariables[j])
-            fm = params.eps * (problem.upperBoundOfFloatVariables[j] -
-                               problem.lowerBoundOfFloatVariables[j])
+            fabsx = np.abs(problem.known_optimum[0].point.float_variables[j] -
+                           sol.best_trials[0].point.float_variables[j])
+            fm = params.eps * (problem.upper_bound_of_float_variables[j] -
+                               problem.lower_bound_of_float_variables[j])
             self.assertLessEqual(fabsx, fm)
 
         # Проверяем что на решение потребовалось правильное число итераций АГП
-        self.assertEqual(sol.numberOfGlobalTrials, number_of_global_trials)
+        self.assertEqual(sol.number_of_global_trials, number_of_global_trials)
 
     def test_Rastrigin_Solve(self):
         r = 3.5
@@ -115,7 +115,7 @@ class TestSolvingProblems(unittest.TestCase):
     def test_GKLS_4D_Solve(self):
         r = 3.5
         problem = GKLS(4, 3)
-        params = SolverParameters(r=r, eps=self.epsVal, refineSolution=False, itersLimit=5000)
+        params = SolverParameters(r=r, eps=self.epsVal, refine_solution=False, iters_limit=5000)
 
         number_of_global_trials = 2830
 
@@ -124,7 +124,7 @@ class TestSolvingProblems(unittest.TestCase):
     def test_StronginC2_Solve(self):
         r = 4
         problem = Stronginc2()
-        params = SolverParameters(r=r, eps=self.epsVal, epsR=0.01)
+        params = SolverParameters(r=r, eps=self.epsVal, eps_r=0.01)
 
         number_of_global_trials = 437
 
@@ -133,7 +133,7 @@ class TestSolvingProblems(unittest.TestCase):
     def test_StronginC3_Solve(self):
         r = 4
         problem = Stronginc3()
-        params = SolverParameters(r=r, eps=self.epsVal, epsR=0.01)
+        params = SolverParameters(r=r, eps=self.epsVal, eps_r=0.01)
 
         number_of_global_trials = 512
 
@@ -142,7 +142,7 @@ class TestSolvingProblems(unittest.TestCase):
     def test_Romeijn3c_Solve(self):
         r = 4
         problem = Romeijn3c()
-        params = SolverParameters(r=r, eps=self.epsVal, epsR=0.01)
+        params = SolverParameters(r=r, eps=self.epsVal, eps_r=0.01)
 
         number_of_global_trials = 702
 
@@ -151,7 +151,7 @@ class TestSolvingProblems(unittest.TestCase):
     def test_Romeijn5c_Solve(self):
         r = 4
         problem = Romeijn5c()
-        params = SolverParameters(r=r, eps=self.epsVal, epsR=0.01)
+        params = SolverParameters(r=r, eps=self.epsVal, eps_r=0.01)
 
         number_of_global_trials = 193
 

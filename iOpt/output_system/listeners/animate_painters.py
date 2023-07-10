@@ -14,34 +14,34 @@ class AnimatePainterListener(Listener):
       Используется для одномерной оптимизации.
     """
 
-    def __init__(self, fileName: str, pathForSaves="", isPointsAtBottom=False, toPaintObjFunc=True):
+    def __init__(self, file_name: str, path_for_saves="", is_points_at_bottom=False, to_paint_obj_func=True):
         """
         Конструктор класса AnimationPaintListener
 
-        :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
-        :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
+        :param file_name: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
+        :param path_for_saves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
            сохраняется в текущей рабочей директории.
-        :param isPointsAtBottom: Должны ли точки поисковой информации ставиться под графиком или нет. Если False,
+        :param is_points_at_bottom: Должны ли точки поисковой информации ставиться под графиком или нет. Если False,
            точки ставятся на графике.
-        :param toPaintObjFunc: Должна ли отрисовываться целевая функция или нет.
+        :param to_paint_obj_func: Должна ли отрисовываться целевая функция или нет.
         """
-        self.fileName = fileName
-        self.pathForSaves = pathForSaves
-        self.isPointsAtBottom = isPointsAtBottom
-        self.toPaintObjFunc = toPaintObjFunc
-        self.__painter = AnimatePainter(self.isPointsAtBottom, 0, self.pathForSaves, self.fileName)
+        self.file_name = file_name
+        self.path_for_saves = path_for_saves
+        self.is_points_at_bottom = is_points_at_bottom
+        self.to_paint_obj_func = to_paint_obj_func
+        self.__painter = AnimatePainter(self.is_points_at_bottom, 0, self.path_for_saves, self.file_name)
 
-    def BeforeMethodStart(self, method: Method):
-        self.__painter.SetProblem(method.task.problem)
-        if self.toPaintObjFunc:
-            self.__painter.PaintObjectiveFunc()
+    def before_method_start(self, method: Method):
+        self.__painter.set_problem(method.task.problem)
+        if self.to_paint_obj_func:
+            self.__painter.paint_objective_func()
 
-    def OnEndIteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
-        self.__painter.PaintPoints(savedNewPoints)
+    def on_end_iteration(self, saved_new_points : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+        self.__painter.paint_points(saved_new_points)
 
-    def OnMethodStop(self, searchData: SearchData, solution: Solution, status: bool):
-        self.__painter.PaintOptimum(solution)
-        self.__painter.SaveImage()
+    def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):
+        self.__painter.paint_optimum(solution)
+        self.__painter.save_image()
 
 class AnimatePainterNDListener(Listener):
     """
@@ -50,29 +50,29 @@ class AnimatePainterNDListener(Listener):
       Используется для многомерной оптимизации.
     """
 
-    def __init__(self, fileName: str, pathForSaves="", varsIndxs=[0, 1], toPaintObjFunc=True):
+    def __init__(self, file_name: str, path_for_saves="", vars_indxs=[0, 1], to_paint_obj_func=True):
         """
         Конструктор класса AnimationNDPaintListener
 
-        :param fileName: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
-        :param pathForSaves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
+        :param file_name: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
+        :param path_for_saves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
            сохраняется в текущей рабочей директории.
-        :param varsIndxs: Пара индексов переменных оптимизационной задачи, для которых будет построен рисунок.
-        :param toPaintObjFunc: Должна ли отрисовываться целевая функция или нет.
+        :param vars_indxs: Пара индексов переменных оптимизационной задачи, для которых будет построен рисунок.
+        :param to_paint_obj_func: Должна ли отрисовываться целевая функция или нет.
         """
-        self.fileName = fileName
-        self.pathForSaves = pathForSaves
-        self.toPaintObjFunc = toPaintObjFunc
-        self.__painter = AnimatePainterND(varsIndxs, self.pathForSaves, self.fileName)
+        self.file_name = file_name
+        self.path_for_saves = path_for_saves
+        self.to_paint_obj_func = to_paint_obj_func
+        self.__painter = AnimatePainterND(vars_indxs, self.path_for_saves, self.file_name)
 
-    def BeforeMethodStart(self, method: Method):
-        self.__painter.SetProblem(method.task.problem)
+    def before_method_start(self, method: Method):
+        self.__painter.set_problem(method.task.problem)
 
-    def OnEndIteration(self, savedNewPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
-        self.__painter.PaintPoints(savedNewPoints)
+    def on_end_iteration(self, saved_new_points : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+        self.__painter.paint_points(saved_new_points)
 
-    def OnMethodStop(self, searchData: SearchData, solution: Solution, status: bool):
-        self.__painter.PaintOptimum(solution)
-        if self.toPaintObjFunc:
-            self.__painter.PaintObjectiveFunc()
-        self.__painter.SaveImage()
+    def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):
+        self.__painter.paint_optimum(solution)
+        if self.to_paint_obj_func:
+            self.__painter.paint_objective_func()
+        self.__painter.save_image()

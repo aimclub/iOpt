@@ -23,11 +23,11 @@ class IndexMethod(Method):
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 searchData: SearchData
+                 search_data: SearchData
                  ):
-        super(IndexMethod, self).__init__(parameters, task, evolvent, searchData)
+        super(IndexMethod, self).__init__(parameters, task, evolvent, search_data)
 
-    def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
+    def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
         Проведение поискового испытания в заданной точке.
 
@@ -36,26 +36,26 @@ class IndexMethod(Method):
         :return: точка, в которой сохранены результаты испытания.
         """
         try:
-            number_of_constraints = self.task.problem.numberOfConstraints
+            number_of_constraints = self.task.problem.number_of_constraints
             for i in range(number_of_constraints):
-                point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)  # ???
-                point = self.task.Calculate(point, i)
-                point.SetZ(point.functionValues[i].value)
-                point.SetIndex(i)
-                if point.GetZ() > 0:
+                point.function_values[i] = FunctionValue(FunctionType.CONSTRAINT, i)  # ???
+                point = self.task.calculate(point, i)
+                point.set_z(point.function_values[i].value)
+                point.set_index(i)
+                if point.get_z() > 0:
                     return point
-            point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, number_of_constraints)
-            point = self.task.Calculate(point, number_of_constraints)
-            point.SetZ(point.functionValues[number_of_constraints].value)
-            point.SetIndex(number_of_constraints)
+            point.function_values[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, number_of_constraints)
+            point = self.task.calculate(point, number_of_constraints)
+            point.set_z(point.function_values[number_of_constraints].value)
+            point.set_index(number_of_constraints)
         except Exception:
-            point.SetZ(sys.float_info.max)
-            point.SetIndex(-10)
+            point.set_z(sys.float_info.max)
+            point.set_index(-10)
 
 
         return point
 
-    def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+    def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
         Вычисление оценки константы Гельдера между между curr_point и left_point.
 
@@ -68,36 +68,36 @@ class IndexMethod(Method):
             raise RuntimeError("CalculateM: curr_point is None")
         if left_point is None:
             return
-        index = curr_point.GetIndex()
+        index = curr_point.get_index()
         if index < 0:
             return
         m = 0.0
-        if left_point.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
-            m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
+        if left_point.get_index() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+            m = abs(left_point.get_z() - curr_point.get_z()) / curr_point.delta
         else:
             # Ищем слева
             other_point = left_point
-            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
-                other_point = other_point.GetLeft()
-            if other_point is not None and other_point.GetIndex() >= 0:
+            while (other_point is not None) and (other_point.get_index() < curr_point.get_index()):
+                other_point = other_point.get_left()
+            if other_point is not None and other_point.get_index() >= 0:
                 # print(index)
-                m = abs(other_point.functionValues[index].value - curr_point.GetZ()) / \
-                    self.CalculateDelta(other_point, curr_point, self.dimension)
+                m = abs(other_point.function_values[index].value - curr_point.get_z()) / \
+                    self.calculate_delta(other_point, curr_point, self.dimension)
             # Ищем справа
-            other_point = left_point.GetRight()
+            other_point = left_point.get_right()
             if other_point is not None and other_point is curr_point:  # возможно только при пересчёте M
-                other_point = other_point.GetRight()
-            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
-                other_point = other_point.GetRight()
-            if other_point is not None and other_point.GetIndex() >= 0:
-                m = max(m, abs(curr_point.GetZ() - other_point.functionValues[index].value) / \
-                        self.CalculateDelta(curr_point, other_point, self.dimension))
+                other_point = other_point.get_right()
+            while (other_point is not None) and (other_point.get_index() < curr_point.get_index()):
+                other_point = other_point.get_right()
+            if other_point is not None and other_point.get_index() >= 0:
+                m = max(m, abs(curr_point.get_z() - other_point.function_values[index].value) / \
+                        self.calculate_delta(curr_point, other_point, self.dimension))
 
         if m > self.M[index] or (self.M[index] == 1.0 and m > 1e-12):
             self.M[index] = m
             self.recalcR = True
 
-    def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+    def calculate_global_r(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
         Вычисление глобальной характеристики интервала [left_point, curr_point].
 
@@ -105,55 +105,55 @@ class IndexMethod(Method):
         :param left_point: левая точка интервала.
         """
 
-        # Сюда переедет целиком CalculateGlobalR из Method, а там останется только случай с равными индексами
+        # Сюда переедет целиком calculate_global_r из Method, а там останется только случай с равными индексами
         if curr_point is None:
-            print("CalculateGlobalR: Curr point is NONE")
-            raise Exception("CalculateGlobalR: Curr point is NONE")
+            print("calculate_global_r: Curr point is NONE")
+            raise Exception("calculate_global_r: Curr point is NONE")
         if left_point is None:
             curr_point.globalR = -np.infty
             return None
-        zl = left_point.GetZ()
-        zr = curr_point.GetZ()
+        zl = left_point.get_z()
+        zr = curr_point.get_z()
         r = self.parameters.r
         deltax = curr_point.delta
 
-        if left_point.GetIndex() < 0 and curr_point.GetIndex() < 0:
+        if left_point.get_index() < 0 and curr_point.get_index() < 0:
             globalR = 2 * deltax - 4 * math.fabs(self.Z[0]) / (r * self.M[0])
-        elif left_point.GetIndex() == curr_point.GetIndex():
-            v = curr_point.GetIndex()
+        elif left_point.get_index() == curr_point.get_index():
+            v = curr_point.get_index()
             globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
                       2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
-        elif left_point.GetIndex() < curr_point.GetIndex():
-            v = curr_point.GetIndex()
+        elif left_point.get_index() < curr_point.get_index():
+            v = curr_point.get_index()
             globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
         else:
-            v = left_point.GetIndex()
+            v = left_point.get_index()
             globalR = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
         curr_point.globalR = globalR
 
-    def UpdateZ(self, point: SearchDataItem) -> None:
-        for i in range(point.GetIndex()):
-            if self.Z[i] > point.functionValues[i].value:
-                self.Z[i] = point.functionValues[i].value
+    def update_z(self, point: SearchDataItem) -> None:
+        for i in range(point.get_index()):
+            if self.Z[i] > point.function_values[i].value:
+                self.Z[i] = point.function_values[i].value
                 self.recalcR = True
 
-    def RecalcAllCharacteristics(self) -> None:
-        for i in range(self.best.GetIndex()):
-            self.Z[i] = -self.M[i] * self.parameters.epsR
-        self.Z[self.best.GetIndex()] = self.best.GetZ()
-        super().RecalcAllCharacteristics()
+    def recalc_all_characteristics(self) -> None:
+        for i in range(self.best.get_index()):
+            self.Z[i] = -self.M[i] * self.parameters.eps_r
+        self.Z[self.best.get_index()] = self.best.get_z()
+        super().recalc_all_characteristics()
 
-    def UpdateOptimum(self, point: SearchDataItem) -> None:
+    def update_optimum(self, point: SearchDataItem) -> None:
         r"""
         Обновляет оценку оптимума.
 
         :param point: точка нового испытания.
         """
 
-        if self.best is None or self.best.GetIndex() < point.GetIndex() or (
-                self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ()):
+        if self.best is None or self.best.get_index() < point.get_index() or (
+                self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
             self.best = point
             self.recalcR = True
-            self.Z[point.GetIndex()] = point.GetZ()
+            self.Z[point.get_index()] = point.get_z()
         # self.UpdateZ(point)
-        self.searchData.solution.bestTrials[0] = self.best
+        self.search_data.solution.best_trials[0] = self.best

@@ -16,8 +16,8 @@ if __name__ == "__main__":
     # add needed listeners for solver
     apl_0 = StaticPainterListener("rastrigin_2_3.5_0.001_static1D_0.png", "output", indx=0)
     apl_1 = StaticPainterListener("rastrigin_2_3.5_0.001_static1D_1.png", "output", indx=1)
-    solver.AddListener(apl_0)
-    solver.AddListener(apl_1)
+    solver.add_listener(apl_0)
+    solver.add_listener(apl_1)
 
     # solve the problem
-    sol = solver.Solve()
+    sol = solver.solve()

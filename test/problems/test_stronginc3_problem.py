@@ -23,7 +23,7 @@ class TestStronginc3(unittest.TestCase):
                 functionValue.type = FunctionType.CONSTRAINT
                 functionValue.functionID = Sample.test_points[i][2]
 
-            functionValue = self.problem.Calculate(point, functionValue)
+            functionValue = self.problem.calculate(point, functionValue)
             self.assertAlmostEqual(functionValue.value, Sample.test_points[i][3], 6)
 
 

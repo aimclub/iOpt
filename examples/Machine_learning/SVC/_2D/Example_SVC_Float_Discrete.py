@@ -24,10 +24,10 @@ if __name__ == "__main__":
 
     problem = SVC_2D_Float_Discrete.SVC_2D_Float_Discrete(x, y, regularization_value_bound, kernel_type)
 
-    method_params = SolverParameters(r=np.double(3.0), itersLimit=100)
+    method_params = SolverParameters(r=np.double(3.0), iters_limit=100)
     solver = Solver(problem, parameters=method_params)
 
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
-    solver_info = solver.Solve()
+    solver_info = solver.solve()

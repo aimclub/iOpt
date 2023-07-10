@@ -25,20 +25,20 @@ class SearchDataItem(Trial):
     """
 
     def __init__(self, y: Point, x: np.double,
-                 functionValues: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
-                 discreteValueIndex: int = 0):
+                 function_values: np.ndarray(shape=(1), dtype=FunctionValue) = [FunctionValue()],
+                 discrete_value_index: int = 0):
         """
         Конструктор класса SearchDataItem
 
         :param y: Точка испытания в исходной N-мерной области поиска
         :param x: Отображении точки испытания y на отрезок [0, 1]
-        :param functionValues: Вектор значений функций (целевой функции и функций ограничений)
-        :param discreteValueIndex: Дискретный параметр
+        :param function_values: Вектор значений функций (целевой функции и функций ограничений)
+        :param discrete_value_index: Дискретный параметр
         """
-        super().__init__(point=y, functionValues=copy.deepcopy(functionValues))
+        super().__init__(point=y, function_values=copy.deepcopy(function_values))
         self.point = y
         self.__x = x
-        self.__discreteValueIndex = discreteValueIndex
+        self.__discrete_value_index = discrete_value_index
         self.__index: int = -2
         self.__z: np.double = sys.float_info.max
         self.__leftPoint: SearchDataItem = None
@@ -49,7 +49,7 @@ class SearchDataItem(Trial):
         self.iterationNumber: int = -1
 
 
-    def GetX(self) -> np.double:
+    def get_x(self) -> np.double:
         """
         Метод позволяет получить правую точку поискового интервала, где :math:`x\in[0, 1]`.
 
@@ -57,7 +57,7 @@ class SearchDataItem(Trial):
         """
         return self.__x
 
-    def GetY(self) -> Point:
+    def get_y(self) -> Point:
         """
         Метод позволяет получить N-мерную точку испытания исходной области поиска.
 
@@ -65,15 +65,15 @@ class SearchDataItem(Trial):
         """
         return self.point
 
-    def GetDiscreteValueIndex(self) -> int:
+    def get_discrete_value_index(self) -> int:
         """
         Метод позволяет получить дискретный параметр.
 
         :return: Значение дискретного параметра
         """
-        return self.__discreteValueIndex
+        return self.__discrete_value_index
 
-    def SetIndex(self, index: int):
+    def set_index(self, index: int):
         """
         Метод позволяет задать значение индекса последнего выполненного ограничения
         для индексной схемы.
@@ -82,7 +82,7 @@ class SearchDataItem(Trial):
         """
         self.__index = index
 
-    def GetIndex(self) -> int:
+    def get_index(self) -> int:
         """
         Метод позволяет получить значение индекса последнего выполненного ограничения
         для индексной схемы.
@@ -91,7 +91,7 @@ class SearchDataItem(Trial):
         """
         return self.__index
 
-    def SetZ(self, z: np.double):
+    def set_z(self, z: np.double):
         """
         Метод позволяет задать значение функции для заданного индекса.
 
@@ -99,7 +99,7 @@ class SearchDataItem(Trial):
         """
         self.__z = z
 
-    def GetZ(self) -> np.double:
+    def get_z(self) -> np.double:
         """
         Метод позволяет получить значение функции для заданного индекса.
 
@@ -107,7 +107,7 @@ class SearchDataItem(Trial):
         """
         return self.__z
 
-    def SetLeft(self, point: SearchDataItem):
+    def set_left(self, point: SearchDataItem):
         """
         Метод позволяет задать левый интервал для исходного.
 
@@ -115,7 +115,7 @@ class SearchDataItem(Trial):
         """
         self.__leftPoint = point
 
-    def GetLeft(self) -> SearchDataItem:
+    def get_left(self) -> SearchDataItem:
         """
         Метод позволяет получить левый интервал для исходного.
 
@@ -123,7 +123,7 @@ class SearchDataItem(Trial):
         """
         return self.__leftPoint
 
-    def SetRight(self, point: SearchDataItem):
+    def set_right(self, point: SearchDataItem):
         """
         Метод позволяет задать правый интервал для исходного.
 
@@ -131,7 +131,7 @@ class SearchDataItem(Trial):
         """
         self.__rightPoint = point
 
-    def GetRight(self) -> SearchDataItem:
+    def get_right(self) -> SearchDataItem:
         """
        Метод позволяет получить правый интервал для исходного.
 
@@ -146,7 +146,7 @@ class SearchDataItem(Trial):
         :return: Значение true - если правая точка исходного интервала меньше
         правой точки второго, иначе - false.
         """
-        return self.GetX() < other.GetX()
+        return self.get_x() < other.get_x()
 
 
 class CharacteristicsQueue:
@@ -169,17 +169,17 @@ class CharacteristicsQueue:
         """
         self.__baseQueue.clear()
 
-    def Insert(self, key: np.double, dataItem: SearchDataItem):
+    def insert(self, key: np.double, data_item: SearchDataItem):
         """
         Метод добавляет поисковый интервал с указанным приоритетом.
         Приоритетом является значение характеристики на данном интервале.
 
         :param key: Приоритет поискового интервала
-        :param dataItem: Вставляемый интервал
+        :param data_item: Вставляемый интервал
         """
-        self.__baseQueue.insert(dataItem, key)
+        self.__baseQueue.insert(data_item, key)
 
-    def GetBestItem(self) -> (SearchDataItem, np.double):
+    def get_best_item(self) -> (SearchDataItem, np.double):
         """
         Метод позволяет получить интервал с лучшей характеристикой
 
@@ -187,7 +187,7 @@ class CharacteristicsQueue:
         """
         return self.__baseQueue.popfirst()
 
-    def IsEmpty(self):
+    def is_empty(self):
         """
         Метод позволяет сделать проверку на пустоту очереди.
 
@@ -195,7 +195,7 @@ class CharacteristicsQueue:
         """
         return self.__baseQueue.is_empty()
 
-    def GetMaxLen(self) -> int:
+    def get_max_len(self) -> int:
         """
         Метод позволяет получить максимальный размер очереди.
 
@@ -203,7 +203,7 @@ class CharacteristicsQueue:
         """
         return self.__baseQueue.maxlen
 
-    def GetLen(self) -> int:
+    def get_len(self) -> int:
         """
         Метод позволяет получить текущий размер очереди.
 
@@ -239,7 +239,7 @@ class SearchData:
         self._RGlobalQueue = CharacteristicsQueue(maxlen)
         self.__firstDataItem: SearchDataItem = None
 
-    def ClearQueue(self):
+    def clear_queue(self):
         """
         Метод позволяет очистить очередь характеристик
         """
@@ -247,50 +247,50 @@ class SearchData:
 
     # вставка точки если знает правую точку
     # в качестве интервала используем [i-1, i]
-    # если rightDataItem == None то его необходимо найти по дереву _allTrials
-    def InsertDataItem(self, newDataItem: SearchDataItem,
-                       rightDataItem: SearchDataItem = None):
+    # если right_data_item == None то его необходимо найти по дереву _allTrials
+    def insert_data_item(self, new_data_item: SearchDataItem,
+                         right_data_item: SearchDataItem = None):
         """
         Метод позволяет добавить новый интервал испытаний в список всех проведенных испытаний
         и приоритетную очередь характеристик.
 
-        :param newDataItem: Новый интервал испытаний
-        :param rightDataItem: Покрывающий интервал, является правым интервалом для newDataItem
+        :param new_data_item: Новый интервал испытаний
+        :param right_data_item: Покрывающий интервал, является правым интервалом для newDataItem
         """
         flag = True
-        if rightDataItem is None:
-            rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
+        if right_data_item is None:
+            right_data_item = self.find_data_item_by_one_dimensional_point(new_data_item.get_x())
             flag = False
-        newDataItem.SetLeft(rightDataItem.GetLeft())
-        rightDataItem.SetLeft(newDataItem)
-        newDataItem.SetRight(rightDataItem)
-        newDataItem.GetLeft().SetRight(newDataItem)
+        new_data_item.set_left(right_data_item.get_left())
+        right_data_item.set_left(new_data_item)
+        new_data_item.set_right(right_data_item)
+        new_data_item.get_left().set_right(new_data_item)
 
-        self._allTrials.append(newDataItem)
+        self._allTrials.append(new_data_item)
 
-        self._RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
+        self._RGlobalQueue.insert(new_data_item.globalR, new_data_item)
         if flag:
-            self._RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
+            self._RGlobalQueue.insert(right_data_item.globalR, right_data_item)
 
-    def InsertFirstDataItem(self, leftDataItem: SearchDataItem,
-                            rightDataItem: SearchDataItem):
+    def insert_first_data_item(self, left_data_item: SearchDataItem,
+                               right_data_item: SearchDataItem):
         """
         Метод позволяет добавить пару интервалов испытаний на первой итерации AGP.
 
-        :param leftDataItem: Левый интервал для rightDataItem
-        :param rightDataItem: Правый интервал для leftDataItem
+        :param left_data_item: Левый интервал для right_data_item
+        :param right_data_item: Правый интервал для leftDataItem
         """
-        leftDataItem.SetRight(rightDataItem)
-        rightDataItem.SetLeft(leftDataItem)
+        left_data_item.set_right(right_data_item)
+        right_data_item.set_left(left_data_item)
 
-        self._allTrials.append(leftDataItem)
-        self._allTrials.append(rightDataItem)
+        self._allTrials.append(left_data_item)
+        self._allTrials.append(right_data_item)
 
-        self.__firstDataItem = leftDataItem
+        self.__firstDataItem = left_data_item
 
     # поиск покрывающего интервала
     # возвращает правую точку
-    def FindDataItemByOneDimensionalPoint(self, x: np.double) -> SearchDataItem:
+    def find_data_item_by_one_dimensional_point(self, x: np.double) -> SearchDataItem:
         """
         Метод позволяет найти покрывающий интервал для полученной точки x.
 
@@ -299,22 +299,22 @@ class SearchData:
         """
         # итерируемся по rightPoint от минимального элемента
         for item in self:
-            if item.GetX() > x:
+            if item.get_x() > x:
                 return item
         return None
 
-    def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
+    def get_data_item_with_max_global_r(self) -> SearchDataItem:
         """
         Метод позволяет получить интервал с лучшим значением глобальной характеристики.
 
         :return: Значение интервала с лучшей глобальной характеристикой
         """
-        if self._RGlobalQueue.IsEmpty():
-            self.RefillQueue()
-        return self._RGlobalQueue.GetBestItem()[0]
+        if self._RGlobalQueue.is_empty():
+            self.refill_queue()
+        return self._RGlobalQueue.get_best_item()[0]
 
     # Перезаполнение очереди (при ее опустошении или при смене оценки константы Липшица)
-    def RefillQueue(self):
+    def refill_queue(self):
         """
         Метод позволяет перезаполнить очередь глобальных характеристик, например, при ее опустошении
         или при смене оценки константы Липшица.
@@ -322,10 +322,10 @@ class SearchData:
         """
         self._RGlobalQueue.Clear()
         for itr in self:
-            self._RGlobalQueue.Insert(itr.globalR, itr)
+            self._RGlobalQueue.insert(itr.globalR, itr)
 
     # Возвращает текущее число интервалов в дереве
-    def GetCount(self) -> int:
+    def get_count(self) -> int:
         """
         Метод позволяет получить текущее число интервалов в списке.
 
@@ -333,7 +333,7 @@ class SearchData:
         """
         return len(self._allTrials)
 
-    def GetLastItem(self) -> SearchDataItem:
+    def get_last_item(self) -> SearchDataItem:
         """
         Метод позволяет получить последний добавленный интервал в список.
 
@@ -344,7 +344,7 @@ class SearchData:
         except Exception:
             print("GetLastItem: List is empty")
 
-    def GetLastItems(self, N: int = 1) -> list[SearchDataItem]:
+    def get_last_items(self, N: int = 1) -> list[SearchDataItem]:
         """
         Метод позволяет получить последние добавленные интервалы в список.
 
@@ -355,18 +355,18 @@ class SearchData:
         except Exception:
             print("GetLastItems: List is empty")
 
-    def SaveProgress(self, fileName: str):
+    def save_progress(self, file_name: str):
         """
         Сохранение процесса оптимизации в файл
 
-        :param fileName: имя файла
+        :param file_name: имя файла
         """
         data = {}
         data['SearchDataItem'] = []
         for dataItem in self._allTrials:
 
             fvs = []
-            for fv in dataItem.functionValues:
+            for fv in dataItem.function_values:
                 fvs.append({
                     'value': fv.value,
                     'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
@@ -374,114 +374,114 @@ class SearchData:
                 })
 
             data['SearchDataItem'].append({
-                'floatVariables': list(dataItem.GetY().floatVariables),
-                'discreteVariables': [] if dataItem.GetY().discreteVariables is None else list(
-                    dataItem.GetY().discreteVariables),
-                'functionValues': list(fvs),
-                'x': dataItem.GetX(),
+                'float_variables': list(dataItem.get_y().float_variables),
+                'discrete_variables': [] if dataItem.get_y().discrete_variables is None else list(
+                    dataItem.get_y().discrete_variables),
+                'function_values': list(fvs),
+                'x': dataItem.get_x(),
                 'delta': dataItem.delta,
                 'globalR': dataItem.globalR,
                 'localR': dataItem.localR,
-                'index': dataItem.GetIndex(),
-                'discreteValueIndex': dataItem.GetDiscreteValueIndex(),
-                '__z': dataItem.GetZ()
+                'index': dataItem.get_index(),
+                'discrete_value_index': dataItem.get_discrete_value_index(),
+                '__z': dataItem.get_z()
             })
 
-        data['BestTrials'] = []  # создаем список
-        dataItem = self.solution.bestTrials[0]
+        data['best_trials'] = []  # создаем список
+        dataItem = self.solution.best_trials[0]
         fvs = []  # пустой список для словарей со значениями функций
-        for fv in dataItem.functionValues:
+        for fv in dataItem.function_values:
             fvs.append({
                 'value': fv.value,
                 'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
                 'functionID': str(fv.functionID),
             })
 
-        data['BestTrials'].append({
-            'floatVariables': list(dataItem.GetY().floatVariables),
-            'discreteVariables': [] if dataItem.GetY().discreteVariables is None else list(
-                dataItem.GetY().discreteVariables),
-            'functionValues': list(fvs),
-            'x': dataItem.GetX(),
+        data['best_trials'].append({
+            'float_variables': list(dataItem.get_y().float_variables),
+            'discrete_variables': [] if dataItem.get_y().discrete_variables is None else list(
+                dataItem.get_y().discrete_variables),
+            'function_values': list(fvs),
+            'x': dataItem.get_x(),
             'delta': dataItem.delta,
             'globalR': dataItem.globalR,
             'localR': dataItem.localR,
-            'index': dataItem.GetIndex(),
-            'discreteValueIndex': dataItem.GetDiscreteValueIndex(),
-            '__z': dataItem.GetZ()
+            'index': dataItem.get_index(),
+            'discrete_value_index': dataItem.get_discrete_value_index(),
+            '__z': dataItem.get_z()
         })
 
-        with open(fileName, 'w') as f:
+        with open(file_name, 'w') as f:
             json.dump(data, f, indent='\t', separators=(',', ':'))
 
-    def LoadProgress(self, fileName: str):
+    def load_progress(self, file_name: str):
         """
         Загрузка процесса оптимизации из файла
 
-        :param fileName: имя файла
+        :param file_name: имя файла
         """
 
-        with open(fileName) as json_file:
+        with open(file_name) as json_file:
             data = json.load(json_file)
 
-            functionValues = []
-            for p in data['BestTrials']:
+            function_values = []
+            for p in data['best_trials']:
 
-                for fv in p['functionValues']:
-                    functionValues.append(FunctionValue(
+                for fv in p['function_values']:
+                    function_values.append(FunctionValue(
                         (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
                         str(fv['functionID'])))
-                    functionValues[-1].value = np.double(fv['value'])
+                    function_values[-1].value = np.double(fv['value'])
 
-                dataItem = SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
-                                          p['discreteValueIndex'])
+                dataItem = SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
+                                          p['discrete_value_index'])
                 dataItem.delta = p['delta']  # [-1] - обращение к последнему элементу
                 dataItem.globalR = p['globalR']
                 dataItem.localR = p['localR']
-                dataItem.SetZ(p['__z'])
-                dataItem.SetIndex(p['index'])
+                dataItem.set_z(p['__z'])
+                dataItem.set_index(p['index'])
 
-                self.solution.bestTrials[0] = dataItem
+                self.solution.best_trials[0] = dataItem
 
             firstDataItem = []
 
             for p in data['SearchDataItem'][:2]:
-                functionValues = []
+                function_values = []
 
-                for fv in p['functionValues']:
-                    functionValues.append(FunctionValue(
+                for fv in p['function_values']:
+                    function_values.append(FunctionValue(
                         (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
                         str(fv['functionID'])))
-                    functionValues[-1].value = np.double(fv['value'])
+                    function_values[-1].value = np.double(fv['value'])
 
                 firstDataItem.append(
-                    SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
-                                   p['discreteValueIndex']))
+                    SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
+                                   p['discrete_value_index']))
                 firstDataItem[-1].delta = p['delta']
                 firstDataItem[-1].globalR = p['globalR']
                 firstDataItem[-1].localR = p['localR']
-                firstDataItem[-1].SetIndex(p['index'])
+                firstDataItem[-1].set_index(p['index'])
 
-            self.InsertFirstDataItem(firstDataItem[0], firstDataItem[1])
+            self.insert_first_data_item(firstDataItem[0], firstDataItem[1])
 
             for p in data['SearchDataItem'][2:]:
-                functionValues = []
+                function_values = []
 
-                for fv in p['functionValues']:
-                    functionValues.append(FunctionValue(
+                for fv in p['function_values']:
+                    function_values.append(FunctionValue(
                         (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
                         str(fv['functionID'])))
-                    functionValues[-1].value = np.double(fv['value'])
+                    function_values[-1].value = np.double(fv['value'])
 
-                dataItem = SearchDataItem(Point(p['floatVariables'], p['discreteVariables']), p['x'], functionValues,
-                                          p['discreteValueIndex'])
+                dataItem = SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
+                                          p['discrete_value_index'])
                 dataItem.delta = p['delta']
                 dataItem.globalR = p['globalR']
                 dataItem.localR = p['localR']
-                dataItem.SetZ(p['__z'])
-                dataItem.SetIndex(p['index'])
+                dataItem.set_z(p['__z'])
+                dataItem.set_index(p['index'])
 
-                self.InsertDataItem(dataItem)
+                self.insert_data_item(dataItem)
 
 
     def __iter__(self):
@@ -498,7 +498,7 @@ class SearchData:
             raise StopIteration
         else:
             tmp = self.curIter
-            self.curIter = self.curIter.GetRight()
+            self.curIter = self.curIter.get_right()
             return tmp
 
 
@@ -520,77 +520,77 @@ class SearchDataDualQueue(SearchData):
         super().__init__(problem, maxlen)
         self.__RLocalQueue = CharacteristicsQueue(maxlen)
 
-    def ClearQueue(self):
+    def clear_queue(self):
         """
         Метод позволяет очистить очереди характеристик
         """
         self._RGlobalQueue.Clear()
         self.__RLocalQueue.Clear()
 
-    def InsertDataItem(self, newDataItem: SearchDataItem,
-                       rightDataItem: SearchDataItem = None):
+    def insert_data_item(self, new_data_item: SearchDataItem,
+                         right_data_item: SearchDataItem = None):
         """
         Метод позволяет добавить новый интервал испытаний в список всех проведенных испытаний
           и приоритетные очереди глобальных и локальных характеристик.
 
-        :param newDataItem: Новый интервал испытаний
-        :param rightDataItem: Покрывающий интервал, является правым интервалом для newDataItem
+        :param new_data_item: Новый интервал испытаний
+        :param right_data_item: Покрывающий интервал, является правым интервалом для newDataItem
         """
         flag = True
-        if rightDataItem is None:
-            rightDataItem = self.FindDataItemByOneDimensionalPoint(newDataItem.GetX())
+        if right_data_item is None:
+            right_data_item = self.find_data_item_by_one_dimensional_point(new_data_item.get_x())
             flag = False
 
-        newDataItem.SetLeft(rightDataItem.GetLeft())
-        rightDataItem.SetLeft(newDataItem)
-        newDataItem.SetRight(rightDataItem)
-        newDataItem.GetLeft().SetRight(newDataItem)
+        new_data_item.set_left(right_data_item.get_left())
+        right_data_item.set_left(new_data_item)
+        new_data_item.set_right(right_data_item)
+        new_data_item.get_left().set_right(new_data_item)
 
-        self._allTrials.append(newDataItem)
+        self._allTrials.append(new_data_item)
 
-        self._RGlobalQueue.Insert(newDataItem.globalR, newDataItem)
-        self.__RLocalQueue.Insert(newDataItem.localR, newDataItem)
+        self._RGlobalQueue.insert(new_data_item.globalR, new_data_item)
+        self.__RLocalQueue.insert(new_data_item.localR, new_data_item)
         if flag:
-            self._RGlobalQueue.Insert(rightDataItem.globalR, rightDataItem)
-            self.__RLocalQueue.Insert(rightDataItem.localR, rightDataItem)
+            self._RGlobalQueue.insert(right_data_item.globalR, right_data_item)
+            self.__RLocalQueue.insert(right_data_item.localR, right_data_item)
 
-    def GetDataItemWithMaxGlobalR(self) -> SearchDataItem:
+    def get_data_item_with_max_global_r(self) -> SearchDataItem:
         """
        Метод позволяет получить интервал с лучшим значением глобальной характеристики.
 
        :return: Значение интервала с лучшей глобальной характеристикой
        """
-        if self._RGlobalQueue.IsEmpty():
-            self.RefillQueue()
-        bestItem = self._RGlobalQueue.GetBestItem()
+        if self._RGlobalQueue.is_empty():
+            self.refill_queue()
+        bestItem = self._RGlobalQueue.get_best_item()
         while bestItem[1] != bestItem[0].globalR:
-            if self._RGlobalQueue.IsEmpty():
-                self.RefillQueue()
-            bestItem = self._RGlobalQueue.GetBestItem()
+            if self._RGlobalQueue.is_empty():
+                self.refill_queue()
+            bestItem = self._RGlobalQueue.get_best_item()
         return bestItem[0]
 
-    def GetDataItemWithMaxLocalR(self) -> SearchDataItem:
+    def get_data_item_with_max_local_r(self) -> SearchDataItem:
         """
        Метод позволяет получить интервал с лучшим значением локальной характеристики.
 
        :return: Значение интервала с лучшей локальной характеристикой
        """
-        if self.__RLocalQueue.IsEmpty():
-            self.RefillQueue()
-        bestItem = self.__RLocalQueue.GetBestItem()
+        if self.__RLocalQueue.is_empty():
+            self.refill_queue()
+        bestItem = self.__RLocalQueue.get_best_item()
         while bestItem[1] != bestItem[0].localR:
-            if self.__RLocalQueue.IsEmpty():
-                self.RefillQueue()
-            bestItem = self.__RLocalQueue.GetBestItem()
+            if self.__RLocalQueue.is_empty():
+                self.refill_queue()
+            bestItem = self.__RLocalQueue.get_best_item()
         return bestItem[0]
 
-    def RefillQueue(self):
+    def refill_queue(self):
         """
        Метод позволяет перезаполнить очереди глобальных и локальных характеристик, например,
          при их опустошении или при смене оценки константы Липшица.
 
        """
-        self.ClearQueue()
+        self.clear_queue()
         for itr in self:
-            self._RGlobalQueue.Insert(itr.globalR, itr)
-            self.__RLocalQueue.Insert(itr.localR, itr)
+            self._RGlobalQueue.insert(itr.globalR, itr)
+            self.__RLocalQueue.insert(itr.localR, itr)

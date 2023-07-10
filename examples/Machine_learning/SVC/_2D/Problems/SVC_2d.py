@@ -29,30 +29,30 @@ class SVC_2D(Problem):
         """
         super(SVC_2D, self).__init__()
         self.dimension = 2
-        self.numberOfFloatVariables = 2
-        self.numberOfDiscreteVariables = 0
-        self.numberOfObjectives = 1
-        self.numberOfConstraints = 0
+        self.number_of_float_variables = 2
+        self.number_of_discrete_variables = 0
+        self.number_of_objectives = 1
+        self.number_of_constraints = 0
         if x_dataset.shape[0] != y_dataset.shape[0]:
             raise ValueError('The input and output sample sizes do not match.')
         self.x = x_dataset
         self.y = y_dataset
-        self.floatVariableNames = np.array(["Regularization parameter", "Kernel coefficient"], dtype=str)
-        self.lowerBoundOfFloatVariables = np.array([regularization_bound['low'], kernel_coefficient_bound['low']],
+        self.float_variable_names = np.array(["Regularization parameter", "Kernel coefficient"], dtype=str)
+        self.lower_bound_of_float_variables = np.array([regularization_bound['low'], kernel_coefficient_bound['low']],
                                                    dtype=np.double)
-        self.upperBoundOfFloatVariables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
+        self.upper_bound_of_float_variables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
                                                    dtype=np.double)
 
 
 
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
         Метод расчёта значения целевой функции в точке
 
         :param point: Точка испытания
-        :param functionValue: объект хранения значения целевой функции в точке
+        :param function_value: объект хранения значения целевой функции в точке
         """
-        cs, gammas = point.floatVariables[0], point.floatVariables[1]
+        cs, gammas = point.float_variables[0], point.float_variables[1]
         clf = SVC(C=10 ** cs, gamma=10 ** gammas)
-        functionValue.value = -cross_val_score(clf, self.x, self.y, scoring='f1').mean()
-        return functionValue
+        function_value.value = -cross_val_score(clf, self.x, self.y, scoring='f1').mean()
+        return function_value
