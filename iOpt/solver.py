@@ -53,7 +53,7 @@ class Solver:
         :return: решение задачи оптимизации
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        sol: Solution = None;
+        sol: Solution = None
         if self.parameters.timeout < 0:
             sol = self.process.solve()
         else:
@@ -78,7 +78,7 @@ class Solver:
         :param number: число итераций глобального поиска
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        self.process.DoGlobalIteration(number)
+        self.process.do_global_iteration(number)
 
     def do_local_refinement(self, number: int = 1):
         """
@@ -87,7 +87,7 @@ class Solver:
         :param number: число итераций локального поиска
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        self.process.DoLocalRefinement(number)
+        self.process.do_local_refinement(number)
 
     def get_results(self) -> Solution:
         """
@@ -112,7 +112,7 @@ class Solver:
         :param file_name: имя файла
         """
         Solver.ChackParameters(self.problem, self.parameters)
-        self.process.LoadProgress(fileName=fileName)
+        self.process.load_progress(file_name=file_name)
 
     def refresh_listener(self) -> None:
         """
@@ -169,7 +169,8 @@ class Solver:
         if len(problem.upper_bound_of_float_variables) != problem.number_of_float_variables:
             raise Exception("List of upper bounds for float search variables defined incorrectly")
 
-        for lowerBound, upperBound in zip(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables):
+        for lowerBound, upperBound in zip(problem.lower_bound_of_float_variables,
+                                          problem.upper_bound_of_float_variables):
             if lowerBound >= upperBound:
                 raise Exception("For floating point search variables, "
                                 "the upper search bound must be greater than the lower.")
@@ -188,8 +189,8 @@ class Solver:
             if parameters.start_point.discrete_variables:
                 if len(parameters.start_point.discrete_variables) != problem.number_of_discrete_variables:
                     raise Exception("Incorrect start point discrete variables")
-            for lowerBound, upperBound, y in zip(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables,
+            for lowerBound, upperBound, y in zip(problem.lower_bound_of_float_variables,
+                                                 problem.upper_bound_of_float_variables,
                                                  parameters.start_point.float_variables):
                 if y < lowerBound or y > upperBound:
                     raise Exception("Incorrect start point coordinate")
-
