@@ -9,34 +9,50 @@ from iOpt.trial import Point, FunctionValue, FunctionType
 
 
 class LocalTaskWrapper:
+    """
+    Класс LocalTaskWrapper (название временное) оборачивает вычисление функции для дальнейшего применения локальных методов.
+    """
+
     def __init__(self, task: OptimizationTask, discrete_variables=None, max_calcs=-1):
         self.discrete_variables = discrete_variables
         self.task = task
-        self.local_trial_count = 0
-        self.max_calcs = max_calcs
+        self.calcs_count = 0
+        self.max_calcs = max_calcs  # В globalizer используется именно ограничение по количеству вычислений функции
 
-    def EvaluateFunction(self, y):
+    def evaluate_function(self, y: List[float]) -> float:
+        """
+        Метод вычисляет значение целевой функции
+
+        :param y: Точка в которой нужно вычислить значение функции
+
+        :return: возвращает значение целевой функции или
+                sys.float_info.max, если:
+                точка лежит за областью поиска
+                ИЛИ не были выполнены ограничения
+                ИЛИ было выкинуто исключение (функция не может быть посчитана в этой точке)
+                ИЛИ число вычислений превысило лимит (если он задан)
+        """
         point = Point(y, self.discrete_variables)
         function_value = FunctionValue(FunctionType.OBJECTIV)
-        if self.max_calcs != -1 and self.local_trial_count >= self.max_calcs:
+        if self.max_calcs != -1 and self.calcs_count >= self.max_calcs:
             function_value.value = sys.float_info.max
             return function_value.value
         for i in range(self.task.problem.dimension):
-            if (y[i] < self.task.problem.lowerBoundOfFloatVariables[i]) \
-                    or (y[i] > self.task.problem.upperBoundOfFloatVariables[i]):
+            if (y[i] < self.task.problem.lower_bound_of_float_variables[i]) \
+                    or (y[i] > self.task.problem.upper_bound_of_float_variables[i]):
                 function_value.value = sys.float_info.max
                 return function_value.value
 
-        self.local_trial_count += 1
+        self.calcs_count += 1
         try:
-            for i in range(self.task.problem.numberOfConstraints):
+            for i in range(self.task.problem.number_of_constraints):
                 function_constraint_value = FunctionValue(FunctionType.CONSTRAINT, i)
-                function_constraint_value = self.task.problem.Calculate(point, function_constraint_value)
+                function_constraint_value = self.task.problem.calculate(point, function_constraint_value)
                 if function_constraint_value.value > 0:
                     function_value.value = sys.float_info.max
                     return function_value.value
 
-            function_value = self.task.problem.Calculate(point, function_value)
+            function_value = self.task.problem.calculate(point, function_value)
         except Exception:
             function_value.value = sys.float_info.max
 
@@ -44,8 +60,11 @@ class LocalTaskWrapper:
 
 
 class HookeJeevesOptimizer:
-    def __init__(self, func: Callable[[List[float]], float], start_point: List[float], step_mult, eps, max_iter):
-        # super().__init__(func, start_point)
+    """
+    Класс HookeJeevesOptimizer реализует метод Хука-Дживса.
+    """
+    def __init__(self, func: Callable[[List[float]], float], start_point: List[float],
+                 step_mult: float, eps: float, max_iter: float):
         self.nfev = 0
         self.cur_point = None
         self.minf = None
@@ -60,7 +79,7 @@ class HookeJeevesOptimizer:
         self.step = self.eps * 2
         self.step_mult = step_mult
 
-    def Minimize(self) -> List[float]:
+    def minimize(self) -> List[float]:
         need_restart: bool = True
         # self.best_point = self.start_point
         # self.minf = self.f(self.start_point)
@@ -76,10 +95,10 @@ class HookeJeevesOptimizer:
 
             self.pr_resdir = [el for el in self.cur_resdir]
             self.cur_resdir = [el for el in self.cur_point]
-            next_f_value = self._MakeResearch(self.cur_resdir)
+            next_f_value = self._make_research(self.cur_resdir)
 
             if curr_f > next_f_value:
-                self._DoStep()
+                self._do_step()
                 k += 1
                 curr_f = next_f_value
             elif self.step > self.eps:
@@ -93,9 +112,8 @@ class HookeJeevesOptimizer:
 
         return self.pr_resdir
 
-    def _MakeResearch(self, point) -> float:
-
-        best_value = self.f(point)
+    def _make_research(self, point) -> float:
+        best_value = self.f(point)  # в globalizer сделано так, хотя это значение уже было вычислено...
 
         for i in range(self.dim):
             point[i] += self.step
@@ -114,20 +132,19 @@ class HookeJeevesOptimizer:
 
         return best_value
 
-    def _DoStep(self):
+    def _do_step(self) -> None:
         for i in range(self.dim):
             self.cur_point[i] = (1 + self.step_mult) * self.cur_resdir[i] - self.step_mult * self.pr_resdir[i]
 
 
-def LocalOptimize(task: OptimizationTask, method, start_point: Point, args: dict, max_calcs=-1) -> dict:
-    local_task = LocalTaskWrapper(task=task, discrete_variables=start_point.discreteVariables, max_calcs=max_calcs)
+def local_optimize(task: OptimizationTask, method, start_point: Point, args: dict, max_calcs: int = -1) -> dict:
+
+    local_task = LocalTaskWrapper(task=task, discrete_variables=start_point.discrete_variables, max_calcs=max_calcs)
     if method == 'Hooke-Jeeves':
-        best_point = HookeJeevesOptimizer(local_task.EvaluateFunction, start_point.floatVariables.copy(),
-                                          **args).Minimize()
+        best_point = HookeJeevesOptimizer(local_task.evaluate_function, start_point.float_variables.copy(),
+                                          **args).minimize()
     else:
-        best_point = scipy.optimize.minimize(local_task.EvaluateFunction, x0=start_point.floatVariables.copy(),
+        best_point = scipy.optimize.minimize(local_task.evaluate_function, x0=start_point.float_variables.copy(),
                                              method=method, **args).x
 
-        # options={'maxiter': localMethodIterationCount})
-
-    return {"x": best_point, "fev": local_task.local_trial_count}
+    return {"x": best_point, "fev": local_task.calcs_count}
