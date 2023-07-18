@@ -22,7 +22,7 @@ class Shekel4(Problem):
         :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 3`
         """
         super(Shekel4, self).__init__()
-        self.name = Shekel4
+        self.name = "Shekel4"
         self.dimension = 4
         self.number_of_float_variables = self.dimension
         self.number_of_discrete_variables = 0
