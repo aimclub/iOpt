@@ -184,7 +184,7 @@ class Process:
         :param file_name: имя файла
         """
         self.search_data.load_progress(file_name=file_name)
-        self.method.iterationsCount = self.search_data.get_count() - 2
+        #self.method.iterationsCount = self.search_data.get_count() - 2
 
         for ditem in self.search_data:
             if ditem.get_index() >= 0:

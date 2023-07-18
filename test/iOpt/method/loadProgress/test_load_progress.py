@@ -53,6 +53,42 @@ class TestLoadProgress(unittest.TestCase):
             if os.path.isfile(path):
                 os.remove(path)
 
+    def test_RastriginInt(self):
+        self.problem = RastriginInt(5, 2)
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=50, refine_solution=False)
+        self.solver = Solver(self.problem, parameters=self.params)
+        self.sol50 = self.solver.solve()
+        self.solver.save_progress('RastriginInt_50.json')
+
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
+        self.solver = Solver(self.problem, parameters=self.params)
+        self.solver.load_progress('RastriginInt_50.json')
+        self.sol50_100 = self.solver.solve()
+        self.solver.save_progress('RastriginInt_50_100.json')
+
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
+        self.solver = Solver(self.problem, parameters=self.params)
+        self.sol100 = self.solver.solve()
+        self.solver.save_progress('RastriginInt_100.json')
+
+        self.params = SolverParameters(r=2.5, eps=0.01, iters_limit=100, refine_solution=False)
+        self.solver = Solver(self.problem, parameters=self.params)
+        self.sol100_ns = self.solver.solve()
+
+        with open('RastriginInt_50_100.json') as json_file:
+            data1 = json.load(json_file)
+
+        with open('RastriginInt_100.json') as json_file:
+            data2 = json.load(json_file)
+
+        self.assertEqual(self.sol50_100.best_trials, self.sol100_ns.best_trials)
+        self.assertEqual(data1, data2)
+
+        pathlist = ['RastriginInt_50.json', 'RastriginInt_50_100.json', 'RastriginInt_100.json']
+        for path in pathlist:
+            if os.path.isfile(path):
+                os.remove(path)
+
 
     def test_GKLS(self):
         self.problem = GKLS(3, 2)
