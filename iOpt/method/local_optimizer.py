@@ -1,6 +1,5 @@
 import sys
-from typing import List
-from collections.abc import Callable
+from typing import List, Any, Iterable, Callable
 
 import scipy
 
@@ -63,7 +62,7 @@ class HookeJeevesOptimizer:
     """
     Класс HookeJeevesOptimizer реализует метод Хука-Дживса.
     """
-    def __init__(self, func: Callable[[List[float]], float], start_point: List[float],
+    def __init__(self, func: Callable[[List[float]], float], start_point: Iterable[float],
                  step_mult: float, eps: float, max_iter: float):
         self.nfev = 0
         self.cur_point = None
