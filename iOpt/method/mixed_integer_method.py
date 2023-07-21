@@ -140,6 +140,7 @@ class MixedIntegerMethod(IndexMethod):
         if calculator is None:
             for item in items:
                 self.calculate_functionals(item)
+                self.update_optimum(item)
         else:
             calculator.calculate_functionals_for_items(items)
 
@@ -246,7 +247,8 @@ class MixedIntegerMethod(IndexMethod):
                 else:
                     other_point = None
                     break
-            if other_point is not None and other_point.get_index() >= 0:
+            if other_point is not None and other_point.get_index() >= 0 \
+                    and other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
                 # print(index)
                 m = abs(other_point.function_values[index].value - curr_point.get_z()) / \
                     self.calculate_delta(other_point, curr_point, self.dimension)
@@ -262,7 +264,8 @@ class MixedIntegerMethod(IndexMethod):
                     other_point = None
                     break
 
-            if other_point is not None and other_point.get_index() >= 0:
+            if other_point is not None and other_point.get_index() >= 0 \
+                    and other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
                 m = max(m, abs(curr_point.get_z() - other_point.function_values[index].value) / \
                         self.calculate_delta(curr_point, other_point, self.dimension))
 
