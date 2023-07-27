@@ -60,6 +60,7 @@ class Solver:
             solv_with_timeout = timeout(seconds=self.parameters.timeout * 60)(self.process.solve)
             try:
                 solv_with_timeout()
+                sol = self.get_results()
             except Exception as exc:
                 print(exc)
                 sol = self.get_results()

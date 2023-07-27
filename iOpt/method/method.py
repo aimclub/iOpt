@@ -142,6 +142,7 @@ class Method:
         if calculator is None:
             for item in items:
                 self.calculate_functionals(item)
+                self.update_optimum(item)
         else:
             calculator.calculate_functionals_for_items(items)
 
