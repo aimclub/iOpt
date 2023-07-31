@@ -8,6 +8,7 @@ from iOpt.output_system.outputers.console_outputer import ConsoleOutputer
 
 import numpy as np
 
+
 class ConsoleOutputListener(Listener):
     """
     Класс ConsoleFullOutputListener - слушатель событий. Содержит методы-обработчики, выдающие в качестве
@@ -32,11 +33,11 @@ class ConsoleOutputListener(Listener):
         self.__outputer = ConsoleOutputer(method.task.problem, method.parameters)
         self.__outputer.print_init_info()
 
-    def on_end_iteration(self, curr_points: List[SearchDataItem], currSolution: Solution):
+    def on_end_iteration(self, curr_points: List[SearchDataItem], curr_solution: Solution):
         if self.mode == 'full':
             self.__outputer.print_iter_point_info(curr_points)
         elif self.mode == 'custom':
-            self.__outputer.print_best_point_info(currSolution, self.iters)
+            self.__outputer.print_best_point_info(curr_solution, self.iters)
         elif self.mode == 'result':
             pass
 

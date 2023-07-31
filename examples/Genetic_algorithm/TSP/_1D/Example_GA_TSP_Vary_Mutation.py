@@ -8,6 +8,7 @@ from examples.Genetic_algorithm.TSP._1D.Problems import ga_tsp_vary_mutation
 import numpy as np
 import xml.etree.ElementTree as ET
 
+
 def load_TSPs_matrix(file_name):
     root = ET.parse(file_name).getroot()
     columns = root.findall('graph/vertex')

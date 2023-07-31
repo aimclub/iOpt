@@ -10,7 +10,7 @@ class FunctionType(Enum):
 class Point:
     def __init__(self,
                  float_variables: np.ndarray(shape=(1), dtype=np.double),
-                 discrete_variables: np.ndarray(shape=(1), dtype=str)=None,
+                 discrete_variables: np.ndarray(shape=(1), dtype=str) = None,
                  ):
         self.float_variables = float_variables
         self.discrete_variables = discrete_variables

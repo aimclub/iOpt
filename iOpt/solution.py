@@ -10,7 +10,6 @@ class Solution:
     def __init__(self,
                  problem: Problem,
                  best_trials: np.ndarray(shape=(1), dtype=Trial) = [Trial([], [])],
-
                  number_of_global_trials: int = 1,
                  number_of_local_trials: int = 0,
                  solving_time: np.double = 0.0,

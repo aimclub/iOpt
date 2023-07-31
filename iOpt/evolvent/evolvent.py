@@ -107,16 +107,16 @@ class Evolvent:
     def __transform_p_2_d(self):
         for i in range(0, self.number_of_float_variables):
             self.yValues[i] = self.yValues[i] * (
-                        self.upper_bound_of_float_variables[i] - self.lower_bound_of_float_variables[i]) + \
-                        (self.upper_bound_of_float_variables[i] + self.lower_bound_of_float_variables[i]) / 2
+                    self.upper_bound_of_float_variables[i] - self.lower_bound_of_float_variables[i]) + \
+                              (self.upper_bound_of_float_variables[i] + self.lower_bound_of_float_variables[i]) / 2
 
     # Преобразование
     # --------------------------------
     def __transform_d_2_p(self):
         for i in range(0, self.number_of_float_variables):
             self.yValues[i] = (self.yValues[i] - (
-                        self.upper_bound_of_float_variables[i] + self.lower_bound_of_float_variables[i]) / 2) / \
-                        (self.upper_bound_of_float_variables[i] - self.lower_bound_of_float_variables[i])
+                    self.upper_bound_of_float_variables[i] + self.lower_bound_of_float_variables[i]) / 2) / \
+                              (self.upper_bound_of_float_variables[i] - self.lower_bound_of_float_variables[i])
 
     # ---------------------------------
 

@@ -24,4 +24,3 @@ if __name__ == "__main__":
 
     # Запуск решения задачи
     sol = solver.solve()
-

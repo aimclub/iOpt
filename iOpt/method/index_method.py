@@ -52,7 +52,6 @@ class IndexMethod(Method):
             point.set_z(sys.float_info.max)
             point.set_index(-10)
 
-
         return point
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
@@ -118,18 +117,18 @@ class IndexMethod(Method):
         deltax = curr_point.delta
 
         if left_point.get_index() < 0 and curr_point.get_index() < 0:
-            globalR = 2 * deltax - 4 * math.fabs(self.Z[0]) / (r * self.M[0])
+            global_r = 2 * deltax - 4 * math.fabs(self.Z[0]) / (r * self.M[0])
         elif left_point.get_index() == curr_point.get_index():
             v = curr_point.get_index()
-            globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
-                      2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
+            global_r = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
+                       2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
         elif left_point.get_index() < curr_point.get_index():
             v = curr_point.get_index()
-            globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
+            global_r = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
         else:
             v = left_point.get_index()
-            globalR = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
-        curr_point.globalR = globalR
+            global_r = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
+        curr_point.globalR = global_r
 
     def update_z(self, point: SearchDataItem) -> None:
         for i in range(point.get_index()):

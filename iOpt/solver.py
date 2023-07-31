@@ -53,7 +53,6 @@ class Solver:
         :return: решение задачи оптимизации
         """
         Solver.check_parameters(self.problem, self.parameters)
-        sol: Solution = None
         if self.parameters.timeout < 0:
             sol = self.process.solve()
         else:

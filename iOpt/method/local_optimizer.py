@@ -1,5 +1,5 @@
 import sys
-from typing import List, Any, Iterable, Callable
+from typing import List, Iterable, Callable
 
 import scipy
 
@@ -62,6 +62,7 @@ class HookeJeevesOptimizer:
     """
     Класс HookeJeevesOptimizer реализует метод Хука-Дживса.
     """
+
     def __init__(self, func: Callable[[List[float]], float], start_point: Iterable[float],
                  step_mult: float, eps: float, max_iter: float):
         self.nfev = 0
@@ -137,7 +138,6 @@ class HookeJeevesOptimizer:
 
 
 def local_optimize(task: OptimizationTask, method, start_point: Point, args: dict, max_calcs: int = -1) -> dict:
-
     local_task = LocalTaskWrapper(task=task, discrete_variables=start_point.discrete_variables, max_calcs=max_calcs)
     if method == 'Hooke-Jeeves':
         best_point = HookeJeevesOptimizer(local_task.evaluate_function, start_point.float_variables.copy(),
