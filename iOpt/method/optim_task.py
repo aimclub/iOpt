@@ -30,14 +30,14 @@ class OptimizationTask:
     def calculate(self,
                   data_item: SearchDataItem,
                   function_index: int,
-                  type: TypeOfCalculation = TypeOfCalculation.FUNCTION
+                  calculation_type: TypeOfCalculation = TypeOfCalculation.FUNCTION
                   ) -> SearchDataItem:
         """Compute selected function by number."""
         # ???
         data_item.function_values[self.perm[function_index]] = self.problem.calculate(data_item.point,
                                                                                       data_item.function_values[
-                                                                                       self.perm[function_index]])
-        if not(np.isfinite(data_item.function_values[self.perm[function_index]].value)):
+                                                                                          self.perm[function_index]])
+        if not np.isfinite(data_item.function_values[self.perm[function_index]].value):
             raise Exception("Infinity values")
 
         return data_item

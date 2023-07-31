@@ -31,7 +31,8 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(2.0), iters_limit=300)
     solver = Solver(problem, parameters=method_params)
 
-    apl = AnimatePainterNDListener("gatsp_2d_anim_vary_mutation.png", "output",  vars_indxs=[0, 1], to_paint_obj_func=True)
+    apl = AnimatePainterNDListener("gatsp_2d_anim_vary_mutation.png", "output", vars_indxs=[0, 1],
+                                   to_paint_obj_func=True)
     solver.add_listener(apl)
 
     spl = StaticPainterNDListener("gatsp_2d_stat_vary_mutation.png", "output", vars_indxs=[0, 1], mode="interpolation")

@@ -8,6 +8,7 @@ from iOpt.solution import Solution
 class StaticDiscreteListener(Listener):
     """
     """
+
     def __init__(self, file_name: str, path_for_saves="", mode='analysis', calc='objective function',
                  type='lines layers', numpoints=150, mrkrs=3):
         """
@@ -74,6 +75,7 @@ class StaticDiscreteListener(Listener):
 
         painter.save_image()
 
+
 # mode: objective function, approximation, only points
 class StaticPainterListener(Listener):
     """
@@ -112,6 +114,7 @@ class StaticPainterListener(Listener):
         painter.paint_points()
         painter.paint_optimum()
         painter.save_image()
+
 
 # mode: surface, lines layers, approximation
 class StaticPainterNDListener(Listener):

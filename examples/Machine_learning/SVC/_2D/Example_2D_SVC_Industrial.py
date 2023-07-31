@@ -9,6 +9,7 @@ from sklearn.utils import shuffle
 import numpy as np
 import pandas as pd
 
+
 def get_SCANIA_dataset():
     xls = pd.read_excel(r"../Datasets/aps_failure_training_set1.xls", header=None)
     data = xls.values[1:]
@@ -18,6 +19,8 @@ def get_SCANIA_dataset():
     y = np.array(_y, dtype=np.double)
     x = np.array(_x, dtype=np.double)
     return shuffle(x, y, random_state=42)
+
+
 if __name__ == "__main__":
     X, Y = get_SCANIA_dataset()
     x = X[:2000]

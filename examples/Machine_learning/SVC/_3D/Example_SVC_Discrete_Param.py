@@ -6,11 +6,13 @@ from iOpt.solver_parametrs import SolverParameters
 from examples.Machine_learning.SVC._3D.Problem import SVC_3D
 from sklearn.utils import shuffle
 
+
 def load_breast_cancer_data():
     dataset = load_breast_cancer()
     x_raw, y_raw = dataset['data'], dataset['target']
     inputs, outputs = shuffle(x_raw, y_raw ^ 1, random_state=42)
     return inputs, outputs
+
 
 if __name__ == "__main__":
     x, y = load_breast_cancer_data()

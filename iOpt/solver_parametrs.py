@@ -6,6 +6,7 @@ class SolverParameters:
     """
     Класс SolverParameters позволяет определить параметры поиска оптимального решения
     """
+
     def __init__(self,
                  eps: np.double = 0.01,
                  r: np.double = 2.0,
@@ -54,4 +55,3 @@ class SolverParameters:
         self.start_point = start_point
         self.number_of_parallel_points = number_of_parallel_points
         self.timeout = timeout
-

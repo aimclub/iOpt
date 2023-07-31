@@ -35,8 +35,8 @@ class MixedIntegerMethod(IndexMethod):
 
         # u = {i, j, k}, i = {0, 1, 2}, j = {0, 1}, k = {0, 1, 2, 3, 4} -> 3*2*4=24
 
-        list_discreteValues = list(task.problem.discrete_variable_values)
-        self.discreteParameters = list(itertools.product(*list_discreteValues))
+        list_discrete_values = list(task.problem.discrete_variable_values)
+        self.discreteParameters = list(itertools.product(*list_discrete_values))
         # определяем количество сочетаний параметров
         self.numberOfParameterCombinations = len(self.discreteParameters)
         # 0 0.5 1  1.5 2   2.5  3    3.5 4
@@ -45,7 +45,7 @@ class MixedIntegerMethod(IndexMethod):
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
-        self.iterationsCount = 1
+        self.iterations_count = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
         left = SearchDataItem(Point(self.evolvent.get_image(0.0), self.discreteParameters[0]), 0.0,
@@ -59,28 +59,27 @@ class MixedIntegerMethod(IndexMethod):
         image_x: list = []
         is_init_image_x: bool = False
 
-        numberOfPointsInOneInterval = \
+        number_of_points_in_one_interval = \
             int(math.modf((self.parameters.number_of_parallel_points + self.numberOfParameterCombinations - 1)
                           / self.numberOfParameterCombinations)[1])
 
-        h: float = 1.0 / (numberOfPointsInOneInterval + 1)
+        h: float = 1.0 / (number_of_points_in_one_interval + 1)
 
         if self.parameters.start_point:
-
             for id_comb in range(self.numberOfParameterCombinations):
-
                 if np.array_equal(self.parameters.start_point.discrete_variables, self.discreteParameters[id_comb]):
-                    numTemp = numberOfPointsInOneInterval - 1
+                    num_temp = number_of_points_in_one_interval - 1
 
                     ystart_point = Point(copy.copy(self.parameters.start_point.float_variables),
-                                        self.discreteParameters[id_comb])
-                    xstart_point = id_comb + self.evolvent.get_inverse_image(self.parameters.start_point.float_variables)
+                                         self.discreteParameters[id_comb])
+                    xstart_point = id_comb + self.evolvent.get_inverse_image(
+                        self.parameters.start_point.float_variables)
                     itemstart_point = SearchDataItem(ystart_point, xstart_point, discrete_value_index=id_comb,
-                                                    function_values=[FunctionValue()] * self.numberOfAllFunctions)
+                                                     function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
-                    isAddstart_point: bool = False
+                    is_add_start_point: bool = False
 
-                    for i in range(numTemp):
+                    for i in range(num_temp):
                         x = id_comb + h * (i + 1)
 
                         y_temp = self.evolvent.get_image(x)
@@ -91,16 +90,15 @@ class MixedIntegerMethod(IndexMethod):
                         if x < xstart_point < id_comb + h * (i + 1):
                             items.append(item)
                             items.append(itemstart_point)
-                            isAddstart_point = True
+                            is_add_start_point = True
                         else:
                             items.append(item)
 
-                    if not isAddstart_point:
+                    if not is_add_start_point:
                         items.append(itemstart_point)
 
                 else:
-
-                    for i in range(numberOfPointsInOneInterval):
+                    for i in range(number_of_points_in_one_interval):
                         x = id_comb + h * (i + 1)
                         if not is_init_image_x:
                             image_x.append(self.evolvent.get_image(x))
@@ -119,7 +117,7 @@ class MixedIntegerMethod(IndexMethod):
                     is_init_image_x = True
         else:
             for id_comb in range(self.numberOfParameterCombinations):
-                for i in range(numberOfPointsInOneInterval):
+                for i in range(number_of_points_in_one_interval):
                     x = id_comb + h * (i + 1)
                     if not is_init_image_x:
                         image_x.append(self.evolvent.get_image(x))
@@ -157,17 +155,17 @@ class MixedIntegerMethod(IndexMethod):
         for id_comb in range(self.numberOfParameterCombinations):
             if id_comb > 0:
                 # вычисление left
-                index = id_comb * numberOfPointsInOneInterval
+                index = id_comb * number_of_points_in_one_interval
                 items[index].delta = self.calculate_delta(right[id_comb - 1], items[index], self.dimension)
                 self.calculate_global_r(items[index], right[id_comb - 1])
 
-            for id_item in range(1, numberOfPointsInOneInterval):
-                index = id_comb * numberOfPointsInOneInterval + id_item
+            for id_item in range(1, number_of_points_in_one_interval):
+                index = id_comb * number_of_points_in_one_interval + id_item
                 items[index].delta = self.calculate_delta(items[index - 1], items[index], self.dimension)
                 self.calculate_global_r(items[index], items[index - 1])
                 self.calculate_m(items[index], items[index - 1])
 
-            left_index = id_comb * numberOfPointsInOneInterval + numberOfPointsInOneInterval - 1
+            left_index = id_comb * number_of_points_in_one_interval + number_of_points_in_one_interval - 1
             right[id_comb].delta = self.calculate_delta(items[left_index], right[id_comb], self.dimension)
             self.calculate_global_r(right[id_comb], items[left_index])
 
@@ -178,13 +176,13 @@ class MixedIntegerMethod(IndexMethod):
             if right_item < self.numberOfParameterCombinations - 1:
                 self.search_data.insert_data_item(right[right_item], right[-1])
 
-            for id_item in range(numberOfPointsInOneInterval):
-                index = right_item * numberOfPointsInOneInterval + id_item
+            for id_item in range(number_of_points_in_one_interval):
+                index = right_item * number_of_points_in_one_interval + id_item
                 self.search_data.insert_data_item(items[index], right[right_item])
 
         self.recalcR = True
         self.recalcM = True
-        self.iterationsCount = len(items)
+        self.iterations_count = len(items)
         self.search_data.solution.number_of_global_trials = len(items)
 
         return items
@@ -216,8 +214,8 @@ class MixedIntegerMethod(IndexMethod):
 
     @staticmethod
     def GetDiscreteParameters(problem: Problem) -> list:
-        list_discreteValues = list(problem.discrete_variable_values)
-        return list(itertools.product(*list_discreteValues))
+        list_discrete_values = list(problem.discrete_variable_values)
+        return list(itertools.product(*list_discrete_values))
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""

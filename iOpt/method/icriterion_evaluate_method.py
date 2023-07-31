@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from iOpt.method.search_data import SearchDataItem
 
 
-class ICriterionEvaluateMethod (ABC):
+class ICriterionEvaluateMethod(ABC):
 
     @abstractmethod
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:

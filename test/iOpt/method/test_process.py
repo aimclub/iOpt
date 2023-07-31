@@ -27,17 +27,17 @@ class TestProcess(unittest.TestCase):
         mock_problem.number_of_objectives = 1
         mock_problem.number_of_constraints = 0
         mock_task.problem = mock_problem
-        searchData = SearchData(mock_problem)
-        functionValue = FunctionValue()
-        functionValue.value = -5.0
-        searchData.solution.best_trials = [Trial(Point([0.45], ['a']), [functionValue])]
+        search_data = SearchData(mock_problem)
+        function_value = FunctionValue()
+        function_value.value = -5.0
+        search_data.solution.best_trials = [Trial(Point([0.45], ['a']), [function_value])]
         method = Method(evolvent=mock_evolvent, parameters=SolverParameters(),
-                        task=mock_task, search_data=searchData)
+                        task=mock_task, search_data=search_data)
         method.stop = True
         method.dimension = 1
         listener = StaticPainterListener(file_name="Output.txt")
         self.process = Process(parameters=SolverParameters(), task=mock_task, evolvent=mock_evolvent,
-                               search_data=searchData, method=method, listeners=[listener])
+                               search_data=search_data, method=method, listeners=[listener])
 
     def test_SolveAssertException(self):
         self.process.parameters = None
@@ -88,7 +88,7 @@ class TestProcess(unittest.TestCase):
             self.fail("test_Solverefine_solution is failed")
 
     def mock_Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
-        functionValue.value = (point.float_variables[0] - 0.45)**2 - 10.25
+        functionValue.value = (point.float_variables[0] - 0.45) ** 2 - 10.25
         return functionValue
 
     def test_GetResult(self):
@@ -103,7 +103,7 @@ class TestProcess(unittest.TestCase):
         return [x]
 
     def mock_CalculateTask(self, dataItem: SearchDataItem, functionIndex: int = 0,
-                  type: TypeOfCalculation = TypeOfCalculation.FUNCTION) -> SearchDataItem:
+                           type: TypeOfCalculation = TypeOfCalculation.FUNCTION) -> SearchDataItem:
         dataItem.function_values[0] = self.mock_Calculate(dataItem.point, dataItem.function_values[0])
         return dataItem
 
