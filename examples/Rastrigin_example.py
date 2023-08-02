@@ -27,4 +27,3 @@ if __name__ == "__main__":
     solver.add_listener(spl)
     # Запуск решения задачи
     sol = solver.solve()
-

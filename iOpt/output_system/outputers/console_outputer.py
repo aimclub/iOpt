@@ -5,6 +5,7 @@ from iOpt.problem import Problem
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
 
+
 class ConsoleOutputer:
     def __init__(self, problem: Problem, parameters: SolverParameters):
         self.problem = problem
@@ -106,8 +107,10 @@ class OutputFunctions:
         tempstr = tempstr[:-2]
         tempstr += "]"
         print("|{:>29} {:<{width}}|".format("bounds: ", tempstr, width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}}|".format("objective-function count: ", number_of_objectives, width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}}|".format("constraint-function count: ", number_of_constraints, width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("objective-function count: ", number_of_objectives,
+                                            width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("constraint-function count: ", number_of_constraints,
+                                            width=size_max_one_output * dim))
         print("-" * (30 + size_max_one_output * dim + 2))
         print("|{:^{width}}|".format("Method Parameters", width=30 + size_max_one_output * dim))
         print("-" * (30 + size_max_one_output * dim + 2))
@@ -115,7 +118,8 @@ class OutputFunctions:
         print("|{:>29} {:<{width}}|".format("r: ", r, width=size_max_one_output * dim))
         print("|{:>29} {:<{width}}|".format("eps_r: ", eps_r, width=size_max_one_output * dim))
         print("|{:>29} {:<{width}}|".format("iters_limit: ", iters_limit, width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}}|".format("number_of_parallel_points: ", number_of_parallel_points, width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("number_of_parallel_points: ", number_of_parallel_points,
+                                            width=size_max_one_output * dim))
         print("-" * (30 + size_max_one_output * dim + 2))
         print("|{:^{width}}|".format("Iterations", width=30 + size_max_one_output * dim))
         print("-" * (30 + size_max_one_output * dim + 2))
@@ -136,7 +140,7 @@ class OutputFunctions:
             print("{:>5}:".format(iter), end=' ')
         print("{:>19.8f}".format(value), end='   ')
         if ndv > 0:
-            print("{:<{width}}|".format(str(point) + " with " + str(dpoint), width = size_max_one_output * (dim1 + dim2)))
+            print("{:<{width}}|".format(str(point) + " with " + str(dpoint), width=size_max_one_output * (dim1 + dim2)))
         else:
             print("{:<{width}}|".format(str(point), width=size_max_one_output * dim1))
 
@@ -148,26 +152,36 @@ class OutputFunctions:
         print("|{:^{width}}|".format("Result", width=30 + size_max_one_output * dim))
         print("-" * (30 + size_max_one_output * dim + 2))
         # print("|{:>29} {:<{width}}|".format("is solved: ", str(solved), width=20*dim))
-        print("|{:>29} {:<{width}}|".format("global iteration count: ", number_of_global_trials, width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}}|".format("local iteration count: ", number_of_local_trials, width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("global iteration count: ", number_of_global_trials,
+                                            width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("local iteration count: ", number_of_local_trials,
+                                            width=size_max_one_output * dim))
         print("|{:>29} {:<{width}}|".format("solving time: ", solving_time, width=size_max_one_output * dim))
         print("|{:>29} {:<{width}}|".format("solution point: ", str(best_trial_point), width=size_max_one_output * dim))
         if ndv > 0:
-            print("|{:>29} {:<{width}}|".format("best disrete combination: ", str(best_trial_d_point), width=size_max_one_output * dim))
+            print("|{:>29} {:<{width}}|".format("best disrete combination: ", str(best_trial_d_point),
+                                                width=size_max_one_output * dim))
         print("|{:>29} {:<{width}.8f}|".format("solution value: ", best_trial_value, width=size_max_one_output * dim))
         print("|{:>29} {:<{width}.8f}|".format("accuracy: ", solution_accuracy, width=size_max_one_output * dim))
         print("-" * (30 + size_max_one_output * dim + 2))
 
     def print_best(self, number_of_global_trials, number_of_local_trials, solution_accuracy,
-                   best_trial_point, best_trial_d_point, best_trial_value, iter, ndv):
+                   best_trial_point, best_trial_d_point, best_trial_value, curr_iter, ndv):
         size_max_one_output = 15
         dim = len(best_trial_point) + len(best_trial_d_point)
-        print("|{:>29} {:<{width}}|".format("current iteration # ", iter, width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}}|".format("global iteration count: ", number_of_global_trials, width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}}|".format("local iteration count: ", number_of_local_trials, width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}}|".format("current best point: ", str(best_trial_point), width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("current iteration # ", curr_iter,
+                                            width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("global iteration count: ", number_of_global_trials,
+                                            width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("local iteration count: ", number_of_local_trials,
+                                            width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}}|".format("current best point: ", str(best_trial_point),
+                                            width=size_max_one_output * dim))
         if ndv > 0:
-            print("|{:>29} {:<{width}}|".format("with discrete combination: ", str(best_trial_d_point), width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}.8f}|".format("current best value: ", best_trial_value, width=size_max_one_output * dim))
-        print("|{:>29} {:<{width}.8f}|".format("currant accuracy: ", solution_accuracy, width=size_max_one_output * dim))
+            print("|{:>29} {:<{width}}|".format("with discrete combination: ", str(best_trial_d_point),
+                                                width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}.8f}|".format("current best value: ", best_trial_value,
+                                               width=size_max_one_output * dim))
+        print("|{:>29} {:<{width}.8f}|".format("currant accuracy: ", solution_accuracy,
+                                               width=size_max_one_output * dim))
         print("." * (30 + size_max_one_output * dim + 2))

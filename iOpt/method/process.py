@@ -90,7 +90,7 @@ class Process:
                 listener.before_method_start(self.method)
             done_trials = self.method.first_iteration()
             self._first_iteration = False
-            number = number - 1
+            number -= 1
 
         for _ in range(number):
             newpoint, oldpoint = self.method.calculate_iteration_point()

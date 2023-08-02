@@ -6,6 +6,7 @@ class SolverParameters:
     """
     Класс SolverParameters позволяет определить параметры поиска оптимального решения
     """
+
     def __init__(self,
                  eps: np.double = 0.01,
                  r: np.double = 2.0,
@@ -15,7 +16,8 @@ class SolverParameters:
                  refine_solution: bool = False,
                  start_point: Point = [],
                  number_of_parallel_points: int = 1,
-                 timeout: int = -1
+                 timeout: int = -1,
+                 proportion_of_global_iterations: float = 0.95
                  ):
         r"""
         Конструктор класса SolverParameters
@@ -34,12 +36,14 @@ class SolverParameters:
         :param start_point: точка начального приближения к решению.
         :param number_of_parallel_points: число параллельно вычисляемых испытаний.
         :param timeout: ограничение на время вычислений в минутах.
+        :param proportion_of_global_iterations: доля глобальных итераций в поиске при использовании локальном метода
         """
         self.eps = eps
         self.r = r
         self.iters_limit = iters_limit
+        self.proportion_of_global_iterations = proportion_of_global_iterations
         if refine_solution:
-            self.global_method_iteration_count = int(self.iters_limit * 0.95)
+            self.global_method_iteration_count = int(self.iters_limit * self.proportion_of_global_iterations)
             self.local_method_iteration_count = self.iters_limit - self.global_method_iteration_count
         else:
             self.global_method_iteration_count = self.iters_limit

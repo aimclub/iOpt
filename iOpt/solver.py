@@ -53,13 +53,13 @@ class Solver:
         :return: решение задачи оптимизации
         """
         Solver.check_parameters(self.problem, self.parameters)
-        sol: Solution = None
         if self.parameters.timeout < 0:
             sol = self.process.solve()
         else:
             solv_with_timeout = timeout(seconds=self.parameters.timeout * 60)(self.process.solve)
             try:
                 solv_with_timeout()
+                sol = self.get_results()
             except Exception as exc:
                 print(exc)
                 sol = self.get_results()

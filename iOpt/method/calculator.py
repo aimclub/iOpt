@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from multiprocessing import Pool
+from pathos.multiprocessing import _ProcessPool
 
 from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.search_data import SearchDataItem
@@ -9,12 +9,12 @@ from iOpt.solver_parametrs import SolverParameters
 
 import sys
 
-#возможно стоит удалить
+# возможно стоит удалить
 sys.setrecursionlimit(10000)
 
 
 class Calculator:
-    pool: Pool = None
+    pool: _ProcessPool = None
     evaluate_method: ICriterionEvaluateMethod = None
 
     def __init__(self,
@@ -29,15 +29,17 @@ class Calculator:
         """
         self.evaluate_method = evaluate_method
         self.parameters = parameters
-        Calculator.pool = Pool(parameters.number_of_parallel_points,
-                               initializer=Calculator.worker_init,
-                               initargs=(self.evaluate_method,))
+        Calculator.worker_init(self.evaluate_method)
+        Calculator.pool = _ProcessPool(parameters.number_of_parallel_points,
+                                       initializer=Calculator.worker_init,
+                                       initargs=(self.evaluate_method,))
 
     r"""
     Инициализация метода вычислений в каждом процессе из пула процессов Calculator.Pool
 
     :param evaluate_method: метод вычислений, проводящий поисковые испытания по заданным правилам.
     """
+
     @staticmethod
     def worker_init(evaluate_method: ICriterionEvaluateMethod):
         Calculator.evaluate_method = evaluate_method
@@ -47,6 +49,7 @@ class Calculator:
 
     :param point: точка проведения испытания
     """
+
     @staticmethod
     def worker(point: SearchDataItem) -> SearchDataItem:
         try:

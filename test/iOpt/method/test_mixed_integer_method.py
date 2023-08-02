@@ -16,6 +16,7 @@ from problems.rastriginInt import RastriginInt
 from iOpt.solver import Solver
 import numpy as np
 
+
 class TestMixedIntegerMethod(unittest.TestCase):
 
     @mock.patch('iOpt.problem.Problem')
@@ -145,10 +146,10 @@ class TestMixedIntegerMethod(unittest.TestCase):
         self.assertAlmostEqual(sol.number_of_global_trials, self.globalTrials_RI_d_3, delta=self.eps_trials_3)
 
     def test_RastriginInt_Solve_Dimension_4_Discrete_2_p_1(self):
-        epsVal = 0.01
+        eps_val = 0.01
         r = 3.5
         problem = RastriginInt(4, 2)
-        params = SolverParameters(r=r, eps=epsVal, number_of_parallel_points=1)
+        params = SolverParameters(r=r, eps=eps_val, number_of_parallel_points=1)
         solver = Solver(problem, parameters=params)
 
         sol = solver.solve()
@@ -157,7 +158,7 @@ class TestMixedIntegerMethod(unittest.TestCase):
         for j in range(problem.dimension - problem.number_of_discrete_variables):
             fabsx = np.abs(problem.known_optimum[0].point.float_variables[j] -
                            sol.best_trials[0].point.float_variables[j])
-            fm = epsVal * (problem.upper_bound_of_float_variables[j] -
+            fm = eps_val * (problem.upper_bound_of_float_variables[j] -
                            problem.lower_bound_of_float_variables[j])
             if fabsx > fm:
                 res = False

@@ -48,7 +48,6 @@ class SearchDataItem(Trial):
         self.localR: np.double = -1.0
         self.iterationNumber: int = -1
 
-
     def get_x(self) -> np.double:
         """
         Метод позволяет получить правую точку поискового интервала, где :math:`x\in[0, 1]`.
@@ -433,17 +432,18 @@ class SearchData:
                         str(fv['functionID'])))
                     function_values[-1].value = np.double(fv['value'])
 
-                dataItem = SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
-                                          p['discrete_value_index'])
-                dataItem.delta = p['delta']  # [-1] - обращение к последнему элементу
-                dataItem.globalR = p['globalR']
-                dataItem.localR = p['localR']
-                dataItem.set_z(p['__z'])
-                dataItem.set_index(p['index'])
+                data_item = SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'],
+                                           function_values,
+                                           p['discrete_value_index'])
+                data_item.delta = p['delta']  # [-1] - обращение к последнему элементу
+                data_item.globalR = p['globalR']
+                data_item.localR = p['localR']
+                data_item.set_z(p['__z'])
+                data_item.set_index(p['index'])
 
-                self.solution.best_trials[0] = dataItem
+                self.solution.best_trials[0] = data_item
 
-            firstDataItem = []
+            first_data_item = []
 
             for p in data['SearchDataItem'][:2]:
                 function_values = []
@@ -454,15 +454,15 @@ class SearchData:
                         str(fv['functionID'])))
                     function_values[-1].value = np.double(fv['value'])
 
-                firstDataItem.append(
+                first_data_item.append(
                     SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
                                    p['discrete_value_index']))
-                firstDataItem[-1].delta = p['delta']
-                firstDataItem[-1].globalR = p['globalR']
-                firstDataItem[-1].localR = p['localR']
-                firstDataItem[-1].set_index(p['index'])
+                first_data_item[-1].delta = p['delta']
+                first_data_item[-1].globalR = p['globalR']
+                first_data_item[-1].localR = p['localR']
+                first_data_item[-1].set_index(p['index'])
 
-            self.insert_first_data_item(firstDataItem[0], firstDataItem[1])
+            self.insert_first_data_item(first_data_item[0], first_data_item[1])
 
             for p in data['SearchDataItem'][2:]:
                 function_values = []
@@ -473,16 +473,15 @@ class SearchData:
                         str(fv['functionID'])))
                     function_values[-1].value = np.double(fv['value'])
 
-                dataItem = SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
-                                          p['discrete_value_index'])
-                dataItem.delta = p['delta']
-                dataItem.globalR = p['globalR']
-                dataItem.localR = p['localR']
-                dataItem.set_z(p['__z'])
-                dataItem.set_index(p['index'])
+                data_item = SearchDataItem(Point(p['float_variables'], p['discrete_variables']),
+                                           p['x'], function_values, p['discrete_value_index'])
+                data_item.delta = p['delta']
+                data_item.globalR = p['globalR']
+                data_item.localR = p['localR']
+                data_item.set_z(p['__z'])
+                data_item.set_index(p['index'])
 
-                self.insert_data_item(dataItem)
-
+                self.insert_data_item(data_item)
 
     def __iter__(self):
         # вернуть самую левую точку из дерева (ниже код проверить!)
@@ -562,12 +561,12 @@ class SearchDataDualQueue(SearchData):
        """
         if self._RGlobalQueue.is_empty():
             self.refill_queue()
-        bestItem = self._RGlobalQueue.get_best_item()
-        while bestItem[1] != bestItem[0].globalR:
+        best_item = self._RGlobalQueue.get_best_item()
+        while best_item[1] != best_item[0].globalR:
             if self._RGlobalQueue.is_empty():
                 self.refill_queue()
-            bestItem = self._RGlobalQueue.get_best_item()
-        return bestItem[0]
+            best_item = self._RGlobalQueue.get_best_item()
+        return best_item[0]
 
     def get_data_item_with_max_local_r(self) -> SearchDataItem:
         """
@@ -577,12 +576,12 @@ class SearchDataDualQueue(SearchData):
        """
         if self.__RLocalQueue.is_empty():
             self.refill_queue()
-        bestItem = self.__RLocalQueue.get_best_item()
-        while bestItem[1] != bestItem[0].localR:
+        best_item = self.__RLocalQueue.get_best_item()
+        while best_item[1] != best_item[0].localR:
             if self.__RLocalQueue.is_empty():
                 self.refill_queue()
-            bestItem = self.__RLocalQueue.get_best_item()
-        return bestItem[0]
+            best_item = self.__RLocalQueue.get_best_item()
+        return best_item[0]
 
     def refill_queue(self):
         """

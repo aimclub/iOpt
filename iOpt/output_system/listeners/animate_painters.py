@@ -7,6 +7,7 @@ from iOpt.output_system.painters.animate_painters import AnimatePainter, Animate
 
 import numpy as np
 
+
 class AnimatePainterListener(Listener):
     """
     Класс AnimationPaintListener - слушатель событий. Содержит методы-обработчики, выдающие в качестве
@@ -36,12 +37,13 @@ class AnimatePainterListener(Listener):
         if self.to_paint_obj_func:
             self.__painter.paint_objective_func()
 
-    def on_end_iteration(self, saved_new_points : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+    def on_end_iteration(self, saved_new_points: np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
         self.__painter.paint_points(saved_new_points)
 
     def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):
         self.__painter.paint_optimum(solution)
         self.__painter.save_image()
+
 
 class AnimatePainterNDListener(Listener):
     """
@@ -68,7 +70,7 @@ class AnimatePainterNDListener(Listener):
     def before_method_start(self, method: Method):
         self.__painter.set_problem(method.task.problem)
 
-    def on_end_iteration(self, saved_new_points : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+    def on_end_iteration(self, saved_new_points: np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
         self.__painter.paint_points(saved_new_points)
 
     def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):

@@ -38,17 +38,17 @@ class Method:
         self.stop: bool = False
         self.recalcR: bool = True
         self.recalcM: bool = True
-        self.iterationsCount: int = 0
+        self.iterations_count: int = 0
         self.best: SearchDataItem = None
 
         self.parameters = parameters
         self.task = task
         self.evolvent = evolvent
         self.search_data = search_data
-        # change to np.array, but indexing np is slower
+
         self.M = [1.0 for _ in range(task.problem.number_of_objectives + task.problem.number_of_constraints)]
         self.Z = [np.infty for _ in range(task.problem.number_of_objectives + task.problem.number_of_constraints)]
-        self.dimension = task.problem.number_of_float_variables  # А ДЛЯ ДИСКРЕТНЫХ?
+        self.dimension = task.problem.number_of_float_variables
         self.search_data.solution.solution_accuracy = np.infty
         self.numberOfAllFunctions = task.problem.number_of_objectives + task.problem.number_of_constraints
 
@@ -109,9 +109,9 @@ class Method:
             xstart_point = self.evolvent.get_inverse_image(self.parameters.start_point.float_variables)
 
             itemstart_point = SearchDataItem(ystart_point, xstart_point,
-                                            function_values=[FunctionValue()] * self.numberOfAllFunctions)
+                                             function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
-            isAddstart_point: bool = False
+            is_add_start_point: bool = False
 
             for i in range(number_of_point):
                 x = h * (i + 1)
@@ -121,11 +121,11 @@ class Method:
                 if x < xstart_point < h * (i + 2):
                     items.append(item)
                     items.append(itemstart_point)
-                    isAddstart_point = True
+                    is_add_start_point = True
                 else:
                     items.append(item)
 
-            if not isAddstart_point:
+            if not is_add_start_point:
                 items.append(itemstart_point)
         else:
 
@@ -142,6 +142,7 @@ class Method:
         if calculator is None:
             for item in items:
                 self.calculate_functionals(item)
+                self.update_optimum(item)
         else:
             calculator.calculate_functionals_for_items(items)
 
@@ -172,7 +173,7 @@ class Method:
         self.recalcR = True
         self.recalcM = True
 
-        self.iterationsCount = len(items)
+        self.iterations_count = len(items)
         self.search_data.solution.number_of_global_trials = len(items)
 
         return items
@@ -184,7 +185,7 @@ class Method:
 
         :return: True, если выполнен критерий остановки; False - в противном случае.
         """
-        if self.min_delta < self.parameters.eps or self.iterationsCount >= self.parameters.global_method_iteration_count:
+        if self.min_delta < self.parameters.eps or self.iterations_count >= self.parameters.global_method_iteration_count:
             self.stop = True
         else:
             self.stop = False
@@ -309,9 +310,6 @@ class Method:
                 self.M[index] = m
                 self.recalcR = True
 
-    # def CalculateM(self, point: SearchDataItem):  # В python нет такой перегрузки функций, надо менять название
-    #     self.CalculateM(point, point.GetLeft())
-
     def calculate_global_r(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
         Вычисление глобальной характеристики интервала [left_point, curr_point].
@@ -331,18 +329,18 @@ class Method:
         deltax = curr_point.delta
 
         if left_point.get_index() < 0 and curr_point.get_index() < 0:
-            globalR = 2 * deltax - 4 * math.fabs(self.Z[0]) / (r * self.M[0])
+            global_r = 2 * deltax - 4 * math.fabs(self.Z[0]) / (r * self.M[0])
         elif left_point.get_index() == curr_point.get_index():
             v = curr_point.get_index()
-            globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
-                      2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
+            global_r = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
+                       2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
         elif left_point.get_index() < curr_point.get_index():
             v = curr_point.get_index()
-            globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
+            global_r = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
         else:
             v = left_point.get_index()
-            globalR = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
-        curr_point.globalR = globalR
+            global_r = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
+        curr_point.globalR = global_r
 
     def renew_search_data(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
         """
@@ -387,7 +385,7 @@ class Method:
         r"""
         Заканчивает итерацию, обновляет счётчик итераций.
         """
-        self.iterationsCount += 1
+        self.iterations_count += 1
 
     def get_iterations_count(self) -> int:
         r"""
@@ -395,7 +393,7 @@ class Method:
 
         :return:  число выполненных итераций.
         """
-        return self.iterationsCount
+        return self.iterations_count
 
     def get_optimum_estimation(self) -> SearchDataItem:
         r"""
