@@ -34,11 +34,9 @@ class Problem(ABC):
         :return: Вычисленное значение функции."""
         pass
 
-   # @abstractmethod
     def get_name(self):
         """
         Метод позволяет получить имя задачи
 
         :return: self.name."""
         return self.name
-        #pass

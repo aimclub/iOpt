@@ -35,7 +35,7 @@ class Stronginc5(Problem):
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0] = self.calculate(KOpoint, KOfunV[0]) # -43.298677;
+        KOfunV[0] = self.calculate(KOpoint, KOfunV[0])  # -43.298677;
         self.known_optimum[0] = Trial(KOpoint, KOfunV)
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:

@@ -75,12 +75,3 @@ class nvs21(Problem):
 
         function_value.value = result
         return function_value
-
-if __name__ == "__main__":
-    Problem = nvs21()
-    point = Problem.known_optimum[0].point
-    print(point.discrete_variables, point.float_variables)
-    #point = Point([0.999609, -2.100473], [1])
-    fv = FunctionValue()
-    fv = Problem.calculate(point, fv)
-    print(fv.value)

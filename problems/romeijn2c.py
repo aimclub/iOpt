@@ -49,7 +49,7 @@ class Romeijn2c(Problem):
         x = point.float_variables
 
         if function_value.type == FunctionType.OBJECTIV:
-            result = np.double(-(0.0204 + 0.0607 * pow(x[4], 2)) * x[0] * x[3] * (x[0] + x[1] + x[2]) - \
+            result = np.double(-(0.0204 + 0.0607 * pow(x[4], 2)) * x[0] * x[3] * (x[0] + x[1] + x[2]) -
                                (0.0187 + 0.0437 * pow(x[5], 2)) * x[1] * x[2] * (x[0] + 1.57 * x[1] + x[3]))
         elif function_value.functionID == 0:  # constraint 1
             for i in range(0, self.dimension):
@@ -57,7 +57,7 @@ class Romeijn2c(Problem):
             result = np.double(2070 * result - 1)
 
         elif function_value.functionID == 1:  # constraint 2
-            result = np.double(0.00062 * x[0] * x[3] * pow(x[4], 2) * (x[0] + x[1] + x[2]) + \
+            result = np.double(0.00062 * x[0] * x[3] * pow(x[4], 2) * (x[0] + x[1] + x[2]) +
                                0.00058 * x[1] * x[2] * pow(x[5], 2) * (x[0] + 1.57 * x[1] + x[3]) - 1)
 
         function_value.value = result

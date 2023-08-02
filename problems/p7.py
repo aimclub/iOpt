@@ -81,11 +81,3 @@ class p7(Problem):
 
         function_value.value = result
         return function_value
-
-if __name__ == "__main__":
-    Problem = p7()
-    point = Problem.known_optimum[0].point
-    print(point.float_variables, point.discrete_variables)
-    fv = FunctionValue()
-    fv = Problem.calculate(point, fv)
-    print(fv.value)

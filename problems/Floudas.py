@@ -79,10 +79,3 @@ class Floudas(Problem):
 
         function_value.value = result
         return function_value
-
-if __name__ == "__main__":
-    Problem = Floudas()
-    point = Point([0.499609, -1.305787], [1])
-    fv = FunctionValue()
-    fv = Problem.calculate(point, fv)
-    print(fv.value)

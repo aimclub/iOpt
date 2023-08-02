@@ -80,10 +80,3 @@ class gbd(Problem):
 
         function_value.value = result
         return function_value
-
-if __name__ == "__main__":
-    Problem = gbd()
-    point = Point([0.666593], [1, 1, 1])
-    fv = FunctionValue()
-    fv = Problem.calculate(point, fv)
-    print(fv.value)

@@ -79,10 +79,3 @@ class ex1222(Problem):
 
         function_value.value = result
         return function_value
-
-if __name__ == "__main__":
-    Problem = ex1222()
-    point = Point([0.999609, -2.100473], [1])
-    fv = FunctionValue()
-    fv = Problem.calculate(point, fv)
-    print(fv.value)

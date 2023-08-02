@@ -75,10 +75,3 @@ class p1(Problem):
 
         function_value.value = result
         return function_value
-
-if __name__ == "__main__":
-    Problem = p1()
-    point = Problem.known_optimum[0].point
-    fv = FunctionValue()
-    fv = Problem.calculate(point, fv)
-    print(fv.value)

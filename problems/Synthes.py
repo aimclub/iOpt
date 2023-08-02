@@ -63,14 +63,25 @@ class Synthes(Problem):
             result = np.double(b[0] + b[1] - 1.1)
         elif function_value.functionID == 1:  # constraint 2
             if ((x[0] - x[1] + 1.0) != 0):
-                result = np.double(-(0.8*math.log(x[1] + 1) +
-                                     0.96*math.log(x[0] - x[1] + 1.0)- 0.8*x[2]))
+                try:
+                    result = np.double(-(math.log(x[1] + 1.0) + 1.2*
+                                     math.log(x[0] - x[1] + 1.0) - x[2]- 2 * b[2] + 2.0))
+                except ValueError:
+                    print("CalculateFuncs Error!!!")
+                    result = np.NaN
+                    pass  # do nothing!
             else:
                 result = 1
         elif function_value.functionID == 2:  # constraint 3
             if ((x[0] - x[1] + 1.0) != 0):
-                result = np.double(-(math.log(x[1] + 1.0) + 1.2*
+                try:
+                    result = np.double(-(math.log(x[1] + 1.0) + 1.2*
                                      math.log(x[0] - x[1] + 1.0) - x[2]- 2 * b[2] + 2.0))
+                except ValueError:
+                    print("CalculateFuncs Error!!!")
+                    result = np.NaN
+                    pass  # do nothing!
+
             else:
                 result = 1
         elif function_value.functionID == 3:  # constraint 4
@@ -82,7 +93,3 @@ class Synthes(Problem):
 
         function_value.value = result
         return function_value
-
-if __name__ == "__main__":
-    print(1)
-
