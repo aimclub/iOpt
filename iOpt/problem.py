@@ -25,18 +25,20 @@ class Problem(ABC):
 
         self.known_optimum: np.ndarray(shape=(1), dtype=Trial) = []
 
-    # @abstractmethod
+    @abstractmethod
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
         Метод вычисления функции в заданной точке.
           Для любой новой постановки задачи, которая наследуется от :class:`Problem`, этот метод следует перегрузить.
 
         :return: Вычисленное значение функции."""
-        # pass
+        pass
 
+    # @abstractmethod
     def get_name(self):
         """
         Метод позволяет получить имя задачи
 
         :return: self.name."""
         return self.name
+        # pass
