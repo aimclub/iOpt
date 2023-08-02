@@ -246,8 +246,8 @@ class MixedIntegerMethod(IndexMethod):
                 else:
                     other_point = None
                     break
-            if other_point is not None and other_point.get_index() >= 0 and \
-                    other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
+            if other_point is not None and other_point.get_index() >= 0 \
+                    and other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
                 # print(index)
                 m = abs(other_point.function_values[index].value - curr_point.get_z()) / \
                     self.calculate_delta(other_point, curr_point, self.dimension)
@@ -263,8 +263,8 @@ class MixedIntegerMethod(IndexMethod):
                     other_point = None
                     break
 
-            if other_point is not None and other_point.get_index() >= 0 and \
-                    other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
+            if other_point is not None and other_point.get_index() >= 0 \
+                    and other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
                 m = max(m, abs(curr_point.get_z() - other_point.function_values[index].value) / \
                         self.calculate_delta(curr_point, other_point, self.dimension))
 
