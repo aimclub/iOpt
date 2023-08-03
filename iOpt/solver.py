@@ -114,6 +114,10 @@ class Solver:
         Solver.check_parameters(self.problem, self.parameters)
         self.process.load_progress(file_name=file_name)
 
+        if (self.problem.number_of_discrete_variables > 0):
+            self.process.method.iterations_count = self.process.search_data.get_count() - (len(self.method.GetDiscreteParameters(self.problem)) + 1 ) #-2
+        else: self.process.method.iterations_count = self.process.search_data.get_count() - 2
+
     def refresh_listener(self) -> None:
         """
         Метод оповещения наблюдателей о произошедшем событии

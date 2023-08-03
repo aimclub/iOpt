@@ -13,7 +13,7 @@ class Stronginc5(Problem):
         Конструктор класса Stronginc5 problem.
         """
         super(Stronginc5, self).__init__()
-        self.name = 'Stronginc5'
+        self.name = "Stronginc5"
         self.dimension: int = 5
         self.number_of_float_variables = self.dimension
         self.number_of_discrete_variables = 0

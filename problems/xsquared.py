@@ -12,7 +12,7 @@ class XSquared(Problem):
 
     def __init__(self, dimension: int):
         super(XSquared, self).__init__()
-        self.name = XSquared
+        self.name = "XSquared"
         self.dimension = dimension
         self.number_of_float_variables = dimension
         self.number_of_discrete_variables = 0
