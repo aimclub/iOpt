@@ -17,11 +17,6 @@ iOpt is an open source framework for automatic selection of parameter values bot
 Key features of the framework
 _____________________________
 
-- Автоматический выбор значений параметров математических моделей и методов ИИ и МО, используемых в промышленности.
-- Интеллектуальное управление процессом выбора оптимальных параметров для промышленных задач.
-- Интеграция с внешними библиотеками или фреймворками искусственного интеллекта и машинного обучения, а также предметными моделями.
-- Автоматизация предварительного анализа исследуемых моделей, например, выделение различных классов зависимостей модели от разных групп параметров.
-- Визуализация процесса выбора оптимальных параметров.
 - Automatic selection of parameter values both for mathematical models and for AI and ML methods used in industry.
 - Intelligent control of the process of choosing the optimal parameters for industrial applications.
 - Integration with external artificial intelligence and machine learning libraries or frameworks as well as applied models.
