@@ -1,8 +1,10 @@
 import unittest
 import numpy as np
 from iOpt.problem import Problem
+from iOpt.trial import Point
 from problems.GKLS import GKLS
 from problems.rastrigin import Rastrigin
+from problems.rastriginInt import RastriginInt
 from problems.xsquared import XSquared
 from problems.hill import Hill
 from problems.shekel import Shekel
@@ -13,6 +15,7 @@ from problems.romeijn3c import Romeijn3c
 from problems.romeijn5c import Romeijn5c
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
+
 
 
 class TestSolvingProblems(unittest.TestCase):
@@ -29,7 +32,7 @@ class TestSolvingProblems(unittest.TestCase):
         sol = solver.solve()
 
         # Проверяем что найденный АГП минимумом соответствуйте априори известному, для этой задачи, с точностью eps
-        for j in range(problem.dimension):
+        for j in range(problem.number_of_float_variables):
             fabsx = np.abs(problem.known_optimum[0].point.float_variables[j] -
                            sol.best_trials[0].point.float_variables[j])
             fm = params.eps * (problem.upper_bound_of_float_variables[j] -
@@ -38,6 +41,7 @@ class TestSolvingProblems(unittest.TestCase):
 
         # Проверяем что на решение потребовалось правильное число итераций АГП
         self.assertEqual(sol.number_of_global_trials, number_of_global_trials)
+        return sol
 
     def test_Rastrigin_Solve(self):
         r = 3.5
@@ -46,6 +50,17 @@ class TestSolvingProblems(unittest.TestCase):
         number_of_global_trials = 44
 
         self.checkIsSolved(problem, params, number_of_global_trials)
+
+    def test_RastriginInt_Solve(self):
+        r = 3.5
+        problem = RastriginInt(dimension=5, number_of_discrete_variables=3)
+        start_point: Point = Point(float_variables=[0.5, 0.5], discrete_variables=['A', 'B', 'A'])
+        params = SolverParameters(r=r, eps=self.epsVal, iters_limit=100000, start_point=start_point,
+                                  number_of_parallel_points=1, refine_solution=True)
+        number_of_global_trials = 5678
+
+        sol = self.checkIsSolved(problem, params, number_of_global_trials)
+        self.assertEqual(sol.number_of_local_trials, 70)
 
     def test_XSquared_Solve(self):
         r = 3.5
