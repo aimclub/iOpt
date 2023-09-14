@@ -24,7 +24,7 @@ def SolveSingleGKLS():
     solver.add_listener(cfol)
 
     # Решение задачи
-    sol = solver.solve()
+    solver.solve()
 
 
 if __name__ == "__main__":

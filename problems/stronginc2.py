@@ -57,10 +57,9 @@ class Stronginc2(Problem):
             res = np.double(res + t1 * t2 * math.exp(2.0 - t1 - t2))
             res = np.double(-res)
         elif function_value.functionID == 0:  # constraint 1
-            res = np.double(((x[0]- 2.2) * (x[0] - 2.2) + (x[1] - 1.2) * (x[1] - 1.2) - 1.25))
+            res = np.double(((x[0] - 2.2) * (x[0] - 2.2) + (x[1] - 1.2) * (x[1] - 1.2) - 1.25))
         elif function_value.functionID == 1:  # constraint 2
             res = np.double(1.21 - (x[0] - 2.2) * (x[0] - 2.2) - (x[1] - 1.2) * (x[1] - 1.2))
 
         function_value.value = res
         return function_value
-

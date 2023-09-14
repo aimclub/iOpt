@@ -69,12 +69,13 @@ class RastriginInt(Problem):
         self.multKoef = 0
 
         x = np.ndarray(shape=(self.dimension), dtype=np.double)
-        count =math.pow(2, self.dimension)
+        count = math.pow(2, self.dimension)
         for i in range(int(count)):
             for j in range(self.dimension):
                 x[j] = self.A[j] if (((i >> j) & 1) == 0) else self.B[j]
             v = abs(self.MultFunc(x))
-            if v > self.multKoef:  self.multKoef = v
+            if v > self.multKoef:
+                self.multKoef = v
 
         self.multKoef += 4
         self.optMultKoef = (self.MultFunc(self.optPoint)+self.multKoef)
