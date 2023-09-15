@@ -1,4 +1,4 @@
-Пакет problems
+iOpt.problems Package
 =====================
 
 GKLS

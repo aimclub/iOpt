@@ -1,4 +1,4 @@
-Пакет iOpt.output\_system.painters
+iOpt.output\_system.painters Package
 ====================================
 
 

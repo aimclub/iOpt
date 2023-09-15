@@ -1,6 +1,6 @@
 iOpt
 ====
-Фреймворк с открытым исходным кодом для автоматического выбора значений параметров как для математических моделей сложных промышленных процессов, так и для используемых в промышленности методов ИИ и МО.
+An open source framework for automatically selecting parameter values for both mathematical models of complex industrial processes and AI and ML methods used in industry.
 
 .. toctree::
    :maxdepth: 4
