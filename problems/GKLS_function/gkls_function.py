@@ -1,5 +1,4 @@
 import numpy as np
-import math
 from problems.GKLS_function.gkls_random import GKLSRandomGenerator
 
 

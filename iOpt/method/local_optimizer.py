@@ -36,7 +36,7 @@ class LocalTaskWrapper:
         if self.max_calcs != -1 and self.calcs_count >= self.max_calcs:
             function_value.value = sys.float_info.max
             return function_value.value
-        for i in range(self.task.problem.dimension):
+        for i in range(self.task.problem.number_of_float_variables):
             if (y[i] < self.task.problem.lower_bound_of_float_variables[i]) \
                     or (y[i] > self.task.problem.upper_bound_of_float_variables[i]):
                 function_value.value = sys.float_info.max
