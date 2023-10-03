@@ -16,6 +16,7 @@ class SolverParameters:
                  refine_solution: bool = False,
                  start_point: Point = [],
                  number_of_parallel_points: int = 1,
+                 async_scheme: bool = False,
                  timeout: int = -1,
                  proportion_of_global_iterations: float = 0.95
                  ):
@@ -54,4 +55,5 @@ class SolverParameters:
         self.refine_solution = refine_solution
         self.start_point = start_point
         self.number_of_parallel_points = number_of_parallel_points
+        self.async_scheme = async_scheme
         self.timeout = timeout
