@@ -53,7 +53,7 @@ class AsyncParallelProcess(Process):
             for _ in range(self.parameters.number_of_parallel_points)
         ]
         self.waiting_workers = self.parameters.number_of_parallel_points
-        self.waiting_oldpoints: list[SearchDataItem] = []
+        self.waiting_oldpoints: dict[float, SearchDataItem] = dict()
 
     def do_global_iteration(self, number: int = 1):
         done_trials = []
@@ -67,20 +67,27 @@ class AsyncParallelProcess(Process):
             for _ in range(self.waiting_workers):
                 newpoint, oldpoint = self.method.calculate_iteration_point()
                 self.task_queue.put_nowait(newpoint)
-                self.waiting_oldpoints.append(oldpoint)
+                self.waiting_oldpoints[newpoint.get_x()] = oldpoint
+                # print(f"\tNew {newpoint.get_x()} at ({oldpoint.get_left().get_x()}, {oldpoint.get_x()})")
+                # print(f'\t{newpoint.get_x()} is in {newpoint.get_x() in self.waiting_oldpoints}')
+            # print(f"\tWait {self.waiting_oldpoints.keys()}")
             newpoint = self.done_queue.get()
-            oldpoint = self.find_oldpoint(newpoint)
+            oldpoint = self.waiting_oldpoints.pop(newpoint.get_x())
+            # print(f"\n\tNew with func value {newpoint.get_x()}")
+            # oldpoint = self.search_data.find_data_item_by_one_dimensional_point(newpoint.get_x())
             self.method.update_optimum(newpoint)
             self.method.renew_search_data(newpoint, oldpoint)
-            self.method.finalize_iteration()
             self.waiting_workers = 1
             while not self.done_queue.empty():
                 newpoint = self.done_queue.get()
-                oldpoint = self.find_oldpoint(newpoint)
+                oldpoint = self.waiting_oldpoints.pop(newpoint.get_x())
+                # print(f"\tNew with func value {newpoint.get_x()}")
+                # oldpoint = self.search_data.find_data_item_by_one_dimensional_point(newpoint.get_x())
                 self.method.update_optimum(newpoint)
                 self.method.renew_search_data(newpoint, oldpoint)
-                self.method.finalize_iteration()
                 self.waiting_workers += 1
+            # print(f'\tStill wait {self.waiting_oldpoints.keys()}')
+            self.method.finalize_iteration()
             done_trials.extend(self.search_data.get_last_items(self.waiting_workers))
         for listener in self._listeners:
             listener.on_end_iteration(done_trials, self.get_results())
@@ -128,12 +135,12 @@ class AsyncParallelProcess(Process):
             w.join()
         while not self.done_queue.empty():
             newpoint = self.done_queue.get()
-            oldpoint = self.find_oldpoint(newpoint)
+            oldpoint = self.waiting_oldpoints.pop(newpoint.get_x())
             self.method.update_optimum(newpoint)
             self.method.renew_search_data(newpoint, oldpoint)
             self.method.finalize_iteration()
 
-    def find_oldpoint(self, point: SearchDataItem) -> SearchDataItem:
-        for i, oldpoint in enumerate(self.waiting_oldpoints):
-            if oldpoint.get_left().get_x() < point.get_x() < oldpoint.get_x():
-                return self.waiting_oldpoints.pop(i)
+    # def find_oldpoint(self, point: SearchDataItem) -> SearchDataItem:
+    #     for i, oldpoint in enumerate(self.waiting_oldpoints):
+    #         if oldpoint.get_left().get_x() < point.get_x() < oldpoint.get_x():
+    #             return self.waiting_oldpoints.pop(i)
