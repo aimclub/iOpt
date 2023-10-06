@@ -1,6 +1,7 @@
-import multiprocessing as mp
 import traceback
 from datetime import datetime
+
+import multiprocess as mp
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
