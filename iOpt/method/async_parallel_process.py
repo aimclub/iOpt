@@ -3,7 +3,6 @@ import traceback
 from datetime import datetime
 
 from iOpt.evolvent.evolvent import Evolvent
-from iOpt.method.calculator import Calculator
 from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.index_method_calculator import IndexMethodCalculator
 from iOpt.method.listener import Listener
@@ -68,13 +67,17 @@ class AsyncParallelProcess(Process):
         self.waiting_oldpoints[newpoint.get_x()] = oldpoint
         oldpoint.blocked = True
 
-    def take_point_from_workers(self, block: bool) -> tuple[SearchDataItem, SearchDataItem]:
+    def take_point_from_workers(
+        self, block: bool
+    ) -> tuple[SearchDataItem, SearchDataItem]:
         newpoint = self.done_queue.get(block=block)
         oldpoint = self.waiting_oldpoints.pop(newpoint.get_x())
         oldpoint.blocked = False
         return newpoint, oldpoint
 
-    def take_list_points_from_workers(self) -> list[tuple[SearchDataItem, SearchDataItem]]:
+    def take_list_points_from_workers(
+        self
+    ) -> list[tuple[SearchDataItem, SearchDataItem]]:
         list_points = []
         points = self.take_point_from_workers(block=True)
         list_points.append(points)
