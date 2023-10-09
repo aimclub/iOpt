@@ -10,7 +10,7 @@ Downloading datasets:
 
 Running the experiment:
 
-     python runner.py --dataset {*dataset name*} --method {*method name*} --max-iter {*number of iterations*} --dir {*directory for results*} --trials {*number of trials*} --n_jobs {*the number of worker processes to use*}
+     python runner.py --dataset {dataset name} --method {method name} --max-iter {number of iterations} --dir {directory for results} --trials {number of trials} --n_jobs {the number of worker processes to use}
 
 `runner.py` script parameters:
 
