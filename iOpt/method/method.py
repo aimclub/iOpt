@@ -217,11 +217,11 @@ class Method:
 
     def calculate_next_point_coordinate(self, point: SearchDataItem) -> float:
         r"""
-        Compute the point of a new test :math:`x^{k+1}` in a given interval :math:`[x_{t-1},x_t]`.
+        Compute the point of a new trial :math:`x^{k+1}` in a given interval :math:`[x_{t-1},x_t]`.
 
         :param point: interval given by its right point :math:`x_t`.
 
-        :return: the point of a new test :math:`x^{k+1}` in this interval.
+        :return: the point of a new trial :math:`x^{k+1}` in this interval.
         """
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
         left = point.get_left()
@@ -251,9 +251,9 @@ class Method:
 
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Calculating the point of a new test :math:`x^{k+1}`.
+        Calculating the point of a new trial :math:`x^{k+1}`.
 
-        :return: :math:`x^{k+1}` - new test point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
+        :return: :math:`x^{k+1}` - new trial point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
           to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
         if self.recalcM is True:
@@ -275,11 +275,11 @@ class Method:
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Performing a search test at a given point.
+        Performing a search trial at a given point.
 
-        :param point: the point at which the test is to be performed.
+        :param point: the point at which the trial is to be performed.
 
-        :return: the point at which the test results are saved.
+        :return: the point at which the trial results are saved.
         """
         try:
             point = self.task.calculate(point, 0)
@@ -369,7 +369,7 @@ class Method:
         r"""
         Updates the optimum estimate.
 
-        :param point: point of a new test.
+        :param point: point of a new trial.
         """
         if self.best is None or self.best.get_index() < point.get_index():
             self.best = point

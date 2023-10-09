@@ -189,9 +189,9 @@ class MixedIntegerMethod(IndexMethod):
 
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Calculating the point of a new test :math:`x^{k+1}`.
+        Calculating the point of a new trial :math:`x^{k+1}`.
 
-        :return: :math:`x^{k+1}` - new test point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
+        :return: :math:`x^{k+1}` - new trial point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
           to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
 

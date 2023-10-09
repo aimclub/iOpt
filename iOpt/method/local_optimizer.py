@@ -20,11 +20,11 @@ class LocalTaskWrapper:
 
     def evaluate_function(self, y: List[float]) -> float:
         """
-        The method calculates the value of the target function
+        The method calculates the value of the objective function
 
         :param y: The point at which you need to calculate the value of the function
 
-        :return: returns the value of the target function or
+        :return: returns the value of the objective function or
                 sys.float_info.max, if:
                 the point lies outside the search area
                 OR the restrictions have not been met

@@ -57,7 +57,7 @@ class SolverFactory:
         :param task: the wrapper of the problem to be solved.
         :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
         :param search_data: data structure for storing accumulated search information.
-        :param method: An optimisation method that conducts search tests according to given rules.
+        :param method: An optimisation method that conducts search trials according to given rules.
         :param listeners: List of "observers" (used to display current information).
 
         :return: created process

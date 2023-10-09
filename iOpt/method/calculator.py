@@ -24,7 +24,7 @@ class Calculator:
         r"""
         Constructor of class Calculator
 
-        :param evaluate_method: a computational method that performs search tests according to specified rules.
+        :param evaluate_method: a computational method that performs search trials according to specified rules.
         :param parameters: solution parameters of the optimisation problem.
         """
         self.evaluate_method = evaluate_method
@@ -37,7 +37,7 @@ class Calculator:
     r"""
     Initialisation of the calculation method in each process from the process pool Calculator.Pool
 
-    :param evaluate_method: a computational method that performs search tests according to specified rules.
+    :param evaluate_method: a computational method that performs search trials according to specified rules.
     """
 
     @staticmethod
@@ -45,9 +45,9 @@ class Calculator:
         Calculator.evaluate_method = evaluate_method
 
     r"""
-    Method of testing in a process from a pool of processes Calculator.Pool
+    Trial method in a process from a pool of processes Calculator.Pool
 
-    :param point: test point
+    :param point: trial point
     """
 
     @staticmethod
@@ -60,9 +60,9 @@ class Calculator:
         return point
 
     r"""
-    Test method for multiple points
+    Trial method for multiple points
 
-    :param points: test points
+    :param points: trial points
     """
 
     def calculate_functionals_for_items(self, points: list[SearchDataItem]) -> list[SearchDataItem]:

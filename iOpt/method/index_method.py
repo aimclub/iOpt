@@ -29,11 +29,11 @@ class IndexMethod(Method):
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Performing a search test at a given point.
+        Performing a search trial at a given point.
 
-        :param point: the point at which the test is to be performed.
+        :param point: the point at which the trial is to be performed.
 
-        :return: the point at which the test results are saved.
+        :return: the point at which the trial results are saved.
         """
         try:
             number_of_constraints = self.task.problem.number_of_constraints

@@ -24,7 +24,7 @@ class AnimatePainterListener(Listener):
            is saved in the current working directory.
         :param is_points_at_bottom: Whether or not the search information points should be placed below the graph. If False,
            the points are placed on the chart.
-        :param to_paint_obj_func: Whether or not the target function should be rendered.
+        :param to_paint_obj_func: Whether or not the objective function should be rendered.
         """
         self.file_name = file_name
         self.path_for_saves = path_for_saves
@@ -60,7 +60,7 @@ class AnimatePainterNDListener(Listener):
         :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
            is saved in the current working directory.
         :param vars_indxs: A pair of indices of the variables of the optimisation problem for which the figure will be plotted.
-        :param to_paint_obj_func: Whether the target function should be rendered or not.
+        :param to_paint_obj_func: Whether the objective function should be rendered or not.
         """
         self.file_name = file_name
         self.path_for_saves = path_for_saves

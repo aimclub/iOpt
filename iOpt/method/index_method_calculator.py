@@ -18,11 +18,11 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Performing a search test at a given point.
+        Performing a search trial at a given point.
 
-        :param point: the point at which the test is to be performed.
+        :param point: the point at which the trial is to be performed.
 
-        :return: the point at which the test results are saved.
+        :return: the point at which the trial results are saved.
         """
         number_of_constraints = self.task.problem.number_of_constraints
         for i in range(number_of_constraints):
@@ -40,10 +40,10 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
 
     def copy_functionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
         r"""
-        Copying the search test.
+        Copying the search trial.
 
-        :param dist_point: point to which the test values are copied.
-        :param src_point: point with test results.
+        :param dist_point: point to which the trial values are copied.
+        :param src_point: point with trial results.
         """
 
         dist_point.function_values = copy.deepcopy(src_point.function_values)

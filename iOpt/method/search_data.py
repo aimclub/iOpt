@@ -30,9 +30,9 @@ class SearchDataItem(Trial):
         """
         Constructor of SearchDataItem class
 
-        :param y: Test point in the original N-dimensional search area
-        :param x: Mapping the test point y to the segment [0, 1]
-        :param function_values: Vector of function values (target and constraint functions)
+        :param y: trial point in the original N-dimensional search area
+        :param x: Mapping the trial point y to the segment [0, 1]
+        :param function_values: Vector of function values (objective and constraint functions)
         :param discrete_value_index: Discrete parameter
         """
         super().__init__(point=y, function_values=copy.deepcopy(function_values))
@@ -58,9 +58,9 @@ class SearchDataItem(Trial):
 
     def get_y(self) -> Point:
         """
-        The method provides an N-dimensional test point of the original search area.
+        The method provides an N-dimensional trial point of the original search area.
 
-        :return: N-dimensional test point value
+        :return: N-dimensional trial point value
         """
         return self.point
 
@@ -250,10 +250,10 @@ class SearchData:
     def insert_data_item(self, new_data_item: SearchDataItem,
                          right_data_item: SearchDataItem = None):
         """
-        The method allows you to add a new test interval to the list of all tests performed
+        The method allows you to add a new trial interval to the list of all trials performed
         and prioritised feature queue.
 
-        :param new_data_item: New test interval
+        :param new_data_item: New trial interval
         :param right_data_item: The covering interval, is the right interval for the newDataItem
         """
         flag = True
@@ -274,7 +274,7 @@ class SearchData:
     def insert_first_data_item(self, left_data_item: SearchDataItem,
                                right_data_item: SearchDataItem):
         """
-        The method allows a pair of test intervals to be added to the first iteration of the AGP.
+        The method allows a pair of trial intervals to be added to the first iteration of the AGP.
 
         :param left_data_item: Left interval for right_data_item
         :param right_data_item: Right interval for leftDataItem
@@ -529,10 +529,10 @@ class SearchDataDualQueue(SearchData):
     def insert_data_item(self, new_data_item: SearchDataItem,
                          right_data_item: SearchDataItem = None):
         """
-        The method allows adding a new test interval to the list of all tests performed
+        The method allows adding a new trial interval to the list of all trials performed
           and priority queues of global and local characteristics.
 
-        :param new_data_item: New test interval
+        :param new_data_item: New trial interval
         :param right_data_item: The covering interval, is the right interval for the newDataItem
         """
         flag = True

@@ -26,7 +26,7 @@ class SolverParameters:
              less likely to stop prematurely.
         :param r: Reliability parameter. Higher value of r -- slower convergence,
              higher probability of finding a global minimum.
-        :param iters_limit: maximum number of search tests.
+        :param iters_limit: maximum number of search trials.
         :param evolvent_density: density of evolvent construction.
              The default density is :math:`2^{-10}` on the hypercube :math:`[0,1]^N`,
              which means that the maximum search accuracy is :math:`2^{-10}`.
@@ -34,7 +34,7 @@ class SolverParameters:
              to the exact solution, eps_r>0 - fast convergence to the neighbourhood of the solution.
         :param refine_solution: if true, the solution will be refined using the local method.
         :param start_point: point of initial approximation to the solution.
-        :param number_of_parallel_points: number of parallel computed tests.
+        :param number_of_parallel_points: number of parallel computed trials.
         :param timeout: calculation time limit in minutes.
         :param proportion_of_global_iterations: share of global iterations in the search when using the local method
         """
