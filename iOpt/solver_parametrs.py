@@ -4,7 +4,7 @@ from iOpt.trial import Point
 
 class SolverParameters:
     """
-    Класс SolverParameters позволяет определить параметры поиска оптимального решения
+    The SolverParameters class allows you to define the parameters for searching the optimal solution
     """
 
     def __init__(self,
@@ -20,23 +20,23 @@ class SolverParameters:
                  proportion_of_global_iterations: float = 0.95
                  ):
         r"""
-        Конструктор класса SolverParameters
+        Constructor of SolverParameters class
 
-        :param eps: Точность решения поставленной задачи. Меньше значения -- выше точность поиска,
-             меньше вероятность преждевременной остановки.
-        :param r: Параметр надежности. Более высокое значение r -- более медленная сходимость,
-             более высокая вероятность нахождения глобального минимума.
-        :param iters_limit: максимальное число поисковых испытаний.
-        :param evolvent_density: плотность построения развертки.
-             По умолчанию плотность :math:`2^{-10}` на гиперкубе :math:`[0,1]^N`,
-             что означает, что максимальная точность поиска составляет :math:`2^{-10}`.
-        :param eps_r: параметр, влияющий на скорость решения задачи с ограничениями. eps_r = 0 - медленная сходимоть
-             к точному решению, eps_r>0 - быстрая сходимть в окрестность решения.
-        :param refine_solution: если true, то решение будет уточнено с помощью локального метода.
-        :param start_point: точка начального приближения к решению.
-        :param number_of_parallel_points: число параллельно вычисляемых испытаний.
-        :param timeout: ограничение на время вычислений в минутах.
-        :param proportion_of_global_iterations: доля глобальных итераций в поиске при использовании локальном метода
+        :param eps: The accuracy of the solution to the task at hand. Smaller values -- higher search accuracy,
+             less likely to stop prematurely.
+        :param r: Reliability parameter. Higher value of r -- slower convergence,
+             higher probability of finding a global minimum.
+        :param iters_limit: maximum number of search tests.
+        :param evolvent_density: density of evolvent construction.
+             The default density is :math:`2^{-10}` on the hypercube :math:`[0,1]^N`,
+             which means that the maximum search accuracy is :math:`2^{-10}`.
+        :param eps_r: parameter affecting the speed of solving the problem with constraints. eps_r = 0 - slow convergence
+             to the exact solution, eps_r>0 - fast convergence to the neighbourhood of the solution.
+        :param refine_solution: if true, the solution will be refined using the local method.
+        :param start_point: point of initial approximation to the solution.
+        :param number_of_parallel_points: number of parallel computed tests.
+        :param timeout: calculation time limit in minutes.
+        :param proportion_of_global_iterations: share of global iterations in the search when using the local method
         """
         self.eps = eps
         self.r = r

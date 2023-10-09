@@ -219,7 +219,7 @@ class DisretePlotter:
 
 class Plotter:
     """
-    Базовый класс вызовов функций стандартного плоттера matplotlib.pyplot.
+    The base class of standard plotter function calls matplotlib.pyplot.
     """
     def plot_by_grid(self):
         pass

@@ -14,7 +14,7 @@ from iOpt.solver_parametrs import SolverParameters
 
 class SolverFactory:
     """
-    Класс SolverFactory создает подходящие классы метода решения и процесса по заданным параметрам
+    The SolverFactory class creates suitable solution method and process classes according to the given parameters
     """
 
     def __init__(self):
@@ -26,14 +26,14 @@ class SolverFactory:
                       evolvent: Evolvent,
                       search_data: SearchData) -> Method:
         """
-        Создает подходящий класс метода решения по заданным параметрам
+        Creates a suitable solution method class based on the given parameters
 
-        :param parameters: параметры решения задачи оптимизации.
-        :param task: обёртка решаемой задачи.
-        :param evolvent: развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param search_data: структура данных для хранения накопленной поисковой информации.
+        :param parameters: parameters of the solution of the optimisation problem.
+        :param task: the wrapper of the problem to be solved.
+        :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
+        :param search_data: data structure for storing accumulated search information.
 
-        :return: созданный метод
+        :return: created method
         """
 
         if task.problem.number_of_discrete_variables > 0:
@@ -51,16 +51,16 @@ class SolverFactory:
                        method: Method,
                        listeners: List[Listener]) -> Process:
         """
-        Создает подходящий класс процесса по заданным параметрам
+        Creates a suitable process class based on the specified parameters
 
-        :param parameters: Параметры решения задачи оптимизации.
-        :param task: Обёртка решаемой задачи.
-        :param evolvent: Развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param search_data: Структура данных для хранения накопленной поисковой информации.
-        :param method: Метод оптимизации, проводящий поисковые испытания по заданным правилам.
-        :param listeners: Список "наблюдателей" (используется для вывода текущей информации).
+        :param parameters: parameters of the solution of the optimisation problem.
+        :param task: the wrapper of the problem to be solved.
+        :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
+        :param search_data: data structure for storing accumulated search information.
+        :param method: An optimisation method that conducts search tests according to given rules.
+        :param listeners: List of "observers" (used to display current information).
 
-        :return: созданный процесс
+        :return: created process
         """
         if parameters.number_of_parallel_points == 1:
             return Process(parameters=parameters, task=task, evolvent=evolvent,

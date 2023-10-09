@@ -8,7 +8,7 @@ from iOpt.trial import FunctionValue, FunctionType
 
 class IndexMethodCalculator(ICriterionEvaluateMethod):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The Method class contains an implementation of the Global Search Algorithm
     """
 
     def __init__(self,
@@ -18,11 +18,11 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Проведение поискового испытания в заданной точке.
+        Performing a search test at a given point.
 
-        :param point: точка, в которой надо провести испытание.
+        :param point: the point at which the test is to be performed.
 
-        :return: точка, в которой сохранены результаты испытания.
+        :return: the point at which the test results are saved.
         """
         number_of_constraints = self.task.problem.number_of_constraints
         for i in range(number_of_constraints):
@@ -40,10 +40,10 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
 
     def copy_functionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
         r"""
-        Копирование поискового испытания.
+        Copying the search test.
 
-        :param dist_point: точка, в которую копируются значения испытаний.
-        :param src_point: точка c результатами испытаний.
+        :param dist_point: point to which the test values are copied.
+        :param src_point: point with test results.
         """
 
         dist_point.function_values = copy.deepcopy(src_point.function_values)

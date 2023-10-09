@@ -5,7 +5,7 @@ import numpy as np
 
 class Solution:
     """
-    Класс описания решения задачи оптимизации
+    Class of description of the solution to the optimisation problem
     """
     def __init__(self,
                  problem: Problem,
@@ -16,14 +16,14 @@ class Solution:
                  solution_accuracy: np.double = 0.0
                  ):
         """
-        Конструктор класса
+        Class constructor
 
-        :param problem: Задача оптимизации
-        :param best_trials: Решение задачи оптимизации
-        :param number_of_global_trials: Число выполненных глобальных итераций поиска
-        :param number_of_local_trials: Число выполненных локальных итераций поиска
-        :param solving_time: Время решения задачи
-        :param solution_accuracy: Точность найденного решения
+        :param problem: Optimisation problem
+        :param best_trials: Solving the optimisation problem
+        :param number_of_global_trials: Number of global search iterations performed
+        :param number_of_local_trials: Number of local search iterations performed
+        :param solving_time: Problem solving time
+        :param solution_accuracy: Accuracy of the solution found
         """
 
         self.problem = problem

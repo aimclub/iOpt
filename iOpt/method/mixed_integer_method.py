@@ -22,7 +22,7 @@ from iOpt.problem import Problem
 
 class MixedIntegerMethod(IndexMethod):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The Method class contains an implementation of the Global Search Algorithm
     """
 
     def __init__(self,
@@ -43,7 +43,7 @@ class MixedIntegerMethod(IndexMethod):
 
     def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
-        Метод выполняет первую итерацию Алгоритма Глобального Поиска.
+        The method performs the first iteration of the Global Search Algorithm.
         """
         self.iterations_count = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
@@ -189,10 +189,10 @@ class MixedIntegerMethod(IndexMethod):
 
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Вычисление точки нового испытания :math:`x^{k+1}`.
+        Calculating the point of a new test :math:`x^{k+1}`.
 
-        :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
-          которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
+        :return: :math:`x^{k+1}` - new test point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
+          to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
 
         if self.recalcM is True:
@@ -219,10 +219,10 @@ class MixedIntegerMethod(IndexMethod):
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление оценки константы Гельдера между между curr_point и left_point.
+        Computing an estimate of the Gelder constant between curr_point and left_point.
 
-        :param curr_point: правая точка интервала
-        :param left_point: левая точка интервала
+        :param curr_point: right interval point
+        :param left_point: left interval point
         """
         # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
         if curr_point is None:

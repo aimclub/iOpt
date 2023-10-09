@@ -10,21 +10,21 @@ import numpy as np
 
 class AnimatePainterListener(Listener):
     """
-    Класс AnimationPaintListener - слушатель событий. Содержит методы-обработчики, выдающие в качестве
-      реакции на события динамически обновляющееся изображение процесса оптимизации.
-      Используется для одномерной оптимизации.
+    The AnimationPaintListener class is an event listener. It contains handler methods that produce a dynamically updating image of the optimisation process in response to events.
+      dynamically updated image of the optimisation process as a reaction to events.
+      It is used for one-dimensional optimisation.
     """
 
     def __init__(self, file_name: str, path_for_saves="", is_points_at_bottom=False, to_paint_obj_func=True):
         """
-        Конструктор класса AnimationPaintListener
+        AnimationPaintListener class constructor
 
-        :param file_name: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
-        :param path_for_saves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
-           сохраняется в текущей рабочей директории.
-        :param is_points_at_bottom: Должны ли точки поисковой информации ставиться под графиком или нет. Если False,
-           точки ставятся на графике.
-        :param to_paint_obj_func: Должна ли отрисовываться целевая функция или нет.
+        :param file_name: File name specifying the format for saving the image. 
+        :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
+           is saved in the current working directory.
+        :param is_points_at_bottom: Whether or not the search information points should be placed below the graph. If False,
+           the points are placed on the chart.
+        :param to_paint_obj_func: Whether or not the target function should be rendered.
         """
         self.file_name = file_name
         self.path_for_saves = path_for_saves
@@ -47,20 +47,20 @@ class AnimatePainterListener(Listener):
 
 class AnimatePainterNDListener(Listener):
     """
-    Класс AnimationPaintListener - слушатель событий. Содержит методы-обработчики, выдающие в качестве
-      реакции на события динамически обновляющееся изображение процесса оптимизации.
-      Используется для многомерной оптимизации.
+    The AnimationPaintListener class is an event listener. It contains handler methods that produce a dynamically updating image of the optimisation process in response to events.
+      dynamically updated image of the optimisation process as a reaction to events.
+      It is used for multidimensional optimisation.
     """
 
     def __init__(self, file_name: str, path_for_saves="", vars_indxs=[0, 1], to_paint_obj_func=True):
         """
-        Конструктор класса AnimationNDPaintListener
+        AnimationNDPaintListener class constructor
 
-        :param file_name: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
-        :param path_for_saves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
-           сохраняется в текущей рабочей директории.
-        :param vars_indxs: Пара индексов переменных оптимизационной задачи, для которых будет построен рисунок.
-        :param to_paint_obj_func: Должна ли отрисовываться целевая функция или нет.
+        :param file_name: File name specifying the format for saving the image. 
+        :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
+           is saved in the current working directory.
+        :param vars_indxs: A pair of indices of the variables of the optimisation problem for which the figure will be plotted.
+        :param to_paint_obj_func: Whether the target function should be rendered or not.
         """
         self.file_name = file_name
         self.path_for_saves = path_for_saves
