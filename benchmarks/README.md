@@ -23,7 +23,7 @@ Running the experiment:
 3. --max-iter – number of iterations
 4. --dir – directory in which tables with results will be saved (by default this will be the `result` folder)
 5. --trials – the number of trials in non-deterministic algorithms (`hyperopt`, `optuna`)
-6. -n_jobs – the number of worker processes to use
+6. --n_jobs – the number of worker processes to use
 
 
 ## Launch example
