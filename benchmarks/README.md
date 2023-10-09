@@ -19,11 +19,11 @@ Running the experiment:
      (`balance`, `bank-marketing`, `banknote`, `breast-cancer`, `car-evaluation`, `cnae9`, `credit-approval`,
       `digits`, `ecoli`, `parkinsons`, `semeion`, `statlog-segmentation`, `wilt`, `zoo`)
 
-2. --method – either `svc`, or `xgb`, or `mlp`
-3. --max-iter – number of iterations
-4. --dir – directory in which tables with results will be saved (by default this will be the `result` folder)
-5. --trials – the number of trials in non-deterministic algorithms (`hyperopt`, `optuna`)
-6. --n_jobs – the number of worker processes to use
+2. **--method** – either `svc`, or `xgb`, or `mlp`
+3. **--max-iter** – number of iterations
+4. **--dir** – directory in which tables with results will be saved (by default this will be the `result` folder)
+5. **--trials** – the number of trials in non-deterministic algorithms (`hyperopt`, `optuna`)
+6. **--n_jobs** – the number of worker processes to use
 
 
 ## Launch example
