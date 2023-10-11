@@ -47,6 +47,7 @@ class SearchDataItem(Trial):
         self.globalR: np.double = -1.0
         self.localR: np.double = -1.0
         self.iterationNumber: int = -1
+        self.blocked: bool = False
 
     def get_x(self) -> np.double:
         """
@@ -321,7 +322,8 @@ class SearchData:
         """
         self._RGlobalQueue.Clear()
         for itr in self:
-            self._RGlobalQueue.insert(itr.globalR, itr)
+            if not itr.blocked:
+                self._RGlobalQueue.insert(itr.globalR, itr)
 
     # Возвращает текущее число интервалов в дереве
     def get_count(self) -> int:

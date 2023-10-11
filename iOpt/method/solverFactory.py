@@ -1,6 +1,7 @@
 from typing import List
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.async_parallel_process import AsyncParallelProcess
 from iOpt.method.index_method import IndexMethod
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
@@ -65,6 +66,10 @@ class SolverFactory:
         if parameters.number_of_parallel_points == 1:
             return Process(parameters=parameters, task=task, evolvent=evolvent,
                            search_data=search_data, method=method, listeners=listeners)
+        elif parameters.async_scheme:
+            return AsyncParallelProcess(parameters=parameters, task=task, evolvent=evolvent,
+                                        search_data=search_data, method=method, listeners=listeners)
         else:
             return ParallelProcess(parameters=parameters, task=task, evolvent=evolvent,
                                    search_data=search_data, method=method, listeners=listeners)
+
