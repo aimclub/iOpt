@@ -11,22 +11,22 @@ if __name__ == "__main__":
     """
 
     # создание объекта задачи
-    problem = GKLS(dimension=3, functionNumber=92)
+    problem = GKLS(dimension=2, functionNumber=39)
 
     # Формируем параметры решателя
-    params = SolverParameters(r=4, eps=0.01, refine_solution=False, number_of_parallel_points=8, async_scheme=True)
+    params = SolverParameters(r=3.5, eps=0.01, iters_limit=300, refine_solution=True, number_of_parallel_points=4)
 
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод резултатов в консоль
-    cfol = ConsoleOutputListener(mode='result')
+    cfol = ConsoleOutputListener(mode='full')
     solver.add_listener(cfol)
 
-    # # Добавляем построение 3D визуализации после решения задачи
-    # spl = StaticPainterNDListener(file_name="GKLS.png", path_for_saves="output", vars_indxs=[0, 1], mode="lines layers",
-    #                               calc="objective function")
-    # solver.add_listener(spl)
+    # Добавляем построение 3D визуализации после решения задачи
+    spl = StaticPainterNDListener(file_name="GKLS.png", path_for_saves="output", vars_indxs=[0, 1], mode="lines layers",
+                                  calc="objective function")
+    solver.add_listener(spl)
 
     # Решение задачи
     solver.solve()
