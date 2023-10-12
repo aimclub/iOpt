@@ -1,11 +1,8 @@
 import traceback
 from datetime import datetime
 
-import multiprocess as mp
-
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.async_calculator import AsyncCalculator
-from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.index_method_calculator import IndexMethodCalculator
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
@@ -14,24 +11,6 @@ from iOpt.method.process import Process
 from iOpt.method.search_data import SearchData
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
-
-
-class Worker(mp.Process):
-    def __init__(
-        self,
-        evaluate_method: ICriterionEvaluateMethod,
-        task_queue: mp.Queue,
-        done_queue: mp.Queue,
-    ):
-        super(Worker, self).__init__()
-        self.evaluate_method = evaluate_method
-        self.task_queue = task_queue
-        self.done_queue = done_queue
-
-    def run(self):
-        for point in iter(self.task_queue.get, "STOP"):
-            point = self.evaluate_method.calculate_functionals(point)
-            self.done_queue.put_nowait(point)
 
 
 class AsyncParallelProcess(Process):
