@@ -3,7 +3,7 @@ from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchDataItem
 
 
-class MulticriterionMethodCalculator(IndexMethodCalculator):
+class MultiObjectiveMethodCalculator(IndexMethodCalculator):
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
     """

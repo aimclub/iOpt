@@ -2,19 +2,19 @@ from typing import Tuple
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.mixed_integer_method import MixedIntegerMethod
-from iOpt.method.multicriterion_optim_task import MulticriterionOptimizationTask
+from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
 from iOpt.method.search_data import SearchDataItem, SearchData
 from iOpt.solver_parametrs import SolverParameters
 
 
-class MulticriterionMethod(MixedIntegerMethod):
+class MultiObjectiveMethod(MixedIntegerMethod):
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
     """
 
     def __init__(self,
                  parameters: SolverParameters,
-                 task: MulticriterionOptimizationTask,
+                 task: MultiObjectiveOptimizationTask,
                  evolvent: Evolvent,
                  search_data: SearchData):
         super().__init__(parameters, task, evolvent, search_data)
@@ -35,7 +35,7 @@ class MulticriterionMethod(MixedIntegerMethod):
         # из IndexMethod
         # Вычисляются ВСЕ критерии
         # Добавить вычисление свертки
-        # Желательно использовать одну реализацию из MulticriterionMethodCalculator и не дублировать код
+        # Желательно использовать одну реализацию из MultiObjectiveMethodCalculator и не дублировать код
         pass
 
     def recalc_all_convolution(self) -> None:
@@ -44,7 +44,7 @@ class MulticriterionMethod(MixedIntegerMethod):
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         #обновление всех сверток по флагу self.is_recalc_all_convolution
 
-        return super(MulticriterionMethod, self).calculate_iteration_point()
+        return super(MultiObjectiveMethod, self).calculate_iteration_point()
 
 
 

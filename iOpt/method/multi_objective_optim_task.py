@@ -32,7 +32,7 @@ class Convolution(ABC):
         pass
 
 
-class MulticriterionOptimizationTask(OptimizationTask):
+class MultiObjectiveOptimizationTask(OptimizationTask):
     def __init__(self,
                  problem: Problem,
                  convolution: Convolution,
