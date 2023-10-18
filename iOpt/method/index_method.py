@@ -29,7 +29,7 @@ class IndexMethod(Method):
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Performing a search trial at a given point.
+        Perform a search trial at a given point
 
         :param point: the point at which the trial is to be performed.
 
@@ -56,10 +56,10 @@ class IndexMethod(Method):
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Computing an estimate of the Gelder constant between curr_point and left_point.
+        Compute an estimate of the Gelder constant between curr_point and left_point
 
-        :param curr_point: right interval point
-        :param left_point: left interval point
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
         if curr_point is None:
@@ -98,9 +98,9 @@ class IndexMethod(Method):
 
     def calculate_global_r(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Calculating the global characteristic of an interval [left_point, curr_point].
+        Calculate the global characteristic of an interval [left_point, curr_point]
 
-        :param curr_point: right point of the interval.
+        :param curr_point: right interval point.
         :param left_point: left interval point.
         """
 
@@ -144,7 +144,7 @@ class IndexMethod(Method):
 
     def update_optimum(self, point: SearchDataItem) -> None:
         r"""
-        Updates the estimate of the optimum.
+        Update the estimate of the optimum
 
         :param point: the point of a new trial.
         """

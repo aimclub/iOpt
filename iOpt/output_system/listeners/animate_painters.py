@@ -12,7 +12,7 @@ class AnimatePainterListener(Listener):
     """
     The AnimationPaintListener class is an event listener. It contains handler methods that produce a dynamically updating image of the optimisation process in response to events.
       dynamically updated image of the optimisation process as a reaction to events.
-      It is used for one-dimensional optimisation.
+      It is used for one-dimensional optimisation
     """
 
     def __init__(self, file_name: str, path_for_saves="", is_points_at_bottom=False, to_paint_obj_func=True):
@@ -49,7 +49,7 @@ class AnimatePainterNDListener(Listener):
     """
     The AnimationPaintListener class is an event listener. It contains handler methods that produce a dynamically updating image of the optimisation process in response to events.
       dynamically updated image of the optimisation process as a reaction to events.
-      It is used for multidimensional optimisation.
+      It is used for multidimensional optimisation
     """
 
     def __init__(self, file_name: str, path_for_saves="", vars_indxs=[0, 1], to_paint_obj_func=True):

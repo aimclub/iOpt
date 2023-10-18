@@ -30,7 +30,7 @@ class Method:
         r"""
         Method class constructor
 
-        :param parameters: parameters of the solution of the optimisation problem.
+        :param parameters: parameters for solving the optimization problem.
         :param task: problem wrapper.
         :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
         :param search_data: data structure for storing accumulated search information.
@@ -76,12 +76,12 @@ class Method:
 
     def calculate_delta(self, l_point: SearchDataItem, r_point: SearchDataItem, dimension: int) -> float:
         """
-        Computes the Gelder distance in the Gelder metric between two points on the segment [0,1],
-          obtained by dimensionality reduction.
+        Compute the Gelder distance in the Gelder metric between two points on the segment [0,1],
+          obtained by dimensionality reduction
 
-        :param l_point: left point
-        :param r_point: right point
-        :param dimension: dimensionality of the original space
+        :param l_point: left point.
+        :param r_point: right point.
+        :param dimension: dimensionality of the original space.
 
         :return: helder distance between lx and rx.
         """
@@ -89,7 +89,7 @@ class Method:
 
     def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
-        The method performs the first iteration of the Global Search Algorithm.
+        Perform the first iteration of the Global Search Algorithm
         """
 
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
@@ -180,8 +180,8 @@ class Method:
 
     def check_stop_condition(self) -> bool:
         r"""
-        Checking the stopping condition.
-        The algorithm should terminate when eps accuracy is reached or the iteration limit is exceeded.
+        Check the stop condition.
+        The algorithm should terminate when eps accuracy is reached or the iteration limit is exceeded
 
         :return: True if the stop criterion is met; False otherwise.
         """
@@ -194,7 +194,7 @@ class Method:
 
     def recalc_m(self) -> None:
         r"""
-        Recalculating the estimate of the Lipschitz constant.
+        Recalculate the estimate of the Lipschitz constant
         """
         if self.recalcM is not True:
             return
@@ -204,7 +204,7 @@ class Method:
 
     def recalc_all_characteristics(self) -> None:
         r"""
-        Recalculation of features for all search intervals.
+        Recalculate of features for all search intervals
         """
         if self.recalcR is not True:
             return
@@ -217,7 +217,7 @@ class Method:
 
     def calculate_next_point_coordinate(self, point: SearchDataItem) -> float:
         r"""
-        Compute the point of a new trial :math:`x^{k+1}` in a given interval :math:`[x_{t-1},x_t]`.
+        Compute the point of a new trial :math:`x^{k+1}` in a given interval :math:`[x_{t-1},x_t]`
 
         :param point: interval given by its right point :math:`x_t`.
 
@@ -251,7 +251,7 @@ class Method:
 
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Calculating the point of a new trial :math:`x^{k+1}`.
+        Calculate the point of a new trial :math:`x^{k+1}`
 
         :return: :math:`x^{k+1}` - new trial point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
           to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
@@ -275,7 +275,7 @@ class Method:
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Performing a search trial at a given point.
+        Perform a search trial at a given point
 
         :param point: the point at which the trial is to be performed.
 
@@ -293,10 +293,10 @@ class Method:
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Computing an estimate of the Gelder constant between curr_point and left_point.
+        Calculate an estimate of the Gelder constant between curr_point and left_point
 
-        :param curr_point: right interval point
-        :param left_point: left interval point
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         if curr_point is None:
             print("CalculateM: curr_point is None")
@@ -312,7 +312,7 @@ class Method:
 
     def calculate_global_r(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Calculating the global characteristic of an interval [left_point, curr_point].
+        Calculate the global characteristic of an interval [left_point, curr_point]
 
         :param curr_point: right interval point.
         :param left_point: left interval point.
@@ -344,11 +344,11 @@ class Method:
 
     def renew_search_data(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
         """
-        The method updates all search information: interval lengths, Gölder constants, all features and inserts a
-          a new point into the repository.
+        Update all search information: interval lengths, Gölder constants, all characteristics and inserts
+a new point into the repository
 
-        :param newpoint: new point
-        :param oldpoint: right point of the interval to which the new point belongs
+        :param newpoint: new point.
+        :param oldpoint: right point of the interval to which the new point belongs.
         """
 
         # oldpoint.delta = Method.CalculateDelta(newpoint.GetX(), oldpoint.GetX(), self.dimension)
@@ -367,7 +367,7 @@ class Method:
 
     def update_optimum(self, point: SearchDataItem) -> None:
         r"""
-        Updates the optimum estimate.
+        Update the optimum estimate
 
         :param point: point of a new trial.
         """
@@ -383,13 +383,13 @@ class Method:
 
     def finalize_iteration(self) -> None:
         r"""
-        Ends the iteration, updates the iteration counter.
+        End the iteration, updates the iteration counter
         """
         self.iterations_count += 1
 
     def get_iterations_count(self) -> int:
         r"""
-        Returns the number of iterations performed.
+        Return the number of iterations performed
 
         :return:  number of iterations performed.
         """
@@ -397,7 +397,7 @@ class Method:
 
     def get_optimum_estimation(self) -> SearchDataItem:
         r"""
-        Returns an estimate of the optimum.
+        Return an estimate of the optimum
 
         :return: current estimate of the optimum.
         """

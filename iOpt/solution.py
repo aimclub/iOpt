@@ -18,12 +18,12 @@ class Solution:
         """
         Class constructor
 
-        :param problem: Optimisation problem
-        :param best_trials: Solving the optimisation problem
-        :param number_of_global_trials: Number of global search iterations performed
-        :param number_of_local_trials: Number of local search iterations performed
-        :param solving_time: Problem solving time
-        :param solution_accuracy: Accuracy of the solution found
+        :param problem: Optimisation problem.
+        :param best_trials: Solving the optimisation problem.
+        :param number_of_global_trials: Number of global search iterations performed.
+        :param number_of_local_trials: Number of local search iterations performed.
+        :param solving_time: Problem solving time.
+        :param solution_accuracy: Accuracy of the solution found.
         """
 
         self.problem = problem

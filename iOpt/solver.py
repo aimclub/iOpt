@@ -15,7 +15,7 @@ class Solver:
     """
     The Solver class is designed to select optimal (in a given metric) values of parameters of complex objects and processes
     Solver class is intended for selecting optimal (in a given metric) values of parameters of complex objects and processes, e.g., methods of artificial intelligence and
-    machine learning and heuristic optimisation methods.
+    machine learning and heuristic optimisation methods
     """
 
     def __init__(self,
@@ -25,8 +25,8 @@ class Solver:
         """
         Solver class constructor
 
-        :param problem: Optimisation problem formulation
-        :param parameters: Parameters of search for optimal solutions
+        :param problem: Optimisation problem formulation.
+        :param parameters: Parameters of search for optimal solutions.
         """
 
         self.problem = problem
@@ -47,10 +47,10 @@ class Solver:
 
     def solve(self) -> Solution:
         """
-        The method allows solving an optimisation problem. The search is stopped according to the criterion,
-        specified when creating the Solver class.
+        Solve an optimisation problem. The search is stopped according to the criterion,
+        specified when creating the Solver class
 
-        :return: optimisation problem solution
+        :return: optimisation problem solution.
         """
         Solver.check_parameters(self.problem, self.parameters)
         if self.parameters.timeout < 0:
@@ -73,43 +73,43 @@ class Solver:
 
     def do_global_iteration(self, number: int = 1):
         """
-        The method allows you to perform several iterations of the global search
+        Perform several iterations of the global search
 
-        :param number: number of global search iterations
+        :param number: number of global search iterations.
         """
         Solver.check_parameters(self.problem, self.parameters)
         self.process.do_global_iteration(number)
 
     def do_local_refinement(self, number: int = 1):
         """
-        The method allows you to perform several iterations of local search
+        Perform several iterations of local search
 
-        :param number: number of local search iterations
+        :param number: number of local search iterations.
         """
         Solver.check_parameters(self.problem, self.parameters)
         self.process.do_local_refinement(number)
 
     def get_results(self) -> Solution:
         """
-        The method provides a current estimate of the solution to the optimisation problem
+        Provide a current estimate of the solution to the optimisation problem
 
-        :return: Solving the optimisation problem
+        :return: Solving the optimisation problem.
         """
         return self.process.get_results()
 
     def save_progress(self, file_name: str) -> None:
         """
-        Saving the optimisation process to a file
+        Save the optimisation process to a file
 
-        :param file_name: file name
+        :param file_name: file name.
         """
         self.process.save_progress(file_name=file_name)
 
     def load_progress(self, file_name: str) -> None:
         """
-        Loading the optimisation process from a file
+        Load the optimisation process from a file
 
-        :param file_name: file name
+        :param file_name: file name.
         """
         Solver.check_parameters(self.problem, self.parameters)
         self.process.load_progress(file_name=file_name)
@@ -120,7 +120,7 @@ class Solver:
 
     def refresh_listener(self) -> None:
         """
-        Method of notifying observers of an event that has occurred
+        Notify observers of an event that has occurred
         """
 
         pass
@@ -129,7 +129,7 @@ class Solver:
         """
         Additions of an optimisation process observer
 
-        :param listener: class object implementing observation methods
+        :param listener: class object implementing observation methods.
         """
 
         self.__listeners.append(listener)
@@ -138,10 +138,10 @@ class Solver:
     def check_parameters(problem: Problem,
                          parameters: SolverParameters = SolverParameters()) -> None:
         """
-        Checks the parameters of the solver
+        Check the parameters of the solver
 
-        :param problem: Optimisation problem formulation
-        :param parameters: Parameters of search for optimal solutions
+        :param problem: Optimisation problem formulation.
+        :param parameters: Parameters of search for optimal solutions.
 
         """
 

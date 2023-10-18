@@ -9,7 +9,7 @@ from iOpt.trial import Point, FunctionValue, FunctionType
 
 class LocalTaskWrapper:
     """
-    The LocalTaskWrapper class (the name is temporary) wraps the function computation for further application of local methods.
+    The LocalTaskWrapper class (the name is temporary) wraps the function computation for further application of local methods
     """
 
     def __init__(self, task: OptimizationTask, discrete_variables=None, max_calcs=-1):
@@ -20,16 +20,16 @@ class LocalTaskWrapper:
 
     def evaluate_function(self, y: List[float]) -> float:
         """
-        The method calculates the value of the objective function
+        Calculate the value of the objective function
 
-        :param y: The point at which you need to calculate the value of the function
+        :param y: The point at which you need to calculate the value of the function.
 
         :return: returns the value of the objective function or
                 sys.float_info.max, if:
                 the point lies outside the search area
                 OR the restrictions have not been met
                 OR an exception was thrown (the function cannot be calculated at this point)
-                OR the number of calculations has exceeded the limit (if set)
+                OR the number of calculations has exceeded the limit (if set).
         """
         point = Point(y, self.discrete_variables)
         function_value = FunctionValue(FunctionType.OBJECTIV)
@@ -60,7 +60,7 @@ class LocalTaskWrapper:
 
 class HookeJeevesOptimizer:
     """
-    The HookeJeevesOptimizer class implements the Hooke Jeeves method.
+    The HookeJeevesOptimizer class implements the Hooke Jeeves method
     """
 
     def __init__(self, func: Callable[[List[float]], float], start_point: Iterable[float],

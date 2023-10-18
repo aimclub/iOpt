@@ -28,8 +28,8 @@ class Problem(ABC):
     @abstractmethod
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        A method for calculating a function at a given point.
-          For any new problem statement that inherits from :class:`Problem`, this method should be overloaded.
+        Calculate a function at a given point.
+          For any new problem statement that inherits from :class:`Problem`, this method should be overloaded
 
         :return: Calculated value of the function."""
         pass
@@ -37,7 +37,7 @@ class Problem(ABC):
     # @abstractmethod
     def get_name(self):
         """
-        The method allows you to get the name of the problem
+        Get the name of the problem
 
         :return: self.name."""
         return self.name

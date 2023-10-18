@@ -21,7 +21,7 @@ class SearchDataItem(Trial):
     """
         The SearchDataItem class is intended for storing search information, which is an
         interval with a right point included, as well as links to neighbouring intervals. SearchDataItem
-        is an inheritor of the Trial class.
+        is an inheritor of the Trial class
     """
 
     def __init__(self, y: Point, x: np.double,
@@ -30,10 +30,10 @@ class SearchDataItem(Trial):
         """
         Constructor of SearchDataItem class
 
-        :param y: trial point in the original N-dimensional search area
-        :param x: Mapping the trial point y to the segment [0, 1]
-        :param function_values: Vector of function values (objective and constraint functions)
-        :param discrete_value_index: Discrete parameter
+        :param y: trial point in the original N-dimensional search area.
+        :param x: Mapping the trial point y to the segment [0, 1].
+        :param function_values: Vector of function values (objective and constraint functions).
+        :param discrete_value_index: Discrete parameter.
         """
         super().__init__(point=y, function_values=copy.deepcopy(function_values))
         self.point = y
@@ -50,98 +50,98 @@ class SearchDataItem(Trial):
 
     def get_x(self) -> np.double:
         """
-        The method allows us to obtain the right point of the search interval where :math:`x\in[0, 1]`.
+        Obtain the right point of the search interval where :math:`x\in[0, 1]`
 
-        :return: Value of the right point of the interval
+        :return: Value of the right point of the interval.
         """
         return self.__x
 
     def get_y(self) -> Point:
         """
-        The method provides an N-dimensional trial point of the original search area.
+        Provide an N-dimensional trial point of the original search area
 
-        :return: N-dimensional trial point value
+        :return: N-dimensional trial point value.
         """
         return self.point
 
     def get_discrete_value_index(self) -> int:
         """
-        The method allows us to obtain a discrete parameter.
+        Obtain a discrete parameter
 
-        :return: Discrete parameter value
+        :return: Discrete parameter value.
         """
         return self.__discrete_value_index
 
     def set_index(self, index: int):
         """
-        The method allows you to specify the index value of the last executed constraint
-        for the index scheme.
+        Specify the index value of the last executed constraint for the index scheme
 
-        :param index: Restriction index
+        :param index: Restriction index.
         """
         self.__index = index
 
     def get_index(self) -> int:
         """
-        The method allows to get the index value of the last executed constraint
-        for the index scheme.
+        Get the index value of the last executed constraint
+        for the index scheme
 
-        :return: Index value
+        :return: Index value.
         """
         return self.__index
 
     def set_z(self, z: np.double):
         """
-        The method allows you to specify a function value for a given index.
+        Allow you to specify a function value for a given index.
 
-        :param z: Function value
+        :param z: Function value.
         """
         self.__z = z
 
     def get_z(self) -> np.double:
         """
-        The method allows you to get the value of the function for a given index.
+        Get the value of the function for a given index
 
-        :return: Function value for index
+        :return: Function value for index.
         """
         return self.__z
 
     def set_left(self, point: SearchDataItem):
         """
-        The method allows you to set the left interval for the source interval.
+        Set the left interval for the source interval
 
-        :param point: Left interval
+        :param point: Left interval.
         """
         self.__leftPoint = point
 
     def get_left(self) -> SearchDataItem:
         """
-        The method allows you to get the left interval for the original interval.
+        Get the left interval for the original interval
 
-        :return: Left interval value
+        :return: Left interval value.
         """
         return self.__leftPoint
 
     def set_right(self, point: SearchDataItem):
         """
-        The method allows you to set the right interval for the original interval.
+        Set the right interval for the original interval
 
-        :param point: Right interval
+        :param point: Right interval.
         """
         self.__rightPoint = point
 
     def get_right(self) -> SearchDataItem:
         """
-       The method allows you to get the right interval for the original interval.
+       Get the right interval for the original interval
 
-       :return: Right interval value
+       :return: Right interval value.
        """
         return self.__rightPoint
 
     def __lt__(self, other) -> bool:
         """
-        The method overrides the < comparison operator for two intervals.
-        :param other: Second interval
+        The method overrides the < comparison operator for two intervals
+        
+        :param other: Second interval.
         :return: The value is true - if the right point of the initial interval is less than the
         the right point of the second interval, otherwise - false.
         """
@@ -151,62 +151,62 @@ class SearchDataItem(Trial):
 class CharacteristicsQueue:
     """
     The CharacteristicsQueue class is designed to store a prioritised queue of
-    of characteristics with preempting.
+    of characteristics with preempting
     """
 
     def __init__(self, maxlen: int):
         """
         Constructor of the CharacteristicsQueue class
 
-        :param maxlen: Maximum queue size
+        :param maxlen: Maximum queue size.
         """
         self.__baseQueue = DEPQ(iterable=None, maxlen=maxlen)
 
     def Clear(self):
         """
-        The method allows you to clear the queue
+        Clear the queue
         """
         self.__baseQueue.clear()
 
     def insert(self, key: np.double, data_item: SearchDataItem):
         """
-        The method adds search interval with specified priority.
-        The priority is the value of the characteristic on this interval.
+        Add search interval with specified priority.
+        The priority is the value of the characteristic on this interval
 
-        :param key: Priority of the search interval
-        :param data_item: Insertion interval
+        :param key: Priority of the search interval.
+        :param data_item: Insertion interval.
         """
         self.__baseQueue.insert(data_item, key)
 
     def get_best_item(self) -> (SearchDataItem, np.double):
         """
-        The method allows you to get the interval with the best characteristic
+        Get the interval with the best characteristic
 
-        :return: Tuple: interval with the best characteristic, priority of the interval in the queue
+        :return: Tuple: interval with the best characteristic, priority of the interval in the queue.
         """
         return self.__baseQueue.popfirst()
 
     def is_empty(self):
         """
-        The method allows you to do a check for queue emptiness.
+        Check for queue emptiness.
 
-        :return: True if the queue is empty, otherwise false
+        :return: True if the queue is empty, otherwise false.
         """
         return self.__baseQueue.is_empty()
 
     def get_max_len(self) -> int:
         """
-        The method allows you to get the maximum queue size.
+        Get the maximum queue size.
 
-        :return: Value of maximum queue size
+        :return: Value of maximum queue size.
         """
         return self.__baseQueue.maxlen
 
     def get_len(self) -> int:
         """
-        The method allows you to get the current queue size.
+        Get the current queue size
 
-        :return: Value of the current queue size
+        :return: Value of the current queue size.
         """
         return len(self.__baseQueue)
 
@@ -214,7 +214,7 @@ class CharacteristicsQueue:
 class SearchData:
     """
     The SearchData class is used to store the set of all intervals, the original task
-    and the priority queue of global characteristics.
+    and the priority queue of global characteristics
     """
 
     # очереди характеристик
@@ -230,8 +230,8 @@ class SearchData:
         """
         Constructor of SearchData class
 
-        :param problem: Information about the original task
-        :param maxlen: Maximum queue size
+        :param problem: Information about the original task.
+        :param maxlen: Maximum queue size.
         """
         self.solution = Solution(problem)
         self._allTrials = []
@@ -240,7 +240,7 @@ class SearchData:
 
     def clear_queue(self):
         """
-        The method allows you to clear the feature queue
+        Clear the feature queue
         """
         self._RGlobalQueue.Clear()
 
@@ -250,11 +250,11 @@ class SearchData:
     def insert_data_item(self, new_data_item: SearchDataItem,
                          right_data_item: SearchDataItem = None):
         """
-        The method allows you to add a new trial interval to the list of all trials performed
-        and prioritised feature queue.
+        Add a new trial interval to the list of all trials performed
+        and prioritised feature queue
 
-        :param new_data_item: New trial interval
-        :param right_data_item: The covering interval, is the right interval for the newDataItem
+        :param new_data_item: New trial interval.
+        :param right_data_item: The covering interval, is the right interval for the newDataItem.
         """
         flag = True
         if right_data_item is None:
@@ -274,10 +274,10 @@ class SearchData:
     def insert_first_data_item(self, left_data_item: SearchDataItem,
                                right_data_item: SearchDataItem):
         """
-        The method allows a pair of trial intervals to be added to the first iteration of the AGP.
+        Allow a pair of trial intervals to be added to the first iteration of the AGP.
 
-        :param left_data_item: Left interval for right_data_item
-        :param right_data_item: Right interval for leftDataItem
+        :param left_data_item: Left interval for right_data_item.
+        :param right_data_item: Right interval for left_data_item.
         """
         left_data_item.set_right(right_data_item)
         right_data_item.set_left(left_data_item)
@@ -291,10 +291,10 @@ class SearchData:
     # возвращает правую точку
     def find_data_item_by_one_dimensional_point(self, x: np.double) -> SearchDataItem:
         """
-        The method allows you to find the covering interval for the obtained point x.
+        Find the covering interval for the obtained point x
 
-        :param x: Right point of the interval
-        :return: Right point of the covering interval
+        :param x: Right point of the interval.
+        :return: Right point of the covering interval.
         """
         # итерируемся по rightPoint от минимального элемента
         for item in self:
@@ -304,9 +304,9 @@ class SearchData:
 
     def get_data_item_with_max_global_r(self) -> SearchDataItem:
         """
-        The method allows to obtain the interval with the best value of the global characteristic.
+        Obtain the interval with the best value of the global characteristic
 
-        :return: Value of the interval with the best global characteristic
+        :return: Value of the interval with the best global characteristic.
         """
         if self._RGlobalQueue.is_empty():
             self.refill_queue()
@@ -315,8 +315,8 @@ class SearchData:
     # Перезаполнение очереди (при ее опустошении или при смене оценки константы Липшица)
     def refill_queue(self):
         """
-        The method allows to refill the queue of global characteristics, for example, when it is empty
-        or when the Lipschitz constant estimation is changed.
+        Refill the queue of global characteristics, for example, when it is empty
+        or when the Lipschitz constant estimation is changed
 
         """
         self._RGlobalQueue.Clear()
@@ -326,17 +326,17 @@ class SearchData:
     # Возвращает текущее число интервалов в дереве
     def get_count(self) -> int:
         """
-        The method allows you to get the current number of intervals in the list.
+        Get the current number of intervals in the list
 
-        :return: Value of the number of intervals in the list
+        :return: Value of the number of intervals in the list.
         """
         return len(self._allTrials)
 
     def get_last_item(self) -> SearchDataItem:
         """
-        The method allows you to get the last added interval to the list.
+        Get the last added interval to the list
 
-        :return: Value of the last added interval
+        :return: Value of the last added interval.
         """
         try:
             return self._allTrials[-1]
@@ -345,9 +345,9 @@ class SearchData:
 
     def get_last_items(self, N: int = 1) -> list[SearchDataItem]:
         """
-        The method allows you to get the last added intervals to the list.
+        Get the last added intervals to the list.
 
-        :return: Values of the last series of added intervals
+        :return: Values of the last series of added intervals.
         """
         try:
             return self._allTrials[-N:]
@@ -356,9 +356,9 @@ class SearchData:
 
     def save_progress(self, file_name: str):
         """
-        Saving the optimisation process to a file
+        Save the optimisation process to a file
 
-        :param file_name: file name
+        :param file_name: file name.
         """
         data = {}
         data['SearchDataItem'] = []
@@ -415,9 +415,9 @@ class SearchData:
 
     def load_progress(self, file_name: str):
         """
-        Loading the optimisation process from a file
+        Load the optimisation process from a file
 
-        :param file_name: file name
+        :param file_name: file name.
         """
 
         with open(file_name) as json_file:
@@ -505,7 +505,7 @@ class SearchDataDualQueue(SearchData):
     """
     The SearchDataDualQueue class is incherited of the SearchData class. It is intended
       for storing a set of all intervals, the initial task and two priority queues
-      for global and local characteristics.
+      for global and local characteristics
 
     """
 
@@ -513,15 +513,15 @@ class SearchDataDualQueue(SearchData):
         """
         Constructor of SearchDataDualQueue class
 
-        :param problem: Information on the initial task
-        :param maxlen: Maximum queue size
+        :param problem: Information on the initial task.
+        :param maxlen: Maximum queue size.
         """
         super().__init__(problem, maxlen)
         self.__RLocalQueue = CharacteristicsQueue(maxlen)
 
     def clear_queue(self):
         """
-        The method allows you to clear the feature queues
+        Clear the feature queues
         """
         self._RGlobalQueue.Clear()
         self.__RLocalQueue.Clear()
@@ -529,11 +529,11 @@ class SearchDataDualQueue(SearchData):
     def insert_data_item(self, new_data_item: SearchDataItem,
                          right_data_item: SearchDataItem = None):
         """
-        The method allows adding a new trial interval to the list of all trials performed
-          and priority queues of global and local characteristics.
+        Add a new trial interval to the list of all trials performed
+          and priority queues of global and local characteristics
 
-        :param new_data_item: New trial interval
-        :param right_data_item: The covering interval, is the right interval for the newDataItem
+        :param new_data_item: New trial interval.
+        :param right_data_item: The covering interval, is the right interval for the new_data_item.
         """
         flag = True
         if right_data_item is None:
@@ -555,9 +555,9 @@ class SearchDataDualQueue(SearchData):
 
     def get_data_item_with_max_global_r(self) -> SearchDataItem:
         """
-       The method allows to obtain the interval with the best value of the global characteristic.
+       Obtain the interval with the best value of the global characteristic
 
-       :return: Value of the interval with the best global characteristic
+       :return: Value of the interval with the best global characteristic.
        """
         if self._RGlobalQueue.is_empty():
             self.refill_queue()
@@ -570,9 +570,9 @@ class SearchDataDualQueue(SearchData):
 
     def get_data_item_with_max_local_r(self) -> SearchDataItem:
         """
-       The method allows to obtain the interval with the best value of the local characteristic.
+       Obtain the interval with the best value of the local characteristic
 
-       :return: Value of the interval with the best local characteristic
+       :return: Value of the interval with the best local characteristic.
        """
         if self.__RLocalQueue.is_empty():
             self.refill_queue()
@@ -585,8 +585,8 @@ class SearchDataDualQueue(SearchData):
 
     def refill_queue(self):
         """
-       The method allows to refill the queues of global and local characteristics, e.g.,
-         when they are emptied or when the Lipschitz constant estimation is changed.
+       Refill the queues of global and local characteristics, e.g.,
+         when they are emptied or when the Lipschitz constant estimation is changed
 
        """
         self.clear_queue()

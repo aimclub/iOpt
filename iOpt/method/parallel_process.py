@@ -13,7 +13,7 @@ from iOpt.solver_parametrs import SolverParameters
 
 class ParallelProcess(Process):
     """
-    The ParallelProcess class implements parallelisation at the level of threads (python processes).
+    The ParallelProcess class implements parallelisation at the level of threads (python processes)
     """
 
     def __init__(self,
@@ -41,9 +41,9 @@ class ParallelProcess(Process):
 
     def do_global_iteration(self, number: int = 1):
         """
-        The method allows you to perform several iterations of the global search
+        Perform several iterations of the global search
 
-        :param number: Number of iterations of global search
+        :param number: Number of iterations of global search.
         """
         number_ = number
         done_trials = []

@@ -18,7 +18,7 @@ from iOpt.trial import Point
 
 class Process:
     """
-    The Process class hides the internal implementation of the Solver class.
+    The Process class hides the internal implementation of the Solver class
     """
 
     def __init__(self,
@@ -49,10 +49,10 @@ class Process:
 
     def solve(self) -> Solution:
         """
-        The method allows solving an optimisation problem. The search is stopped according to the criterion,
-        specified when creating the Solver class.
+        Solve an optimisation problem. The search is stopped according to the criterion,
+        specified when creating the Solver class
 
-        :return: Current evaluation of the solution to the optimisation problem
+        :return: Current evaluation of the solution to the optimisation problem.
         """
 
         start_time = datetime.now()
@@ -79,9 +79,9 @@ class Process:
 
     def do_global_iteration(self, number: int = 1):
         """
-        The method allows you to perform several iterations of the global search
+        Perform several iterations of the global search
 
-        :param number: Number of iterations of global search
+        :param number: Number of iterations of global search.
         """
         number_ = number
         done_trials = []
@@ -105,9 +105,9 @@ class Process:
 
     def do_local_refinement(self, number: int = 1):
         """
-        The method allows you to perform several iterations of local search
+        Perform several iterations of local search
 
-        :param number: Number of iterations of local search
+        :param number: Number of iterations of local search.
         """
         try:
             local_method_iteration_count = number
@@ -163,25 +163,25 @@ class Process:
 
     def get_results(self) -> Solution:
         """
-        The method returns the best solution to the optimisation problem
+        Return the best solution to the optimisation problem
 
-        :return: Optimisation problem solution
+        :return: Optimisation problem solution.
         """
         return self.search_data.solution
 
     def save_progress(self, file_name: str) -> None:
         """
-        Saving the optimisation process from a file
+        Save the optimisation process from a file
 
-        :param file_name: file name
+        :param file_name: file name.
         """
         self.search_data.save_progress(file_name=file_name)
 
     def load_progress(self, file_name: str) -> None:
         """
-        Loading the optimisation process from a file
+        Load the optimisation process from a file
 
-        :param file_name: file name
+        :param file_name: file name.
         """
         self.search_data.load_progress(file_name=file_name)
         self.method.iterations_count = self.search_data.get_count() - 2

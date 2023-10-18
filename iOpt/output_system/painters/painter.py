@@ -3,7 +3,7 @@ from iOpt.method.search_data import SearchDataItem
 
 class Painter:
     """
-    Basic Drawer Class.
+    Basic Drawer Class
     """
     def paint_objective_func(self):
         pass

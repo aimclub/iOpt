@@ -32,7 +32,7 @@ class OptimizationTask:
                   function_index: int,
                   calculation_type: TypeOfCalculation = TypeOfCalculation.FUNCTION
                   ) -> SearchDataItem:
-        """Compute selected function by number."""
+        """Compute selected function by number"""
         # ???
         data_item.function_values[self.perm[function_index]] = self.problem.calculate(data_item.point,
                                                                                       data_item.function_values[

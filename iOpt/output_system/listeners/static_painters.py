@@ -80,7 +80,7 @@ class StaticDiscreteListener(Listener):
 class StaticPainterListener(Listener):
     """
     The StaticPaintListener class is an event listener. It contains a method handler that produces an image as a reaction to the method's completion.
-      as a reaction to the method completion.
+      as a reaction to the method completion
     """
 
     def __init__(self, file_name: str, path_for_saves="", indx=0, is_points_at_bottom=False, mode='objective function'):
@@ -121,7 +121,7 @@ class StaticPainterNDListener(Listener):
     """
     The StaticNDPaintListener class is an event listener. It contains a method handler that produces an image as a
       image as a reaction to the method completion.
-      It is used for multidimensional optimisation.
+      It is used for multidimensional optimisation
     """
 
     def __init__(self, file_name: str, path_for_saves="", vars_indxs=[0, 1], mode='lines layers',

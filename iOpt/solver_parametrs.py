@@ -36,7 +36,7 @@ class SolverParameters:
         :param start_point: point of initial approximation to the solution.
         :param number_of_parallel_points: number of parallel computed trials.
         :param timeout: calculation time limit in minutes.
-        :param proportion_of_global_iterations: share of global iterations in the search when using the local method
+        :param proportion_of_global_iterations: share of global iterations in the search when using the local method.
         """
         self.eps = eps
         self.r = r

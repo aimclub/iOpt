@@ -12,7 +12,7 @@ class Evolvent:
     :param number_of_float_variables: dimension (N).
     :type  number_of_float_variables: int.
     :param evolvent_density: evolvent density (m).
-    :type  evolvent_density: int
+    :type  evolvent_density: int.
     """
 
     def __init__(self,

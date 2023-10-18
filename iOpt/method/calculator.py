@@ -35,7 +35,7 @@ class Calculator:
                                        initargs=(self.evaluate_method,))
 
     r"""
-    Initialisation of the calculation method in each process from the process pool Calculator.Pool
+    Initialize the calculation method in each process from the process pool Calculator.Pool
 
     :param evaluate_method: a computational method that performs search trials according to specified rules.
     """
@@ -45,9 +45,9 @@ class Calculator:
         Calculator.evaluate_method = evaluate_method
 
     r"""
-    Trial method in a process from a pool of processes Calculator.Pool
+    Сalculation method in each process from the process pool Calculator.Pool
 
-    :param point: trial point
+    :param point: trial point.
     """
 
     @staticmethod
@@ -60,9 +60,9 @@ class Calculator:
         return point
 
     r"""
-    Trial method for multiple points
+    Сalculation method for multiple points
 
-    :param points: trial points
+    :param points: trial points.
     """
 
     def calculate_functionals_for_items(self, points: list[SearchDataItem]) -> list[SearchDataItem]:

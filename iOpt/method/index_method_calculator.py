@@ -18,7 +18,7 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Performing a search trial at a given point.
+        Perform a search trial at a given point
 
         :param point: the point at which the trial is to be performed.
 
@@ -40,7 +40,7 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
 
     def copy_functionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
         r"""
-        Copying the search trial.
+        Copy the search trial
 
         :param dist_point: point to which the trial values are copied.
         :param src_point: point with trial results.

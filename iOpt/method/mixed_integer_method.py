@@ -43,7 +43,7 @@ class MixedIntegerMethod(IndexMethod):
 
     def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
-        The method performs the first iteration of the Global Search Algorithm.
+        The method performs the first iteration of the Global Search Algorithm
         """
         self.iterations_count = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
@@ -189,7 +189,7 @@ class MixedIntegerMethod(IndexMethod):
 
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Calculating the point of a new trial :math:`x^{k+1}`.
+        Calculate the point of a new trial :math:`x^{k+1}`
 
         :return: :math:`x^{k+1}` - new trial point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
           to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
@@ -219,10 +219,10 @@ class MixedIntegerMethod(IndexMethod):
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Computing an estimate of the Gelder constant between curr_point and left_point.
+        Compute an estimate of the Gelder constant between curr_point and left_point
 
-        :param curr_point: right interval point
-        :param left_point: left interval point
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
         if curr_point is None:

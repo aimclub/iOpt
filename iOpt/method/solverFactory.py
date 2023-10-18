@@ -26,7 +26,7 @@ class SolverFactory:
                       evolvent: Evolvent,
                       search_data: SearchData) -> Method:
         """
-        Creates a suitable solution method class based on the given parameters
+        Create a suitable solution method class based on the given parameters
 
         :param parameters: parameters of the solution of the optimisation problem.
         :param task: the wrapper of the problem to be solved.
@@ -51,7 +51,7 @@ class SolverFactory:
                        method: Method,
                        listeners: List[Listener]) -> Process:
         """
-        Creates a suitable process class based on the specified parameters
+        Create a suitable process class based on the specified parameters
 
         :param parameters: parameters of the solution of the optimisation problem.
         :param task: the wrapper of the problem to be solved.
@@ -60,7 +60,7 @@ class SolverFactory:
         :param method: An optimisation method that conducts search trials according to given rules.
         :param listeners: List of "observers" (used to display current information).
 
-        :return: created process
+        :return: created process.
         """
         if parameters.number_of_parallel_points == 1:
             return Process(parameters=parameters, task=task, evolvent=evolvent,

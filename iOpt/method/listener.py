@@ -5,7 +5,7 @@ import numpy as np
 
 class Listener:
     """
-    Event listener base class.
+    Event listener base class
     """
 
     def before_method_start(self, method: Method):

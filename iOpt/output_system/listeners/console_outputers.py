@@ -12,7 +12,7 @@ import numpy as np
 class ConsoleOutputListener(Listener):
     """
     The ConsoleFullOutputListener class is an event listener. It contains handler methods that produce console output as a
-      console output as a reaction to the event.
+      console output as a reaction to the event
     """
 
     def __init__(self, mode='full', iters=100):
