@@ -32,11 +32,11 @@ class Process:
         """
         Constructor of the Process class
 
-        :param parameters: Parameters of the solution to the optimisation problem.
+        :param parameters: Parameters of the solution to the optimization problem.
         :param task: The wrapper of the problem to be solved.
         :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
         :param search_data: A data structure for storing accumulated search information.
-        :param method: An optimisation method that performs search trials according to given rules.
+        :param method: An optimization method that performs search trials according to given rules.
         :param listeners: List of "observers" (used to display current information).
         """
         self.parameters = parameters
@@ -49,10 +49,10 @@ class Process:
 
     def solve(self) -> Solution:
         """
-        Solve an optimisation problem. The search is stopped according to the criterion,
+        Solve an optimization problem. The search is stopped according to the criterion,
         specified when creating the Solver class
 
-        :return: Current evaluation of the solution to the optimisation problem.
+        :return: Current evaluation of the solution to the optimization problem.
         """
 
         start_time = datetime.now()
@@ -163,15 +163,15 @@ class Process:
 
     def get_results(self) -> Solution:
         """
-        Return the best solution to the optimisation problem
+        Return the best solution to the optimization problem
 
-        :return: Optimisation problem solution.
+        :return: Optimization problem solution.
         """
         return self.search_data.solution
 
     def save_progress(self, file_name: str) -> None:
         """
-        Save the optimisation process from a file
+        Save the optimization process from a file
 
         :param file_name: file name.
         """
@@ -179,7 +179,7 @@ class Process:
 
     def load_progress(self, file_name: str) -> None:
         """
-        Load the optimisation process from a file
+        Load the optimization process from a file
 
         :param file_name: file name.
         """

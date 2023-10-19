@@ -150,7 +150,7 @@ class SearchDataItem(Trial):
 
 class CharacteristicsQueue:
     """
-    The CharacteristicsQueue class is designed to store a prioritised queue of
+    The CharacteristicsQueue class is designed to store a prioritised queue
     of characteristics with preempting
     """
 
@@ -240,7 +240,7 @@ class SearchData:
 
     def clear_queue(self):
         """
-        Clear the feature queue
+        Clear the characteristic queue
         """
         self._RGlobalQueue.Clear()
 
@@ -251,7 +251,7 @@ class SearchData:
                          right_data_item: SearchDataItem = None):
         """
         Add a new trial interval to the list of all trials performed
-        and prioritised feature queue
+        and prioritised characteristic queue
 
         :param new_data_item: New trial interval.
         :param right_data_item: The covering interval, is the right interval for the newDataItem.
@@ -274,7 +274,7 @@ class SearchData:
     def insert_first_data_item(self, left_data_item: SearchDataItem,
                                right_data_item: SearchDataItem):
         """
-        Allow a pair of trial intervals to be added to the first iteration of the AGP.
+        Allow a pair of trial intervals to be added to the first iteration of the GSA.
 
         :param left_data_item: Left interval for right_data_item.
         :param right_data_item: Right interval for left_data_item.
@@ -356,7 +356,7 @@ class SearchData:
 
     def save_progress(self, file_name: str):
         """
-        Save the optimisation process to a file
+        Save the optimization process to a file
 
         :param file_name: file name.
         """
@@ -415,7 +415,7 @@ class SearchData:
 
     def load_progress(self, file_name: str):
         """
-        Load the optimisation process from a file
+        Load the optimization process from a file
 
         :param file_name: file name.
         """
@@ -521,7 +521,7 @@ class SearchDataDualQueue(SearchData):
 
     def clear_queue(self):
         """
-        Clear the feature queues
+        Clear the characteristic queues
         """
         self._RGlobalQueue.Clear()
         self.__RLocalQueue.Clear()

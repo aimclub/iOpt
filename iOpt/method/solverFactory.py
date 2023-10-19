@@ -28,7 +28,7 @@ class SolverFactory:
         """
         Create a suitable solution method class based on the given parameters
 
-        :param parameters: parameters of the solution of the optimisation problem.
+        :param parameters: parameters of the solution of the optimization problem.
         :param task: the wrapper of the problem to be solved.
         :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
         :param search_data: data structure for storing accumulated search information.
@@ -53,11 +53,11 @@ class SolverFactory:
         """
         Create a suitable process class based on the specified parameters
 
-        :param parameters: parameters of the solution of the optimisation problem.
+        :param parameters: parameters of the solution of the optimization problem.
         :param task: the wrapper of the problem to be solved.
         :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
         :param search_data: data structure for storing accumulated search information.
-        :param method: An optimisation method that conducts search trials according to given rules.
+        :param method: An optimization method that conducts search trials according to given rules.
         :param listeners: List of "observers" (used to display current information).
 
         :return: created process.

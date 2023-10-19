@@ -25,7 +25,7 @@ class Calculator:
         Constructor of class Calculator
 
         :param evaluate_method: a computational method that performs search trials according to specified rules.
-        :param parameters: solution parameters of the optimisation problem.
+        :param parameters: solution parameters of the optimization problem.
         """
         self.evaluate_method = evaluate_method
         self.parameters = parameters

@@ -15,7 +15,7 @@ class Solver:
     """
     The Solver class is designed to select optimal (in a given metric) values of parameters of complex objects and processes
     Solver class is intended for selecting optimal (in a given metric) values of parameters of complex objects and processes, e.g., methods of artificial intelligence and
-    machine learning and heuristic optimisation methods
+    machine learning and heuristic optimization methods
     """
 
     def __init__(self,
@@ -25,7 +25,7 @@ class Solver:
         """
         Solver class constructor
 
-        :param problem: Optimisation problem formulation.
+        :param problem: Optimization problem formulation.
         :param parameters: Parameters of search for optimal solutions.
         """
 
@@ -47,10 +47,10 @@ class Solver:
 
     def solve(self) -> Solution:
         """
-        Solve an optimisation problem. The search is stopped according to the criterion,
+        Solve an optimization problem. The search is stopped according to the criterion,
         specified when creating the Solver class
 
-        :return: optimisation problem solution.
+        :return: optimization problem solution.
         """
         Solver.check_parameters(self.problem, self.parameters)
         if self.parameters.timeout < 0:
@@ -91,15 +91,15 @@ class Solver:
 
     def get_results(self) -> Solution:
         """
-        Provide a current estimate of the solution to the optimisation problem
+        Provide a current estimate of the solution to the optimization problem
 
-        :return: Solving the optimisation problem.
+        :return: Solving the optimization problem.
         """
         return self.process.get_results()
 
     def save_progress(self, file_name: str) -> None:
         """
-        Save the optimisation process to a file
+        Save the optimization process to a file
 
         :param file_name: file name.
         """
@@ -107,7 +107,7 @@ class Solver:
 
     def load_progress(self, file_name: str) -> None:
         """
-        Load the optimisation process from a file
+        Load the optimization process from a file
 
         :param file_name: file name.
         """
@@ -127,7 +127,7 @@ class Solver:
 
     def add_listener(self, listener: Listener) -> None:
         """
-        Additions of an optimisation process observer
+        Additions of an optimization process observer
 
         :param listener: class object implementing observation methods.
         """
@@ -140,7 +140,7 @@ class Solver:
         """
         Check the parameters of the solver
 
-        :param problem: Optimisation problem formulation.
+        :param problem: Optimization problem formulation.
         :param parameters: Parameters of search for optimal solutions.
 
         """

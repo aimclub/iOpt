@@ -79,19 +79,19 @@ class StaticDiscreteListener(Listener):
 # mode: objective function, approximation, only points
 class StaticPainterListener(Listener):
     """
-    The StaticPaintListener class is an event listener. It contains a method handler that produces an image as a reaction to the method's completion.
+    The StaticPainterListener class is an event listener. It contains a method handler that produces an image as a reaction to the method's completion.
       as a reaction to the method completion
     """
 
     def __init__(self, file_name: str, path_for_saves="", indx=0, is_points_at_bottom=False, mode='objective function'):
         """
-        Constructor of the StaticPaintListener class
+        Constructor of the StaticPainterListener class
 
         :param file_name: File name specifying the format for saving the image. 
         :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
            is saved in the current working directory.
-        :param indx: Index of the variable of the optimisation problem. It is used in multivariate optimisation.
-           It allows to display in the cross-section of the found minimum the process of optimisation by one selected variable.
+        :param indx: Index of the variable of the optimization problem. It is used in multivariate optimization.
+           It allows to display in the cross-section of the found minimum the process of optimization by one selected variable.
         :param is_points_at_bottom: Draw search information points below the graph. If False, the points are placed on the graph.
         :param mode: The calculation method for drawing the graph of the objective function that will be used. Possible
            modes: 'objective function', 'only points', 'approximation' and 'interpolation'. The 'objective function' mode
@@ -119,20 +119,20 @@ class StaticPainterListener(Listener):
 # mode: surface, lines layers, approximation
 class StaticPainterNDListener(Listener):
     """
-    The StaticNDPaintListener class is an event listener. It contains a method handler that produces an image as a
+    The StaticPainterNDListener class is an event listener. It contains a method handler that produces an image as a
       image as a reaction to the method completion.
-      It is used for multidimensional optimisation
+      It is used for multidimensional optimization
     """
 
     def __init__(self, file_name: str, path_for_saves="", vars_indxs=[0, 1], mode='lines layers',
                  calc='objective function'):
         """
-        Конструктор класса StaticNDPaintListener
+        Конструктор класса StaticPainterNDListener
 
         :param file_name: File name specifying the format for saving the image. 
         :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
            is saved in the current working directory.
-        :param vars_indxs: A pair of indices of the variables of the optimisation problem for which the figure will be plotted.
+        :param vars_indxs: A pair of indices of the variables of the optimization problem for which the figure will be plotted.
         :param mode_: Drawing mode of the objective function graph that will be used.
            Possible modes: 'lines layers', 'surface'.
            The 'lines layers' mode draws level lines in the cross-section of the solution found by the method.

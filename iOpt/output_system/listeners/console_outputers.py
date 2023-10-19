@@ -11,18 +11,18 @@ import numpy as np
 
 class ConsoleOutputListener(Listener):
     """
-    The ConsoleFullOutputListener class is an event listener. It contains handler methods that produce console output as a
+    The ConsoleOutputListener class is an event listener. It contains handler methods that produce console output as a
       console output as a reaction to the event
     """
 
     def __init__(self, mode='full', iters=100):
         """
-        Constructor of the ConsoleFullOutputListener class
+        Constructor of the ConsoleOutputListener class
 
         :param mode: The console output mode to be used. Possible modes: 'full', 'custom' and 'result'.
-           The 'full' mode performs full output of the search information obtained by the method to the console during the optimisation process.
+           The 'full' mode performs full output of the search information obtained by the method to the console during the optimization process.
            information received by the method. The 'custom' mode outputs the current best point with a specified frequency. 'result' mode
-           mode outputs to the console only the final result of the optimisation process.
+           mode outputs to the console only the final result of the optimization process.
         :param iters: Frequency of output to the console. Used in conjunction with the 'custom' output mode.
         """
         self.__outputer: ConsoleOutputer = None

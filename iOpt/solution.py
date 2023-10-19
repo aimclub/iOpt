@@ -5,7 +5,7 @@ import numpy as np
 
 class Solution:
     """
-    Class of description of the solution to the optimisation problem
+    Class of description of the solution to the optimization problem
     """
     def __init__(self,
                  problem: Problem,
@@ -18,11 +18,11 @@ class Solution:
         """
         Class constructor
 
-        :param problem: Optimisation problem.
-        :param best_trials: Solving the optimisation problem.
+        :param problem: Optimization problem.
+        :param best_trials: Solution the optimization problem.
         :param number_of_global_trials: Number of global search iterations performed.
         :param number_of_local_trials: Number of local search iterations performed.
-        :param solving_time: Problem solving time.
+        :param solving_time: Problem solution time.
         :param solution_accuracy: Accuracy of the solution found.
         """
 

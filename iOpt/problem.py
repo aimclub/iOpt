@@ -6,7 +6,7 @@ from iOpt.trial import Trial
 
 
 class Problem(ABC):
-    """Base class for optimisation problems"""
+    """Base class for optimization problems"""
 
     def __init__(self):
         self.name: str = ''

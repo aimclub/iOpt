@@ -10,9 +10,9 @@ import numpy as np
 
 class AnimatePainterListener(Listener):
     """
-    The AnimationPaintListener class is an event listener. It contains handler methods that produce a dynamically updating image of the optimisation process in response to events.
-      dynamically updated image of the optimisation process as a reaction to events.
-      It is used for one-dimensional optimisation
+    The AnimationPaintListener class is an event listener. It contains handler methods that produce a dynamically updating image of the optimization process in response to events.
+      dynamically updated image of the optimization process as a reaction to events.
+      It is used for one-dimensional optimization
     """
 
     def __init__(self, file_name: str, path_for_saves="", is_points_at_bottom=False, to_paint_obj_func=True):
@@ -47,19 +47,19 @@ class AnimatePainterListener(Listener):
 
 class AnimatePainterNDListener(Listener):
     """
-    The AnimationPaintListener class is an event listener. It contains handler methods that produce a dynamically updating image of the optimisation process in response to events.
-      dynamically updated image of the optimisation process as a reaction to events.
-      It is used for multidimensional optimisation
+    The AnimatePainterNDListener class is an event listener. It contains handler methods that produce a dynamically updating image of the optimization process in response to events.
+      dynamically updated image of the optimization process as a reaction to events.
+      It is used for multidimensional optimization
     """
 
     def __init__(self, file_name: str, path_for_saves="", vars_indxs=[0, 1], to_paint_obj_func=True):
         """
-        AnimationNDPaintListener class constructor
+        AnimatePainterNDListener class constructor
 
         :param file_name: File name specifying the format for saving the image. 
         :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
            is saved in the current working directory.
-        :param vars_indxs: A pair of indices of the variables of the optimisation problem for which the figure will be plotted.
+        :param vars_indxs: A pair of indices of the variables of the optimization problem for which the figure will be plotted.
         :param to_paint_obj_func: Whether the objective function should be rendered or not.
         """
         self.file_name = file_name

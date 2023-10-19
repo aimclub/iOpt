@@ -13,7 +13,7 @@ from iOpt.solver_parametrs import SolverParameters
 
 class ParallelProcess(Process):
     """
-    The ParallelProcess class implements parallelisation at the level of threads (python processes)
+    The ParallelProcess class implements parallelization at the level of threads (python processes)
     """
 
     def __init__(self,
@@ -27,11 +27,11 @@ class ParallelProcess(Process):
         """
         Constructor of the ParallelProcess class
 
-        :param parameters: Parameters of the solution to the optimisation problem.
+        :param parameters: Parameters of the solution to the optimization problem.
         :param task: The wrapper of the problem to be solved.
         :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
         :param search_data: A data structure for storing accumulated search information.
-        :param method: An optimisation method that performs search trials according to given rules.
+        :param method: An optimization method that performs search trials according to given rules.
         :param listeners: List of "observers" (used to display current information).
         """
         super(ParallelProcess, self).__init__(parameters, task, evolvent, search_data, method, listeners)
