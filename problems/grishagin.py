@@ -8,20 +8,20 @@ from problems.grishagin_function.grishagin_function import GrishaginFunction
 
 class Grishagin(Problem):
     """
-    Функция Гришагина задана формулой:
+    The Grishagin function is given by the formula:
        :math:`f(y) = \{ (\sum_{i=1}^{7}\sum_{i=1}^{7} A_{ij}a_{ij}(x)+B_{ij}b_{ij}(x))^{2}+`
        :math:`+(\sum_{i=1}^{7}\sum_{i=1}^{7} C_{ij}a_{ij}(x)+D_{ij}b_{ij}(x))^{2}\}`,
-       где :math:`a_{ij}(x) = sin(i\pi x_{1})sin(j\pi x_{2}),`
+       where :math:`a_{ij}(x) = sin(i\pi x_{1})sin(j\pi x_{2}),`
        :math:`b_{ij}(x) = cos(i\pi x_{1})cos(j\pi x_{2}),`
-       коэффициенты :math:`A_{ij}, B_{ij}, C_{ij}, D_{ij}` - равномерно распределеные величины
-       на отрезке :math:`[-1, 1].`
+       coefficients :math:`A_{ij}, B_{ij}, C_{ij}, D_{ij}` - uniformly distributed values
+       on the segment :math:`[-1, 1].`
     """
 
     def __init__(self, function_number: int):
         """
-        Конструктор класса Grishagin problem.
+        Constructor of the Grishagin problem class
 
-        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 100`
+        :param functionNumber: the number of the task in the set, :math:`1 <= functionNumber <= 100`
         """
         super(Grishagin, self).__init__()
         self.name = "Grishagin"
@@ -53,11 +53,11 @@ class Grishagin(Problem):
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения выбранной функции в заданной точке.
+        Calculating the value of the selected function at a given point
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
+        :param point: coordinates of the trial point where the value of the function will be calculated.
+        :param function_value: object defining the function number in the task and storing the function value.
+        :return: Calculated value of the function at the point.
         """
         function_value.value = self.function.Calculate(point.float_variables)
 

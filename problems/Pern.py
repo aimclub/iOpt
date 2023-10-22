@@ -14,7 +14,7 @@ class Pern(Problem):
 
     def __init__(self):
         """
-        Конструктор класса Pern problem.
+        Constructor of the Pern problem class
         """
         super(Pern, self).__init__()
         self.name = "Pern"
@@ -56,11 +56,11 @@ class Pern(Problem):
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения выбранной функции в заданной точке.
+        Calculate the value of the selected function at a given point
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
+        :param point: coordinates of the trial point where the value of the function will be calculated.
+        :param function_value: object defining the function number in the task and storing the function value.
+        :return: Calculated value of the function at point.
         """
         result: np.double = 0
         x = point.float_variables[0]
