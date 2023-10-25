@@ -31,6 +31,29 @@ class Convolution(ABC):
                               ) -> SearchDataItem:
         pass
 
+class MinMaxConvolution(Convolution):
+    """
+    """
+
+    def __int__(self,
+                problem: Problem,
+                lambda_param: np.ndarray(shape=(1), dtype=np.double)
+                ):
+        super().__init__(problem, lambda_param)
+
+    # Свертка меняет z у SearchDataItem. Z используется в методе для вычисления характеристик
+    def calculate_convolution(self,
+                              data_item: SearchDataItem,
+                              min_value: np.ndarray(shape=(1), dtype=np.double) = [],
+                              max_value: np.ndarray(shape=(1), dtype=np.double) = []
+                              ) -> SearchDataItem:
+        value = 0
+        for i in range(0, self.problem.number_of_objectives):
+            f_value = data_item.function_values[i].value - min_value[i]
+            value = max(value, f_value*self.lambda_param[i])
+        data_item.set_z(value)
+        return data_item
+
 
 class MultiObjectiveOptimizationTask(OptimizationTask):
     def __init__(self,
@@ -41,8 +64,29 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
         super().__init__(problem, perm)
         self.convolution = convolution
         # !!! реализовать заполнение массива
-        self.min_value: np.ndarray(shape=(1), dtype=np.double) = []
-        self.max_value: np.ndarray(shape=(1), dtype=np.double) = []
+        self.min_value: np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double) = []
+        self.max_value: np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double) = []
+        # есть ли в этом смысл? Проход по всей области парето может занять много времени
+        if self.problem.known_optimum: #проверка на пустоту
+            self.min_value = self.problem.known_optimum[0].function_values
+            for know_optimum in self.problem.known_optimum:
+                for i in range(0, self.problem.number_of_objectives):
+                    if self.min_value[i] > know_optimum.function_values[i]:
+                        self.min_value[i] = know_optimum.function_values[i]
+
+    def update_min_max_value(self,
+                           data_item: SearchDataItem,):
+        if self.min_value and self.max_value: # проверка на пустоту
+            for i in range(0, self.problem.number_of_objectives):
+                if self.min_value[i] > data_item.function_values[i]:
+                    self.min_value[i] = data_item.function_values[i]
+                if self.max_value[i] < data_item.function_values[i]:
+                    self.max_value[i] = data_item.function_values[i]
+                # тут нужно решить что-то с флагами, что нужно пересчитать всё
+        else:
+            self.min_value = data_item.function_values
+            self.max_value = data_item.function_values
+
 
 
 def calculate(self,
