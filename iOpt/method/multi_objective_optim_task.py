@@ -74,18 +74,18 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
                     if self.min_value[i] > know_optimum.function_values[i]:
                         self.min_value[i] = know_optimum.function_values[i]
 
-    def update_min_max_value(self,
-                           data_item: SearchDataItem,):
-        if self.min_value and self.max_value: # проверка на пустоту
-            for i in range(0, self.problem.number_of_objectives):
-                if self.min_value[i] > data_item.function_values[i]:
-                    self.min_value[i] = data_item.function_values[i]
-                if self.max_value[i] < data_item.function_values[i]:
-                    self.max_value[i] = data_item.function_values[i]
-                # тут нужно решить что-то с флагами, что нужно пересчитать всё
-        else:
-            self.min_value = data_item.function_values
-            self.max_value = data_item.function_values
+    # def update_min_max_value(self,
+    #                        data_item: SearchDataItem,):
+    #     if self.min_value and self.max_value: # проверка на пустоту
+    #         for i in range(0, self.problem.number_of_objectives):
+    #             if self.min_value[i] > data_item.function_values[i]:
+    #                 self.min_value[i] = data_item.function_values[i]
+    #             if self.max_value[i] < data_item.function_values[i]:
+    #                 self.max_value[i] = data_item.function_values[i]
+    #             # тут нужно решить что-то с флагами, что нужно пересчитать всё
+    #     else:
+    #         self.min_value = data_item.function_values
+    #         self.max_value = data_item.function_values
 
 
 
