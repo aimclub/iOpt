@@ -3,9 +3,12 @@ from typing import List
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.index_method import IndexMethod
 from iOpt.method.listener import Listener
+from iOpt.method.mco_process import MCOProcess
 from iOpt.method.method import Method
 from iOpt.method.mixed_integer_method import MixedIntegerMethod
+from iOpt.method.multi_objective_method import MultiObjectiveMethod
 from iOpt.method.optim_task import OptimizationTask
+from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
 from iOpt.method.parallel_process import ParallelProcess
 from iOpt.method.process import Process
 from iOpt.method.search_data import SearchData
@@ -35,8 +38,11 @@ class SolverFactory:
 
         :return: созданный метод
         """
-
-        if task.problem.number_of_discrete_variables > 0:
+        if task.problem.number_of_objectives > 1:
+            # create_method вызывается до create_process... Временное решение: перезатирать task из MCOProcess
+            # TODO: исправить.
+            return MultiObjectiveMethod(parameters, task, evolvent, search_data)
+        elif task.problem.number_of_discrete_variables > 0:
             return MixedIntegerMethod(parameters, task, evolvent, search_data)
         elif task.problem.number_of_constraints > 0:
             return IndexMethod(parameters, task, evolvent, search_data)
@@ -62,7 +68,11 @@ class SolverFactory:
 
         :return: созданный процесс
         """
-        if parameters.number_of_parallel_points == 1:
+        if task.problem.number_of_objectives > 1:
+            # А если parameters.number_of_parallel_points > 1???
+            return MCOProcess(parameters=parameters, task=task, evolvent=evolvent,
+                              search_data=search_data, method=method, listeners=listeners)
+        elif parameters.number_of_parallel_points == 1:
             return Process(parameters=parameters, task=task, evolvent=evolvent,
                            search_data=search_data, method=method, listeners=listeners)
         else:

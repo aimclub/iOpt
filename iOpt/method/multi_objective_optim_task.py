@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import List
+
 import numpy as np
 
 from iOpt.method.optim_task import OptimizationTask, TypeOfCalculation
@@ -15,10 +17,10 @@ class Convolution(ABC):
     Также возможен вариант, что свертка изменяется по ссылке передаваемой через конструктор класса.
     """
 
-    def __int__(self,
-                problem: Problem,
-                lambda_param: np.ndarray(shape=(1), dtype=np.double)
-                ):
+    def __init__(self,
+                 problem: Problem,
+                 lambda_param: List[float]
+                 ):
         self.problem = problem
         self.lambda_param = lambda_param
 
@@ -26,31 +28,32 @@ class Convolution(ABC):
     @abstractmethod
     def calculate_convolution(self,
                               data_item: SearchDataItem,
-                              min_value: np.ndarray(shape=(1), dtype=np.double) = [],
-                              max_value: np.ndarray(shape=(1), dtype=np.double) = []
+                              min_value: List[float],
+                              max_value: List[float]
                               ) -> SearchDataItem:
         pass
+
 
 class MinMaxConvolution(Convolution):
     """
     """
 
-    def __int__(self,
-                problem: Problem,
-                lambda_param: np.ndarray(shape=(1), dtype=np.double)
-                ):
+    def __init__(self,
+                 problem: Problem,
+                 lambda_param: List[float]
+                 ):
         super().__init__(problem, lambda_param)
 
     # Свертка меняет z у SearchDataItem. Z используется в методе для вычисления характеристик
     def calculate_convolution(self,
                               data_item: SearchDataItem,
-                              min_value: np.ndarray(shape=(1), dtype=np.double) = [],
-                              max_value: np.ndarray(shape=(1), dtype=np.double) = []
+                              min_value: List[float],
+                              max_value: List[float]
                               ) -> SearchDataItem:
         value = 0
         for i in range(0, self.problem.number_of_objectives):
             f_value = data_item.function_values[i].value - min_value[i]
-            value = max(value, f_value*self.lambda_param[i])
+            value = max(value, f_value * self.lambda_param[i])
         data_item.set_z(value)
         return data_item
 
@@ -59,15 +62,15 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
     def __init__(self,
                  problem: Problem,
                  convolution: Convolution,
-                 perm: np.ndarray(shape=(1), dtype=int) = None
+                 perm: List[float] | None = None
                  ):
         super().__init__(problem, perm)
         self.convolution = convolution
         # !!! реализовать заполнение массива
-        self.min_value: np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double) = []
-        self.max_value: np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double) = []
+        self.min_value: List[float] = [0] * self.problem.number_of_objectives
+        self.max_value: List[float] = [float('-inf')] * self.problem.number_of_objectives
         # есть ли в этом смысл? Проход по всей области парето может занять много времени
-        if self.problem.known_optimum: #проверка на пустоту
+        if self.problem.known_optimum:  # проверка на пустоту
             self.min_value = self.problem.known_optimum[0].function_values
             for know_optimum in self.problem.known_optimum:
                 for i in range(0, self.problem.number_of_objectives):
@@ -86,7 +89,6 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
     #     else:
     #         self.min_value = data_item.function_values
     #         self.max_value = data_item.function_values
-
 
 
 def calculate(self,
