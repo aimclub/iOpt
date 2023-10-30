@@ -1,3 +1,4 @@
+import copy
 from typing import Tuple
 
 import math
@@ -11,13 +12,13 @@ from iOpt.method.mixed_integer_method import MixedIntegerMethod
 from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
 from iOpt.method.search_data import SearchDataItem, SearchData
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.trial import FunctionValue, FunctionType
+from iOpt.trial import FunctionValue, FunctionType, Trial
 from iOpt.method.optim_task import TypeOfCalculation
 
 class TypeOfParetoRelation(Enum): # проблемы с именованием!!!
     DOMINANT = 1
-    NONDOMINATED = 0 # NONCOMPARABLE
-    SUBMIT = -1 #NONDOMINATED
+    NONCOMPARABLE = 0 # NONCOMPARABLE
+    NONDOMINATED = -1 #NONDOMINATED
 
 class MultiObjectiveMethod(MixedIntegerMethod):
     """
@@ -85,6 +86,14 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             self.task.calculate(item, -1, TypeOfCalculation.CONVOLUTION) # индекс интовый, он ни на что не влияет
         self.is_recalc_all_convolution = False
 
+        self.recalcR = True
+        self.recalcM = True
+
+        self.Z[self.task.problem.number_of_constraints] = self.best.get_z() #???? а точно ли?? лучшая же может поменяться
+        # не логичнее ли запускать в update_optimum после смены min_max?
+
+
+
         #поднять флаги M и R
         # сменить Z (как?)
     # По влагу необходимо пересчитать все свертки (ВСЕ?! почему мн.ч), затем все R и перрезаполнить очередь (А нужно ли?!, если R меняются в предке)
@@ -133,6 +142,9 @@ class MultiObjectiveMethod(MixedIntegerMethod):
         #
         #self.search_data.solution.best_trials[0] = self.best меняется вся область Парето
 
+        # может логичнее сначала изменить мин мах, потом пересчитать свертки, затем изменить бест,
+        # потом уже область парето, потому что там ничего не зависит от get_z
+
 
 
     def check_dominance(self, point: SearchDataItem) -> None:
@@ -145,37 +157,82 @@ class MultiObjectiveMethod(MixedIntegerMethod):
          если она где-то лучше, где-то хуже текущих - добавить ее в список
 
         """
+        pareto_front = copy.deepcopy(self.search_data.solution.best_trials)
+
         new = point.function_values
         add_point = 0
-        for trial in self.search_data.solution.best_trials:
+        for trial in pareto_front:
             old = trial.function_values
             relation = self.type_of_pareto_relation(new, old)
-            if(relation == TypeOfParetoRelation.NONDOMINATED):
+            if(relation == TypeOfParetoRelation.NONCOMPARABLE):
                 # добавить новый в список, но нужно проверить, что он не добавлен?!
                 add_point = 1
                 # но нужно проверить, не доминируется ли кем-то еще,
             elif(relation == TypeOfParetoRelation.DOMINANT):
                 # удалить старый и добавить новый
                 add_point = 1
-                np.delete(self.search_data.solution.best_trials, old) # насколько это вообще оптимально? Можно ли по другому? .. возвращает новый массив
+                pareto_front = np.delete(pareto_front, old) # насколько это вообще оптимально? Можно ли по другому? .. возвращает новый массив
+            elif (relation == TypeOfParetoRelation.NONDOMINATED): # если доминируется хоть кем-то, то точно не добавляем
+                add_point = 0
+                break
             # если она хуже хотя бы одной - то выходим из рассмотрения вообще
         if add_point:
-            np.append(self.search_data.solution.best_trials, new)
+            pareto_front = np.append(pareto_front, new)
             # что тут нужно еще сделать?!
+
+        self.search_data.solution.best_trials = pareto_front # вроде это и есть присвоение адреса
+
+        # не стала делать заполнение с нуля, потому что мне кажется это не оптимальным:
+        # если несравнимы, то добавляем оба
+        # если новый доминирует, то добавляем только его
+        # если новый кем-то доминируем, то придется с нуля заполнять массив
+        # потому что если он раньше был с кем-то несравним, то его придется удалить
+        # можно попробовать сделать это через set, но уйдет больше памяти на них
+        # хотя снизу что-то получилось
+
+
+        # способ 2
+        pareto_front = np.ndarray(shape=(1), dtype=Trial)
+
+        new = point.function_values
+        add_point = 0
+        for trial in self.search_data.solution.best_trials:
+            old = trial.function_values
+            relation = self.type_of_pareto_relation(new, old)
+            if (relation == TypeOfParetoRelation.NONCOMPARABLE):
+                # добавить новый в список, но нужно проверить, что он не добавлен?!
+                add_point = 1
+                pareto_front = np.append(pareto_front, old)
+                # но нужно проверить, не доминируется ли кем-то еще,
+            elif (relation == TypeOfParetoRelation.DOMINANT):
+                # удалить старый и добавить новый
+                add_point = 1
+            elif (relation == TypeOfParetoRelation.NONDOMINATED):  # если доминируется хоть кем-то,то точно не добавляем
+                add_point = 0
+                break
+                # здесь не нужно добавлять старый, потому что если новый не добавляем, то ничгео не меняем
+            # если она хуже хотя бы одной - то выходим из рассмотрения вообще
+        if add_point:
+            pareto_front = np.append(pareto_front, new)
+            self.search_data.solution.best_trials = pareto_front  # вроде это и есть присвоение адреса
+        # если мы не добавляем точку, значит оставляем все как есть и ничего не меняем
+            # что тут нужно еще сделать?!
+
+
 
     def type_of_pareto_relation(self, p1: np.ndarray(shape=(1), dtype=FunctionValue),
                                 p2: np.ndarray(shape=(1), dtype=FunctionValue)) -> TypeOfParetoRelation:
         count_dom = 0
         number_of_objectives = self.task.problem.number_of_objectives
         for i in number_of_objectives:
-            if(p1[i]>p2[i]):
+            if(p1[i]<p2[i]):
                 count_dom += 1
         if count_dom == 0 :
-            return TypeOfParetoRelation.SUBMIT
+            return TypeOfParetoRelation.NONDOMINATED
         elif count_dom == number_of_objectives:
             return TypeOfParetoRelation.DOMINANT
         else:
-            return TypeOfParetoRelation.NONDOMINATED
+            return TypeOfParetoRelation.NONCOMPARABLE
     def update_min_max_value(self,
                            data_item: SearchDataItem):
         # а где его применять?!
