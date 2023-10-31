@@ -15,7 +15,7 @@ class Convolution(ABC):
     Также возможен вариант, что свертка изменяется по ссылке передаваемой через конструктор класса.
     """
 
-    def __int__(self,
+    def __init__(self,
                 problem: Problem,
                 lambda_param: np.ndarray(shape=(1), dtype=np.double)
                 ):
@@ -35,7 +35,7 @@ class MinMaxConvolution(Convolution):
     """
     """
 
-    def __int__(self,
+    def __init__(self,
                 problem: Problem,
                 lambda_param: np.ndarray(shape=(1), dtype=np.double)
                 ):
