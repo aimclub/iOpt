@@ -22,10 +22,10 @@ class Calculator:
                  parameters: SolverParameters
                  ):
         r"""
-        Конструктор класса Calculator
+        Constructor of class Calculator
 
-        :param evaluate_method: метод вычислений, проводящий поисковые испытания по заданным правилам.
-        :param parameters: параметры решения задачи оптимизации.
+        :param evaluate_method: a computational method that performs search trials according to specified rules.
+        :param parameters: solution parameters of the optimization problem.
         """
         self.evaluate_method = evaluate_method
         self.parameters = parameters
@@ -35,9 +35,9 @@ class Calculator:
                                        initargs=(self.evaluate_method,))
 
     r"""
-    Инициализация метода вычислений в каждом процессе из пула процессов Calculator.Pool
+    Initialize the calculation method in each process from the process pool Calculator.Pool
 
-    :param evaluate_method: метод вычислений, проводящий поисковые испытания по заданным правилам.
+    :param evaluate_method: a computational method that performs search trials according to specified rules.
     """
 
     @staticmethod
@@ -45,9 +45,9 @@ class Calculator:
         Calculator.evaluate_method = evaluate_method
 
     r"""
-    Метод проведения испытаний в процессе из пула процессов Calculator.Pool
+    Сalculation method in each process from the process pool Calculator.Pool
 
-    :param point: точка проведения испытания
+    :param point: trial point.
     """
 
     @staticmethod
@@ -60,9 +60,9 @@ class Calculator:
         return point
 
     r"""
-    Метод проведения испытаний для множества точек
+    Сalculation method for multiple points
 
-    :param points: точки проведения испытаний
+    :param points: trial points.
     """
 
     def calculate_functionals_for_items(self, points: list[SearchDataItem]) -> list[SearchDataItem]:

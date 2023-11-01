@@ -13,9 +13,9 @@ from iOpt.solver_parametrs import SolverParameters
 
 class Solver:
     """
-    Класс Solver предназначен для выбора оптимальных (в заданной метрике) значений параметров
-    сложных объектов и процессов, например, методов искусственного интеллекта и
-    машинного обучения, а также – методов эвристической оптимизации.
+    The Solver class is designed to select optimal (in a given metric) values of parameters of complex objects and processes
+    Solver class is intended for selecting optimal (in a given metric) values of parameters of complex objects and processes, e.g., methods of artificial intelligence and
+    machine learning and heuristic optimization methods
     """
 
     def __init__(self,
@@ -23,10 +23,10 @@ class Solver:
                  parameters: SolverParameters = SolverParameters()
                  ):
         """
-        Конструктор класса Solver
+        Solver class constructor
 
-        :param problem: Постановка задачи оптимизации
-        :param parameters: Параметры поиска оптимальных решений
+        :param problem: Optimization problem formulation.
+        :param parameters: Parameters of search for optimal solutions.
         """
 
         self.problem = problem
@@ -47,10 +47,10 @@ class Solver:
 
     def solve(self) -> Solution:
         """
-        Метод позволяет решить задачу оптимизации. Остановка поиска выполняется согласно критерию,
-        заданному при создании класса Solver.
+        Solve an optimization problem. The search is stopped according to the criterion,
+        specified when creating the Solver class
 
-        :return: решение задачи оптимизации
+        :return: optimization problem solution.
         """
         Solver.check_parameters(self.problem, self.parameters)
         if self.parameters.timeout < 0:
@@ -73,43 +73,43 @@ class Solver:
 
     def do_global_iteration(self, number: int = 1):
         """
-        Метод позволяет выполнить несколько итераций глобального поиска
+        Perform several iterations of the global search
 
-        :param number: число итераций глобального поиска
+        :param number: number of global search iterations.
         """
         Solver.check_parameters(self.problem, self.parameters)
         self.process.do_global_iteration(number)
 
     def do_local_refinement(self, number: int = 1):
         """
-        Метод позволяет выполнить несколько итераций локального поиска
+        Perform several iterations of local search
 
-        :param number: число итераций локального поиска
+        :param number: number of local search iterations.
         """
         Solver.check_parameters(self.problem, self.parameters)
         self.process.do_local_refinement(number)
 
     def get_results(self) -> Solution:
         """
-        Метод позволяет получить текущую оценку решения задачи оптимизации
+        Provide a current estimate of the solution to the optimization problem
 
-        :return: решение задачи оптимизации
+        :return: Solving the optimization problem.
         """
         return self.process.get_results()
 
     def save_progress(self, file_name: str) -> None:
         """
-        Сохранение процесса оптимизации в файл
+        Save the optimization process to a file
 
-        :param file_name: имя файла
+        :param file_name: file name.
         """
         self.process.save_progress(file_name=file_name)
 
     def load_progress(self, file_name: str) -> None:
         """
-        Загрузка процесса оптимизации из файла
+        Load the optimization process from a file
 
-        :param file_name: имя файла
+        :param file_name: file name.
         """
         Solver.check_parameters(self.problem, self.parameters)
         self.process.load_progress(file_name=file_name)
@@ -120,16 +120,16 @@ class Solver:
 
     def refresh_listener(self) -> None:
         """
-        Метод оповещения наблюдателей о произошедшем событии
+        Notify observers of an event that has occurred
         """
 
         pass
 
     def add_listener(self, listener: Listener) -> None:
         """
-        Добавления наблюдателя за процессом оптимизации
+        Additions of an optimization process observer
 
-        :param listener: объект класса реализующий методы наблюдения
+        :param listener: class object implementing observation methods.
         """
 
         self.__listeners.append(listener)
@@ -138,10 +138,10 @@ class Solver:
     def check_parameters(problem: Problem,
                          parameters: SolverParameters = SolverParameters()) -> None:
         """
-        Проверяет параметры решателя
+        Check the parameters of the solver
 
-        :param problem: Постановка задачи оптимизации
-        :param parameters: Параметры поиска оптимальных решений
+        :param problem: Optimization problem formulation.
+        :param parameters: Parameters of search for optimal solutions.
 
         """
 

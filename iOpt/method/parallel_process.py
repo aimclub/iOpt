@@ -13,7 +13,7 @@ from iOpt.solver_parametrs import SolverParameters
 
 class ParallelProcess(Process):
     """
-    Класс ParallelProcess реализует распараллеливание на уровне потоков (процессов python).
+    The ParallelProcess class implements parallelization at the level of threads (python processes)
     """
 
     def __init__(self,
@@ -25,14 +25,14 @@ class ParallelProcess(Process):
                  listeners: List[Listener]
                  ):
         """
-        Конструктор класса ParallelProcess
+        Constructor of the ParallelProcess class
 
-        :param parameters: Параметры решения задачи оптимизации.
-        :param task: Обёртка решаемой задачи.
-        :param evolvent: Развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param search_data: Структура данных для хранения накопленной поисковой информации.
-        :param method: Метод оптимизации, проводящий поисковые испытания по заданным правилам.
-        :param listeners: Список "наблюдателей" (используется для вывода текущей информации).
+        :param parameters: Parameters of the solution to the optimization problem.
+        :param task: The wrapper of the problem to be solved.
+        :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
+        :param search_data: A data structure for storing accumulated search information.
+        :param method: An optimization method that performs search trials according to given rules.
+        :param listeners: List of "observers" (used to display current information).
         """
         super(ParallelProcess, self).__init__(parameters, task, evolvent, search_data, method, listeners)
 
@@ -41,9 +41,9 @@ class ParallelProcess(Process):
 
     def do_global_iteration(self, number: int = 1):
         """
-        Метод позволяет выполнить несколько итераций глобального поиска
+        Perform several iterations of the global search
 
-        :param number: Количество итераций глобального поиска
+        :param number: Number of iterations of global search.
         """
         number_ = number
         done_trials = []

@@ -7,7 +7,7 @@ from iOpt.problem import Problem
 
 class XSquared(Problem):
     """
-    Функция критерия :math:`f(x) = x^2`.
+    Criterion function :math:`f(x) = x^2`
     """
 
     def __init__(self, dimension: int):
@@ -40,11 +40,11 @@ class XSquared(Problem):
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения критерия
+        Calculation of the criterion value
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
+        :param point: coordinates of the trial point where the value of the function will be calculated. 
+        :param function_value: object defining the function number in the task and storing the function value.
+        :return: Calculated value of the function at point.
         """
         sum: np.double = 0
         for i in range(self.dimension):

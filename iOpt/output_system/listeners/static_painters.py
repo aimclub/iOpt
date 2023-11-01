@@ -79,26 +79,26 @@ class StaticDiscreteListener(Listener):
 # mode: objective function, approximation, only points
 class StaticPainterListener(Listener):
     """
-    Класс StaticPaintListener - слушатель событий. Содержит метод-обработчик, выдающий в качестве
-      реакции на завершение работы метода изображение.
+    The StaticPainterListener class is an event listener. It contains a method handler that produces an image as a reaction to the method's completion.
+      as a reaction to the method completion
     """
 
     def __init__(self, file_name: str, path_for_saves="", indx=0, is_points_at_bottom=False, mode='objective function'):
         """
-        Конструктор класса StaticPaintListener
+        Constructor of the StaticPainterListener class
 
-        :param file_name: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
-        :param path_for_saves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
-           сохраняется в текущей рабочей директории.
-        :param indx: Индекс переменной оптимизационной задачи. Используется в многомерной оптимизации.
-           Позволяет отобразить в сечении найденного минимума процесс оптимизации по одной выбранной переменной.
-        :param is_points_at_bottom: Отрисовать точки поисковой информации под графиком. Если False, точки ставятся на графике.
-        :param mode: Способ вычислений для отрисовки графика целевой функции, который будет использован. Возможные
-           режимы: 'objective function', 'only points', 'approximation' и 'interpolation'. Режим 'objective function'
-           строит график, вычисляя значения целевой функции на равномерной сетке. Режим 'approximation' строит
-           нейроаппроксимацию для целевой функции на основе полученной поисковой информации.
-           Режим 'interpolation' строит интерполяцию для целевой функции на основе полученной поисковой информации.
-           Режим 'only points' не строит график целевой функции.
+        :param file_name: File name specifying the format for saving the image. 
+        :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
+           is saved in the current working directory.
+        :param indx: Index of the variable of the optimization problem. It is used in multivariate optimization.
+           It allows to display in the cross-section of the found minimum the process of optimization by one selected variable.
+        :param is_points_at_bottom: Draw search information points below the graph. If False, the points are placed on the graph.
+        :param mode: The calculation method for drawing the graph of the objective function that will be used. Possible
+           modes: 'objective function', 'only points', 'approximation' and 'interpolation'. The 'objective function' mode
+           constructs the graph by calculating the values of the objective function on a uniform grid. The 'approximation' mode builds
+           neuroapproximation for the objective function based on the obtained search information.
+           The 'interpolation' mode builds interpolation for the objective function based on the obtained search information.
+           The 'only points' mode does not plot the objective function.
         """
         self.file_name = file_name
         self.path_for_saves = path_for_saves
@@ -119,30 +119,30 @@ class StaticPainterListener(Listener):
 # mode: surface, lines layers, approximation
 class StaticPainterNDListener(Listener):
     """
-    Класс StaticNDPaintListener - слушатель событий. Содержит метод-обработчик, выдающий в качестве
-      реакции на завершение работы метода изображение.
-      Используется для многомерной оптимизации.
+    The StaticPainterNDListener class is an event listener. It contains a method handler that produces an image as a
+      image as a reaction to the method completion.
+      It is used for multidimensional optimization
     """
 
     def __init__(self, file_name: str, path_for_saves="", vars_indxs=[0, 1], mode='lines layers',
                  calc='objective function'):
         """
-        Конструктор класса StaticNDPaintListener
+        Конструктор класса StaticPainterNDListener
 
-        :param file_name: Название файла с указанием формата для сохранения изображения. Обязательный параметр.
-        :param path_for_saves: Директория для сохранения изображения. В случае, если параметр не указан, изображение
-           сохраняется в текущей рабочей директории.
-        :param vars_indxs: Пара индексов переменных оптимизационной задачи, для которых будет построен рисунок.
-        :param mode_: Режим отрисовки графика целевой функции, который будет использован.
-           Возможные режимы:'lines layers', 'surface'.
-           Режим 'lines layers' рисует линии уровня в сечении найденного методом решения.
-           Режим 'surface' строит поверхность в сечении найденного методом решения.
-        :param calc: Способ вычислений для отрисовки графика целевой функции, который будет использован. Возможные
-           режимы: 'objective function' (только в режиме 'lines layers'), 'approximation' (только в режиме 'surface')
-           и 'interpolation'. Режим 'objective function' строит график, вычисляя значения целевой функции на равномерной
-           сетке. Режим 'approximation' строит нейроаппроксимацию для целевой функции на основе полученной поисковой
-           информации. Режим 'interpolation' строит интерполяцию для целевой функции на основе полученной поисковой
-           информации.
+        :param file_name: File name specifying the format for saving the image. 
+        :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
+           is saved in the current working directory.
+        :param vars_indxs: A pair of indices of the variables of the optimization problem for which the figure will be plotted.
+        :param mode_: Drawing mode of the objective function graph that will be used.
+           Possible modes: 'lines layers', 'surface'.
+           The 'lines layers' mode draws level lines in the cross-section of the solution found by the method.
+           The 'surface' mode draws the surface in the cross-section of the solution found by the method.
+        :param calc: The calculation method for drawing the graph of the objective function that will be used. Possible
+           modes: 'objective function' (only in the 'line layers' mode), 'approximation' (only in the 'surface' mode)
+           and 'interpolation'. The 'objective function' mode builds a graph by calculating the values of the objective function on a uniform grid.
+           grid. The 'approximation' mode builds a neuroapproximation for the objective function based on the obtained search information.
+           information. The 'interpolation' mode builds interpolation for the objective function based on the obtained search information.
+           information.
         """
         self.file_name = file_name
         self.path_for_saves = path_for_saves

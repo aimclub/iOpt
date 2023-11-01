@@ -16,7 +16,7 @@ from iOpt.trial import FunctionValue, FunctionType
 
 class IndexMethod(Method):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The Method class contains an implementation of the Global Search Algorithm
     """
 
     def __init__(self,
@@ -29,11 +29,11 @@ class IndexMethod(Method):
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Проведение поискового испытания в заданной точке.
+        Perform a search trial at a given point
 
-        :param point: точка, в которой надо провести испытание.
+        :param point: the point at which the trial is to be performed.
 
-        :return: точка, в которой сохранены результаты испытания.
+        :return: the point at which the trial results are saved.
         """
         try:
             number_of_constraints = self.task.problem.number_of_constraints
@@ -56,10 +56,10 @@ class IndexMethod(Method):
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление оценки константы Гельдера между между curr_point и left_point.
+        Compute an estimate of the Gelder constant between curr_point and left_point
 
-        :param curr_point: правая точка интервала
-        :param left_point: левая точка интервала
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
         if curr_point is None:
@@ -98,10 +98,10 @@ class IndexMethod(Method):
 
     def calculate_global_r(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление глобальной характеристики интервала [left_point, curr_point].
+        Calculate the global characteristic of an interval [left_point, curr_point]
 
-        :param curr_point: правая точка интервала.
-        :param left_point: левая точка интервала.
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
 
         # Сюда переедет целиком calculate_global_r из Method, а там останется только случай с равными индексами
@@ -144,9 +144,9 @@ class IndexMethod(Method):
 
     def update_optimum(self, point: SearchDataItem) -> None:
         r"""
-        Обновляет оценку оптимума.
+        Update the estimate of the optimum
 
-        :param point: точка нового испытания.
+        :param point: the point of a new trial.
         """
 
         if self.best is None or self.best.get_index() < point.get_index() or (

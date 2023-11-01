@@ -3,16 +3,16 @@ import math
 
 
 class Evolvent:
-    """Класс разверток
+    r"""Class Evolvent
 
-    :param lower_bound_of_float_variables: массив для левых (нижних) границ, А.
+    :param lower_bound_of_float_variables: array for lower bounds, А.
     :type  lower_bound_of_float_variables: np.ndarray(shape = (1), dtype = np.double).
-    :param upper_bound_of_float_variables: массив для правых (верхних) границ, В.
+    :param upper_bound_of_float_variables: array for upper bounds, В.
     :type  upper_bound_of_float_variables: np.ndarray(shape = (1), dtype = np.double).
-    :param number_of_float_variables: размерность задачи (N).
-    :type  number_of_float_variables: int
-    :param evolvent_density: плотность развертки (m).
-    :type  evolvent_density: int
+    :param number_of_float_variables: dimension (N).
+    :type  number_of_float_variables: int.
+    :param evolvent_density: evolvent density (m).
+    :type  evolvent_density: int.
     """
 
     def __init__(self,
@@ -42,11 +42,11 @@ class Evolvent:
                    lower_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = [],
                    upper_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = []
                    ):
-        """Установка граничных значений
+        r"""Set bounds
 
-        :param lower_bound_of_float_variables: массив для левых (нижних) границ, А.
+        :param lower_bound_of_float_variables: array for lower bounds, А.
         :type  lower_bound_of_float_variables: np.ndarray(shape = (1), dtype = np.double).
-        :param upper_bound_of_float_variables: массив для правых (верхних) границ, В.
+        :param upper_bound_of_float_variables: array for upper bounds, В.
         :type  upper_bound_of_float_variables: np.ndarray(shape = (1), dtype = np.double).
         """
 
@@ -56,11 +56,11 @@ class Evolvent:
     def get_image(self,
                   x: np.double
                   ) -> np.ndarray(shape=(1), dtype=np.double):
-        """Получить образ (x->y)
+        r"""Get image (x->y)
 
-        :param x: значение x.
+        :param x: value of *x*.
         :type  x: np.double.
-        :return: массив значений *y*
+        :return: array of values *y*.
         :rtype: np.ndarray(shape = (1), dtype = np.double).
 
         """
@@ -72,11 +72,11 @@ class Evolvent:
     def get_inverse_image(self,
                           y: np.ndarray(shape=(1), dtype=np.double)
                           ) -> np.double:
-        """Получить обратное значение образа (y->x)
+        r"""Get inverse image (y->x)
 
-        :param y: значение y.
-        :type  y: np.ndarray(shape = (1), dtype = np.double)
-        :return: значение *x*
+        :param y: value of *y*.
+        :type  y: np.ndarray(shape = (1), dtype = np.double).
+        :return: value of *x*.
         :rtype: np.double:.
 
         """
@@ -89,11 +89,11 @@ class Evolvent:
     def get_preimages(self,
                       y: np.ndarray(shape=(1), dtype=np.double),
                       ) -> np.double:
-        """Получить обратное значение образа (y->x)
+        r"""Get inverse image (y->x)
 
-        :param y: значение y.
-        :type  y: np.ndarray(shape = (1), dtype = np.double)
-        :return: значение *x*
+        :param y: value of *y*.
+        :type  y: np.ndarray(shape = (1), dtype = np.double).
+        :return: value of *x*.
         :rtype: np.double:.
 
         """
