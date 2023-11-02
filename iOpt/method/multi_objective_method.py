@@ -89,7 +89,12 @@ class MultiObjectiveMethod(MixedIntegerMethod):
         self.recalcR = True
         self.recalcM = True
 
+
+
         self.Z[self.task.problem.number_of_constraints] = self.best.get_z() #???? а точно ли?? лучшая же может поменяться
+
+        #найти новый бест????
+
         # не логичнее ли запускать в update_optimum после смены min_max?
 
 
@@ -131,19 +136,46 @@ class MultiObjectiveMethod(MixedIntegerMethod):
 
         #self.best = self.search_data.solution.best_trials[0] (если существует)
 
-        if self.best is None or self.best.get_index() < point.get_index() or (
-                self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
-            self.best = point
-            self.recalcR = True
-            self.Z[point.get_index()] = point.get_z()
+        # вариант предложенный на созвоне:
+        """
+        if(point.get_index()==self.task.problem.number_of_constraints): # а вот нужно ли его на весь блок кода или только эту часть?!
+            if self.best is None or self.best.get_index() < point.get_index() or (
+                    self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
+                self.best = point
+                self.recalcR = True
+                self.Z[point.get_index()] = point.get_z()
+
+            self.update_min_max_value(point)
+
+            self.check_dominance(point)
+        """
 
         # update_min_max_value
-        # check_dominance
-        #
-        #self.search_data.solution.best_trials[0] = self.best меняется вся область Парето
+        # check_dominance // self.search_data.solution.best_trials[0] = self.best меняется вся область Парето
 
         # может логичнее сначала изменить мин мах, потом пересчитать свертки, затем изменить бест,
         # потом уже область парето, потому что там ничего не зависит от get_z
+
+        #этот вариант кода:
+
+
+
+        if (point.get_index() == self.task.problem.number_of_constraints):  # а вот нужно ли его на весь блок кода или только эту часть?!
+            self.update_min_max_value(point)
+            self.recalc_all_convolution()
+            self.check_dominance(point) #не важен порядок recalc и этого, его вообще можно в конец убрать, он не зависит от best
+
+            if self.best is None or self.best.get_index() < point.get_index() or (
+                    self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
+                self.best = point
+                self.recalcR = True
+                self.Z[point.get_index()] = point.get_z()
+
+
+       
+
+
+
 
 
 
@@ -157,6 +189,8 @@ class MultiObjectiveMethod(MixedIntegerMethod):
          если она где-то лучше, где-то хуже текущих - добавить ее в список
 
         """
+
+        r"""
         pareto_front = copy.deepcopy(self.search_data.solution.best_trials)
 
         new = point.function_values
@@ -180,8 +214,9 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             pareto_front = np.append(pareto_front, new)
             # что тут нужно еще сделать?!
 
-        self.search_data.solution.best_trials = pareto_front # вроде это и есть присвоение адреса
+        self.search_data.solution.best_trials = pareto_front # вроде это и есть присвоение адреса //Присваивание создаёт новую переменную, которая дублирует ссылку на исходный объект.
 
+        """
         # не стала делать заполнение с нуля, потому что мне кажется это не оптимальным:
         # если несравнимы, то добавляем оба
         # если новый доминирует, то добавляем только его
@@ -192,6 +227,8 @@ class MultiObjectiveMethod(MixedIntegerMethod):
 
 
         # способ 2
+
+
         pareto_front = np.ndarray(shape=(1), dtype=Trial)
 
         new = point.function_values
@@ -217,6 +254,7 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             self.search_data.solution.best_trials = pareto_front  # вроде это и есть присвоение адреса
         # если мы не добавляем точку, значит оставляем все как есть и ничего не меняем
             # что тут нужно еще сделать?!
+
 
 
 
