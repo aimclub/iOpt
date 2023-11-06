@@ -1,4 +1,4 @@
-Интерфейсные классы iOpt
+iOpt Interface Classes
 ========================
 
 problem
@@ -41,8 +41,9 @@ trial
    :undoc-members:
    :show-inheritance:
 
-Реализация iOpt
----------------
+iOpt Implementation
+========================
+
 
 .. toctree::
    :maxdepth: 4

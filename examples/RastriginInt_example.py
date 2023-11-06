@@ -10,18 +10,17 @@ if __name__ == "__main__":
     """
 
     # Создание тестовой задачи
-    problem = RastriginInt(dimension=5, numberOfDiscreteVariables=3)
+    problem = RastriginInt(dimension=5, number_of_discrete_variables=3)
     # Начальная точка
-    startPoint: Point = Point(floatVariables=[0.5, 0.5], discreteVariables=['A', 'B', 'A'])
+    start_point: Point = Point(float_variables=[0.5, 0.5], discrete_variables=['A', 'B', 'A'])
     # Параметры решателя
-    params = SolverParameters(r=2.5, eps=0.01, itersLimit=10000, startPoint=startPoint, numberOfParallelPoints=16)
+    params = SolverParameters(r=2.5, eps=0.01, iters_limit=10000, start_point=start_point, number_of_parallel_points=16)
     # Создание решателя
     solver = Solver(problem=problem, parameters=params)
     # Вывод результатов в консоль в процессе решения задачи
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
     # 3D визуализация по окончании решения задачи
 
     # Запуск решения задачи
-    sol = solver.Solve()
-
+    sol = solver.solve()

@@ -22,35 +22,35 @@ from iOpt.problem import Problem
 
 class MixedIntegerMethod(IndexMethod):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The Method class contains an implementation of the Global Search Algorithm
     """
 
     def __init__(self,
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 searchData: SearchData
+                 search_data: SearchData
                  ):
-        super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, searchData)
+        super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, search_data)
 
         # u = {i, j, k}, i = {0, 1, 2}, j = {0, 1}, k = {0, 1, 2, 3, 4} -> 3*2*4=24
 
-        list_discreteValues = list(task.problem.discreteVariableValues)
-        self.discreteParameters = list(itertools.product(*list_discreteValues))
+        list_discrete_values = list(task.problem.discrete_variable_values)
+        self.discreteParameters = list(itertools.product(*list_discrete_values))
         # определяем количество сочетаний параметров
         self.numberOfParameterCombinations = len(self.discreteParameters)
         # 0 0.5 1  1.5 2   2.5  3    3.5 4
 
-    def FirstIteration(self, calculator: Calculator = None) -> None:
+    def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
-        Метод выполняет первую итерацию Алгоритма Глобального Поиска.
+        The method performs the first iteration of the Global Search Algorithm
         """
-        self.iterationsCount = 1
+        self.iterations_count = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-        left = SearchDataItem(Point(self.evolvent.GetImage(0.0), self.discreteParameters[0]), 0.0,
-                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
-        image_right = self.evolvent.GetImage(1.0)
+        left = SearchDataItem(Point(self.evolvent.get_image(0.0), self.discreteParameters[0]), 0.0,
+                              function_values=[FunctionValue()] * self.numberOfAllFunctions)
+        image_right = self.evolvent.get_image(1.0)
         right: list[SearchDataItem] = []
 
         # [(x + y - 1)/y]
@@ -59,169 +59,170 @@ class MixedIntegerMethod(IndexMethod):
         image_x: list = []
         is_init_image_x: bool = False
 
-        numberOfPointsInOneInterval = \
-            int(math.modf((self.parameters.numberOfParallelPoints + self.numberOfParameterCombinations - 1)
+        number_of_points_in_one_interval = \
+            int(math.modf((self.parameters.number_of_parallel_points + self.numberOfParameterCombinations - 1)
                           / self.numberOfParameterCombinations)[1])
 
-        h: float = 1.0 / (numberOfPointsInOneInterval + 1)
+        h: float = 1.0 / (number_of_points_in_one_interval + 1)
 
-        if self.parameters.startPoint:
-
+        if self.parameters.start_point:
             for id_comb in range(self.numberOfParameterCombinations):
+                if np.array_equal(self.parameters.start_point.discrete_variables, self.discreteParameters[id_comb]):
+                    num_temp = number_of_points_in_one_interval - 1
 
-                if np.array_equal(self.parameters.startPoint.discreteVariables, self.discreteParameters[id_comb]):
-                    numTemp = numberOfPointsInOneInterval - 1
+                    ystart_point = Point(copy.copy(self.parameters.start_point.float_variables),
+                                         self.discreteParameters[id_comb])
+                    xstart_point = id_comb + self.evolvent.get_inverse_image(
+                        self.parameters.start_point.float_variables)
+                    itemstart_point = SearchDataItem(ystart_point, xstart_point, discrete_value_index=id_comb,
+                                                     function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
-                    yStartPoint = Point(copy.copy(self.parameters.startPoint.floatVariables),
-                                        self.discreteParameters[id_comb])
-                    xStartPoint = id_comb + self.evolvent.GetInverseImage(self.parameters.startPoint.floatVariables)
-                    itemStartPoint = SearchDataItem(yStartPoint, xStartPoint, discreteValueIndex=id_comb,
-                                          functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                    is_add_start_point: bool = False
 
-                    isAddStartPoint: bool = False
-
-                    for i in range(numTemp):
+                    for i in range(num_temp):
                         x = id_comb + h * (i + 1)
 
-                        y_temp = self.evolvent.GetImage(x)
+                        y_temp = self.evolvent.get_image(x)
 
                         y = Point(copy.copy(y_temp), self.discreteParameters[id_comb])
-                        item = SearchDataItem(y, x, discreteValueIndex=id_comb,
-                                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
-                        if x < xStartPoint < id_comb + h * (i + 1):
+                        item = SearchDataItem(y, x, discrete_value_index=id_comb,
+                                              function_values=[FunctionValue()] * self.numberOfAllFunctions)
+                        if x < xstart_point < id_comb + h * (i + 1):
                             items.append(item)
-                            items.append(itemStartPoint)
-                            isAddStartPoint = True
+                            items.append(itemstart_point)
+                            is_add_start_point = True
                         else:
                             items.append(item)
 
-                    if not isAddStartPoint:
-                        items.append(itemStartPoint)
+                    if not is_add_start_point:
+                        items.append(itemstart_point)
 
                 else:
-
-                    for i in range(numberOfPointsInOneInterval):
+                    for i in range(number_of_points_in_one_interval):
                         x = id_comb + h * (i + 1)
                         if not is_init_image_x:
-                            image_x.append(self.evolvent.GetImage(x))
+                            image_x.append(self.evolvent.get_image(x))
 
                         y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
-                        item = SearchDataItem(y, x, discreteValueIndex=id_comb,
-                                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                        item = SearchDataItem(y, x, discrete_value_index=id_comb,
+                                              function_values=[FunctionValue()] * self.numberOfAllFunctions)
                         items.append(item)
 
                 right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
                                             float(id_comb + 1),
-                                            functionValues=[FunctionValue()] * self.numberOfAllFunctions,
-                                            discreteValueIndex=id_comb))
+                                            function_values=[FunctionValue()] * self.numberOfAllFunctions,
+                                            discrete_value_index=id_comb))
 
                 if not is_init_image_x:
                     is_init_image_x = True
         else:
             for id_comb in range(self.numberOfParameterCombinations):
-                for i in range(numberOfPointsInOneInterval):
+                for i in range(number_of_points_in_one_interval):
                     x = id_comb + h * (i + 1)
                     if not is_init_image_x:
-                        image_x.append(self.evolvent.GetImage(x))
+                        image_x.append(self.evolvent.get_image(x))
 
                     y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])
-                    item = SearchDataItem(y, x, discreteValueIndex=id_comb,
-                                          functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                    item = SearchDataItem(y, x, discrete_value_index=id_comb,
+                                          function_values=[FunctionValue()] * self.numberOfAllFunctions)
                     items.append(item)
 
                 right.append(SearchDataItem(Point(copy.copy(image_right), self.discreteParameters[id_comb]),
                                             float(id_comb + 1),
-                                            functionValues=[FunctionValue()] * self.numberOfAllFunctions,
-                                            discreteValueIndex=id_comb))
+                                            function_values=[FunctionValue()] * self.numberOfAllFunctions,
+                                            discrete_value_index=id_comb))
 
                 if not is_init_image_x:
                     is_init_image_x = True
 
         if calculator is None:
             for item in items:
-                self.CalculateFunctionals(item)
+                self.calculate_functionals(item)
+                self.update_optimum(item)
         else:
-            calculator.CalculateFunctionalsForItems(items)
+            calculator.calculate_functionals_for_items(items)
 
         for item in items:
-            self.UpdateOptimum(item)
+            self.update_optimum(item)
 
         left.delta = 0
         # left надо для всех считать
-        self.CalculateGlobalR(left, None)
+        self.calculate_global_r(left, None)
 
-        items[0].delta = self.CalculateDelta(left, items[0], self.dimension)
-        self.CalculateGlobalR(items[0], left)
+        items[0].delta = self.calculate_delta(left, items[0], self.dimension)
+        self.calculate_global_r(items[0], left)
 
         for id_comb in range(self.numberOfParameterCombinations):
             if id_comb > 0:
                 # вычисление left
-                index = id_comb * numberOfPointsInOneInterval
-                items[index].delta = self.CalculateDelta(right[id_comb - 1], items[index], self.dimension)
-                self.CalculateGlobalR(items[index], right[id_comb - 1])
+                index = id_comb * number_of_points_in_one_interval
+                items[index].delta = self.calculate_delta(right[id_comb - 1], items[index], self.dimension)
+                self.calculate_global_r(items[index], right[id_comb - 1])
 
-            for id_item in range(1, numberOfPointsInOneInterval):
-                index = id_comb * numberOfPointsInOneInterval + id_item
-                items[index].delta = self.CalculateDelta(items[index - 1], items[index], self.dimension)
-                self.CalculateGlobalR(items[index], items[index - 1])
-                self.CalculateM(items[index], items[index - 1])
+            for id_item in range(1, number_of_points_in_one_interval):
+                index = id_comb * number_of_points_in_one_interval + id_item
+                items[index].delta = self.calculate_delta(items[index - 1], items[index], self.dimension)
+                self.calculate_global_r(items[index], items[index - 1])
+                self.calculate_m(items[index], items[index - 1])
 
-            left_index = id_comb * numberOfPointsInOneInterval + numberOfPointsInOneInterval - 1
-            right[id_comb].delta = self.CalculateDelta(items[left_index], right[id_comb], self.dimension)
-            self.CalculateGlobalR(right[id_comb], items[left_index])
+            left_index = id_comb * number_of_points_in_one_interval + number_of_points_in_one_interval - 1
+            right[id_comb].delta = self.calculate_delta(items[left_index], right[id_comb], self.dimension)
+            self.calculate_global_r(right[id_comb], items[left_index])
 
         # вставить left  и right, потом middle
-        self.searchData.InsertFirstDataItem(left, right[-1])
+        self.search_data.insert_first_data_item(left, right[-1])
 
         for right_item in range(self.numberOfParameterCombinations):
             if right_item < self.numberOfParameterCombinations - 1:
-                self.searchData.InsertDataItem(right[right_item], right[-1])
+                self.search_data.insert_data_item(right[right_item], right[-1])
 
-            for id_item in range(numberOfPointsInOneInterval):
-                index = right_item * numberOfPointsInOneInterval + id_item
-                self.searchData.InsertDataItem(items[index], right[right_item])
+            for id_item in range(number_of_points_in_one_interval):
+                index = right_item * number_of_points_in_one_interval + id_item
+                self.search_data.insert_data_item(items[index], right[right_item])
 
         self.recalcR = True
         self.recalcM = True
+        self.iterations_count = len(items)
+        self.search_data.solution.number_of_global_trials = len(items)
 
-        self.iterationsCount = len(items)
+        return items
 
-    def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
+    def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Вычисление точки нового испытания :math:`x^{k+1}`.
+        Calculate the point of a new trial :math:`x^{k+1}`
 
-        :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
-          которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
+        :return: :math:`x^{k+1}` - new trial point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
+          to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
 
         if self.recalcM is True:
-            self.RecalcM()
+            self.recalc_m()
         if self.recalcR is True:
-            self.RecalcAllCharacteristics()
+            self.recalc_all_characteristics()
 
-        old = self.searchData.GetDataItemWithMaxGlobalR()
+        old = self.search_data.get_data_item_with_max_global_r()
         self.min_delta = min(old.delta, self.min_delta)
-        newx = self.CalculateNextPointCoordinate(old)
-        newy = self.evolvent.GetImage(newx - math.modf(newx)[1])
-        new = copy.deepcopy(SearchDataItem(Point(newy, old.point.discreteVariables),
-                                           newx, discreteValueIndex=old.GetDiscreteValueIndex(),
-                                           functionValues=[FunctionValue()] * self.numberOfAllFunctions))
+        newx = self.calculate_next_point_coordinate(old)
+        newy = self.evolvent.get_image(newx - math.modf(newx)[1])
+        new = copy.deepcopy(SearchDataItem(Point(newy, old.point.discrete_variables),
+                                           newx, discrete_value_index=old.get_discrete_value_index(),
+                                           function_values=[FunctionValue()] * self.numberOfAllFunctions))
         # Обновление числа испытаний
-        self.searchData.solution.numberOfGlobalTrials += 1
+        self.search_data.solution.number_of_global_trials += 1
 
         return new, old
 
     @staticmethod
     def GetDiscreteParameters(problem: Problem) -> list:
-        list_discreteValues = list(problem.discreteVariableValues)
-        return list(itertools.product(*list_discreteValues))
+        list_discrete_values = list(problem.discrete_variable_values)
+        return list(itertools.product(*list_discrete_values))
 
-    def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+    def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление оценки константы Гельдера между между curr_point и left_point.
+        Compute an estimate of the Gelder constant between curr_point and left_point
 
-        :param curr_point: правая точка интервала
-        :param left_point: левая точка интервала
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
         if curr_point is None:
@@ -229,40 +230,42 @@ class MixedIntegerMethod(IndexMethod):
             raise RuntimeError("CalculateM: curr_point is None")
         if left_point is None:
             return
-        index = curr_point.GetIndex()
+        index = curr_point.get_index()
         if index < 0:
             return
         m = 0.0
-        if left_point.GetIndex() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
-            m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
+        if left_point.get_index() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+            m = abs(left_point.get_z() - curr_point.get_z()) / curr_point.delta
         else:
             # Ищем слева
             other_point = left_point
-            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
-                if other_point.GetDiscreteValueIndex() == curr_point.GetDiscreteValueIndex():
-                    other_point = other_point.GetLeft()
+            while (other_point is not None) and (other_point.get_index() < curr_point.get_index()):
+                if other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
+                    other_point = other_point.get_left()
                 else:
                     other_point = None
                     break
-            if other_point is not None and other_point.GetIndex() >= 0:
+            if other_point is not None and other_point.get_index() >= 0 \
+                    and other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
                 # print(index)
-                m = abs(other_point.functionValues[index].value - curr_point.GetZ()) / \
-                    self.CalculateDelta(other_point, curr_point, self.dimension)
+                m = abs(other_point.function_values[index].value - curr_point.get_z()) / \
+                    self.calculate_delta(other_point, curr_point, self.dimension)
 
             # Ищем справа
-            other_point = left_point.GetRight()
+            other_point = left_point.get_right()
             if other_point is not None and other_point is curr_point:  # возможно только при пересчёте M
-                other_point = other_point.GetRight()
-            while (other_point is not None) and (other_point.GetIndex() < curr_point.GetIndex()):
-                if other_point.GetDiscreteValueIndex() == curr_point.GetDiscreteValueIndex():
-                    other_point = other_point.GetRight()
+                other_point = other_point.get_right()
+            while (other_point is not None) and (other_point.get_index() < curr_point.get_index()):
+                if other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
+                    other_point = other_point.get_right()
                 else:
                     other_point = None
                     break
 
-            if other_point is not None and other_point.GetIndex() >= 0:
-                m = max(m, abs(curr_point.GetZ() - other_point.functionValues[index].value) / \
-                        self.CalculateDelta(curr_point, other_point, self.dimension))
+            if other_point is not None and other_point.get_index() >= 0 \
+                    and other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
+                m = max(m, abs(curr_point.get_z() - other_point.function_values[index].value) / \
+                        self.calculate_delta(curr_point, other_point, self.dimension))
 
         if m > self.M[index] or (self.M[index] == 1.0 and m > 1e-12):
             self.M[index] = m

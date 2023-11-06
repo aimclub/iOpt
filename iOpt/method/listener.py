@@ -5,17 +5,17 @@ import numpy as np
 
 class Listener:
     """
-    Базовый класс слушателя событий.
+    Event listener base class
     """
 
-    def BeforeMethodStart(self, method: Method):
+    def before_method_start(self, method: Method):
         pass
 
-    def OnEndIteration(self, currPoints : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
+    def on_end_iteration(self, curr_points : np.ndarray(shape=(1), dtype=SearchDataItem), solution: Solution):
         pass
 
-    def OnMethodStop(self, searchData: SearchData, solution: Solution, status: bool):
+    def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):
         pass
 
-    def OnRefrash(self):
+    def on_refrash(self):
         pass

@@ -4,29 +4,29 @@
    contain the root `toctree` directive.
 
 
-Добро пожаловать в документацию iOpt!
-=====================================
+Welcome to the iOpt documentation!
+==================================
 
 .. image:: ../iOpt_logo.png
    :width: 200
    :align: center
-   :alt: Введение
+   :alt: iOpt_logo
 
-iOpt - фреймворк с открытым исходным кодом для автоматического выбора значений параметров как для математических моделей сложных промышленных процессов, так и для используемых в промышленности методов ИИ и МО. Фреймворк распространяется под лицензией 3-Clause BSD.
+iOpt is an open source framework for automatic selection of parameter values both for mathematical models of complex industrial processes and for AI and ML methods used in industry. The framework is distributed under the 3-Clause BSD license.
 
-Ключевые возможности фреймворка
-_______________________________
+Key features of the framework
+_____________________________
 
-- Автоматический выбор значений параметров математических моделей и методов ИИ и МО, используемых в промышленности.
-- Интеллектуальное управление процессом выбора оптимальных параметров для промышленных задач.
-- Интеграция с внешними библиотеками или фреймворками искусственного интеллекта и машинного обучения, а также предметными моделями.
-- Автоматизация предварительного анализа исследуемых моделей, например, выделение различных классов зависимостей модели от разных групп параметров.
-- Визуализация процесса выбора оптимальных параметров.
+- Automatic selection of parameter values both for mathematical models and for AI and ML methods used in industry.
+- Intelligent control of the process of choosing the optimal parameters for industrial applications.
+- Integration with external artificial intelligence and machine learning libraries or frameworks as well as applied models.
+- Automation of the preliminary analysis of the models under study, e.g., by identifying different types of model dependencies on different groups of parameters.
+- Visualization of the process of choosing optimal parameters.
 
 
 .. toctree::
    :maxdepth: 2
-   :caption: Содержание:
+   :caption: Content:
    
    introduction
    install
@@ -34,7 +34,7 @@ _______________________________
    modules/modules
    about
 
-Индексы и таблицы
+Indexes and tables
 ==================
 
 * :ref:`genindex`

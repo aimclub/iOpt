@@ -6,7 +6,7 @@ from iOpt.output_system.listeners.animate_painters import AnimatePainterNDListen
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 if __name__ == "__main__":
-    # create the problem 2D dimension
+    # create the problem _2D dimension
     problem = XSquared(2)
 
     # add solver parameters
@@ -16,11 +16,11 @@ if __name__ == "__main__":
     solver = Solver(problem, parameters=params)
 
     cfol = ConsoleOutputListener(mode="full")
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
     # add needed listeners for solver
     apl = AnimatePainterNDListener("xsquared_1_2.5_0.01.png")
-    solver.AddListener(apl)
+    solver.add_listener(apl)
 
     # solve the problem
-    sol = solver.Solve()
+    sol = solver.solve()

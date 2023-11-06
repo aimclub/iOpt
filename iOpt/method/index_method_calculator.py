@@ -8,7 +8,7 @@ from iOpt.trial import FunctionValue, FunctionType
 
 class IndexMethodCalculator(ICriterionEvaluateMethod):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The Method class contains an implementation of the Global Search Algorithm
     """
 
     def __init__(self,
@@ -16,36 +16,36 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
                  ):
         self.task = task
 
-    def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
+    def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Проведение поискового испытания в заданной точке.
+        Perform a search trial at a given point
 
-        :param point: точка, в которой надо провести испытание.
+        :param point: the point at which the trial is to be performed.
 
-        :return: точка, в которой сохранены результаты испытания.
+        :return: the point at which the trial results are saved.
         """
-        number_of_constraints = self.task.problem.numberOfConstraints
+        number_of_constraints = self.task.problem.number_of_constraints
         for i in range(number_of_constraints):
-            point.functionValues[i] = FunctionValue(FunctionType.CONSTRAINT, i)
-            point = self.task.Calculate(point, i)
-            point.SetZ(point.functionValues[i].value)
-            point.SetIndex(i)
-            if point.GetZ() < 0:
+            point.function_values[i] = FunctionValue(FunctionType.CONSTRAINT, i)
+            point = self.task.calculate(point, i)
+            point.set_z(point.function_values[i].value)
+            point.set_index(i)
+            if point.get_z() < 0:
                 return point
-        point.functionValues[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
-        point = self.task.Calculate(point, number_of_constraints)
-        point.SetZ(point.functionValues[number_of_constraints].value)
-        point.SetIndex(number_of_constraints)
+        point.function_values[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
+        point = self.task.calculate(point, number_of_constraints)
+        point.set_z(point.function_values[number_of_constraints].value)
+        point.set_index(number_of_constraints)
         return point
 
-    def CopyFunctionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
+    def copy_functionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
         r"""
-        Копирование поискового испытания.
+        Copy the search trial
 
-        :param dist_point: точка, в которую копируются значения испытаний.
-        :param src_point: точка c результатами испытаний.
+        :param dist_point: point to which the trial values are copied.
+        :param src_point: point with trial results.
         """
 
-        dist_point.functionValues = copy.deepcopy(src_point.functionValues)
-        dist_point.SetZ(src_point.GetZ())
-        dist_point.SetIndex(src_point.GetIndex())
+        dist_point.function_values = copy.deepcopy(src_point.function_values)
+        dist_point.set_z(src_point.get_z())
+        dist_point.set_index(src_point.get_index())

@@ -4,7 +4,7 @@ from iOpt.solver_parametrs import SolverParameters
 from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
 
 if __name__ == "__main__":
-    # create the problem 2D dimension
+    # create the problem _2D dimension
     problem = XSquared(2)
 
     # add solver parameters
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     # add needed listeners for solver
     apl = StaticPainterNDListener("xsquared_2_2.5_0.01.png", mode='lines layers')
-    solver.AddListener(apl)
+    solver.add_listener(apl)
 
     # solve the problem
-    sol = solver.Solve()
+    sol = solver.solve()

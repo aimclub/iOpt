@@ -12,12 +12,12 @@ if __name__ == "__main__":
     # Создание тестовой задачи
     problemInt = RastriginIntHiddenConstraint(2, 1)
     # Параметры решателя
-    paramsInt = SolverParameters(r=2.5, eps=0.01, itersLimit=300, refineSolution=True)
+    paramsInt = SolverParameters(r=2.5, eps=0.01, iters_limit=300, refine_solution=True)
     # Создание решателя
     solverInt = Solver(problemInt, parameters=paramsInt)
     # Вывод результатов в консоль в процессе решения задачи
     cfolInt = ConsoleOutputListener(mode='result')
-    solverInt.AddListener(cfolInt)
+    solverInt.add_listener(cfolInt)
     # Запуск решения задачи
-    solInt = solverInt.Solve()
+    solInt = solverInt.solve()
     print(solInt)

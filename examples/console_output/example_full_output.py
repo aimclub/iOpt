@@ -15,8 +15,8 @@ if __name__ == "__main__":
 
     # add needed listeners for solver
     cfol = ConsoleOutputListener(mode="full")
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
     # solve the problem
-    sol = solver.Solve()
+    sol = solver.solve()
 

@@ -13,58 +13,58 @@ p = np.array([[0, 5], [2, 5], [3, 2], [4, 4], [5, 1]])
 class Romeijn3c(Problem):
     def __init__(self):
         """
-        Конструктор класса Romeijn3c problem.
+        Romeijn3c problem class constructor.
         """
         super(Romeijn3c, self).__init__()
         self.name = "Romeijn3c"
         self.dimension: int = 2
-        self.numberOfFloatVariables = self.dimension
-        self.numberOfDiscreteVariables = 0
-        self.numberOfObjectives = 1
-        self.numberOfConstraints = 3
+        self.number_of_float_variables = self.dimension
+        self.number_of_discrete_variables = 0
+        self.number_of_objectives = 1
+        self.number_of_constraints = 3
 
-        self.floatVariableNames = np.ndarray(shape=(self.dimension), dtype=str)
+        self.float_variable_names = np.ndarray(shape=(self.dimension), dtype=str)
         for i in range(self.dimension):
-            self.floatVariableNames[i] = i
+            self.float_variable_names[i] = i
 
-        self.lowerBoundOfFloatVariables = np.ndarray(shape=(1, self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables = [-3, -4]
-        self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables = [10, 7]
+        self.lower_bound_of_float_variables = np.ndarray(shape=(1, self.dimension), dtype=np.double)
+        self.lower_bound_of_float_variables = [-3, -4]
+        self.upper_bound_of_float_variables = np.ndarray(shape=(self.dimension), dtype=np.double)
+        self.upper_bound_of_float_variables = [10, 7]
 
-        self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
+        self.known_optimum = np.ndarray(shape=(1), dtype=Trial)
 
         pointfv = [-3, -4]
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0] = self.Calculate(KOpoint, KOfunV[0])
-        self.knownOptimum[0] = Trial(KOpoint, KOfunV)
+        KOfunV[0] = self.calculate(KOpoint, KOfunV[0])
+        self.known_optimum[0] = Trial(KOpoint, KOfunV)
 
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения выбранной функции в заданной точке.
+        Calculate the value of the selected function at a given point
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
+        :param point: coordinates of the trial point where the value of the function will be calculated.
+        :param function_value: object defining the function number in the task and storing the function value.
+        :return: Calculated value of the function at point.
         """
         result: np.double = 0
-        x = point.floatVariables
+        x = point.float_variables
 
-        if functionValue.type == FunctionType.OBJECTIV:
+        if function_value.type == FunctionType.OBJECTIV:
             for i in range(0, 5):
                 temp = 0
                 for j in range(0, self.dimension):
                     temp += pow(x[j] - p[i][j], 2)
                 temp = a[i] * temp + c[i]
                 result += 1 / temp
-        elif functionValue.functionID == 0:  # constraint 1
+        elif function_value.functionID == 0:  # constraint 1
             result = np.double(x[0] + x[1] - 5)
-        elif functionValue.functionID == 1:  # constraint 2
+        elif function_value.functionID == 1:  # constraint 2
             result = np.double(x[0] - pow(x[1], 2))
-        elif functionValue.functionID == 2:  # constraint 3
+        elif function_value.functionID == 2:  # constraint 3
             result = np.double(5 * pow(x[0], 3) - 8 / 5 * pow(x[1], 2))
 
-        functionValue.value = result
-        return functionValue
+        function_value.value = result
+        return function_value

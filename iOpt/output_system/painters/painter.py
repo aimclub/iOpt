@@ -3,16 +3,16 @@ from iOpt.method.search_data import SearchDataItem
 
 class Painter:
     """
-    Базовый класс рисовальщика.
+    Basic Drawer Class
     """
-    def PaintObjectiveFunc(self):
+    def paint_objective_func(self):
         pass
 
-    def PaintPoints(self, currPoint: SearchDataItem):
+    def paint_points(self, curr_point: SearchDataItem):
         pass
 
-    def PaintOptimum(self, solution: Solution):
+    def paint_optimum(self, solution: Solution):
         pass
 
-    def SaveImage(self):
+    def save_image(self):
         pass

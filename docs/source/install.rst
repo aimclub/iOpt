@@ -1,36 +1,35 @@
-Установка и запуск
+Installation and how to use
 ==================
 
-Предварительные замечания
+Preliminary remarks
 -------------------------
 
-- В зависимости от текущей конфигурации, команда запуска Python может быть `python` или `python3`. В дальнейшем предполагается, что они обе запускают интерпретатор версии 3.
-- Аналогично, команда запуска менджера пакетов может быть `pip` или `pip3`.
-- Для построения документации необходимо предварительно установить пакет **sphinx** (лучше с правами администратора).
-- Для установки и использования в ОС Windows нужно иметь настроенный интерпретатор команд (bash, cmd).
+- Depending on the current configuration, the Python startup command may be `python` or `python3`. In what follows, it is assumed that they both run the version 3 interpreter.
+- Likewise, the command to start the package manager can be `pip` or `pip3`.
+- To build documentation, you must first install the **sphinx** package (preferably with administrator privileges).
+- To install and use the framework on Windows OS, you need to have a configured command interpreter (bash, cmd).
 
-Автоматическая установка в Unix-подобных системах
+Automatic installation on Unix-like systems
 --------------------------------------------------
 
-Самый простой способ установить фреймворк:
+The easiest way to install the framework:
 
-- Сделать клон репозитория и перейти в его корневую папку
+- Clone the repository and go to its root folder
 
 .. code-block::
 
-    git clone https://github.com/UNN-ITMM-Software/iOpt
+    git clone https://github.com/aimclub/iOpt
     cd iOpt
 
 
-- Установить поддержку **virtualenv**
+- Install **virtualenv** support
 
 .. code-block::
 
     pip install virtualenv
     
 
-- Создать и автивировать рабочее окружение **ioptenv**
-
+- Create and activate the working environment **ioptenv**
 
 .. code-block:: 
 
@@ -38,14 +37,14 @@
     source ioptenv/bin/activate
 
 
-- Выполнить установку пакетов
+- Install packages
 
 .. code-block:: 
 
     python setup.py install
 
 
-- Запустить примеры из папки **examples**
+- To run examples from the **examples** folder
 
 .. code-block:: 
 
@@ -53,37 +52,37 @@
     python examples/Rastrigin_example.py
 
 
-- После окончания работы деактивировать виртуальное окружение
+- To deactivate the virtual environment after finishing work
 
 .. code-block:: 
 
     deactivate
 
 
-Особенности автоматической установки в ОС Windows
+Differences in automatic installation in Windows OS
 -------------------------------------------------
 
-После установки **virtualenv** и создания виртуального окружения, его активация осуществляется командой
+After installing **virtualenv** and creating a virtual environment, its activation is carried out with the command
 
 .. code-block:: 
 
    ioptenv\Scripts\activate.bat
 
 
-Ручная установка в Unix-подобных системах
+Manual installation on Unix-like systems
 -----------------------------------------
 
-При этом способе необходимо:
+In this case it is necessary:
 
-- перейти в корень репозитория
-- установить требуемые пакеты
+- go to the root folder of the repository
+- install the required packages
 
 .. code-block:: 
 
     pip install numpy depq cycler kiwisolver matplotlib scikit-learn sphinx sphinx_rtd_theme sphinxcontrib-details-directive  autodocsumm
 
 
-- для доступа к модулю **iOpt** необходимо модифицировать переменную **PYTHONPATH** следующей командой
+- to access the **iOpt** module you need to modify the **PYTHONPATH** variable with the following command
 
 .. code-block:: 
 

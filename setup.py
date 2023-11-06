@@ -21,7 +21,7 @@ def _get_requirements(req_name: str):
 
 setup(
    name='iOpt',
-   version='0.1.6',
+   version='0.2.22',
    description='Фреймворк для автоматического выбора значений параметров для математических моделей, ИИ и МО.',
    author='UNN Team',
    author_email='',

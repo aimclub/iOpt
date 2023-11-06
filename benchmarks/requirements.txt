@@ -1,0 +1,13 @@
+# frameworks
+optuna
+hyperopt
+
+# estimators
+skicit-learn
+xgboost
+
+# utils
+pandas
+numpy
+requests
+arff

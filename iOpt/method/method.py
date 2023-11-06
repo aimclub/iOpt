@@ -18,47 +18,47 @@ from iOpt.trial import Point, FunctionValue
 
 class Method:
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The Method class contains an implementation of the Global Search Algorithm
     """
 
     def __init__(self,
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 searchData: SearchData
+                 search_data: SearchData
                  ):
         r"""
-        Конструктор класса Method
+        Method class constructor
 
-        :param parameters: параметры решения задачи оптимизации.
-        :param task: обёртка решаемой задачи.
-        :param evolvent: развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param searchData: структура данных для хранения накопленной поисковой информации.
+        :param parameters: parameters for solving the optimization problem.
+        :param task: problem wrapper.
+        :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
+        :param search_data: data structure for storing accumulated search information.
         """
         self.stop: bool = False
         self.recalcR: bool = True
         self.recalcM: bool = True
-        self.iterationsCount: int = 0
+        self.iterations_count: int = 0
         self.best: SearchDataItem = None
 
         self.parameters = parameters
         self.task = task
         self.evolvent = evolvent
-        self.searchData = searchData
-        # change to np.array, but indexing np is slower
-        self.M = [1.0 for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
-        self.Z = [np.infty for _ in range(task.problem.numberOfObjectives + task.problem.numberOfConstraints)]
-        self.dimension = task.problem.numberOfFloatVariables  # А ДЛЯ ДИСКРЕТНЫХ?
-        self.searchData.solution.solutionAccuracy = np.infty
-        self.numberOfAllFunctions = task.problem.numberOfObjectives + task.problem.numberOfConstraints
+        self.search_data = search_data
+
+        self.M = [1.0 for _ in range(task.problem.number_of_objectives + task.problem.number_of_constraints)]
+        self.Z = [np.infty for _ in range(task.problem.number_of_objectives + task.problem.number_of_constraints)]
+        self.dimension = task.problem.number_of_float_variables
+        self.search_data.solution.solution_accuracy = np.infty
+        self.numberOfAllFunctions = task.problem.number_of_objectives + task.problem.number_of_constraints
 
     @property
     def min_delta(self):
-        return self.searchData.solution.solutionAccuracy
+        return self.search_data.solution.solution_accuracy
 
     @min_delta.setter
     def min_delta(self, val):
-        self.searchData.solution.solutionAccuracy = val
+        self.search_data.solution.solution_accuracy = val
 
     # @staticmethod
     # def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
@@ -74,169 +74,173 @@ class Method:
     #     """
     #     return pow(rx - lx, 1.0 / dimension)
 
-    def CalculateDelta(self, lPoint: SearchDataItem, rPoint: SearchDataItem, dimension: int) -> float:
+    def calculate_delta(self, l_point: SearchDataItem, r_point: SearchDataItem, dimension: int) -> float:
         """
-        Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
-          полученными при редукции размерности.
+        Compute the Gelder distance in the Gelder metric between two points on the segment [0,1],
+          obtained by dimensionality reduction
 
-        :param lPoint: левая точка
-        :param rPoint: правая точка
-        :param dimension: размерность исходного пространства
+        :param l_point: left point.
+        :param r_point: right point.
+        :param dimension: dimensionality of the original space.
 
-        :return: гельдерово расстояние между lx и rx.
+        :return: helder distance between lx and rx.
         """
-        return pow(rPoint.GetX() - lPoint.GetX(), 1.0 / dimension)
+        return pow(r_point.get_x() - l_point.get_x(), 1.0 / dimension)
 
-    def FirstIteration(self, calculator: Calculator = None) -> None:
+    def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
         r"""
-        Метод выполняет первую итерацию Алгоритма Глобального Поиска.
+        Perform the first iteration of the Global Search Algorithm
         """
 
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
         # Интервал задаётся правой точкой, т.е. будут интервалы только для 0.5 и 1
-        left = SearchDataItem(Point(self.evolvent.GetImage(0.0), None), 0.,
-                              functionValues=[FunctionValue()] * self.numberOfAllFunctions)
-        right = SearchDataItem(Point(self.evolvent.GetImage(1.0), None), 1.0,
-                               functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+        left = SearchDataItem(Point(self.evolvent.get_image(0.0), None), 0.,
+                              function_values=[FunctionValue()] * self.numberOfAllFunctions)
+        right = SearchDataItem(Point(self.evolvent.get_image(1.0), None), 1.0,
+                               function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
         items: list[SearchDataItem] = []
 
-        if self.parameters.startPoint:
-            numberOfPoint: int = self.parameters.numberOfParallelPoints - 1
-            h: float = 1.0 / (numberOfPoint + 1)
+        if self.parameters.start_point:
+            number_of_point: int = self.parameters.number_of_parallel_points - 1
+            h: float = 1.0 / (number_of_point + 1)
 
-            yStartPoint = Point(copy.copy(self.parameters.startPoint.floatVariables), None)
-            xStartPoint = self.evolvent.GetInverseImage(self.parameters.startPoint.floatVariables)
+            ystart_point = Point(copy.copy(self.parameters.start_point.float_variables), None)
+            xstart_point = self.evolvent.get_inverse_image(self.parameters.start_point.float_variables)
 
-            itemStartPoint = SearchDataItem(yStartPoint, xStartPoint,
-                                  functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+            itemstart_point = SearchDataItem(ystart_point, xstart_point,
+                                             function_values=[FunctionValue()] * self.numberOfAllFunctions)
 
-            isAddStartPoint: bool = False
+            is_add_start_point: bool = False
 
-            for i in range(numberOfPoint):
+            for i in range(number_of_point):
                 x = h * (i + 1)
-                y = Point(self.evolvent.GetImage(x), None)
+                y = Point(self.evolvent.get_image(x), None)
                 item = SearchDataItem(y, x,
-                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
-                if x < xStartPoint < h * (i + 2):
+                                      function_values=[FunctionValue()] * self.numberOfAllFunctions)
+                if x < xstart_point < h * (i + 2):
                     items.append(item)
-                    items.append(itemStartPoint)
-                    isAddStartPoint = True
+                    items.append(itemstart_point)
+                    is_add_start_point = True
                 else:
                     items.append(item)
 
-            if not isAddStartPoint:
-                items.append(itemStartPoint)
+            if not is_add_start_point:
+                items.append(itemstart_point)
         else:
 
-            numberOfPoint: int = self.parameters.numberOfParallelPoints
-            h: float = 1.0 / (numberOfPoint + 1)
+            number_of_point: int = self.parameters.number_of_parallel_points
+            h: float = 1.0 / (number_of_point + 1)
 
-            for i in range(numberOfPoint):
+            for i in range(number_of_point):
                 x = h * (i + 1)
-                y = Point(self.evolvent.GetImage(x), None)
+                y = Point(self.evolvent.get_image(x), None)
                 item = SearchDataItem(y, x,
-                                      functionValues=[FunctionValue()] * self.numberOfAllFunctions)
+                                      function_values=[FunctionValue()] * self.numberOfAllFunctions)
                 items.append(item)
 
         if calculator is None:
             for item in items:
-                self.CalculateFunctionals(item)
+                self.calculate_functionals(item)
+                self.update_optimum(item)
         else:
-            calculator.CalculateFunctionalsForItems(items)
+            calculator.calculate_functionals_for_items(items)
 
         for item in items:
-            self.UpdateOptimum(item)
+            self.update_optimum(item)
 
         left.delta = 0
-        self.CalculateGlobalR(left, None)
+        self.calculate_global_r(left, None)
 
-        items[0].delta = self.CalculateDelta(left, items[0], self.dimension)
-        self.CalculateGlobalR(items[0], left)
+        items[0].delta = self.calculate_delta(left, items[0], self.dimension)
+        self.calculate_global_r(items[0], left)
         for id_item, item in enumerate(items):
             if id_item > 0:
-                items[id_item].delta = self.CalculateDelta(items[id_item - 1], items[id_item], self.dimension)
-                self.CalculateGlobalR(items[id_item], items[id_item - 1])
-                self.CalculateM(items[id_item], items[id_item - 1])
+                items[id_item].delta = self.calculate_delta(items[id_item - 1], items[id_item], self.dimension)
+                self.calculate_global_r(items[id_item], items[id_item - 1])
+                self.calculate_m(items[id_item], items[id_item - 1])
 
-        right.delta = self.CalculateDelta(items[-1], right, self.dimension)
-        self.CalculateGlobalR(right, items[-1])
+        right.delta = self.calculate_delta(items[-1], right, self.dimension)
+        self.calculate_global_r(right, items[-1])
 
         # вставить left  и right, потом middle
-        self.searchData.InsertFirstDataItem(left, right)
-        # self.searchData.InsertDataItem(middle, right)
+        self.search_data.insert_first_data_item(left, right)
+        # self.search_data.InsertDataItem(middle, right)
 
         for item in items:
-            self.searchData.InsertDataItem(item, right)
+            self.search_data.insert_data_item(item, right)
 
         self.recalcR = True
         self.recalcM = True
 
-        self.iterationsCount = len(items)
+        self.iterations_count = len(items)
+        self.search_data.solution.number_of_global_trials = len(items)
 
-    def CheckStopCondition(self) -> bool:
+        return items
+
+    def check_stop_condition(self) -> bool:
         r"""
-        Проверка условия остановки.
-        Алгоритм должен завершить работу, когда достигнута точность eps или превышен лимит итераций.
+        Check the stop condition.
+        The algorithm should terminate when eps accuracy is reached or the iteration limit is exceeded
 
-        :return: True, если выполнен критерий остановки; False - в противном случае.
+        :return: True if the stop criterion is met; False otherwise.
         """
-        if self.min_delta < self.parameters.eps or self.iterationsCount >= self.parameters.globalMethodIterationCount:
+        if self.min_delta < self.parameters.eps or self.iterations_count >= self.parameters.global_method_iteration_count:
             self.stop = True
         else:
             self.stop = False
 
         return self.stop
 
-    def RecalcM(self) -> None:
+    def recalc_m(self) -> None:
         r"""
-        Пересчёт оценки константы Липшица.
+        Recalculate the estimate of the Lipschitz constant
         """
         if self.recalcM is not True:
             return
-        for item in self.searchData:
-            self.CalculateM(item, item.GetLeft())
+        for item in self.search_data:
+            self.calculate_m(item, item.get_left())
         self.recalcM = False
 
-    def RecalcAllCharacteristics(self) -> None:
+    def recalc_all_characteristics(self) -> None:
         r"""
-        Пересчёт характеристик для всех поисковых интервалов.
+        Recalculate of features for all search intervals
         """
         if self.recalcR is not True:
             return
-        self.searchData.ClearQueue()
-        for item in self.searchData:  # Должно работать...
-            self.CalculateGlobalR(item, item.GetLeft())
+        self.search_data.clear_queue()
+        for item in self.search_data:  # Должно работать...
+            self.calculate_global_r(item, item.get_left())
             # self.CalculateLocalR(item)
-        self.searchData.RefillQueue()
+        self.search_data.refill_queue()
         self.recalcR = False
 
-    def CalculateNextPointCoordinate(self, point: SearchDataItem) -> float:
+    def calculate_next_point_coordinate(self, point: SearchDataItem) -> float:
         r"""
-        Вычисление точки нового испытания :math:`x^{k+1}` в заданном интервале :math:`[x_{t-1},x_t]`.
+        Compute the point of a new trial :math:`x^{k+1}` in a given interval :math:`[x_{t-1},x_t]`
 
-        :param point: интервал, заданный его правой точкой :math:`x_t`.
+        :param point: interval given by its right point :math:`x_t`.
 
-        :return: точка нового испытания :math:`x^{k+1}` в этом интервале.
+        :return: the point of a new trial :math:`x^{k+1}` in this interval.
         """
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
-        left = point.GetLeft()
+        left = point.get_left()
         if left is None:
             print("CalculateNextPointCoordinate: Left point is NONE")
             raise Exception("CalculateNextPointCoordinate: Left point is NONE")
-        xl = left.GetX()
-        xr = point.GetX()
-        idl = left.GetIndex()
-        idr = point.GetIndex()
+        xl = left.get_x()
+        xr = point.get_x()
+        idl = left.get_index()
+        idr = point.get_index()
         if idl == idr and idl >= 0:
             v = idr
-            dif = point.GetZ() - left.GetZ()
+            dif = point.get_z() - left.get_z()
             dg = -1.0
             if dif > 0:
                 dg = 1.0
 
             x = 0.5 * (xl + xr)
-            x -= 0.5 * dg * pow(abs(dif) / self.M[v], self.task.problem.numberOfFloatVariables) / self.parameters.r
+            x -= 0.5 * dg * pow(abs(dif) / self.M[v], self.task.problem.number_of_float_variables) / self.parameters.r
 
         else:
             x = 0.5 * (xl + xr)
@@ -245,159 +249,156 @@ class Method:
             raise Exception("CalculateNextPointCoordinate: x is outside of interval")
         return x
 
-    def CalculateIterationPoint(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
+    def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Вычисление точки нового испытания :math:`x^{k+1}`.
+        Calculate the point of a new trial :math:`x^{k+1}`
 
-        :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
-          которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
+        :return: :math:`x^{k+1}` - new trial point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
+          to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
         if self.recalcM is True:
-            self.RecalcM()
+            self.recalc_m()
         if self.recalcR is True:
-            self.RecalcAllCharacteristics()
+            self.recalc_all_characteristics()
 
-        old = self.searchData.GetDataItemWithMaxGlobalR()
+        old = self.search_data.get_data_item_with_max_global_r()
         self.min_delta = min(old.delta, self.min_delta)
-        newx = self.CalculateNextPointCoordinate(old)
-        newy = self.evolvent.GetImage(newx)
+        newx = self.calculate_next_point_coordinate(old)
+        newy = self.evolvent.get_image(newx)
         new = copy.deepcopy(SearchDataItem(Point(newy, []), newx,
-                                           functionValues=[FunctionValue()] * self.numberOfAllFunctions))
+                                           function_values=[FunctionValue()] * self.numberOfAllFunctions))
 
         # Обновление числа испытаний
-        self.searchData.solution.numberOfGlobalTrials += 1
+        self.search_data.solution.number_of_global_trials += 1
 
         return new, old
 
-    def CalculateFunctionals(self, point: SearchDataItem) -> SearchDataItem:
+    def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Проведение поискового испытания в заданной точке.
+        Perform a search trial at a given point
 
-        :param point: точка, в которой надо провести испытание.
+        :param point: the point at which the trial is to be performed.
 
-        :return: точка, в которой сохранены результаты испытания.
+        :return: the point at which the trial results are saved.
         """
         try:
-            point = self.task.Calculate(point, 0)
-            point.SetZ(point.functionValues[0].value)
-            point.SetIndex(0)
+            point = self.task.calculate(point, 0)
+            point.set_z(point.function_values[0].value)
+            point.set_index(0)
         except Exception:
-            point.SetZ(sys.float_info.max)
-            point.SetIndex(-10)
+            point.set_z(sys.float_info.max)
+            point.set_index(-10)
 
         return point
 
-    def CalculateM(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+    def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление оценки константы Гельдера между между curr_point и left_point.
+        Calculate an estimate of the Gelder constant between curr_point and left_point
 
-        :param curr_point: правая точка интервала
-        :param left_point: левая точка интервала
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         if curr_point is None:
             print("CalculateM: curr_point is None")
             raise RuntimeError("CalculateM: curr_point is None")
         if left_point is None:
             return
-        index = curr_point.GetIndex()
-        if left_point.GetIndex() == index and index >= 0:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
-            m = abs(left_point.GetZ() - curr_point.GetZ()) / curr_point.delta
+        index = curr_point.get_index()
+        if left_point.get_index() == index and index >= 0:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+            m = abs(left_point.get_z() - curr_point.get_z()) / curr_point.delta
             if m > self.M[index]:
                 self.M[index] = m
                 self.recalcR = True
 
-    # def CalculateM(self, point: SearchDataItem):  # В python нет такой перегрузки функций, надо менять название
-    #     self.CalculateM(point, point.GetLeft())
-
-    def CalculateGlobalR(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
+    def calculate_global_r(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление глобальной характеристики интервала [left_point, curr_point].
+        Calculate the global characteristic of an interval [left_point, curr_point]
 
-        :param curr_point: правая точка интервала.
-        :param left_point: левая точка интервала.
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         if curr_point is None:
-            print("CalculateGlobalR: Curr point is NONE")
-            raise Exception("CalculateGlobalR: Curr point is NONE")
+            print("calculate_global_r: Curr point is NONE")
+            raise Exception("calculate_global_r: Curr point is NONE")
         if left_point is None:
             curr_point.globalR = -np.infty
             return None
-        zl = left_point.GetZ()
-        zr = curr_point.GetZ()
+        zl = left_point.get_z()
+        zr = curr_point.get_z()
         r = self.parameters.r
         deltax = curr_point.delta
 
-        if left_point.GetIndex() < 0 and curr_point.GetIndex() < 0:
-            globalR = 2 * deltax - 4 * math.fabs(self.Z[0]) / (r * self.M[0])
-        elif left_point.GetIndex() == curr_point.GetIndex():
-            v = curr_point.GetIndex()
-            globalR = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
-                      2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
-        elif left_point.GetIndex() < curr_point.GetIndex():
-            v = curr_point.GetIndex()
-            globalR = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
+        if left_point.get_index() < 0 and curr_point.get_index() < 0:
+            global_r = 2 * deltax - 4 * math.fabs(self.Z[0]) / (r * self.M[0])
+        elif left_point.get_index() == curr_point.get_index():
+            v = curr_point.get_index()
+            global_r = deltax + (zr - zl) * (zr - zl) / (deltax * self.M[v] * self.M[v] * r * r) - \
+                       2 * (zr + zl - 2 * self.Z[v]) / (r * self.M[v])
+        elif left_point.get_index() < curr_point.get_index():
+            v = curr_point.get_index()
+            global_r = 2 * deltax - 4 * (zr - self.Z[v]) / (r * self.M[v])
         else:
-            v = left_point.GetIndex()
-            globalR = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
-        curr_point.globalR = globalR
+            v = left_point.get_index()
+            global_r = 2 * deltax - 4 * (zl - self.Z[v]) / (r * self.M[v])
+        curr_point.globalR = global_r
 
-    def RenewSearchData(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
+    def renew_search_data(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
         """
-        Метод обновляет всю поисковую информацию: длины интервалов, константы Гёльдера, все характеристики и вставляет
-          новую точку в хранилище.
+        Update all search information: interval lengths, Gölder constants, all characteristics and inserts
+a new point into the repository
 
-        :param newpoint: новая точка
-        :param oldpoint: правая точка интервала, которому принадлежит новая точка
+        :param newpoint: new point.
+        :param oldpoint: right point of the interval to which the new point belongs.
         """
 
         # oldpoint.delta = Method.CalculateDelta(newpoint.GetX(), oldpoint.GetX(), self.dimension)
         # newpoint.delta = Method.CalculateDelta(oldpoint.GetLeft().GetX(), newpoint.GetX(), self.dimension)
 
-        oldpoint.delta = self.CalculateDelta(newpoint, oldpoint, self.dimension)
-        newpoint.delta = self.CalculateDelta(oldpoint.GetLeft(), newpoint, self.dimension)
+        oldpoint.delta = self.calculate_delta(newpoint, oldpoint, self.dimension)
+        newpoint.delta = self.calculate_delta(oldpoint.get_left(), newpoint, self.dimension)
 
-        self.CalculateM(newpoint, oldpoint.GetLeft())
-        self.CalculateM(oldpoint, newpoint)
+        self.calculate_m(newpoint, oldpoint.get_left())
+        self.calculate_m(oldpoint, newpoint)
 
-        self.CalculateGlobalR(newpoint, oldpoint.GetLeft())
-        self.CalculateGlobalR(oldpoint, newpoint)
+        self.calculate_global_r(newpoint, oldpoint.get_left())
+        self.calculate_global_r(oldpoint, newpoint)
 
-        self.searchData.InsertDataItem(newpoint, oldpoint)
+        self.search_data.insert_data_item(newpoint, oldpoint)
 
-    def UpdateOptimum(self, point: SearchDataItem) -> None:
+    def update_optimum(self, point: SearchDataItem) -> None:
         r"""
-        Обновляет оценку оптимума.
+        Update the optimum estimate
 
-        :param point: точка нового испытания.
+        :param point: point of a new trial.
         """
-        if self.best is None or self.best.GetIndex() < point.GetIndex():
+        if self.best is None or self.best.get_index() < point.get_index():
             self.best = point
             self.recalcR = True
-            self.Z[point.GetIndex()] = point.GetZ()
-        elif self.best.GetIndex() == point.GetIndex() and point.GetZ() < self.best.GetZ():
+            self.Z[point.get_index()] = point.get_z()
+        elif self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z():
             self.best = point
             self.recalcR = True
-            self.Z[point.GetIndex()] = point.GetZ()
-        self.searchData.solution.bestTrials[0] = self.best
+            self.Z[point.get_index()] = point.get_z()
+        self.search_data.solution.best_trials[0] = self.best
 
-    def FinalizeIteration(self) -> None:
+    def finalize_iteration(self) -> None:
         r"""
-        Заканчивает итерацию, обновляет счётчик итераций.
+        End the iteration, updates the iteration counter
         """
-        self.iterationsCount += 1
+        self.iterations_count += 1
 
-    def GetIterationsCount(self) -> int:
+    def get_iterations_count(self) -> int:
         r"""
-        Возвращает число выполненных итераций.
+        Return the number of iterations performed
 
-        :return:  число выполненных итераций.
+        :return:  number of iterations performed.
         """
-        return self.iterationsCount
+        return self.iterations_count
 
-    def GetOptimumEstimation(self) -> SearchDataItem:
+    def get_optimum_estimation(self) -> SearchDataItem:
         r"""
-        Возвращает оценку оптимума.
+        Return an estimate of the optimum
 
-        :return: текущая оценка оптимума.
+        :return: current estimate of the optimum.
         """
         return self.best

@@ -1,10 +1,10 @@
-Введение
-========
+Introduction
+============
 
-Фреймворк методов интеллектуальной эвристической оптимизации iOpt предназначен для выбора оптимальных (в заданной метрике) значений параметров сложных объектов и процессов, например, методов искусственного интеллекта и машинного обучения, а также – методов эвристической оптимизации.
+iOpt is an open source intelligent optimization framework. It is designed to select the optimal (in a given metric) parameter values for complex objects and processes, for example, artificial intelligence and machine learning methods, as well as heuristic optimization methods.
 
-Фреймворк позволяет проводить точную настройку параметров моделей и методов, используемых в прикладных исследованиях в различных научных областях.
+The framework allows one to tune the parameters of models and methods used in applied research in various scientific fields.
 
-Фреймворк iOpt разработан на языке программирования Python. Для его использования необходим установленный интерпретатор языка Pyhon версии не ниже 3.8.
+The iOpt framework is developed in Python. To use it, you need to have Python 3.8 or later installed.
 
-Фреймворк доступен в исходных кодах по адресу https://github.com/UNN-ITMM-Software/iOpt.
+The iOpt source code is available at https://github.com/aimclub/iOpt.

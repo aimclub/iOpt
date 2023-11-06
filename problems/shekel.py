@@ -8,38 +8,38 @@ import problems.Shekel.shekel_generation as shekelGen
 
 class Shekel(Problem):
     """
-    Функция Шекеля - это многомерная, мультимодальная, непрерывная, детерминированная функция, задана формулой:
+    The Scheckel function is a multivariate, multimodal, continuous, deterministic function, given by the formula:
        :math:`f(x) = \sum_{i=1}^{m}(c_{i}+(x-a_{i})^{2})^{-1}`,
-       где :math:`m` – количество максимумов функции,
-       :math:`a, c` - параметры, генерируемые случайным образом.
-       В данном генераторе задача является одномерной.
+       where :math:`m` – number of maxima of the function,
+       :math:`a, c` - randomly generated parameters.
+       In this generator, the problem is one-dimensional.
     """
 
     def __init__(self, function_number: int):
         """
-        Конструктор класса Shekel problem.
+        Constructor of the Shekel problem class
 
-        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
+        :param functionNumber: task number in the set, :math:`1 <= functionNumber <= 1000`.
         """
         super(Shekel, self).__init__()
-        self.name = Shekel
+        self.name = "Shekel"
         self.dimension = 1
-        self.numberOfFloatVariables = self.dimension
-        self.numberOfDiscreteVariables = 0
-        self.numberOfObjectives = 1
-        self.numberOfConstraints = 0
+        self.number_of_float_variables = self.dimension
+        self.number_of_discrete_variables = 0
+        self.number_of_objectives = 1
+        self.number_of_constraints = 0
         self.fn = function_number
 
-        self.floatVariableNames = np.ndarray(shape=(self.dimension,), dtype=str)
+        self.float_variable_names = np.ndarray(shape=(self.dimension,), dtype=str)
         for i in range(self.dimension):
-            self.floatVariableNames[i] = i
+            self.float_variable_names[i] = i
 
-        self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension,), dtype=np.double)
-        self.lowerBoundOfFloatVariables.fill(0)
-        self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension,), dtype=np.double)
-        self.upperBoundOfFloatVariables.fill(10)
+        self.lower_bound_of_float_variables = np.ndarray(shape=(self.dimension,), dtype=np.double)
+        self.lower_bound_of_float_variables.fill(0)
+        self.upper_bound_of_float_variables = np.ndarray(shape=(self.dimension,), dtype=np.double)
+        self.upper_bound_of_float_variables.fill(10)
 
-        self.knownOptimum = np.ndarray(shape=(1,), dtype=Trial)
+        self.known_optimum = np.ndarray(shape=(1,), dtype=Trial)
 
         pointfv = np.ndarray(shape=(self.dimension,), dtype=np.double)
         pointfv[0] = shekelGen.minShekel[self.fn][1]
@@ -47,21 +47,21 @@ class Shekel(Problem):
         KOfunV = np.ndarray(shape=(1,), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
         KOfunV[0].value = shekelGen.minShekel[self.fn][0]
-        self.knownOptimum[0] = Trial(KOpoint, KOfunV)
+        self.known_optimum[0] = Trial(KOpoint, KOfunV)
 
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения выбранной функции в заданной точке.
+        Calculating the value of the selected function at a given point
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
+        :param point: coordinates of the trial point where the value of the function will be calculated. 
+        :param function_value: object defining the function number in the task and storing the function value.
+        :return: Calculated value of the function at point.
         """
         res: np.double = 0
         for i in range(shekelGen.NUM_SHEKEL_COEFF):
             res = res - 1 / (
-                        shekelGen.kShekel[self.fn][i] * pow(point.floatVariables[0] - shekelGen.aShekel[self.fn][i], 2)
+                        shekelGen.kShekel[self.fn][i] * pow(point.float_variables[0] - shekelGen.aShekel[self.fn][i], 2)
                         + shekelGen.cShekel[self.fn][i])
 
-        functionValue.value = res
-        return functionValue
+        function_value.value = res
+        return function_value

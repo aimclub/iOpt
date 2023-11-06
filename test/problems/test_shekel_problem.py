@@ -23,13 +23,13 @@ class TestShekel(unittest.TestCase):
         NUM_SHEKEL_COEFF = 10
         res: np.double = 0
         for i in range(NUM_SHEKEL_COEFF):
-            res = res - 1 / (kShekel[i] * pow(point.floatVariables[0] - aShekel[i], 2) + cShekel[i])
+            res = res - 1 / (kShekel[i] * pow(point.float_variables[0] - aShekel[i], 2) + cShekel[i])
         functionValue = FunctionValue()
-        functionValue = self.Shekel.Calculate(point, functionValue)
+        functionValue = self.Shekel.calculate(point, functionValue)
         self.assertEqual(functionValue.value, res)
 
     def test_OptimumValue(self):
-        self.assertEqual(self.Shekel.knownOptimum[0].functionValues[0].value, -1.85298)
+        self.assertEqual(self.Shekel.known_optimum[0].function_values[0].value, -1.85298)
 
     def test_CalculateOptimumPoint(self):
         point = Point([7.288], [])
@@ -45,10 +45,10 @@ class TestShekel(unittest.TestCase):
         res: np.double = 0
 
         for i in range(NUM_SHEKEL_COEFF):
-            res = res - 1 / (kShekel[i] * pow(point.floatVariables[0] - aShekel[i], 2) + cShekel[i])
+            res = res - 1 / (kShekel[i] * pow(point.float_variables[0] - aShekel[i], 2) + cShekel[i])
 
         functionValue = FunctionValue()
-        functionValue = self.Shekel.Calculate(point, functionValue)
+        functionValue = self.Shekel.calculate(point, functionValue)
         self.assertEqual(functionValue.value, res)
 
 

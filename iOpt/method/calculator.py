@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from multiprocessing import Pool
+from pathos.multiprocessing import _ProcessPool
 
 from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.search_data import SearchDataItem
@@ -9,60 +9,63 @@ from iOpt.solver_parametrs import SolverParameters
 
 import sys
 
-#возможно стоит удалить
+# возможно стоит удалить
 sys.setrecursionlimit(10000)
 
 
 class Calculator:
-    pool: Pool = None
-    evaluateMethod: ICriterionEvaluateMethod = None
+    pool: _ProcessPool = None
+    evaluate_method: ICriterionEvaluateMethod = None
 
     def __init__(self,
-                 evaluateMethod: ICriterionEvaluateMethod,
+                 evaluate_method: ICriterionEvaluateMethod,
                  parameters: SolverParameters
                  ):
         r"""
-        Конструктор класса Calculator
+        Constructor of class Calculator
 
-        :param evaluateMethod: метод вычислений, проводящий поисковые испытания по заданным правилам.
-        :param parameters: параметры решения задачи оптимизации.
+        :param evaluate_method: a computational method that performs search trials according to specified rules.
+        :param parameters: solution parameters of the optimization problem.
         """
-        self.evaluateMethod = evaluateMethod
+        self.evaluate_method = evaluate_method
         self.parameters = parameters
-        Calculator.pool = Pool(parameters.numberOfParallelPoints,
-                               initializer=Calculator.worker_init,
-                               initargs=(self.evaluateMethod,))
+        Calculator.worker_init(self.evaluate_method)
+        Calculator.pool = _ProcessPool(parameters.number_of_parallel_points,
+                                       initializer=Calculator.worker_init,
+                                       initargs=(self.evaluate_method,))
 
     r"""
-    Инициализация метода вычислений в каждом процессе из пула процессов Calculator.Pool
+    Initialize the calculation method in each process from the process pool Calculator.Pool
 
-    :param evaluateMethod: метод вычислений, проводящий поисковые испытания по заданным правилам.
+    :param evaluate_method: a computational method that performs search trials according to specified rules.
     """
+
     @staticmethod
-    def worker_init(evaluateMethod: ICriterionEvaluateMethod):
-        Calculator.evaluateMethod = evaluateMethod
+    def worker_init(evaluate_method: ICriterionEvaluateMethod):
+        Calculator.evaluate_method = evaluate_method
 
     r"""
-    Метод проведения испытаний в процессе из пула процессов Calculator.Pool
+    Сalculation method in each process from the process pool Calculator.Pool
 
-    :param point: точка проведения испытания
+    :param point: trial point.
     """
+
     @staticmethod
     def worker(point: SearchDataItem) -> SearchDataItem:
         try:
-            Calculator.evaluateMethod.CalculateFunctionals(point)
+            Calculator.evaluate_method.calculate_functionals(point)
         except Exception:
-            point.SetZ(sys.float_info.max)
-            point.SetIndex(-10)
+            point.set_z(sys.float_info.max)
+            point.set_index(-10)
         return point
 
     r"""
-    Метод проведения испытаний для множества точек
+    Сalculation method for multiple points
 
-    :param points: точки проведения испытаний
+    :param points: trial points.
     """
 
-    def CalculateFunctionalsForItems(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
+    def calculate_functionals_for_items(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
         # пока оставленно на случай отладки
         # for point in points:
         #     self.worker(point, self.method)
@@ -70,15 +73,15 @@ class Calculator:
         # Ниже реализация цикла через пулл процессов
         points_copy = []
         for point in points:
-            sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.GetX()),
-                                functionValues=copy.deepcopy(point.functionValues),
-                                discreteValueIndex=point.GetDiscreteValueIndex())
+            sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.get_x()),
+                                function_values=copy.deepcopy(point.function_values),
+                                discrete_value_index=point.get_discrete_value_index())
             points_copy.append(sd)
 
         points_res = Calculator.pool.map(Calculator.worker, points_copy)
 
         for point, point_r in zip(points, points_res):
-            self.evaluateMethod.CopyFunctionals(point, point_r)
+            self.evaluate_method.copy_functionals(point, point_r)
 
         return points
 

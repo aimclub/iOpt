@@ -15,8 +15,8 @@ if __name__ == "__main__":
 
     # add needed listeners for solver
     apl = StaticPainterListener("rastrigin_1_3_0.01.png", mode="approximation")
-    solver.AddListener(apl)
+    solver.add_listener(apl)
 
     # solve the problem
-    sol = solver.Solve()
+    sol = solver.solve()
     

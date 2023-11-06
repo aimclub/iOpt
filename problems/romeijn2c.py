@@ -9,56 +9,56 @@ from iOpt.problem import Problem
 class Romeijn2c(Problem):
     def __init__(self):
         """
-        Конструктор класса Romeijn2c problem.
+        Romeijn2c problem class constructor.
         """
         super(Romeijn2c, self).__init__()
         self.name = "Romeijn2c"
         self.dimension: int = 6
-        self.numberOfFloatVariables = self.dimension
-        self.numberOfDiscreteVariables = 0
-        self.numberOfObjectives = 1
-        self.numberOfConstraints = 2
+        self.number_of_float_variables = self.dimension
+        self.number_of_discrete_variables = 0
+        self.number_of_objectives = 1
+        self.number_of_constraints = 2
 
-        self.floatVariableNames = np.ndarray(shape=(self.dimension), dtype=str)
+        self.float_variable_names = np.ndarray(shape=(self.dimension), dtype=str)
         for i in range(self.dimension):
-            self.floatVariableNames[i] = i
+            self.float_variable_names[i] = i
 
-        self.lowerBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.lowerBoundOfFloatVariables.fill(0)
-        self.upperBoundOfFloatVariables = np.ndarray(shape=(self.dimension), dtype=np.double)
-        self.upperBoundOfFloatVariables = [10, 10, 15, 15, 1, 1]
+        self.lower_bound_of_float_variables = np.ndarray(shape=(self.dimension), dtype=np.double)
+        self.lower_bound_of_float_variables.fill(0)
+        self.upper_bound_of_float_variables = np.ndarray(shape=(self.dimension), dtype=np.double)
+        self.upper_bound_of_float_variables = [10, 10, 15, 15, 1, 1]
 
-        self.knownOptimum = np.ndarray(shape=(1), dtype=Trial)
+        self.known_optimum = np.ndarray(shape=(1), dtype=Trial)
 
         pointfv = [10, 10, 15, 4.609, 0.78511, 0.384]
         KOpoint = Point(pointfv, [])
         KOfunV = np.ndarray(shape=(1), dtype=FunctionValue)
         KOfunV[0] = FunctionValue()
-        KOfunV[0] = self.Calculate(KOpoint, KOfunV[0])
-        self.knownOptimum[0] = Trial(KOpoint, KOfunV)
+        KOfunV[0] = self.calculate(KOpoint, KOfunV[0])
+        self.known_optimum[0] = Trial(KOpoint, KOfunV)
 
-    def Calculate(self, point: Point, functionValue: FunctionValue) -> FunctionValue:
+    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения выбранной функции в заданной точке.
+        Calculate the value of the selected function at a given point
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param functionValue: объект определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
+        :param point: coordinates of the trial point where the value of the function will be calculated.
+        :param function_value: object defining the function number in the task and storing the function value.
+        :return: Calculated value of the function at point.
         """
         result: np.double = 1
-        x = point.floatVariables
+        x = point.float_variables
 
-        if functionValue.type == FunctionType.OBJECTIV:
-            result = np.double(-(0.0204 + 0.0607 * pow(x[4], 2)) * x[0] * x[3] * (x[0] + x[1] + x[2]) - \
+        if function_value.type == FunctionType.OBJECTIV:
+            result = np.double(-(0.0204 + 0.0607 * pow(x[4], 2)) * x[0] * x[3] * (x[0] + x[1] + x[2]) -
                                (0.0187 + 0.0437 * pow(x[5], 2)) * x[1] * x[2] * (x[0] + 1.57 * x[1] + x[3]))
-        elif functionValue.functionID == 0:  # constraint 1
+        elif function_value.functionID == 0:  # constraint 1
             for i in range(0, self.dimension):
                 result = result / x[i]
             result = np.double(2070 * result - 1)
 
-        elif functionValue.functionID == 1:  # constraint 2
-            result = np.double(0.00062 * x[0] * x[3] * pow(x[4], 2) * (x[0] + x[1] + x[2]) + \
+        elif function_value.functionID == 1:  # constraint 2
+            result = np.double(0.00062 * x[0] * x[3] * pow(x[4], 2) * (x[0] + x[1] + x[2]) +
                                0.00058 * x[1] * x[2] * pow(x[5], 2) * (x[0] + 1.57 * x[1] + x[3]) - 1)
 
-        functionValue.value = result
-        return functionValue
+        function_value.value = result
+        return function_value

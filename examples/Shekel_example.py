@@ -13,19 +13,19 @@ if __name__ == "__main__":
     problem = Shekel(function_number=0)
 
     # Формируем параметры решателя
-    params = SolverParameters(r=3, eps=0.01, itersLimit=300, refineSolution=True)
+    params = SolverParameters(r=3, eps=0.01, iters_limit=300, refine_solution=True)
 
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)
 
     # Добавляем вывод результатов в консоль
     cfol = ConsoleOutputListener(mode='full')
-    solver.AddListener(cfol)
+    solver.add_listener(cfol)
 
     # Добавляем построение визуализации после решения задачи
-    spl = StaticPainterListener(fileName="shekel.png", pathForSaves="output", indx=0, isPointsAtBottom=False,
+    spl = StaticPainterListener(file_name="shekel.png", path_for_saves="output", indx=0, is_points_at_bottom=False,
                                 mode="objective function")
-    solver.AddListener(spl)
+    solver.add_listener(spl)
 
     # Решение задачи
-    sol = solver.Solve()
+    sol = solver.solve()

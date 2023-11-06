@@ -25,11 +25,11 @@ class TestHill(unittest.TestCase):
             dtype=np.double)
         NUM_HILL_COEFF = 14
         for i in range(NUM_HILL_COEFF):
-            res = res + aHill[i] * math.sin(2 * i * math.pi * point.floatVariables[0]) + bHill[i] * math.cos(
-                2 * i * math.pi * point.floatVariables[0])
+            res = res + aHill[i] * math.sin(2 * i * math.pi * point.float_variables[0]) + bHill[i] * math.cos(
+                2 * i * math.pi * point.float_variables[0])
 
         functionValue = FunctionValue()
-        functionValue = self.Hill.Calculate(point, functionValue)
+        functionValue = self.Hill.calculate(point, functionValue)
         self.assertEqual(functionValue.value, res)
 
         def test_Calculate1(self):
@@ -47,15 +47,15 @@ class TestHill(unittest.TestCase):
                 dtype=np.double)
             NUM_HILL_COEFF = 14
             for i in range(NUM_HILL_COEFF):
-                res = res + aHill[i] * math.sin(2 * i * math.pi * point.floatVariables[0]) + bHill[i] * math.cos(
-                    2 * i * math.pi * point.floatVariables[0])
+                res = res + aHill[i] * math.sin(2 * i * math.pi * point.float_variables[0]) + bHill[i] * math.cos(
+                    2 * i * math.pi * point.float_variables[0])
 
             functionValue = FunctionValue()
-            functionValue = self.Hill.Calculate(point, functionValue)
+            functionValue = self.Hill.calculate(point, functionValue)
             self.assertEqual(functionValue.value, res)
 
     def test_OptimumValue(self):
-        self.assertEqual(self.Hill.knownOptimum[0].functionValues[0].value, -4.8322090)
+        self.assertEqual(self.Hill.known_optimum[0].function_values[0].value, -4.8322090)
 
 
 """Executing the tests in the above test case class"""
