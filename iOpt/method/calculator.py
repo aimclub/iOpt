@@ -85,5 +85,5 @@ class Calculator:
 
         return points
 
-    def __del__(self):
-        self.pool.close()
+    #def __del__(self):
+        #self.pool.close()
