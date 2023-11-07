@@ -31,6 +31,7 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                  evolvent: Evolvent,
                  search_data: SearchData):
         super().__init__(parameters, task, evolvent, search_data)
+        self.task.get_name()
         # Флаг используется при
         # 1. Запуске новой задачи (продолжение вычислений с новой сверткой)
         # 2. Обновлении минимума и максимума одного из критериев
@@ -68,14 +69,18 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                                                                              number_of_constraints+i)
                 point = self.task.calculate(point, number_of_constraints+i)
 
+
+            self.update_min_max_value(point) # сделать проверку на первую итерацию или куда-то вынести?!
+
             #Добавить вычисление свертки
-            point = self.task.calculate(point, number_of_constraints+self.task.problem.number_of_objectives,
-                                        TypeOfCalculation.CONVOLUTION) # по идее, там должен установиться z, а индекс не нужен (можно -1???)
+            point = self.task.calculate(point, -1,
+                                        TypeOfCalculation.CONVOLUTION)
+
             point.set_index(number_of_constraints)
 
         except Exception:
             point.set_z(sys.float_info.max)
-            point.set_index(-10)
+            point.set_index(-11)
 
         return point
 
@@ -83,25 +88,17 @@ class MultiObjectiveMethod(MixedIntegerMethod):
         if self.is_recalc_all_convolution is not True:
             return
         for item in self.search_data:
-            self.task.calculate(item, -1, TypeOfCalculation.CONVOLUTION) # индекс интовый, он ни на что не влияет
+            self.task.calculate(item, -1, TypeOfCalculation.CONVOLUTION)
+            if(item.get_z()<self.best.get_z() and item.get_z()>0):
+                self.best = item
+
         self.is_recalc_all_convolution = False
 
         self.recalcR = True
         self.recalcM = True
 
-
-
-        self.Z[self.task.problem.number_of_constraints] = self.best.get_z() #???? а точно ли?? лучшая же может поменяться
-
-        #найти новый бест????
-
-        # не логичнее ли запускать в update_optimum после смены min_max?
-
-
-
-        #поднять флаги M и R
-        # сменить Z (как?)
-    # По влагу необходимо пересчитать все свертки (ВСЕ?! почему мн.ч), затем все R и перрезаполнить очередь (А нужно ли?!, если R меняются в предке)
+        if self.best:
+            self.Z[self.task.problem.number_of_constraints] = self.best.get_z()
 
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         #обновление всех сверток по флагу self.is_recalc_all_convolution
@@ -118,120 +115,31 @@ class MultiObjectiveMethod(MixedIntegerMethod):
         :param point: точка нового испытания.
         """
 
-        # добавить обновление
-        # self.task.min_value
-        # self.task.max_value
-        # из IndexMethod
-
-        # Оптимум поддерживает актуальное состоение найденой области Парето, а не одной точки!
-
-        # НУЖНО ИЗМЕНИТЬ!
-        #
-        #
-
-
-        #сделать копию, потом в конце присвоить ссылку начальному
-
-        #(point.get_index()==number_of_constraints )
-
-        #self.best = self.search_data.solution.best_trials[0] (если существует)
-
-        # вариант предложенный на созвоне:
-        """
-        if(point.get_index()==self.task.problem.number_of_constraints): # а вот нужно ли его на весь блок кода или только эту часть?!
-            if self.best is None or self.best.get_index() < point.get_index() or (
+        if self.best is None or self.best.get_index() < point.get_index() or (
                     self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
-                self.best = point
-                self.recalcR = True
-                self.Z[point.get_index()] = point.get_z()
+            self.best = point
+            self.recalcR = True
+            self.Z[point.get_index()] = point.get_z()
 
-            self.update_min_max_value(point)
-
-            self.check_dominance(point)
-        """
-
-        # update_min_max_value
-        # check_dominance // self.search_data.solution.best_trials[0] = self.best меняется вся область Парето
-
-        # может логичнее сначала изменить мин мах, потом пересчитать свертки, затем изменить бест,
-        # потом уже область парето, потому что там ничего не зависит от get_z
-
-        #этот вариант кода:
-
+        if self.search_data.get_count() == 0:
+            self.search_data.solution.best_trials[0] = self.best # на первой итерации нам нужно засунуть в лучшее хоть что-то
 
 
         if (point.get_index() == self.task.problem.number_of_constraints):  # а вот нужно ли его на весь блок кода или только эту часть?!
             self.update_min_max_value(point)
-            self.recalc_all_convolution()
-            self.check_dominance(point) #не важен порядок recalc и этого, его вообще можно в конец убрать, он не зависит от best
-
-            if self.best is None or self.best.get_index() < point.get_index() or (
-                    self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
-                self.best = point
-                self.recalcR = True
-                self.Z[point.get_index()] = point.get_z()
-
-
-       
-
-
-
-
-
+            if(self.search_data.get_count()>0):
+                self.recalc_all_convolution()
+                # if(len(self.search_data.solution.best_trials)>1):
+                self.check_dominance(point) #не важен порядок recalc и этого, его вообще можно в конец убрать, он не зависит от best
+        i = 0
+        for trial in self.search_data.solution.best_trials:
+            print(i, trial.function_values[0].value, trial.function_values[1].value)
+            i +=1
 
     def check_dominance(self, point: SearchDataItem) -> None:
-        r"""
-         основная идея:
-         пройти по всем найденным оптимальным триалам (точка и значение функций)
-         сравнить отношение новой точки и точки из оптимальных
-         если эта точка не лучше ни одной ни по одному критерию - забить на нее
-         если она лучше по всем критериям какой-то точки - то выкинуть эту точку из оптимальных
-         если она где-то лучше, где-то хуже текущих - добавить ее в список
-
-        """
-
-        r"""
-        pareto_front = copy.deepcopy(self.search_data.solution.best_trials)
-
-        new = point.function_values
-        add_point = 0
-        for trial in pareto_front:
-            old = trial.function_values
-            relation = self.type_of_pareto_relation(new, old)
-            if(relation == TypeOfParetoRelation.NONCOMPARABLE):
-                # добавить новый в список, но нужно проверить, что он не добавлен?!
-                add_point = 1
-                # но нужно проверить, не доминируется ли кем-то еще,
-            elif(relation == TypeOfParetoRelation.DOMINANT):
-                # удалить старый и добавить новый
-                add_point = 1
-                pareto_front = np.delete(pareto_front, old) # насколько это вообще оптимально? Можно ли по другому? .. возвращает новый массив
-            elif (relation == TypeOfParetoRelation.NONDOMINATED): # если доминируется хоть кем-то, то точно не добавляем
-                add_point = 0
-                break
-            # если она хуже хотя бы одной - то выходим из рассмотрения вообще
-        if add_point:
-            pareto_front = np.append(pareto_front, new)
-            # что тут нужно еще сделать?!
-
-        self.search_data.solution.best_trials = pareto_front # вроде это и есть присвоение адреса //Присваивание создаёт новую переменную, которая дублирует ссылку на исходный объект.
-
-        """
-        # не стала делать заполнение с нуля, потому что мне кажется это не оптимальным:
-        # если несравнимы, то добавляем оба
-        # если новый доминирует, то добавляем только его
-        # если новый кем-то доминируем, то придется с нуля заполнять массив
-        # потому что если он раньше был с кем-то несравним, то его придется удалить
-        # можно попробовать сделать это через set, но уйдет больше памяти на них
-        # хотя снизу что-то получилось
-
-
-        # способ 2
-
-
         pareto_front = np.ndarray(shape=(1), dtype=Trial)
 
-        new = point.function_values
+        new = point.function_values # new - массив fv
         add_point = 0
         for trial in self.search_data.solution.best_trials:
             old = trial.function_values
@@ -239,7 +147,7 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             if (relation == TypeOfParetoRelation.NONCOMPARABLE):
                 # добавить новый в список, но нужно проверить, что он не добавлен?!
                 add_point = 1
-                pareto_front = np.append(pareto_front, old)
+                pareto_front = np.append(pareto_front, trial) #состоит из трайлов, поэтому нужно засунуть трайл
                 # но нужно проверить, не доминируется ли кем-то еще,
             elif (relation == TypeOfParetoRelation.DOMINANT):
                 # удалить старый и добавить новый
@@ -250,20 +158,17 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                 # здесь не нужно добавлять старый, потому что если новый не добавляем, то ничгео не меняем
             # если она хуже хотя бы одной - то выходим из рассмотрения вообще
         if add_point:
-            pareto_front = np.append(pareto_front, new)
-            self.search_data.solution.best_trials = pareto_front  # вроде это и есть присвоение адреса
+            pareto_front = np.append(pareto_front, Trial(point.point, point.function_values)) #состоит из трайлов, поэтому нужно засунуть трайл
+            self.search_data.solution.best_trials = pareto_front[1:]  # присвоение адреса, (в первой (точнее нулевой) ячейке находится NoneType
         # если мы не добавляем точку, значит оставляем все как есть и ничего не меняем
-            # что тут нужно еще сделать?!
-
-
 
 
     def type_of_pareto_relation(self, p1: np.ndarray(shape=(1), dtype=FunctionValue),
                                 p2: np.ndarray(shape=(1), dtype=FunctionValue)) -> TypeOfParetoRelation:
         count_dom = 0
         number_of_objectives = self.task.problem.number_of_objectives
-        for i in number_of_objectives:
-            if(p1[i]<p2[i]):
+        for i in range(number_of_objectives):
+            if(p1[i].value<=p2[i].value): # нужно подумать над равенством
                 count_dom += 1
         if count_dom == 0 :
             return TypeOfParetoRelation.NONDOMINATED
@@ -274,14 +179,17 @@ class MultiObjectiveMethod(MixedIntegerMethod):
     def update_min_max_value(self,
                            data_item: SearchDataItem):
         # а где его применять?!
-        if self.task.min_value and self.max_value: # проверка на пустоту
+        if self.task.min_value and self.task.max_value: # проверка на пустоту
             for i in range(0, self.task.problem.number_of_objectives):
-                if self.task.min_value[i] > data_item.function_values[i]:
-                    self.task.min_value[i] = data_item.function_values[i]
+                if self.task.min_value[i] > data_item.function_values[i].value:
+                    self.task.min_value[i] = data_item.function_values[i].value
                     self.is_recalc_all_convolution = True
-                if self.task.max_value[i] < data_item.function_values[i]:
-                    self.task.max_value[i] = data_item.function_values[i]
+                if self.task.max_value[i] < data_item.function_values[i].value:
+                    self.task.max_value[i] = data_item.function_values[i].value
                     self.is_recalc_all_convolution = True # а нужно ли, если мах не влияет на свертку?
         else:
-            self.task.min_value = data_item.function_values
-            self.task.max_value = data_item.function_values
+            self.task.min_value = [fv.value for fv in data_item.function_values]
+            self.task.max_value = [fv.value for fv in data_item.function_values]
+
+
+
