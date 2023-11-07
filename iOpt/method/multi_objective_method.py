@@ -15,10 +15,10 @@ from iOpt.solver_parametrs import SolverParameters
 from iOpt.trial import FunctionValue, FunctionType, Trial
 from iOpt.method.optim_task import TypeOfCalculation
 
-class TypeOfParetoRelation(Enum): # проблемы с именованием!!!
+class TypeOfParetoRelation(Enum):
     DOMINANT = 1
-    NONCOMPARABLE = 0 # NONCOMPARABLE
-    NONDOMINATED = -1 #NONDOMINATED
+    NONCOMPARABLE = 0
+    NONDOMINATED = -1
 
 class MultiObjectiveMethod(MixedIntegerMethod):
     """
@@ -131,10 +131,11 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                 self.recalc_all_convolution()
                 # if(len(self.search_data.solution.best_trials)>1):
                 self.check_dominance(point) #не важен порядок recalc и этого, его вообще можно в конец убрать, он не зависит от best
-        i = 0
-        for trial in self.search_data.solution.best_trials:
-            print(i, trial.function_values[0].value, trial.function_values[1].value)
-            i +=1
+
+        # i = 0
+        # for trial in self.search_data.solution.best_trials:
+        #     print(i, trial.function_values[0].value, trial.function_values[1].value)
+        #     i +=1
 
     def check_dominance(self, point: SearchDataItem) -> None:
         pareto_front = np.ndarray(shape=(1), dtype=Trial)
@@ -166,13 +167,16 @@ class MultiObjectiveMethod(MixedIntegerMethod):
     def type_of_pareto_relation(self, p1: np.ndarray(shape=(1), dtype=FunctionValue),
                                 p2: np.ndarray(shape=(1), dtype=FunctionValue)) -> TypeOfParetoRelation:
         count_dom = 0
+        count_equal = 0
         number_of_objectives = self.task.problem.number_of_objectives
         for i in range(number_of_objectives):
-            if(p1[i].value<=p2[i].value): # нужно подумать над равенством
+            if(p1[i].value<p2[i].value): # нужно подумать над равенством
                 count_dom += 1
+            elif (p1[i].value == p2[i].value):
+                count_equal += 1
         if count_dom == 0 :
             return TypeOfParetoRelation.NONDOMINATED
-        elif count_dom == number_of_objectives:
+        elif (count_dom + count_equal) == number_of_objectives:
             return TypeOfParetoRelation.DOMINANT
         else:
             return TypeOfParetoRelation.NONCOMPARABLE
