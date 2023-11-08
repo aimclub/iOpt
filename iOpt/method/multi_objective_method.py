@@ -89,7 +89,7 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             return
         for item in self.search_data:
             self.task.calculate(item, -1, TypeOfCalculation.CONVOLUTION)
-            if(item.get_z()<self.best.get_z() and item.get_z()>0):
+            if(item.get_z()<self.best.get_z() and item.get_z()>0 and item.get_index()>=0): # достаточно ли неотрицательный индекс, или нужно равенство количеству функций
                 self.best = item
 
         self.is_recalc_all_convolution = False
@@ -121,6 +121,8 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             self.recalcR = True
             self.Z[point.get_index()] = point.get_z()
 
+        print("point.get_index() in uo", point.get_index())
+
         if self.search_data.get_count() == 0:
             self.search_data.solution.best_trials[0] = self.best # на первой итерации нам нужно засунуть в лучшее хоть что-то
 
@@ -132,10 +134,10 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                 # if(len(self.search_data.solution.best_trials)>1):
                 self.check_dominance(point) #не важен порядок recalc и этого, его вообще можно в конец убрать, он не зависит от best
 
-        # i = 0
-        # for trial in self.search_data.solution.best_trials:
-        #     print(i, trial.function_values[0].value, trial.function_values[1].value)
-        #     i +=1
+        i = 0
+        for trial in self.search_data.solution.best_trials:
+            print(i, trial.function_values[0].value, trial.function_values[1].value, trial.point.float_variables)
+            i +=1
 
     def check_dominance(self, point: SearchDataItem) -> None:
         pareto_front = np.ndarray(shape=(1), dtype=Trial)
