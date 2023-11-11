@@ -30,7 +30,7 @@ class Calculator:
         self.evaluate_method = evaluate_method
         self.parameters = parameters
         Calculator.worker_init(self.evaluate_method)
-        Calculator.pool = _ProcessPool(parameters.number_of_parallel_points,
+        self.pool = _ProcessPool(parameters.number_of_parallel_points,
                                        initializer=Calculator.worker_init,
                                        initargs=(self.evaluate_method,))
 
@@ -78,12 +78,12 @@ class Calculator:
                                 discrete_value_index=point.get_discrete_value_index())
             points_copy.append(sd)
 
-        points_res = Calculator.pool.map(Calculator.worker, points_copy)
+        points_res = self.pool.map(Calculator.worker, points_copy)
 
         for point, point_r in zip(points, points_res):
             self.evaluate_method.copy_functionals(point, point_r)
 
         return points
 
-    #def __del__(self):
-        #self.pool.close()
+    def __del__(self):
+        self.pool.close()
