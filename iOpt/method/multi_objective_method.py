@@ -38,6 +38,8 @@ class MultiObjectiveMethod(MixedIntegerMethod):
         # По влагу необходимо пересчитать все свертки, затем все R и перрезаполнить очередь (А нужно ли?!, если R меняются в предке)
         self.is_recalc_all_convolution = True
 
+
+
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
         Проведение поискового испытания в заданной точке.
@@ -70,12 +72,12 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                 point = self.task.calculate(point, number_of_constraints+i)
 
 
-            self.update_min_max_value(point) # сделать проверку на первую итерацию или куда-то вынести?!
+            # вот как раз из-за этого не получается просто вынести метод в отдельный калькулятор целиком
+            #if self.iterations_count == 1:
+                #self.update_min_max_value(point) # сделать проверку на первую итерацию или куда-то вынести?!
 
             #Добавить вычисление свертки
-            point = self.task.calculate(point, -1,
-                                        TypeOfCalculation.CONVOLUTION)
-
+            point = self.task.calculate(point, -1, TypeOfCalculation.CONVOLUTION)
             point.set_index(number_of_constraints)
 
         except Exception:
@@ -87,9 +89,10 @@ class MultiObjectiveMethod(MixedIntegerMethod):
     def recalc_all_convolution(self) -> None:
         if self.is_recalc_all_convolution is not True:
             return
+        #пересчитать бест
         for item in self.search_data:
-            self.task.calculate(item, -1, TypeOfCalculation.CONVOLUTION)
-            if(item.get_z()<self.best.get_z() and item.get_z()>0 and item.get_index()>=0): # достаточно ли неотрицательный индекс, или нужно равенство количеству функций
+            self.task.calculate(item, -1, TypeOfCalculation.CONVOLUTION) # вынести в два цикла
+            if(item.get_z()<self.best.get_z() and item.get_z()>0 and item.get_index()>=0): # достаточно ли неотрицательный индекс, или нужно равенство количеству ограничений # индекс должен быть больше или равен, чем у текущего
                 self.best = item
 
         self.is_recalc_all_convolution = False
@@ -115,32 +118,38 @@ class MultiObjectiveMethod(MixedIntegerMethod):
         :param point: точка нового испытания.
         """
 
+        #print(self.task.min_value)
+
         if self.best is None or self.best.get_index() < point.get_index() or (
                     self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
             self.best = point
             self.recalcR = True
             self.Z[point.get_index()] = point.get_z()
 
-        print("point.get_index() in uo", point.get_index())
+        #print("point.get_index() in uo", point.get_index())
 
-        if self.search_data.get_count() == 0:
+        if self.search_data.get_count() == 0: # или if self.iterations_count == 1: (наверно хуже, потому что считывание из файла заполняет SD и идет до update_optimum
             self.search_data.solution.best_trials[0] = self.best # на первой итерации нам нужно засунуть в лучшее хоть что-то
 
 
         if (point.get_index() == self.task.problem.number_of_constraints):  # а вот нужно ли его на весь блок кода или только эту часть?!
             self.update_min_max_value(point)
-            if(self.search_data.get_count()>0):
-                self.recalc_all_convolution()
-                # if(len(self.search_data.solution.best_trials)>1):
-                self.check_dominance(point) #не важен порядок recalc и этого, его вообще можно в конец убрать, он не зависит от best
+            if(self.search_data.get_count()>0): # см выше комментарий
+                #self.recalc_all_convolution() # просто поднять флаг
+                self.check_dominance(point)
 
+        # вывод для проверки
         i = 0
         for trial in self.search_data.solution.best_trials:
-            print(i, trial.function_values[0].value, trial.function_values[1].value, trial.point.float_variables)
+            fv = [trial.function_values[k].value for k in range(self.task.problem.number_of_objectives)]
+            print(fv, trial.point.float_variables)
+            #print(i, trial.function_values[0].value, trial.function_values[1].value, trial.point.float_variables)
             i +=1
 
+        print(self.best.get_z(), self.best.point.float_variables, self.best.function_values[0].value, self.best.function_values[1].value  )
+
     def check_dominance(self, point: SearchDataItem) -> None:
-        pareto_front = np.ndarray(shape=(1), dtype=Trial)
+        pareto_front: np.ndarray(shape=(1), dtype=Trial) = []
 
         new = point.function_values # new - массив fv
         add_point = 0
@@ -162,7 +171,7 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             # если она хуже хотя бы одной - то выходим из рассмотрения вообще
         if add_point:
             pareto_front = np.append(pareto_front, Trial(point.point, point.function_values)) #состоит из трайлов, поэтому нужно засунуть трайл
-            self.search_data.solution.best_trials = pareto_front[1:]  # присвоение адреса, (в первой (точнее нулевой) ячейке находится NoneType
+            self.search_data.solution.best_trials = pareto_front  # присвоение адреса
         # если мы не добавляем точку, значит оставляем все как есть и ничего не меняем
 
 
@@ -184,8 +193,12 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             return TypeOfParetoRelation.NONCOMPARABLE
     def update_min_max_value(self,
                            data_item: SearchDataItem):
+        #print("up1 ", self.task.min_value)
         # а где его применять?!
-        if self.task.min_value and self.task.max_value: # проверка на пустоту
+        if (self.task.min_value[0]==self.task.max_value[0] and self.task.min_value[0]==0):
+            self.task.min_value = [fv.value for fv in data_item.function_values]
+            self.task.max_value = [fv.value for fv in data_item.function_values]
+        elif self.task.min_value and self.task.max_value: # проверка на пустоту
             for i in range(0, self.task.problem.number_of_objectives):
                 if self.task.min_value[i] > data_item.function_values[i].value:
                     self.task.min_value[i] = data_item.function_values[i].value
@@ -193,9 +206,11 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                 if self.task.max_value[i] < data_item.function_values[i].value:
                     self.task.max_value[i] = data_item.function_values[i].value
                     self.is_recalc_all_convolution = True # а нужно ли, если мах не влияет на свертку?
-        else:
-            self.task.min_value = [fv.value for fv in data_item.function_values]
-            self.task.max_value = [fv.value for fv in data_item.function_values]
+        # elif (self.task.min_value[0]==self.task.max_value[0]):
+        #     self.task.min_value = [fv.value for fv in data_item.function_values]
+        #     self.task.max_value = [fv.value for fv in data_item.function_values]
+
+        #print("up2 ",self.task.min_value)
 
 
 

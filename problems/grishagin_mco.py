@@ -31,7 +31,7 @@ class Grishagin_mco(Problem):
         self.dimension = 2
         self.number_of_float_variables = self.dimension
         self.number_of_discrete_variables = 0
-        self.number_of_objectives = 1
+        self.number_of_objectives = count_functions
         self.number_of_constraints = 0
         self.float_variable_names = np.ndarray(shape=(self.dimension,), dtype=str)
         for i in range(self.dimension):
@@ -48,7 +48,8 @@ class Grishagin_mco(Problem):
             self.function_numbers = function_numbers #сюда бы проверки всякие запихнуть
         else:
             for i in range(count_functions):
-                self.function_numbers[i]=i # мб добавить рандомное заполнение?
+                self.function_numbers[i]=i+1 # мб добавить рандомное заполнение?
+        print(self.number_of_objectives, self.function_numbers)
 
         self.functions = np.ndarray(shape=(self.count_functions,), dtype=GrishaginFunction)
         for i in range(count_functions):
@@ -72,5 +73,6 @@ class Grishagin_mco(Problem):
         :return: Вычисленное значение функции в точке point
         """
         function_value.value = self.functions[function_value.functionID].Calculate(point.float_variables)
+        #print(function_value.functionID, function_value.value, self.functions[function_value.functionID].fn)
 
         return function_value

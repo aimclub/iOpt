@@ -55,6 +55,7 @@ class MinMaxConvolution(Convolution):
         for i in range(0, self.problem.number_of_objectives):
             f_value = data_item.function_values[i].value - min_value[i]
             value = max(value, f_value * self.lambda_param[i])
+            # добавить дельту, на которую влияет максимум
         data_item.set_z(value)
         return data_item
 
@@ -68,8 +69,10 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
         super().__init__(problem, perm)
         self.convolution = convolution
         # !!! реализовать заполнение массива
-        self.min_value: np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double) = []
-        self.max_value: np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double) = []
+        self.min_value = np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double)  # задать нулями
+        self.min_value.fill(0)
+        self.max_value = np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double)
+        self.max_value.fill(0)
         # есть ли в этом смысл? Проход по всей области парето может занять много времени
         if self.problem.known_optimum:  # проверка на пустоту
             self.min_value = self.problem.known_optimum[0].function_values
