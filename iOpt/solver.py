@@ -1,6 +1,8 @@
+from time import time
 from typing import List
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.grid_search_method import GridSearchMethod
 from iOpt.method.listener import Listener
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
@@ -97,13 +99,19 @@ class Solver:
         """
         return self.process.get_results()
 
-    def save_progress(self, file_name: str) -> None:
+    def save_progress(self, file_name: str = None) -> str:
         """
         Save the optimization process to a file
 
         :param file_name: file name.
         """
+
+        if file_name is None:
+            file_name = "log_" + self.parameters.to_string() + "_" + str(time())
+
         self.process.save_progress(file_name=file_name)
+
+        return file_name
 
     def load_progress(self, file_name: str) -> None:
         """
@@ -115,8 +123,10 @@ class Solver:
         self.process.load_progress(file_name=file_name)
 
         if (self.problem.number_of_discrete_variables > 0):
-            self.process.method.iterations_count = self.process.search_data.get_count() - (len(self.method.GetDiscreteParameters(self.problem)) + 1 ) #-2
-        else: self.process.method.iterations_count = self.process.search_data.get_count() - 2
+            self.process.method.iterations_count = self.process.search_data.get_count() - (
+                    len(self.method.GetDiscreteParameters(self.problem)) + 1)  # -2
+        else:
+            self.process.method.iterations_count = self.process.search_data.get_count() - 2
 
     def refresh_listener(self) -> None:
         """
@@ -198,3 +208,35 @@ class Solver:
                                                    parameters.start_point.float_variables):
                 if y < lower_bound or y > upper_bound:
                     raise Exception("Incorrect start point coordinate")
+
+    def grid_search(self) -> Solution:
+        """
+        Search optimal value on use grid search algorithm.
+
+        :return: optimization problem solution.
+        """
+
+        temp_method = self.method
+        temp_process = self.process
+
+        self.method = GridSearchMethod(self.parameters, self.task, self.evolvent, self.search_data)
+        self.process = SolverFactory.create_process(parameters=self.parameters, task=self.task, evolvent=self.evolvent,
+                                                    search_data=self.search_data, method=self.method,
+                                                    listeners=self.__listeners)
+
+        sol = self.solve()
+
+        self.method = temp_method
+        self.process = temp_process
+
+        return sol
+
+    def release_all_listener(self):
+
+        for listener in self.__listeners:
+            listener.on_end_iteration(self.search_data.get_last_items(self.search_data.get_count() - 2),
+                                      self.get_results())
+
+        status = self.method.check_stop_condition()
+        for listener in self.__listeners:
+            listener.on_method_stop(self.search_data, self.get_results(), status)

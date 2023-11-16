@@ -55,3 +55,12 @@ class SolverParameters:
         self.start_point = start_point
         self.number_of_parallel_points = number_of_parallel_points
         self.timeout = timeout
+
+    def to_string(self) -> str:
+        result: str = ("%.2f" % self.eps) + "_" + \
+                      ("%.2f" % self.r) + "_" + \
+                      ("%d" % self.iters_limit) + "_" + \
+                      ("%.2f" % self.proportion_of_global_iterations) + "_" + \
+                      ("%d" % self.number_of_parallel_points)
+
+        return result
