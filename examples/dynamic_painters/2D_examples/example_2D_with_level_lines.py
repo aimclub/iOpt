@@ -6,7 +6,7 @@ from iOpt.output_system.listeners.animate_painters import AnimatePainterNDListen
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 if __name__ == "__main__":
-    # create the problem 2D dimension
+    # create the problem _2D dimension
     problem = XSquared(2)
 
     # add solver parameters

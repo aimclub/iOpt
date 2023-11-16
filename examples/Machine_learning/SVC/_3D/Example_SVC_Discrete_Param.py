@@ -13,7 +13,6 @@ def load_breast_cancer_data():
     inputs, outputs = shuffle(x_raw, y_raw ^ 1, random_state=42)
     return inputs, outputs
 
-
 if __name__ == "__main__":
     x, y = load_breast_cancer_data()
     regularization_value_bound = {'low': 1, 'up': 10}
@@ -29,3 +28,4 @@ if __name__ == "__main__":
     cfol = ConsoleOutputListener(mode='full')
     solver.add_listener(cfol)
     solver_info = solver.solve()
+
