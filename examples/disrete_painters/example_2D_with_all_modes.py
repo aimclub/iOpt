@@ -5,7 +5,7 @@ from iOpt.output_system.listeners.static_painters import StaticDiscreteListener
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 if __name__ == "__main__":
-    # create the problem 2D dimension float vars
+    # create the problem _2D dimension float vars
     problem = RastriginInt(5, 3)
 
     # add solver parameters
