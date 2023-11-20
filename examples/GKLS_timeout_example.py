@@ -3,8 +3,7 @@ from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from problems.GKLS import GKLS
 
-
-def SolveSingleGKLS():
+if __name__ == "__main__":
     """
     Минимизация тестовой функции из GKLS генератора с номером 39
     """
@@ -25,7 +24,3 @@ def SolveSingleGKLS():
 
     # Решение задачи
     solver.solve()
-
-
-if __name__ == "__main__":
-    SolveSingleGKLS()
