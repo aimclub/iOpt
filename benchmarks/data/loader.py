@@ -12,7 +12,7 @@ from sklearn.datasets import load_breast_cancer, load_digits
 from pathlib import Path
 from dataclasses import dataclass
 
-from typing import List
+from typing import List, Literal
 
 
 @dataclass
@@ -20,6 +20,7 @@ class Dataset:
     name: str
     features: npt.NDArray
     targets: npt.NDArray
+    type: Literal['classification', 'regression'] = 'classification'
 
 
 class Parser(ABC):
@@ -52,8 +53,10 @@ class Parser(ABC):
              for i in range(number_features) if (skip is None) or self.feature_skip_condition(i, skip)]
         ).T
 
-    def preprocess_target(self, targets):
-        return LabelEncoder().fit_transform(targets)
+    def preprocess_target(self, targets, is_regression):
+        if not is_regression:
+            return LabelEncoder().fit_transform(targets)
+        return [float(x) for x in targets]
 
     @staticmethod
     def separate_target(data, index_target: int | List[int]):
@@ -71,11 +74,12 @@ class Parser(ABC):
                 targets.append(target.index('1'))
         return features, targets
 
-    def parse_file(self, index_target, sample_skip=None, feature_skip=None):
+    def parse_file(self, index_target, sample_skip=None, feature_skip=None,
+                   is_regression=False):
         data = self.load_data(sample_skip)
         features, targets = self.separate_target(data, index_target)
         return self.preprocess_features(features, skip=feature_skip), \
-            self.preprocess_target(targets)
+            self.preprocess_target(targets, is_regression)
 
 
 class TextParser(Parser):
@@ -233,6 +237,24 @@ class Wilt(ArffParser):
     def load_dataset(self) -> Dataset:
         features, targets = self.parse_file(index_target=-1)
         return Dataset('Wilt', features, targets)
+
+
+class Transformator(TextParser):
+    def __init__(self):
+        super().__init__('transformator/transformator.csv', spliter=',')
+
+    def load_dataset(self) -> Dataset:
+        features, targets = self.parse_file(index_target=-1)
+        return Dataset('Transformator', features, targets)
+
+
+class Turbine(TextParser):
+    def __init__(self):
+        super().__init__('turbine/no_predict.csv', spliter=';')
+    
+    def load_dataset(self) -> Dataset:
+        features, targets = self.parse_file(index_target=-1, is_regression=True)
+        return Dataset('Turbine', features, targets, 'regression')
 
 
 def get_datasets(*args) -> List[Dataset]:

@@ -1,10 +1,11 @@
 from abc import ABC, abstractclassmethod
 from typing import Literal
 
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.model_selection import cross_val_score, StratifiedKFold, KFold
 from sklearn.metrics import (
     accuracy_score,
     f1_score,
+    r2_score
 )
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, MaxAbsScaler
@@ -20,10 +21,13 @@ PREPROCESSING = {
 
 
 class Metric(ABC):
-    def __init__(self, name, preprocessing=None):
+    def __init__(self, name, preprocessing=None, is_regression=False):
         self.name = name
         self.preprocessing = PREPROCESSING[preprocessing] if (preprocessing is not None) else None
-        self.cv = StratifiedKFold(shuffle=True, random_state=42)
+        if is_regression:
+            self.cv = KFold(shuffle=True, random_state=42)
+        else:
+            self.cv = StratifiedKFold(shuffle=True, random_state=42)
 
     def __call__(self, estimator, dataset: data.Dataset):
 
@@ -64,6 +68,14 @@ class F1(Metric):
         return f1_score(y, model.predict(x), average=self.average)
 
 
+class R2(Metric):
+    def __init__(self, preprocessing):
+        super().__init__('r2-score', preprocessing, is_regression=True)
+    
+    def get_score(self, model, x, y):
+        return r2_score(y, model.predict(x))
+
+
 DATASET_TO_METRIC = {
     data.BreastCancer:               F1(preprocessing='standard', average='binary'),
     data.Digits:                     Accuracy(preprocessing='standard'),
@@ -78,5 +90,7 @@ DATASET_TO_METRIC = {
     data.Zoo:                        F1(preprocessing='standard', average='macro'),
     data.Banknote:                   F1(preprocessing='standard', average='binary'),
     data.CarEvaluation:              F1(preprocessing='standard', average='macro'),
-    data.Wilt:                       F1(preprocessing='standard', average='binary')
+    data.Wilt:                       F1(preprocessing='standard', average='binary'),
+    data.Transformator:              F1(preprocessing=None, average='macro'),
+    data.Turbine:                    R2(preprocessing=None)
 }

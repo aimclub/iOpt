@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 
 from hyperparams import Hyperparameter, Numerical, Categorial
 from sklearn.svm import SVC
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier, XGBRegressor
 from sklearn.neural_network import MLPClassifier
 from functools import partial
 
@@ -25,6 +25,11 @@ METHOD_TO_HYPERPARAMS = {
         'subsample': Numerical('float', 0.05, 0.95),
         'colsample_bytree': Numerical('float', 0.05, 0.95),
         'learning_rate': Numerical('float', 0.001, 0.1, is_log_scale=True)
+    },
+    
+    XGBRegressor: {
+        'gamma': Numerical('float', 0.2, 0.3),
+        'learning_rate': Numerical('float', 0.2, 0.4)
     },
 
     MLPClassifier: {
@@ -50,14 +55,16 @@ NAME_TO_DATASET = {
     'semeion': data.Semeion,
     'statlog-segmentation': data.StatlogSegmentation,
     'wilt': data.Wilt,
-    'zoo': data.Zoo
+    'zoo': data.Zoo,
+    'transformator': data.Transformator,
+    'turbine': data.Turbine
 }
 
 
 @dataclass
 class ConsoleArgument:
     max_iter: int
-    estimator: SVC | XGBClassifier | MLPClassifier
+    estimator: SVC | XGBClassifier | MLPClassifier | XGBRegressor
     dataset: data.Dataset
     hyperparams: Hyperparameter = field(init=False)
     dir: str
@@ -74,10 +81,12 @@ class ConsoleArgument:
 def get_estimator(name: str) -> SVC | XGBClassifier | MLPClassifier:
     if name == 'svc':
         return partial(SVC, max_iter=1000)
-    elif name == 'xgb':
+    elif name == 'xgbclassifier':
         return partial(XGBClassifier, n_jobs=1)
-    elif name == 'mlp':
+    elif name == 'mlpclassifier':
         return MLPClassifier
+    elif name == 'xgbregressor':
+        return partial(XGBRegressor, n_jobs=1)
     raise ValueError(f'Estimator "{name}" do not support')
 
 
