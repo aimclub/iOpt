@@ -54,5 +54,5 @@ class SVC_2D_Transformators_State(Problem):
         """
         cs, gammas = point.float_variables[0], point.float_variables[1]
         clf = SVC(C=10 ** cs, gamma=10 ** gammas)
-        function_value.value = -cross_val_score(clf, self.x, self.y, scoring='accuracy').mean()
+        function_value.value = -cross_val_score(clf, self.x, self.y, scoring='f1_macro').mean()
         return function_value
