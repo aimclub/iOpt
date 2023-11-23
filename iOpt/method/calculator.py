@@ -14,7 +14,6 @@ sys.setrecursionlimit(10000)
 
 
 class Calculator:
-    pool: ProcessPool = None
     evaluate_method: ICriterionEvaluateMethod = None
 
     def __init__(self,
