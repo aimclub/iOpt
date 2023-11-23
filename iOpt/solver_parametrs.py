@@ -57,6 +57,11 @@ class SolverParameters:
         self.timeout = timeout
 
     def to_string(self) -> str:
+        """
+        Creates a string containing the values of the main parameters
+
+        :return: string containing the parameters values
+        """
         result: str = ("%.2f" % self.eps) + "_" + \
                       ("%.2f" % self.r) + "_" + \
                       ("%d" % self.iters_limit) + "_" + \

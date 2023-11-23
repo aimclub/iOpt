@@ -232,6 +232,9 @@ class Solver:
         return sol
 
     def release_all_listener(self):
+        """
+        Force all listeners to start.
+        """
 
         for listener in self.__listeners:
             listener.on_end_iteration(self.search_data.get_last_items(self.search_data.get_count() - 2),
