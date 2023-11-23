@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from pathos.multiprocessing import _ProcessPool
+from pathos.multiprocessing import ProcessPool
 
 from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.search_data import SearchDataItem
@@ -14,7 +14,7 @@ sys.setrecursionlimit(10000)
 
 
 class Calculator:
-    pool: _ProcessPool = None
+    pool: ProcessPool = None
     evaluate_method: ICriterionEvaluateMethod = None
 
     def __init__(self,
@@ -30,7 +30,7 @@ class Calculator:
         self.evaluate_method = evaluate_method
         self.parameters = parameters
         Calculator.worker_init(self.evaluate_method)
-        self.pool = _ProcessPool(parameters.number_of_parallel_points,
+        self.pool = ProcessPool(parameters.number_of_parallel_points,
                                        initializer=Calculator.worker_init,
                                        initargs=(self.evaluate_method,))
 
@@ -84,6 +84,3 @@ class Calculator:
             self.evaluate_method.copy_functionals(point, point_r)
 
         return points
-
-    def __del__(self):
-        self.pool.close()
