@@ -86,6 +86,6 @@ class GridSearchMethod(Method):
 
         deltax = curr_point.delta
 
-        global_r = 2 * deltax
+        global_r = deltax
 
         curr_point.globalR = global_r
