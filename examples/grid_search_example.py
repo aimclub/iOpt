@@ -10,7 +10,7 @@ if __name__ == "__main__":
     Поиск на сетке тестовой функции из GKLS генератора с номером 39, сохранение и загрузка поисковой информации
     """
 
-    # создание объекта задачи
+    # Создаем объект задачи
     problem = GKLS(dimension=2, functionNumber=39)
 
     # Формируем параметры решателя
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)
 
-    # Решение задачи
+    # Решаем задачу
     solver.grid_search()
 
     log = solver.save_progress()

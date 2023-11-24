@@ -211,7 +211,7 @@ class Solver:
 
     def grid_search(self) -> Solution:
         """
-        Search optimal value on use grid search algorithm.
+        Search optimal value using grid search algorithm.
 
         :return: optimization problem solution.
         """
