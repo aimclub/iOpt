@@ -26,7 +26,7 @@ class DisretePlotter:
         self.combcount = len(self.discreteParamsCombinations)
 
         if mode == 'analysis':
-            self.fig, self.ax = plt.subplots(figsize=(8, 6))
+            self.fig = plt.Figure()
             self.fig.suptitle('Analysis optimization method work', fontsize=10)
             self.axes = []
 
@@ -64,7 +64,7 @@ class DisretePlotter:
             self.axes[self.count + 3].set_yticks([])
 
         elif mode == 'bestcombination':
-            self.fig, self.ax = plt.subplots(figsize=(8, 6))
+            self.fig = plt.Figure()
             self.axes = []
             self.axes.append(plt.subplot2grid((9, 1), (0, 0), colspan=1, rowspan=8))
             self.axes.append(plt.subplot2grid((9, 1), (8, 0), colspan=1, rowspan=1))
@@ -288,7 +288,7 @@ class Plotter3D(Plotter):
 
         self.plotterType = plotter_type
 
-        self.fig = plt.subplot()
+        self.fig = plt.Figure()
         if self.plotterType == 'surface':
             self.ax = plt.subplot(projection='3d')
         elif self.plotterType == 'lines layers':
@@ -356,7 +356,7 @@ class Plotter3D(Plotter):
 
     def plot_by_points(self, points, values):
         if self.plotterType == 'surface':
-            surf = self.ax.plot_trisurf(np.array(points)[:, 0], np.array(points)[:, 1], values, cmap=plt.cm.viridis, alpha=0.95)
+            self.ax.plot_trisurf(np.array(points)[:, 0], np.array(points)[:, 1], values, cmap=plt.cm.viridis, alpha=0.95)
     def plot_points(self, points, values, clr='blue', mrkr='o', mrkrs=3):
         if self.plotterType == 'lines layers':
             self.ax.scatter(np.array(points)[:, 0], np.array(points)[:, 1], color=clr, marker=mrkr, s=mrkrs)

@@ -25,7 +25,6 @@ def factory_dataset():
 
 
 if __name__ == "__main__":
-    '''
     X, Y = factory_dataset()
     regularization_value_bound = {'low': 5, 'up': 9}
     kernel_coefficient_bound = {'low': -3, 'up': 1}
@@ -40,8 +39,8 @@ if __name__ == "__main__":
     log = "SVC_2D_Transformators_2000"
     solver.load_progress(log)                 # загружаем точки из файла в солвер
     solver.release_all_listener()             # запускаем подключенных слушаетей
-    '''
 
+    '''
     X, Y = factory_dataset()
     regularization_value_bound = {'low': 5, 'up': 9}
     kernel_coefficient_bound = {'low': -3, 'up': 1}
@@ -58,4 +57,4 @@ if __name__ == "__main__":
     cfol = ConsoleOutputListener(mode='full')
     solver.add_listener(cfol)
     solver_info = solver.solve()
-
+    '''
