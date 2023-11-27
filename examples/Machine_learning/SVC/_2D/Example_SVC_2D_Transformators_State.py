@@ -33,9 +33,12 @@ if __name__ == "__main__":
     method_params = SolverParameters(r=np.double(2.0), iters_limit=2000, number_of_parallel_points=5,
                                      evolvent_density=12)
     solver = Solver(problem=problem, parameters=method_params)
-    spl = StaticPainterNDListener("svc2d_transformator_state_stat.png", "output", vars_indxs=[0, 1], mode="surface",
+    spl1 = StaticPainterNDListener("svc2d_transformator_state_stat1.png", "output", vars_indxs=[0, 1], mode="surface",
                                   calc="by points")
-    solver.add_listener(spl)
+    solver.add_listener(spl1)
+    spl2 = StaticPainterNDListener("svc2d_transformator_state_stat2.png", "output", vars_indxs=[0, 1], mode="lines layers",
+                                  calc="by points")
+    solver.add_listener(spl2)
     log = "SVC_2D_Transformators_2000"
     solver.load_progress(log)                 # загружаем точки из файла в солвер
     solver.release_all_listener()             # запускаем подключенных слушаетей

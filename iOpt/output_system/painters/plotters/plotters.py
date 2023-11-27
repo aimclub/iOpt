@@ -357,6 +357,8 @@ class Plotter3D(Plotter):
     def plot_by_points(self, points, values):
         if self.plotterType == 'surface':
             self.ax.plot_trisurf(np.array(points)[:, 0], np.array(points)[:, 1], values, cmap=plt.cm.viridis, alpha=0.95)
+        if self.plotterType == 'lines layers':
+            self.ax.tricontourf(np.array(points)[:, 0], np.array(points)[:, 1], values, cmap=plt.cm.viridis)
     def plot_points(self, points, values, clr='blue', mrkr='o', mrkrs=3):
         if self.plotterType == 'lines layers':
             self.ax.scatter(np.array(points)[:, 0], np.array(points)[:, 1], color=clr, marker=mrkr, s=mrkrs)
