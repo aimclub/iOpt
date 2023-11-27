@@ -211,7 +211,8 @@ class DisretePlotter:
                 x1, x2 = np.meshgrid(x1, x2)
                 z = interp(x1, x2)
                 xx=self.axes[0].contour(x1, x2, z, levels=10, linewidths=1, cmap='plasma')
-                self.fig.colorbar(ScalarMappable(norm=xx.norm, cmap=xx.cmap))
+                #self.fig.colorbar(xx, ax = self.axes[0], ticks=xx.levels)
+                self.fig.colorbar(ScalarMappable(norm=xx.norm, cmap=xx.cmap), ax=self.axes[0], orientation='vertical')
             else:
                 f = interpolate.interp1d(np.array(points), np.array(values), kind=3)
                 x_plot = np.linspace(min(np.array(points)), max(np.array(points)), points_count)
@@ -274,7 +275,7 @@ class Plotter2D(Plotter):
         self.ax.scatter(points, values, color=clr, marker=mrkr, s=mrkrs)
 
 class Plotter3D(Plotter):
-    def __init__(self, parameters_in_nd_problem, left_bounds, right_bounds, obj_func, plotter_type):
+    def __init__(self, parameters_in_nd_problem, left_bounds, right_bounds, obj_func, plotter_type, calc_type):
         plt.style.use('fivethirtyeight')
         plt.rcParams['contour.negative_linestyle'] = 'solid'
         plt.rcParams["figure.figsize"] = (8, 6)
@@ -283,6 +284,7 @@ class Plotter3D(Plotter):
         self.leftBounds = left_bounds
         self.rightBounds = right_bounds
         self.objFunc = obj_func
+        self.calc_type = calc_type
 
         self.plotterType = plotter_type
 
@@ -352,11 +354,18 @@ class Plotter3D(Plotter):
             z = interp(x1, x2)
             self.ax.plot_surface(x1, x2, z, cmap=plt.cm.viridis, alpha=0.6)
 
+    def plot_by_points(self, points, values):
+        if self.plotterType == 'surface':
+            surf = self.ax.plot_trisurf(np.array(points)[:, 0], np.array(points)[:, 1], values, cmap=plt.cm.viridis, alpha=0.95)
     def plot_points(self, points, values, clr='blue', mrkr='o', mrkrs=3):
         if self.plotterType == 'lines layers':
             self.ax.scatter(np.array(points)[:, 0], np.array(points)[:, 1], color=clr, marker=mrkr, s=mrkrs)
         elif self.plotterType == 'surface':
-            self.ax.scatter(np.array(points)[:, 0], np.array(points)[:, 1], values, s=mrkrs, color=clr, marker=mrkr, alpha=1.0)
+            if self.calc_type == 'by points':
+                self.ax.scatter(np.array(points)[:, 0], np.array(points)[:, 1], values, s=mrkrs, color=clr, marker=mrkr,
+                                alpha=0.2)
+            else:
+                self.ax.scatter(np.array(points)[:, 0], np.array(points)[:, 1], values, s=mrkrs, color=clr, marker=mrkr, alpha=1.0)
 
 class AnimatePlotter2D(Plotter2D):
     def __init__(self, parameters_in_nd_problem, left_bounds, right_bounds, obj_func=None,
