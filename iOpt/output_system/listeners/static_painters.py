@@ -138,7 +138,7 @@ class StaticPainterNDListener(Listener):
            The 'lines layers' mode draws level lines in the cross-section of the solution found by the method.
            The 'surface' mode draws the surface in the cross-section of the solution found by the method.
         :param calc: The calculation method for drawing the graph of the objective function that will be used. Possible
-           modes: 'objective function' (only in the 'line layers' mode), 'approximation' (only in the 'surface' mode)
+           modes: 'objective function' (only in the 'line layers' mode), 'approximation' (only in the 'surface' mode), 'by points'
            and 'interpolation'. The 'objective function' mode builds a graph by calculating the values of the objective function on a uniform grid.
            grid. The 'approximation' mode builds a neuroapproximation for the objective function based on the obtained search information.
            information. The 'interpolation' mode builds interpolation for the objective function based on the obtained search information.
