@@ -41,11 +41,11 @@ class AsyncParallelProcess(Process):
             for _ in range(self.calculator.waiting_workers):
                 newpoint, oldpoint = self.method.calculate_iteration_point()
                 self.calculator.give_point(newpoint, oldpoint)
+                self.method.finalize_iteration()
 
             for newpoint, oldpoint in self.calculator.take_list_of_calculated_points():
                 self.method.update_optimum(newpoint)
                 self.method.renew_search_data(newpoint, oldpoint)
-                self.method.finalize_iteration()
 
             done_trials.extend(
                 self.search_data.get_last_items(self.calculator.waiting_workers)
