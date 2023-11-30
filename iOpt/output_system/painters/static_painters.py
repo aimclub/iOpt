@@ -231,7 +231,8 @@ class StaticPainterND(Painter):
                             float(solution.problem.upper_bound_of_float_variables[parameters[1]])]
 
         # настройки графика
-        self.plotter = Plotter3D(parameters, self.leftBounds, self.rightBounds, solution.problem.calculate, self.objectFunctionPainterType)
+        self.plotter = Plotter3D(parameters, self.leftBounds, self.rightBounds, solution.problem.calculate,
+                                 self.objectFunctionPainterType, self.objectFunctionCalculatorType)
 
     def paint_objective_func(self):
         if self.objectFunctionPainterType == 'lines layers':
@@ -239,6 +240,8 @@ class StaticPainterND(Painter):
                 self.plotter.plot_by_grid(self.calculate_func, self.optimum, points_count=100)
             elif self.objectFunctionCalculatorType == 'interpolation':
                 self.plotter.plot_interpolation(self.points, self.values, points_count=100)
+            elif self.objectFunctionCalculatorType == 'by points':
+               self.plotter.plot_by_points(self.points, self.values)
             elif self.objectFunctionCalculatorType == "approximation":
                 pass
         elif self.objectFunctionPainterType == 'surface':
@@ -246,6 +249,8 @@ class StaticPainterND(Painter):
                 self.plotter.plot_approximation(self.points, self.values, points_count=50)
             elif self.objectFunctionCalculatorType == 'interpolation':
                 self.plotter.plot_interpolation(self.points, self.values, points_count=50)
+            elif self.objectFunctionCalculatorType == 'by points':
+               self.plotter.plot_by_points(self.points, self.values)
             elif self.objectFunctionCalculatorType == "objective function":
                 pass
 

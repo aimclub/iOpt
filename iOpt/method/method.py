@@ -60,20 +60,6 @@ class Method:
     def min_delta(self, val):
         self.search_data.solution.solution_accuracy = val
 
-    # @staticmethod
-    # def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
-    #     """
-    #     Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
-    #       полученными при редукции размерности.
-    #
-    #     :param lx: левая точка
-    #     :param rx: правая точка
-    #     :param dimension: размерность исходного пространства
-    #
-    #     :return: гельдерово расстояние между lx и rx.
-    #     """
-    #     return pow(rx - lx, 1.0 / dimension)
-
     def calculate_delta(self, l_point: SearchDataItem, r_point: SearchDataItem, dimension: int) -> float:
         """
         Compute the Gelder distance in the Gelder metric between two points on the segment [0,1],
@@ -165,7 +151,6 @@ class Method:
 
         # вставить left  и right, потом middle
         self.search_data.insert_first_data_item(left, right)
-        # self.search_data.InsertDataItem(middle, right)
 
         for item in items:
             self.search_data.insert_data_item(item, right)
@@ -211,7 +196,6 @@ class Method:
         self.search_data.clear_queue()
         for item in self.search_data:  # Должно работать...
             self.calculate_global_r(item, item.get_left())
-            # self.CalculateLocalR(item)
         self.search_data.refill_queue()
         self.recalcR = False
 
@@ -350,9 +334,6 @@ a new point into the repository
         :param newpoint: new point.
         :param oldpoint: right point of the interval to which the new point belongs.
         """
-
-        # oldpoint.delta = Method.CalculateDelta(newpoint.GetX(), oldpoint.GetX(), self.dimension)
-        # newpoint.delta = Method.CalculateDelta(oldpoint.GetLeft().GetX(), newpoint.GetX(), self.dimension)
 
         oldpoint.delta = self.calculate_delta(newpoint, oldpoint, self.dimension)
         newpoint.delta = self.calculate_delta(oldpoint.get_left(), newpoint, self.dimension)

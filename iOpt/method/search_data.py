@@ -372,19 +372,20 @@ class SearchData:
                     'functionID': str(fv.functionID),
                 })
 
-            data['SearchDataItem'].append({
-                'float_variables': list(dataItem.get_y().float_variables),
-                'discrete_variables': [] if dataItem.get_y().discrete_variables is None else list(
-                    dataItem.get_y().discrete_variables),
-                'function_values': list(fvs),
-                'x': dataItem.get_x(),
-                'delta': dataItem.delta,
-                'globalR': dataItem.globalR,
-                'localR': dataItem.localR,
-                'index': dataItem.get_index(),
-                'discrete_value_index': dataItem.get_discrete_value_index(),
-                '__z': dataItem.get_z()
-            })
+            if np.isfinite(dataItem.get_z()):
+                data['SearchDataItem'].append({
+                    'float_variables': list(dataItem.get_y().float_variables),
+                    'discrete_variables': [] if dataItem.get_y().discrete_variables is None else list(
+                        dataItem.get_y().discrete_variables),
+                    'function_values': list(fvs),
+                    'x': dataItem.get_x(),
+                    'delta': dataItem.delta,
+                    'globalR': dataItem.globalR,
+                    'localR': dataItem.localR,
+                    'index': dataItem.get_index(),
+                    'discrete_value_index': dataItem.get_discrete_value_index(),
+                    '__z': dataItem.get_z()
+                })
 
         data['best_trials'] = []  # создаем список
         dataItem = self.solution.best_trials[0]
