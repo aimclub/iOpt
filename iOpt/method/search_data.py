@@ -47,6 +47,7 @@ class SearchDataItem(Trial):
         self.globalR: np.double = -1.0
         self.localR: np.double = -1.0
         self.iterationNumber: int = -1
+        self.blocked: bool = False
 
     def get_x(self) -> np.double:
         """
@@ -321,7 +322,8 @@ class SearchData:
         """
         self._RGlobalQueue.Clear()
         for itr in self:
-            self._RGlobalQueue.insert(itr.globalR, itr)
+            if not itr.blocked:
+                self._RGlobalQueue.insert(itr.globalR, itr)
 
     # Возвращает текущее число интервалов в дереве
     def get_count(self) -> int:
@@ -372,19 +374,20 @@ class SearchData:
                     'functionID': str(fv.functionID),
                 })
 
-            data['SearchDataItem'].append({
-                'float_variables': list(dataItem.get_y().float_variables),
-                'discrete_variables': [] if dataItem.get_y().discrete_variables is None else list(
-                    dataItem.get_y().discrete_variables),
-                'function_values': list(fvs),
-                'x': dataItem.get_x(),
-                'delta': dataItem.delta,
-                'globalR': dataItem.globalR,
-                'localR': dataItem.localR,
-                'index': dataItem.get_index(),
-                'discrete_value_index': dataItem.get_discrete_value_index(),
-                '__z': dataItem.get_z()
-            })
+            if np.isfinite(dataItem.get_z()):
+                data['SearchDataItem'].append({
+                    'float_variables': list(dataItem.get_y().float_variables),
+                    'discrete_variables': [] if dataItem.get_y().discrete_variables is None else list(
+                        dataItem.get_y().discrete_variables),
+                    'function_values': list(fvs),
+                    'x': dataItem.get_x(),
+                    'delta': dataItem.delta,
+                    'globalR': dataItem.globalR,
+                    'localR': dataItem.localR,
+                    'index': dataItem.get_index(),
+                    'discrete_value_index': dataItem.get_discrete_value_index(),
+                    '__z': dataItem.get_z()
+                })
 
         data['best_trials'] = []  # создаем список
         dataItem = self.solution.best_trials[0]
