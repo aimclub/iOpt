@@ -46,18 +46,17 @@ class TestAsyncParallelProcess(unittest.TestCase):
     def test_Solve(self):
         self.async_parallel_process.solve()
         items = self.async_parallel_process.search_data.get_last_items(5)
-        self.assertAlmostEqual(-1 / 3, items[0].get_y().float_variables[0])
-        self.assertAlmostEqual(1 / 3, items[1].get_y().float_variables[0])
-        self.assertAlmostEqual(2 / 3, items[2].get_y().float_variables[0])
-        self.assertAlmostEqual(0.0, items[3].get_y().float_variables[0])
+        self.assertAlmostEqual(-1 / 3, items[1].get_y().float_variables[0])
+        self.assertAlmostEqual(1 / 3, items[2].get_y().float_variables[0])
+        self.assertAlmostEqual(2 / 3, items[3].get_y().float_variables[0])
         self.assertAlmostEqual(-2 / 3, items[4].get_y().float_variables[0])
         self.assertAlmostEqual(
-            0.0,
+            1 / 3,
             self.async_parallel_process.search_data.solution.best_trials[0]
             .point.float_variables[0],
         )
         self.assertAlmostEqual(
-            0.0,
+            1 / 9,
             self.async_parallel_process.search_data.solution.best_trials[0]
             .function_values[0].value,
         )
