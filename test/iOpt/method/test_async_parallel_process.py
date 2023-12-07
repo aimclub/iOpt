@@ -29,7 +29,7 @@ class ProblemForTest(Problem):
 
 class TestAsyncParallelProcess(unittest.TestCase):
     def setUp(self):
-        param = SolverParameters(number_of_parallel_points=2, iters_limit=4)
+        param = SolverParameters(number_of_parallel_points=2, iters_limit=5)
         problem = ProblemForTest()
         task = OptimizationTask(problem)
         evolvent = Evolvent(
@@ -61,7 +61,7 @@ class TestAsyncParallelProcess(unittest.TestCase):
             self.async_parallel_process.search_data.solution.best_trials[0]
             .function_values[0].value,
         )
-        self.assertEqual(4, self.async_parallel_process.method.iterations_count)
+        self.assertEqual(5, self.async_parallel_process.method.iterations_count)
 
 
 if __name__ == "__main__":
