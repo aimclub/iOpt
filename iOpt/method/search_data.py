@@ -445,6 +445,7 @@ class SearchData:
                 data_item.set_index(p['index'])
 
                 self.solution.best_trials[0] = data_item
+                self.solution.solution_accuracy = min(data_item.delta, self.solution.solution_accuracy)
 
             first_data_item = []
 

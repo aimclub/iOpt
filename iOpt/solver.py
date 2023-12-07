@@ -128,6 +128,9 @@ class Solver:
         else:
             self.process.method.iterations_count = self.process.search_data.get_count() - 2
 
+        self.process.search_data.solution.number_of_global_trials = self.process.method.iterations_count
+        self.process.search_data.solution.solution_accuracy = self.process.method.min_delta
+
     def refresh_listener(self) -> None:
         """
         Notify observers of an event that has occurred
