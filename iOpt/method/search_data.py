@@ -356,7 +356,7 @@ class SearchData:
         except Exception:
             print("GetLastItems: List is empty")
 
-    def save_progress(self, file_name: str):
+    def save_progress(self, file_name: str, mode = 'only search_data'):
         """
         Save the optimization process to a file
 
@@ -389,34 +389,59 @@ class SearchData:
                     '__z': dataItem.get_z()
                 })
 
-        data['best_trials'] = []  # создаем список
-        dataItem = self.solution.best_trials[0]
-        fvs = []  # пустой список для словарей со значениями функций
-        for fv in dataItem.function_values:
-            fvs.append({
-                'value': fv.value,
-                'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
-                'functionID': str(fv.functionID),
+        data['best_trials'] = []
+        for dataItem in self.solution.best_trials: # сохранение всех лучших (если несколько, например, в mco)
+            for fv in dataItem.function_values:
+                fvs.append({
+                    'value': fv.value,
+                    'type': 1 if fv.type == FunctionType.OBJECTIV else 2,
+                    'functionID': str(fv.functionID),
+                })
+
+            data['best_trials'].append({
+                'float_variables': list(dataItem.get_y().float_variables),
+                'discrete_variables': [] if dataItem.get_y().discrete_variables is None else list(
+                    dataItem.get_y().discrete_variables),
+                'function_values': list(fvs),
+                'x': dataItem.get_x(),
+                'delta': dataItem.delta,
+                'globalR': dataItem.globalR,
+                'localR': dataItem.localR,
+                'index': dataItem.get_index(),
+                'discrete_value_index': dataItem.get_discrete_value_index(),
+                '__z': dataItem.get_z()
+                #'iterationNumber': dataItem.iterationNumber() # он больше нигде не используется. ПОЧЕМУ?!
             })
 
-        data['best_trials'].append({
-            'float_variables': list(dataItem.get_y().float_variables),
-            'discrete_variables': [] if dataItem.get_y().discrete_variables is None else list(
-                dataItem.get_y().discrete_variables),
-            'function_values': list(fvs),
-            'x': dataItem.get_x(),
-            'delta': dataItem.delta,
-            'globalR': dataItem.globalR,
-            'localR': dataItem.localR,
-            'index': dataItem.get_index(),
-            'discrete_value_index': dataItem.get_discrete_value_index(),
-            '__z': dataItem.get_z()
-        })
+        if mode == 'full':
+            data['solution'] = []
+            data['solution'].append({
+                'number_of_trials': (self.solution.number_of_global_trials + self.solution.number_of_local_trials),
+                'number_of_global_trials': self.solution.number_of_global_trials,
+                'number_of_local_trials': self.solution.number_of_local_trials,
+                'solving_time': self.solution.solving_time,
+                'solution_accuracy': self.solution.solution_accuracy
+            })
+
+            data['float_variables'] = []
+            for i in range(self.solution.problem.number_of_float_variables):
+                bounds = [self.solution.problem.lower_bound_of_float_variables[i],
+                          self.solution.problem.upper_bound_of_float_variables[i]]
+                data['float_variables'].append({
+                    str(self.solution.problem.float_variable_names[i]): (list(bounds)),
+                })
+
+            data['discrete_variables'] = []
+            for i in range(self.solution.problem.number_of_discrete_variables):
+                data['discrete_variables'].append({
+                    str(self.solution.problem.discrete_variable_names[i]):
+                        (list(self.solution.problem.discrete_variable_values[i])),
+                })
 
         with open(file_name, 'w') as f:
             json.dump(data, f, indent='\t', separators=(',', ':'))
 
-    def load_progress(self, file_name: str):
+    def load_progress(self, file_name: str, mode = 'only search_data'):
         """
         Load the optimization process from a file
 
@@ -485,6 +510,12 @@ class SearchData:
                 data_item.set_index(p['index'])
 
                 self.insert_data_item(data_item)
+
+            if mode == 'full': # а есть ли в этом смысл, если они все обнуляются? Аналогично с параметрами самой проблемы, их нет смысла выгружать
+                for p in data['solution']:
+                    self.solution.number_of_global_trials = p['number_of_global_trials']
+                    self.solution.number_of_local_trials = p['number_of_local_trials']
+                    self.solution.solving_time = p['solving_time']
 
     def __iter__(self):
         # вернуть самую левую точку из дерева (ниже код проверить!)

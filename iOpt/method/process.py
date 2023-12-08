@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List
 
 import traceback
+import json
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.listener import Listener
@@ -169,21 +170,21 @@ class Process:
         """
         return self.search_data.solution
 
-    def save_progress(self, file_name: str) -> None:
+    def save_progress(self, file_name: str, mode = 'only search_data') -> None:
         """
         Save the optimization process from a file
 
         :param file_name: file name.
         """
-        self.search_data.save_progress(file_name=file_name)
+        self.search_data.save_progress(file_name=file_name, mode=mode)
 
-    def load_progress(self, file_name: str) -> None:
+    def load_progress(self, file_name: str, mode = 'only search_data') -> None:
         """
         Load the optimization process from a file
 
         :param file_name: file name.
         """
-        self.search_data.load_progress(file_name=file_name)
+        self.search_data.load_progress(file_name=file_name, mode=mode)
         self.method.iterations_count = self.search_data.get_count() - 2
 
         for ditem in self.search_data:

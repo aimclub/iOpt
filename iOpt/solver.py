@@ -99,7 +99,7 @@ class Solver:
         """
         return self.process.get_results()
 
-    def save_progress(self, file_name: str = None) -> str:
+    def save_progress(self, file_name: str = None, mode = 'only search_data') -> str:
         """
         Save the optimization process to a file
 
@@ -109,18 +109,18 @@ class Solver:
         if file_name is None:
             file_name = "log_" + self.parameters.to_string() + "_" + str(time())
 
-        self.process.save_progress(file_name=file_name)
+        self.process.save_progress(file_name=file_name, mode=mode)
 
         return file_name
 
-    def load_progress(self, file_name: str) -> None:
+    def load_progress(self, file_name: str, mode = 'only search_data') -> None:
         """
         Load the optimization process from a file
 
         :param file_name: file name.
         """
         Solver.check_parameters(self.problem, self.parameters)
-        self.process.load_progress(file_name=file_name)
+        self.process.load_progress(file_name=file_name, mode=mode)
 
         if (self.problem.number_of_discrete_variables > 0):
             self.process.method.iterations_count = self.process.search_data.get_count() - (
