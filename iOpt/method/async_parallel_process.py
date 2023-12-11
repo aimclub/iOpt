@@ -79,7 +79,7 @@ class AsyncParallelProcess(Process):
             self.do_local_refinement(self.parameters.local_method_iteration_count)
 
         result = self.get_results()
-        result.solving_time = (datetime.now() - start_time).total_seconds()
+        result.solving_time += (datetime.now() - start_time).total_seconds()
 
         for listener in self._listeners:
             status = self.method.check_stop_condition()

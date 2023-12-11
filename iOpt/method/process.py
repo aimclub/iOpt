@@ -70,7 +70,7 @@ class Process:
             self.do_local_refinement(self.parameters.local_method_iteration_count)
 
         result = self.get_results()
-        result.solving_time = (datetime.now() - start_time).total_seconds()
+        result.solving_time += (datetime.now() - start_time).total_seconds()
 
         for listener in self._listeners:
             status = self.method.check_stop_condition()
@@ -170,7 +170,7 @@ class Process:
         """
         return self.search_data.solution
 
-    def save_progress(self, file_name: str, mode = 'only search_data') -> None:
+    def save_progress(self, file_name: str, mode = 'full') -> None:
         """
         Save the optimization process from a file
 
@@ -178,7 +178,7 @@ class Process:
         """
         self.search_data.save_progress(file_name=file_name, mode=mode)
 
-    def load_progress(self, file_name: str, mode = 'only search_data') -> None:
+    def load_progress(self, file_name: str, mode = 'full') -> None:
         """
         Load the optimization process from a file
 

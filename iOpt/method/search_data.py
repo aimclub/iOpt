@@ -356,7 +356,7 @@ class SearchData:
         except Exception:
             print("GetLastItems: List is empty")
 
-    def save_progress(self, file_name: str, mode = 'only search_data'):
+    def save_progress(self, file_name: str, mode = 'full'):
         """
         Save the optimization process to a file
 
@@ -364,6 +364,8 @@ class SearchData:
         """
         data = {}
         data['SearchDataItem'] = []
+        iternum = -2
+        num_iteration_best = -1
         for dataItem in self._allTrials:
 
             fvs = []
@@ -389,6 +391,10 @@ class SearchData:
                     '__z': dataItem.get_z()
                 })
 
+            if dataItem==self.solution.best_trials[0]:
+                num_iteration_best = iternum
+            iternum +=1
+
         data['best_trials'] = []
         for dataItem in self.solution.best_trials: # сохранение всех лучших (если несколько, например, в mco)
             for fv in dataItem.function_values:
@@ -409,8 +415,8 @@ class SearchData:
                 'localR': dataItem.localR,
                 'index': dataItem.get_index(),
                 'discrete_value_index': dataItem.get_discrete_value_index(),
-                '__z': dataItem.get_z()
-                #'iterationNumber': dataItem.iterationNumber() # он больше нигде не используется. ПОЧЕМУ?!
+                '__z': dataItem.get_z(),
+                #'iterationNumber': dataItem.iterationNumber # он больше нигде не используется. ПОЧЕМУ?!
             })
 
         if mode == 'full':
@@ -420,7 +426,8 @@ class SearchData:
                 'number_of_global_trials': self.solution.number_of_global_trials,
                 'number_of_local_trials': self.solution.number_of_local_trials,
                 'solving_time': self.solution.solving_time,
-                'solution_accuracy': self.solution.solution_accuracy
+                'solution_accuracy': self.solution.solution_accuracy,
+                'num_iteration_best_trial': num_iteration_best
             })
 
             data['float_variables'] = []
@@ -441,7 +448,7 @@ class SearchData:
         with open(file_name, 'w') as f:
             json.dump(data, f, indent='\t', separators=(',', ':'))
 
-    def load_progress(self, file_name: str, mode = 'only search_data'):
+    def load_progress(self, file_name: str, mode = 'full'):
         """
         Load the optimization process from a file
 
@@ -470,6 +477,8 @@ class SearchData:
                 data_item.set_index(p['index'])
 
                 self.solution.best_trials[0] = data_item
+                if mode == 'only search_data':
+                    self.solution.solution_accuracy = min(data_item.delta, self.solution.solution_accuracy)
 
             first_data_item = []
 
@@ -516,6 +525,8 @@ class SearchData:
                     self.solution.number_of_global_trials = p['number_of_global_trials']
                     self.solution.number_of_local_trials = p['number_of_local_trials']
                     self.solution.solving_time = p['solving_time']
+                    self.solution.solution_accuracy = p['solution_accuracy']
+                    #сюда еще точность
 
     def __iter__(self):
         # вернуть самую левую точку из дерева (ниже код проверить!)
