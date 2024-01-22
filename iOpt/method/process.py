@@ -177,6 +177,19 @@ class Process:
         :param file_name: file name.
         """
         self.search_data.save_progress(file_name=file_name, mode=mode)
+        if mode=='full':
+            with open(file_name, 'r') as jfr:
+                jf_file = json.load(jfr)
+            with open(file_name, 'w') as jf:
+                jf_file['Parameters'] = []
+                jf_file['Parameters'].append({
+                    'eps': self.parameters.eps,
+                    'r': self.parameters.r,
+                    'iters_limit': self.parameters.iters_limit,
+                    'start_point': self.parameters.start_point,
+                    'number_of_parallel_points': self.parameters.number_of_parallel_points
+                })
+                json.dump(jf_file, jf, indent = '\t', separators = (',', ':'))
 
     def load_progress(self, file_name: str, mode = 'full') -> None:
         """

@@ -4,6 +4,7 @@ import copy
 import math
 import sys
 from typing import Tuple
+from time import time
 
 import numpy as np
 
@@ -265,6 +266,7 @@ class Method:
 
         :return: the point at which the trial results are saved.
         """
+        point.creation_time = time()
         try:
             point = self.task.calculate(point, 0)
             point.set_z(point.function_values[0].value)

@@ -48,6 +48,7 @@ class SearchDataItem(Trial):
         self.localR: np.double = -1.0
         self.iterationNumber: int = -1
         self.blocked: bool = False
+        self.creation_time = 0
 
     def get_x(self) -> np.double:
         """
@@ -362,6 +363,7 @@ class SearchData:
 
         :param file_name: file name.
         """
+        dataglob = []
         data = {}
         data['SearchDataItem'] = []
         iternum = -2
@@ -388,7 +390,8 @@ class SearchData:
                     'localR': dataItem.localR,
                     'index': dataItem.get_index(),
                     'discrete_value_index': dataItem.get_discrete_value_index(),
-                    '__z': dataItem.get_z()
+                    '__z': dataItem.get_z(),
+                    'creation_time': dataItem.creation_time
                 })
 
             if dataItem==self.solution.best_trials[0]:
@@ -416,6 +419,7 @@ class SearchData:
                 'index': dataItem.get_index(),
                 'discrete_value_index': dataItem.get_discrete_value_index(),
                 '__z': dataItem.get_z(),
+                'creation_time': dataItem.creation_time
                 #'iterationNumber': dataItem.iterationNumber # он больше нигде не используется. ПОЧЕМУ?!
             })
 
@@ -430,23 +434,34 @@ class SearchData:
                 'num_iteration_best_trial': num_iteration_best
             })
 
-            data['float_variables'] = []
+            #data['float_variables'] = []
+            float_variables = []
             for i in range(self.solution.problem.number_of_float_variables):
                 bounds = [self.solution.problem.lower_bound_of_float_variables[i],
                           self.solution.problem.upper_bound_of_float_variables[i]]
-                data['float_variables'].append({
+                float_variables.append({
                     str(self.solution.problem.float_variable_names[i]): (list(bounds)),
                 })
 
-            data['discrete_variables'] = []
+            #data['discrete_variables'] = []
+            discrete_variables = []
             for i in range(self.solution.problem.number_of_discrete_variables):
-                data['discrete_variables'].append({
+                discrete_variables.append({
                     str(self.solution.problem.discrete_variable_names[i]):
                         (list(self.solution.problem.discrete_variable_values[i])),
                 })
 
+
+            data['Task'] = []
+            data['Task'].append({
+                'float_variables': list(float_variables),
+                'discrete_variables': list(discrete_variables),
+                'name': self.solution.problem.name
+            })
+
         with open(file_name, 'w') as f:
             json.dump(data, f, indent='\t', separators=(',', ':'))
+            f.write('\n')
 
     def load_progress(self, file_name: str, mode = 'full'):
         """
@@ -516,6 +531,7 @@ class SearchData:
                 data_item.globalR = p['globalR']
                 data_item.localR = p['localR']
                 data_item.set_z(p['__z'])
+                data_item.creation_time = p['creation_time']
                 data_item.set_index(p['index'])
 
                 self.insert_data_item(data_item)
