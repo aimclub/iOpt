@@ -65,7 +65,7 @@ class Solver:
             except Exception as exc:
                 print(exc)
                 sol = self.get_results()
-                sol.solving_time = self.parameters.timeout * 60
+                sol.solving_time += self.parameters.timeout * 60
                 self.method.recalcR = True
                 self.method.recalcM = True
                 status = self.method.check_stop_condition()
@@ -99,7 +99,7 @@ class Solver:
         """
         return self.process.get_results()
 
-    def save_progress(self, file_name: str = None) -> str:
+    def save_progress(self, file_name: str = None, mode = 'full') -> str:
         """
         Save the optimization process to a file
 
@@ -109,24 +109,29 @@ class Solver:
         if file_name is None:
             file_name = "log_" + self.parameters.to_string() + "_" + str(time())
 
-        self.process.save_progress(file_name=file_name)
+        self.process.save_progress(file_name=file_name, mode=mode)
 
         return file_name
 
-    def load_progress(self, file_name: str) -> None:
+    def load_progress(self, file_name: str, mode = 'full') -> None:
         """
         Load the optimization process from a file
 
         :param file_name: file name.
         """
         Solver.check_parameters(self.problem, self.parameters)
-        self.process.load_progress(file_name=file_name)
+        self.process.load_progress(file_name=file_name, mode=mode)
 
         if (self.problem.number_of_discrete_variables > 0):
             self.process.method.iterations_count = self.process.search_data.get_count() - (
                     len(self.method.GetDiscreteParameters(self.problem)) + 1)  # -2
         else:
             self.process.method.iterations_count = self.process.search_data.get_count() - 2
+
+        if mode == 'only search_data':
+            self.process.search_data.solution.number_of_global_trials = self.process.method.iterations_count
+
+
 
     def refresh_listener(self) -> None:
         """
