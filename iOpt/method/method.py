@@ -266,7 +266,6 @@ class Method:
 
         :return: the point at which the trial results are saved.
         """
-        point.creation_time = time()
         try:
             point = self.task.calculate(point, 0)
             point.set_z(point.function_values[0].value)
@@ -348,6 +347,8 @@ a new point into the repository
 
         self.search_data.insert_data_item(newpoint, oldpoint)
 
+        #newpoint.creation_time = time()  # перенести в finalize
+
     def update_optimum(self, point: SearchDataItem) -> None:
         r"""
         Update the optimum estimate
@@ -368,6 +369,8 @@ a new point into the repository
         r"""
         End the iteration, updates the iteration counter
         """
+        self.search_data.get_last_item().creation_time = time()
+        self.search_data.get_last_item().iterationNumber = self.iterations_count #будет ли работать в параллельном случае?
         self.iterations_count += 1
 
     def get_iterations_count(self) -> int:

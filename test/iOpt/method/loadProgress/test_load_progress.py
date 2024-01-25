@@ -39,8 +39,6 @@ class TestLoadProgress(unittest.TestCase):
         self.solver = Solver(self.problem, parameters=self.params)
         self.sol100_ns = self.solver.solve()
 
-        #data = [json.loads(line) for line in open('data.json', 'r')]
-
         with open('Rastrigin2_50_100.json', 'r') as json_file:
             data1 = json.load(json_file)
 
@@ -49,10 +47,8 @@ class TestLoadProgress(unittest.TestCase):
             data2 = json.load(json_file)
 
         self.assertEqual(self.sol50_100.best_trials, self.sol100_ns.best_trials)
-        #self.assertEqual(data1['best_trials'], data2['best_trials'])
         self.assertEqual({key:value for (key,value) in data1['best_trials'][0].items() if key!= 'creation_time'}, {key:value for (key,value) in data2['best_trials'][0].items() if key!= 'creation_time'})
         self.assertEqual({key:value for (key,value) in data1['SearchDataItem'][0].items() if key!= 'creation_time'}, {key:value for (key,value) in data2['SearchDataItem'][0].items() if key!= 'creation_time'})
-        #self.assertEqual(data1['SearchDataItem'], data2['SearchDataItem'])
         self.assertEqual(data1['solution'][0]['number_of_global_trials'],
                          data2['solution'][0]['number_of_global_trials'])
         self.assertEqual(data1['solution'][0]['number_of_local_trials'],
@@ -94,8 +90,6 @@ class TestLoadProgress(unittest.TestCase):
             data2 = json.load(json_file)
 
         self.assertEqual(self.sol50_100.best_trials, self.sol100_ns.best_trials)
-        # self.assertEqual(data1['best_trials'], data2['best_trials'])
-        # self.assertEqual(data1['SearchDataItem'], data2['SearchDataItem'])
         self.assertEqual({key: value for (key, value) in data1['best_trials'][0].items() if key != 'creation_time'},
                          {key: value for (key, value) in data2['best_trials'][0].items() if key != 'creation_time'})
         self.assertEqual({key: value for (key, value) in data1['SearchDataItem'][0].items() if key != 'creation_time'},
@@ -137,8 +131,6 @@ class TestLoadProgress(unittest.TestCase):
             data2 = json.load(json_file)
 
         self.assertEqual(self.sol50_100.best_trials, self.sol100_ns.best_trials)
-        # self.assertEqual(data1['best_trials'], data2['best_trials'])
-        # self.assertEqual(data1['SearchDataItem'], data2['SearchDataItem'])
         self.assertEqual({key: value for (key, value) in data1['best_trials'][0].items() if key != 'creation_time'},
                          {key: value for (key, value) in data2['best_trials'][0].items() if key != 'creation_time'})
         self.assertEqual({key: value for (key, value) in data1['SearchDataItem'][0].items() if key != 'creation_time'},
@@ -179,8 +171,6 @@ class TestLoadProgress(unittest.TestCase):
             data2 = json.load(json_file)
 
         self.assertEqual(self.sol50_100.best_trials, self.sol100_ns.best_trials)
-        # self.assertEqual(data1['best_trials'], data2['best_trials'])
-        # self.assertEqual(data1['SearchDataItem'], data2['SearchDataItem'])
         self.assertEqual({key: value for (key, value) in data1['best_trials'][0].items() if key != 'creation_time'},
                          {key: value for (key, value) in data2['best_trials'][0].items() if key != 'creation_time'})
         self.assertEqual({key: value for (key, value) in data1['SearchDataItem'][0].items() if key != 'creation_time'},

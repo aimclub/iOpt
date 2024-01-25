@@ -176,20 +176,18 @@ class Process:
 
         :param file_name: file name.
         """
-        self.search_data.save_progress(file_name=file_name, mode=mode)
-        if mode=='full':
-            with open(file_name, 'r') as jfr:
-                jf_file = json.load(jfr)
-            with open(file_name, 'w') as jf:
-                jf_file['Parameters'] = []
-                jf_file['Parameters'].append({
+        data = self.search_data.searchdata_to_json(mode=mode)
+        data['Parameters'] = []
+        data['Parameters'].append({
                     'eps': self.parameters.eps,
                     'r': self.parameters.r,
                     'iters_limit': self.parameters.iters_limit,
                     'start_point': self.parameters.start_point,
                     'number_of_parallel_points': self.parameters.number_of_parallel_points
-                })
-                json.dump(jf_file, jf, indent = '\t', separators = (',', ':'))
+        })
+        with open(file_name, 'w') as f:
+            json.dump(data, f, indent='\t', separators=(',', ':'))
+            f.write('\n')
 
     def load_progress(self, file_name: str, mode = 'full') -> None:
         """
@@ -197,7 +195,10 @@ class Process:
 
         :param file_name: file name.
         """
-        self.search_data.load_progress(file_name=file_name, mode=mode)
+        with open(file_name) as json_file:
+            data = json.load(json_file)
+
+        self.search_data.json_to_searchdata(data=data, mode=mode)
         self.method.iterations_count = self.search_data.get_count() - 2
 
         for ditem in self.search_data:

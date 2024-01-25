@@ -357,19 +357,15 @@ class SearchData:
         except Exception:
             print("GetLastItems: List is empty")
 
-    def save_progress(self, file_name: str, mode = 'full'):
+    def searchdata_to_json(self, mode ='full') -> json: #что именно возвращает? По идее просто словарь с кучей вложений, но насколько понятно?
         """
         Save the optimization process to a file
 
         :param file_name: file name.
         """
-        dataglob = []
         data = {}
         data['SearchDataItem'] = []
-        iternum = -2
-        num_iteration_best = -1
         for dataItem in self._allTrials:
-
             fvs = []
             for fv in dataItem.function_values:
                 fvs.append({
@@ -391,13 +387,11 @@ class SearchData:
                     'index': dataItem.get_index(),
                     'discrete_value_index': dataItem.get_discrete_value_index(),
                     '__z': dataItem.get_z(),
-                    'creation_time': dataItem.creation_time
+                    'creation_time': dataItem.creation_time,
+                    'iterationNumber': dataItem.iterationNumber
                 })
 
-            if dataItem==self.solution.best_trials[0]:
-                num_iteration_best = iternum
-            iternum +=1
-
+        num_iterations_best = [] #в случае с mco - несколько лучших
         data['best_trials'] = []
         for dataItem in self.solution.best_trials: # сохранение всех лучших (если несколько, например, в mco)
             for fv in dataItem.function_values:
@@ -419,9 +413,11 @@ class SearchData:
                 'index': dataItem.get_index(),
                 'discrete_value_index': dataItem.get_discrete_value_index(),
                 '__z': dataItem.get_z(),
-                'creation_time': dataItem.creation_time
-                #'iterationNumber': dataItem.iterationNumber # он больше нигде не используется. ПОЧЕМУ?!
+                'creation_time': dataItem.creation_time,
+                'iterationNumber': dataItem.iterationNumber
             })
+
+            num_iterations_best.append(dataItem.iterationNumber)
 
         if mode == 'full':
             data['solution'] = []
@@ -431,10 +427,9 @@ class SearchData:
                 'number_of_local_trials': self.solution.number_of_local_trials,
                 'solving_time': self.solution.solving_time,
                 'solution_accuracy': self.solution.solution_accuracy,
-                'num_iteration_best_trial': num_iteration_best
+                'num_iteration_best_trial': list(num_iterations_best)
             })
 
-            #data['float_variables'] = []
             float_variables = []
             for i in range(self.solution.problem.number_of_float_variables):
                 bounds = [self.solution.problem.lower_bound_of_float_variables[i],
@@ -443,14 +438,12 @@ class SearchData:
                     str(self.solution.problem.float_variable_names[i]): (list(bounds)),
                 })
 
-            #data['discrete_variables'] = []
             discrete_variables = []
             for i in range(self.solution.problem.number_of_discrete_variables):
                 discrete_variables.append({
                     str(self.solution.problem.discrete_variable_names[i]):
                         (list(self.solution.problem.discrete_variable_values[i])),
                 })
-
 
             data['Task'] = []
             data['Task'].append({
@@ -459,90 +452,79 @@ class SearchData:
                 'name': self.solution.problem.name
             })
 
-        with open(file_name, 'w') as f:
-            json.dump(data, f, indent='\t', separators=(',', ':'))
-            f.write('\n')
+        return data
 
-    def load_progress(self, file_name: str, mode = 'full'):
+    def json_to_searchdata(self, data, mode ='full'):
         """
         Load the optimization process from a file
 
         :param file_name: file name.
         """
+        function_values = []
+        for trial in data['best_trials']:
+            for fv in trial['function_values']:
+                function_values.append(FunctionValue(
+                    (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
+                    str(fv['functionID'])))
+                function_values[-1].value = np.double(fv['value'])
 
-        with open(file_name) as json_file:
-            data = json.load(json_file)
+            data_item = SearchDataItem(Point(trial['float_variables'], trial['discrete_variables']), trial['x'],
+                                       function_values,
+                                       trial['discrete_value_index'])
+            data_item.delta = trial['delta']
+            data_item.globalR = trial['globalR']
+            data_item.localR = trial['localR']
+            data_item.set_z(trial['__z'])
+            data_item.set_index(trial['index'])
 
+            self.solution.best_trials[0] = data_item
+            if mode == 'only search_data':
+                self.solution.solution_accuracy = min(data_item.delta, self.solution.solution_accuracy)
+
+        first_data_item = []
+        for trial in data['SearchDataItem'][:2]:
             function_values = []
-            for p in data['best_trials']:
+            for fv in trial['function_values']:
+                function_values.append(FunctionValue(
+                    (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
+                    str(fv['functionID'])))
+                function_values[-1].value = np.double(fv['value'])
 
-                for fv in p['function_values']:
-                    function_values.append(FunctionValue(
-                        (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
-                        str(fv['functionID'])))
-                    function_values[-1].value = np.double(fv['value'])
+            first_data_item.append(
+                SearchDataItem(Point(trial['float_variables'], trial['discrete_variables']), trial['x'], function_values,
+                               trial['discrete_value_index']))
+            first_data_item[-1].delta = trial['delta']
+            first_data_item[-1].globalR = trial['globalR']
+            first_data_item[-1].localR = trial['localR']
+            first_data_item[-1].set_index(trial['index'])
 
-                data_item = SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'],
-                                           function_values,
-                                           p['discrete_value_index'])
-                data_item.delta = p['delta']  # [-1] - обращение к последнему элементу
-                data_item.globalR = p['globalR']
-                data_item.localR = p['localR']
-                data_item.set_z(p['__z'])
-                data_item.set_index(p['index'])
+        self.insert_first_data_item(first_data_item[0], first_data_item[1])
 
-                self.solution.best_trials[0] = data_item
-                if mode == 'only search_data':
-                    self.solution.solution_accuracy = min(data_item.delta, self.solution.solution_accuracy)
+        for trial in data['SearchDataItem'][2:]:
+            function_values = []
+            for fv in trial['function_values']:
+                function_values.append(FunctionValue(
+                    (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
+                    str(fv['functionID'])))
+                function_values[-1].value = np.double(fv['value'])
 
-            first_data_item = []
+            data_item = SearchDataItem(Point(trial['float_variables'], trial['discrete_variables']),
+                                       trial['x'], function_values, trial['discrete_value_index'])
+            data_item.delta = trial['delta']
+            data_item.globalR = trial['globalR']
+            data_item.localR = trial['localR']
+            data_item.set_z(trial['__z'])
+            data_item.creation_time = trial['creation_time']
+            data_item.set_index(trial['index'])
 
-            for p in data['SearchDataItem'][:2]:
-                function_values = []
+            self.insert_data_item(data_item)
 
-                for fv in p['function_values']:
-                    function_values.append(FunctionValue(
-                        (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
-                        str(fv['functionID'])))
-                    function_values[-1].value = np.double(fv['value'])
-
-                first_data_item.append(
-                    SearchDataItem(Point(p['float_variables'], p['discrete_variables']), p['x'], function_values,
-                                   p['discrete_value_index']))
-                first_data_item[-1].delta = p['delta']
-                first_data_item[-1].globalR = p['globalR']
-                first_data_item[-1].localR = p['localR']
-                first_data_item[-1].set_index(p['index'])
-
-            self.insert_first_data_item(first_data_item[0], first_data_item[1])
-
-            for p in data['SearchDataItem'][2:]:
-                function_values = []
-
-                for fv in p['function_values']:
-                    function_values.append(FunctionValue(
-                        (FunctionType.OBJECTIV if fv['type'] == 1 else FunctionType.CONSTRAINT),
-                        str(fv['functionID'])))
-                    function_values[-1].value = np.double(fv['value'])
-
-                data_item = SearchDataItem(Point(p['float_variables'], p['discrete_variables']),
-                                           p['x'], function_values, p['discrete_value_index'])
-                data_item.delta = p['delta']
-                data_item.globalR = p['globalR']
-                data_item.localR = p['localR']
-                data_item.set_z(p['__z'])
-                data_item.creation_time = p['creation_time']
-                data_item.set_index(p['index'])
-
-                self.insert_data_item(data_item)
-
-            if mode == 'full': # а есть ли в этом смысл, если они все обнуляются? Аналогично с параметрами самой проблемы, их нет смысла выгружать
-                for p in data['solution']:
-                    self.solution.number_of_global_trials = p['number_of_global_trials']
-                    self.solution.number_of_local_trials = p['number_of_local_trials']
-                    self.solution.solving_time = p['solving_time']
-                    self.solution.solution_accuracy = p['solution_accuracy']
-                    #сюда еще точность
+        if mode == 'full':
+            for trial in data['solution']:
+                self.solution.number_of_global_trials = trial['number_of_global_trials']
+                self.solution.number_of_local_trials = trial['number_of_local_trials']
+                self.solution.solving_time = trial['solving_time']
+                self.solution.solution_accuracy = trial['solution_accuracy']
 
     def __iter__(self):
         # вернуть самую левую точку из дерева (ниже код проверить!)
