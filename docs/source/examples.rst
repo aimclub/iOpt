@@ -430,7 +430,7 @@ an object of the **Solver** class with the passed objective function object.
 To render, we called the **AddListener** method, passing objects of the **AnimationNDPaintListener** 
 and **StaticNDPaintListener** classes.
 
-.. code-block:: 
+.. code-block:: python
     :caption: Running optimization of the SVC_2D object serving as the objective function
 
     from iOpt.method.listener import StaticNDPaintListener, AnimationNDPaintListener
@@ -538,7 +538,7 @@ Let's prepare a problem to solve. To do this, as in the two-dimensional case,
 it is necessary to declare a class that is a descendant of the **Problem** class 
 with the abstract **Calculate** method. The code for this class is presented below:
 
-.. code-block:: 
+.. code-block:: python
 
    class SVC_3D(Problem):
       def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray,
@@ -740,7 +740,7 @@ cross-validation experiments of 0.1068376.
 Calculation of the averaged f1-score on a grid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let’s make sure that this problem can be solved better by varying two continuous parameters 
+Let's make sure that this problem can be solved better by varying two continuous parameters 
 of the algorithm. To do this, we calculate the average value of cross-validation at each point 
 of a uniform 20 by 20 grid:
 
@@ -867,3 +867,896 @@ the well-known Scikit-Optimize framework.
 Over 500 iterations, the Scikit-Optimize framework found a combination of parameters that provides 
 a solution to the classification problem with f1-score value of 0.4492, which is 21% worse than 
 the optimal value obtained using iOpt over 200 iterations.
+
+Tuning hyperparameters in the problem of predicting the concentration of nitrogen oxide in the working area of a gas turbine
+____________________________________________________________________________________________________________________________
+Gas turbines are promising power plants for generating electrical and thermal energy. Their use makes it possible to increase the efficiency of power plants. However, when operating a gas turbine unit, it is necessary to fulfill a number of requirements for maintaining a given power, environmental cleanliness, vibration, noise, etc. Thus, the degree of danger of atmospheric air pollution with carbon and nitrogen oxides is extremely high and depends on the parameters of energy generation. The concentration of emissions is carefully monitored by law enforcement agencies, and exceeding the standards leads to the payment of fines. In this regard, there is a need to control the amount of harmful emissions by selecting optimal generator operating parameters.
+
+Dataset
+~~~~~~~
+The dataset contains information from sensors located near the gas turbine to study flue gas emissions, namely :math:`CO` and :math:`NO_{\mathit{x}}` (:math:`NO+NO_{\mathit{2}}`). The dataset contains 36733 instances of measurements from 11 sensors collected in one hour. The data is sorted in chronological order. There are no empty cells or cells with an undefined value.
+
+Solving the problem on a uniform grid
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The problem of predicting the concentration of nitrogen oxide in the working area of a turbine based on the collected dataset is considered. To solve this problem, use the XGBRegressor method from the xgboost library.
+
+The listing below shows the code for loading a dataset and then shuffling it.
+
+.. code-block:: python
+   :caption: Solving the problem on a uniform grid
+
+   import numpy as np
+   from sklearn.model_selection import GridSearchCV
+   from sklearn.model_selection import cross_val_score
+   from sklearn.utils import shuffle
+   import csv
+   from sklearn.metrics import r2_score
+   import xgboost as xgb
+
+   def gasturbine_Dataset():
+      x = []
+      y = []
+      with open("no_predict.csv") as file:
+         file_reader = csv.reader(file, delimiter = ";")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x, dtype=np.float32), np.array(y, dtype=np.float32), random_state=42)
+
+   x, y = gasturbine_Dataset()
+
+:math:`R^2` was selected as the target metric, the values of which are in the range [0, 1], which makes the display of the results more visual: an :math:`R^2` metric value of 0 means that the model will work poorly with an unknown data set; if the value of :math:`R^2` is 1, the model is ideal. This also means that the closer the :math:`R^2` score is to 1, the more accurately the model is trained. During the study of the values of the objective function on a uniform grid of size 40 by 40 points, when varying the parameters gamma (minimum loss reduction) and learning_rate (learning rate), in the range [0.2, 0.3] and [0.2, 0.4], respectively, the optimal value of the objective function , equal to 0.8598, was found at the point learning_rate = 0.2974359, gamma = 0.2974359.
+
+The search was performed using the GridSearchCV method from the sklearn library. The cross-validation parameter was set to five, which is the default value. The code of the program that searches for the optimum on a uniform grid is presented in the listing below.
+
+.. code-block:: python
+   :caption: Solving the problem on a uniform grid
+
+   import numpy as np
+   from sklearn.model_selection import GridSearchCV
+   from sklearn.model_selection import cross_val_score
+   from sklearn.utils import shuffle
+   import csv
+   from sklearn.metrics import r2_score
+   import xgboost as xgb
+
+   gamma = np.linspace(0.2, 0.3, 40)
+   learning_rate = np.linspace(0.2, 0.4, 40)
+
+   params = {'learning_rate': learning_rate, 'gamma': gamma}
+
+   search = GridSearchCV(xgb.XGBRegressor(), cv=5, param_grid=params, scoring='r2', n_jobs=-1)
+   search.fit(x, y)
+
+.. figure:: images/grid_search_up.JPG
+    :width: 500
+    :align: center
+    
+    Graph of the objective function obtained by the GridSearchCV method on a uniform 40x40 grid
+
+Tuning hyperparameters using the iOpt framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Let's conduct a series of experiments with different values of the :math:`iter_limits` parameter: 100, 250, 500, 1000, and the reliability parameter :math:`r=2`.
+
+The listing presents code that allows you to determine such a combination of parameters of the XGBoost Regression algorithm that allows you to obtain the optimal metric value for the current task using the iOpt framework.
+
+.. code-block:: python
+   :caption: Solving the problem of finding the optimal combination of continuous parameters using the iOpt framework
+
+   from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+   from iOpt.output_system.listeners.animate_painters import AnimatePainterNDListener
+   from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+   from iOpt.solver import Solver
+   from iOpt.solver_parametrs import SolverParameters
+   from examples.Machine_learning.XGBoostRegression._2D.Problems.XGBR_2D_Gasturbine import XGBR_2d_Gasturbine
+   from sklearn.utils import shuffle
+   import numpy as np
+   import csv
+
+   def gasturbine_Dataset():
+      x = []
+      y = []
+      with open(r"../Datasets/no_predict.csv") as file:
+         file_reader = csv.reader(file, delimiter=";")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x, dtype=np.float32), np.array(y, dtype=np.float32), random_state=42)
+
+   if __name__ == "__main__":
+      X, Y = gasturbine_Dataset()
+      learning_rate_bound = {'low': 0.2, 'up': 0.4}
+      gamma_bound = {'low': 0.2, 'up': 0.3}
+      problem = XGBR_2d_Gasturbine(X, Y, learning_rate_bound, gamma_bound)
+      method_params = SolverParameters(r=np.double(2.0), iters_limit=1000)
+      solver = Solver(problem, parameters=method_params)
+      apl = AnimatePainterNDListener("XGBR_2d_Gasturbine_anim.png", "output", vars_indxs=[0, 1])
+      solver.add_listener(apl)
+      spl = StaticPainterNDListener("XGBR_2d_Gasturbine_stat.png", "output", vars_indxs=[0, 1], mode="surface", calc="interpolation")
+      solver.add_listener(spl)
+      cfol = ConsoleOutputListener(mode='full')
+      solver.add_listener(cfol)
+      solver_info = solver.solve()
+
+Let's prepare an auxiliary class to describe the problem being solved. An example of such a class is presented in the listing below.
+
+.. code-block:: python
+   :caption: Description of the problem for finding the optimal combination of values of continuous parameters using the iOpt framework
+
+   import numpy as np
+   import xgboost as xgb
+   from iOpt.trial import Point
+   from iOpt.trial import FunctionValue
+   from iOpt.problem import Problem
+   from sklearn.svm import SVC
+   from sklearn.model_selection import cross_val_score
+   from typing import Dict
+   from sklearn.pipeline import Pipeline
+   from sklearn.preprocessing import StandardScaler
+   from sklearn.metrics import r2_score
+
+
+   class XGBR_2d_Gasturbine(Problem):
+      def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray,
+                  learning_rate_bound: Dict[str, float],
+                  min_loss_red_coefficient_bound: Dict[str, float]):
+         super(XGBR_2d_Gasturbine, self).__init__()
+         self.dimension = 2
+         self.number_of_float_variables = 2
+         self.number_of_discrete_variables = 0
+         self.number_of_objectives = 1
+         self.number_of_constraints = 0
+         if x_dataset.shape[0] != y_dataset.shape[0]:
+               raise ValueError('The input and output sample sizes do not match.')
+         self.x = x_dataset
+         self.y = y_dataset
+         self.float_variable_names = np.array(["Learning rate parameter", "Minimum loss reduction coefficient"], dtype=str)
+         self.lower_bound_of_float_variables = np.array([learning_rate_bound['low'], min_loss_red_coefficient_bound['low']],
+                                                      dtype=np.double)
+         self.upper_bound_of_float_variables = np.array([learning_rate_bound['up'], min_loss_red_coefficient_bound['up']],
+                                                      dtype=np.double)
+
+      def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
+         learning_rate, gamma = point.float_variables[0], point.float_variables[1]
+         regr = xgb.XGBRegressor(learning_rate=learning_rate, gamma=gamma)
+         function_value.value = -cross_val_score(regr, self.x, self.y, scoring='r2').mean()
+         return function_value
+
+The results of the experiments are presented in the table.
+
+
+.. list-table:: Assessing the impact of the iter_limits parameter on the value of the target metric
+   :widths: 20 20 20 20 20
+   :header-rows: 1
+
+   * - iter_limits
+     - Obj. function value
+     - Gamma
+     - Learning_rate
+     - Time(sec.)
+   * - 100
+     - -0.8599
+     - 0.2417
+     - 0.3503
+     - 64
+   * - 250
+     - -0.8602
+     - 0.2542
+     - 0.3251
+     - 151
+   * - 500
+     - -0.8602
+     - 0.2542
+     - 0.3251
+     - 295
+   * - 1000
+     - -0.8605
+     - 0.2312
+     - 0.2956
+     - 401
+
+Each experiment was run under identical conditions using parallel computing. The results of the experiments show that even with a limit of 100 iterations, the iOpt framework found a better combination of hyperparameters than when searching on a uniform grid of 40 by 40 points, and as a result, in fewer calls to the objective function. The best metric value was obtained with a limit of 1000 iterations: -0.8605. The parameters gamma and learning_rate are 0.2312 and 0.2956, respectively. Figure shows a graph of the objective function when the optimization process is limited to 1000 iterations.
+
+.. figure:: images/iOpt_1000_1.JPG
+    :width: 500
+    :align: center
+    
+    Graph of the objective function obtained using the iOpt framework with iterations limited to iters_limit = 1000
+
+Comparison with other frameworks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To compare the quality of work, experiments were conducted on the same data set using the Hyperopt and Optuna frameworks.
+The Hyperopt framework was launched in sequential mode due to the lack of parallel mode. The experiment execution time was 753 seconds. The figure below shows the profile of the objective function graph obtained during optimization of hyperparameters using the Hyperopt framework during 1000 iterations. Thus, the optimal combination of hyperparameters was found: learning_rate = 0.3343, gamma = 0.2426. The value of the objective function is -0.8603.
+
+.. figure:: images/hyperopt1000_1.JPG
+    :width: 500
+    :align: center
+    
+    Graph of the objective function obtained during optimization of hyperparameters using the Hyperopt framework during 1000 iterations
+
+The listing presents code for determining such a combination of parameters of the XGBoost Regression algorithm, which allows you to obtain the optimal metric value for the current task using the Hyperopt framework.
+
+.. code-block:: python
+   :caption: Solving the problem of finding the optimal combination of continuous parameters using the Hyperopt framework
+
+   import numpy as np
+   from sklearn.model_selection import cross_val_score
+   from sklearn.utils import shuffle
+   import csv
+   from hyperopt import fmin, hp, tpe, Trials, space_eval, STATUS_OK
+   from hyperopt.pyll import scope as ho_scope
+   from hyperopt.pyll.stochastic import sample as ho_sample
+   from sklearn.metrics import r2_score
+   import xgboost as xgb
+
+   def gasturbine_Dataset():
+      x = []
+      y = []
+      with open("no_predict.csv") as file:
+         file_reader = csv.reader(file, delimiter = ";")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x, dtype=np.float32), np.array(y, dtype=np.float32), random_state=42)
+
+   x, y = gasturbine_Dataset()
+
+   SEED = 21
+   n_pts = 14
+   iter_nums = 1000
+   hp_space = {'gamma': hp.uniform('gamma', 0.2, 0.3), 
+               'learning_rate': hp.uniform('learning_rate', 0.2, 0.4)}
+   trls = Trials()
+   res_HO = fmin(lambda hps: 
+               -cross_val_score(xgb.XGBRegressor(gamma=hps['gamma'], learning_rate=hps['learning_rate']), x, y, scoring='r2', cv=5).mean(),
+               space=hp_space, algo=tpe.suggest, 
+                  trials=trls, max_evals=iter_nums, rstate=np.random.default_rng(SEED))
+   xy_HO = [np.array([x['misc']['vals']['gamma'] for x in trls.trials]), 
+            np.array([x['misc']['vals']['learning_rate'] for x in trls.trials])]
+   best_HO = (-trls.best_trial['result']['loss'], (space_eval(hp_space, res_HO)['gamma'],space_eval(hp_space, res_HO)['learning_rate']))
+
+The Optuna framework implements a parallel computing mode, which allows you to calculate the value of the objective function at several test points at once with the n_jobs parameter set. During the process of optimizing the learning_rate and gamma hyperparameters using the Optuna framework, the minimum value of the objective function was found equal to -0.8605 at the point {learning_rate, gamma} = {0.3498; 0.2395}. The experiment took 536 seconds to complete.
+
+Below is a listing with code for determining such a combination of parameters of the XGBoost Regression algorithm, which allows you to obtain the optimal metric value for the current task using the Optuna framework. The figure below shows the profile of the objective function graph obtained during optimization of hyperparameters using the Optuna framework during 1000 iterations.
+
+.. code-block:: python
+   :caption: Solving the problem of finding the optimal combination of continuous parameters using the Optuna framework
+
+   import numpy as np
+   from sklearn.model_selection import cross_val_score
+   from sklearn.utils import shuffle
+   import csv
+   from sklearn.metrics import r2_score
+   import xgboost as xgb
+   import optuna
+
+   def gasturbine_Dataset():
+      x = []
+      y = []
+      with open("no_predict.csv") as file:
+         file_reader = csv.reader(file, delimiter = ";")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x, dtype=np.float32), np.array(y, dtype=np.float32), random_state=42)
+
+
+   def objective(trial):
+      gamma = trial.suggest_float('gamma', 0.2, 0.3)
+      learning_rate = trial.suggest_float('learning_rate', 0.2, 0.4)
+      
+      return -cross_val_score(xgb.XGBRegressor(gamma=gamma, learning_rate=learning_rate), x, y, scoring='r2', cv=5).mean()
+
+   study = optuna.create_study()
+   study.optimize(objective, n_trials=1000, n_jobs=12)
+
+
+.. figure:: images/optuna1000_1.JPG
+    :width: 500
+    :align: center
+    
+    Graph of the objective function obtained during optimization of hyperparameters using the Optuna framework during 1000 iterations
+
+
+Tuning hyperparameters using the iOpt framework when working with continuous and discrete values in the problem of predicting the concentration of nitrogen oxide in the working area of a gas turbine
+______________________________________________________________________________________________________________________________________________________________________________________________________
+
+Let's consider the work of the iOpt framework when searching for the optimal combination of continuous and discrete parameters. Let us specify and consider the following parameters:
+
+* learning_rate (learning rate), continuous parameter, on the interval [0.2, 0.4];
+* gamma (coefficient that determines the minimum reduction in losses), continuous parameter, on the interval [0.2, 0.3];
+* booster (kernel type), a discrete parameter whose value takes one of three states: 'gblinear', 'gbtree', 'dart'.
+
+Let's prepare an auxiliary class describing the problem to be solved. An example of such a class is presented in the following listing.
+
+.. code-block:: python
+   :caption: Description of the problem for finding the optimal combination of values of continuous and discrete parameters using the iOpt framework
+
+   import numpy as np
+   import xgboost as xgb
+   from iOpt.trial import Point
+   from iOpt.trial import FunctionValue
+   from iOpt.problem import Problem
+   from sklearn.model_selection import cross_val_score
+   from typing import Dict, List
+
+
+   class XGB_3D(Problem):
+      def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray,
+                  learning_rate_bound: Dict[str, float],
+                  gamma_bound: Dict[str, float],
+                  booster_type: Dict[str, List[str]]
+                  ):
+         super(XGB_3D, self).__init__()
+         self.dimension = 3
+         self.number_of_float_variables = 2
+         self.number_of_discrete_variables = 1
+         self.number_of_objectives = 1
+         self.number_of_constraints = 0
+         if x_dataset.shape[0] != y_dataset.shape[0]:
+               raise ValueError('The input and output sample sizes do not match.')
+         self.x = x_dataset
+         self.y = y_dataset
+         self.float_variable_names = np.array(["learning_rate", "gamma"], dtype=str)
+         self.lower_bound_of_float_variables = np.array([learning_rate_bound['low'], gamma_bound['low']],
+                                                      dtype=np.double)
+         self.upper_bound_of_float_variables = np.array([learning_rate_bound['up'], gamma_bound['up']],
+                                                      dtype=np.double)
+         self.discrete_variable_names.append('booster')
+         self.discrete_variable_values.append(booster_type['booster'])
+
+
+      def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
+         learning_rate, gamma = point.float_variables[0], point.float_variables[1]
+         booster = point.discrete_variables[0]
+         regr = xgb.XGBRegressor(learning_rate=learning_rate, gamma=gamma, booster=booster)
+         function_value.value = -cross_val_score(regr, self.x, self.y, scoring='r2', cv=5).mean()
+         return function_value
+
+
+:math:`R^2` was chosen as the target metric due to ease of interpretability: the closer the :math:`R^2` estimate is to 1, the more accurately the model is trained. When describing a problem, it is important to indicate the following task parameters:
+
+* dimension – number of analyzed parameters (dimension);
+* number_of_float_variables – number of continuous parameters;
+* number_of_discrete_variables – number of discrete parameters;
+* float_variable_names – list of continuous parameters;
+* discrete_variable_names - list of discrete parameters;
+* lower_bound_of_float_variables and upper_bound_of_float_variables – minimum and maximum values of continuous parameters;
+* discrete_variable_values – values of discrete parameters.
+
+To calculate the value of the objective function at a point, we overload the calculate function. To estimate the value of the target function, we use the cross_val_score method from the sklearn library with the specific values of the cross-validation parameters and the target metric described above.
+
+After generating the optimization problem, you need to run the solver to find the optimal combination of hyperparameters. An example of code with launching the solver and visualizing the optimization process is presented in the listing.
+
+.. code-block:: python
+   :caption: Tuning continuous and discrete parameters using the iOpt framework
+
+   from examples.Machine_learning.XGBoostRegression._3D.Problems import XGB_3D
+   from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+   from iOpt.output_system.listeners.static_painters import StaticDiscreteListener
+   from iOpt.solver import Solver
+   from iOpt.solver_parametrs import SolverParameters
+   from sklearn.utils import shuffle
+   import numpy as np
+   import csv
+
+   def gasturbine_Dataset():
+      x = []
+      y = []
+      with open(r"../Datasets/no_predict.csv") as file:
+         file_reader = csv.reader(file, delimiter=";")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x, dtype=np.float32), np.array(y, dtype=np.float32), random_state=42)
+
+
+   if __name__ == "__main__":
+      X, Y = gasturbine_Dataset()
+      learning_rate_bound = {'low': 0.2, 'up': 0.4}
+      gamma_bound = {'low': 0.2, 'up': 0.3}
+      booster_type = {'booster': ['gblinear', 'gbtree', 'dart']}
+
+      problem = XGB_3D.XGB_3D(X, Y, learning_rate_bound, gamma_bound, booster_type)
+      method_params = SolverParameters(r=np.double(2.0), iters_limit=1000, number_of_parallel_points=12, evolvent_density=12)
+      solver = Solver(problem, parameters=method_params)
+      apl = StaticDiscreteListener("experiment1.png", mode='analysis')
+      solver.add_listener(apl)
+      apl = StaticDiscreteListener("experiment2.png", mode='bestcombination', calc='interpolation', mrkrs=4)
+      solver.add_listener(apl)
+      cfol = ConsoleOutputListener(mode='full')
+      solver.add_listener(cfol)
+      solver_info = solver.solve()
+
+After loading the data, you need to create an optimization task, the description of the fields of which is presented in the listing above. Thus, the problem instance takes as parameters the data under study, the boundaries for changing the values of the regularization parameter, the boundaries for changing the values of the kernel coefficient parameter, and the values of the discrete parameter of the kernel type. To start the search procedure for the optimal combination of hyperparameters, you need an object of the SolverParameters class, in which the following parameters are set:
+
+* Reliability parameter r;
+* Limit on the number of iterations of the algorithm iters_limit;
+* Number of points calculated at a time: number_of_parallel_points.
+
+To demonstrate the parallel calculation of the value of the objective function at several points, we will set the value of the number_of_parallel_points parameter to 12, and also limit ourselves to performing 1000 iterations. Objects of the StaticDiscreteListener class allow you to obtain a graphical representation of the results of the framework. In this case, when setting the mode parameter to analysis, upon completion of the optimization procedure, a research protocol will be displayed, which indicates the dynamics of the search for the optimal value of the objective function, the distribution of test points over the values of the discrete parameter, and the distribution of the values of the objective function over iterations. If the mode parameter is set to bestcombination, a level line plot will be presented for the combination of hyperparameters with the best quality metric.
+
+.. figure:: images/regression-3d.JPG
+    :width: 500
+    :align: center
+    
+    General information on the process of searching for the optimal combination of hyperparameters using the iOpt framework
+
+
+.. figure:: images/LL-regression3d.JPG
+    :width: 500
+    :align: center
+    
+    Line graph of the target function level, plotted with the parameter booster = "dart"
+
+During the experiment, the optimal value of the quality metric was obtained equal to -0.8603 with the following combination of parameters: learning_rate = 0.2893, gamma = 0.2715, booster = 'dart'.
+
+Tuning hyperparameters in the problem of analyzing and predicting the state of power transformers of nuclear power plants
+______________________________________________________________________________________________________________________________________________________________________________________________________
+
+Today, a significant number of power transformers at nuclear power plants are operated with an extended service life, sometimes exceeding the established period of 25 years. Taking into account the extended service life of nuclear power plants, there is a need to monitor the technical condition of power transformers.
+
+The transformer control system controls the concentration level of gases dissolved in the transformer oil. The problem is to predict from time series the type of transformer fault.
+
+Dataset
+~~~~~~~~
+
+Based on 420 measurements for each of the 4 sensors, a dataset was formed with the number of attributes equal to 1680. The data storage structure in the set is as follows: the first 1680 columns are attributes, the 1681st column is the class to which this example belongs. All examples are written line by line.
+There are no empty cells or cells with an undefined value. The classes are unbalanced with a predominance of the “normal work” class: 1705 examples out of 2100 (81.19%). The listing below shows the code for loading a dataset and then shuffling it.
+
+.. code-block:: python
+   :caption: Function for loading a data set for the task of analyzing and predicting the state of power transformers of nuclear power plants
+
+   import csv
+   import numpy as np
+   import pandas as pd
+
+   def factory_dataset():
+      x = []
+      y = []
+      with open("transformator.csv") as file:
+         file_reader = csv.reader(file, delimiter = ",")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x), np.array(y), random_state=42)
+
+   x, y = factory_dataset()
+
+Solving the problem on a uniform grid
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We will solve the problem of data classification using a support vector machine (SVC). The Macro F1 metric, which is optimal for highly unbalanced classes, was chosen as the target criterion. Let us determine the optimal values of the parameters at which the value of the quality criterion reaches its optimum. During the study, the values of the objective function were calculated on a uniform grid of size 50 by 50 points, varying the parameters gamma (kernel coefficient) and C (regularization parameter), in the ranges [:math:`10^{-3}`, :math:`10^1`] and [:math:`10^5`, :math:`10^9``] respectively. The optimal value of the criterion, equal to 0.9487, was found at point :math:`С=1.7575∙10^5`, :math:`gamma = 6.2505∙10^{-2}`.
+
+The search was performed using the GridSearchCV method from the sklearn library. The cross-validation parameter was set to a strategy generated using the StratifiedKFold method. Forming cross-validation using this method is recommended for unbalanced classes, since the same ratio of classes is maintained in both the training and test sets. The graph of the objective function is shown in the figure below.
+
+.. figure:: images/prev2.jpg
+    :width: 500
+    :align: center
+    
+    Graph of the objective function obtained by enumerating parameters on a uniform grid
+
+The listing shows the code for searching for the optimal metric value on the specified parameter area using the GridSearchCV method from the sklearn library.
+
+.. code-block:: python
+   :caption: Search for the optimal metric value on a uniform grid using the GridSearchCV method for the task of analyzing and predicting the state of NPP power transformers
+
+   import numpy as np
+   from sklearn.svm import SVC
+   from sklearn.model_selection import train_test_split
+   from sklearn.model_selection import GridSearchCV
+   from sklearn.model_selection import cross_val_score
+   from sklearn.utils import shuffle
+   from sklearn.metrics import f1_score
+   from sklearn.model_selection import StratifiedKFold
+
+
+   cv = StratifiedKFold(shuffle=True, random_state=42)
+
+   cs = np.logspace(5, 9, 50)
+   gamms = np.logspace(-3, 1, 50)
+   params = {'C': cs, 'gamma': gamms}
+
+   search = GridSearchCV(SVC(), cv=cv, param_grid=params, scoring='f1_macro', n_jobs=-1)
+   search.fit(x, y)
+
+Tuning parameters using the iOpt framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Let's search for the optimal combination of hyperparameters using the iOpt framework. Let's prepare an auxiliary class in which we will describe the basic aspects of the problem being solved. An example of such a class is presented in the listing.
+
+.. code-block:: python
+   :caption: Description of the task for finding the optimal combination of values of continuous parameters using the iOpt framework
+   
+   import numpy as np
+   from iOpt.trial import Point
+   from iOpt.trial import FunctionValue
+   from iOpt.problem import Problem
+   from sklearn.svm import SVC
+   from sklearn.model_selection import cross_val_score
+   from typing import Dict
+   from sklearn.model_selection import StratifiedKFold
+
+   class SVC_2D_Transformators_State(Problem):
+
+      def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray,
+                  regularization_bound: Dict[str, float],
+                  kernel_coefficient_bound: Dict[str, float]):
+
+         super(SVC_2D_Transformators_State, self).__init__()
+         self.dimension = 2
+         self.number_of_float_variables = 2
+         self.number_of_discrete_variables = 0
+         self.number_of_objectives = 1
+         self.number_of_constraints = 0
+         if x_dataset.shape[0] != y_dataset.shape[0]:
+               raise ValueError('The input and output sample sizes do not match.')
+         self.x = x_dataset
+         self.y = y_dataset
+         self.float_variable_names = np.array(["Regularization parameter", "Kernel coefficient"], dtype=str)
+         self.lower_bound_of_float_variables = np.array([regularization_bound['low'], kernel_coefficient_bound['low']],
+                                                      dtype=np.double)
+         self.upper_bound_of_float_variables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
+                                                      dtype=np.double)
+         self.cv = StratifiedKFold(shuffle=True, random_state=42)
+
+
+      def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
+         cs, gammas = point.float_variables[0], point.float_variables[1]
+         clf = SVC(C=10 ** cs, gamma=10 ** gammas)
+         function_value.value = -cross_val_score(clf, self.x, self.y, cv=self.cv, scoring='f1_macro').mean()
+         return function_value
+
+To calculate the value of the objective function at a point, we overload the calculate function. To estimate the value of the target function, we use the cross_val_score method from the sklearn library with the specific values of the cross-validation parameters and the target metric described above.
+Let's conduct a series of experiments with different values of the iter_limits parameter: 100, 250, 500, 1000, 2500 and the reliability parameter r=2.
+Below is the code for searching for a combination of parameters of the SVC algorithm, at which the metric value will be optimal, using the iOpt framework while limiting the number of iterations of the algorithm iters_limit = 500.
+
+.. code-block:: python
+   :caption: Solving the problem of finding the optimal combination of continuous parameters using the iOpt framework
+
+   from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+   from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+   from iOpt.solver import Solver
+   from iOpt.solver_parametrs import SolverParameters
+   from examples.Machine_learning.SVC._2D.Problems import SVC_2D_Transformators_State
+   from sklearn.utils import shuffle
+   import numpy as np
+   import csv
+
+   def factory_dataset():
+      x = []
+      y = []
+      with open(r"../Datasets/transformator_state.csv") as file:
+         file_reader = csv.reader(file, delimiter=",")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x), np.array(y), random_state=42)
+
+
+   if __name__ == "__main__":
+      X, Y = factory_dataset()
+      regularization_value_bound = {'low': 5, 'up': 9}
+      kernel_coefficient_bound = {'low': -3, 'up': 1}
+      problem = SVC_2D_Transformators_State.SVC_2D_Transformators_State(X, Y, regularization_value_bound, kernel_coefficient_bound)
+      method_params = SolverParameters(r=np.double(2.0), iters_limit=500, number_of_parallel_points=12, evolvent_density=12)
+      solver = Solver(problem=problem, parameters=method_params)
+      spl1 = StaticPainterNDListener("svc2d_transformator_state_stat1.png", "output", vars_indxs=[0, 1], mode="surface", calc="by points")
+      solver.add_listener(spl1)
+      spl2 = StaticPainterNDListener("svc2d_transformator_state_stat2.png", "output", vars_indxs=[0, 1], mode="lines layers", calc="by points")
+      solver.add_listener(spl2)
+      cfol = ConsoleOutputListener(mode='full')
+      solver.add_listener(cfol)
+      solver_info = solver.solve()
+
+The results of the experiments are presented in the table.
+
+.. list-table:: Assessing the impact of the iter_limits parameter on the value of the target metric
+   :widths: 20 20 20 20 20
+   :header-rows: 1
+
+   * - iter_limits
+     - Obj. function value
+     - C
+     - Gamma
+     - Time(sec.)
+   * - 100
+     - -0.9467
+     - :math:`1.0045∙10^5`
+     - 0.1005
+     - 227
+   * - 250
+     - -0.9467
+     - :math:`1.0045∙10^5`
+     - 0.1005
+     - 539
+   * - 500
+     - -0.9494
+     - :math:`1.8024∙10^5`
+     - 0.0591
+     - 1061
+   * - 1000
+     - -0.9494
+     - :math:`1.8024∙10^5`
+     - 0.0591
+     - 3144
+
+Each experiment was run under identical conditions using parallel computing. The results of the experiments show that even with a limit of 500 iterations, the iOpt framework found a better combination of hyperparameters than when searching on a uniform grid of 50 by 50 points, and as a result, in fewer calls to the objective function. The figure shows a graph of the objective function when the optimization process is limited to 500 iterations.
+
+.. figure:: images/iter500_1.PNG
+    :width: 500
+    :align: center
+    
+    Graph of the objective function obtained with the parameter iter_limits = 500
+
+Comparison with other frameworks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To compare the quality of work, experiments were conducted on the same data set using the Hyperopt and Optuna frameworks.
+
+The Hyperopt framework was launched in sequential mode due to the lack of parallel mode. The execution time of the experiment with a limit of 500 iterations was 6750 seconds. A combination of hyperparameters was found: :math:`C = 1.165∙10^5`, :math:`gamma = 9.3492∙10^{-2}`. The value of the objective function is -0.9487.
+
+Below is the code for preparing a problem to be solved by the Hyperopt framework with a limit of 500 iterations.
+
+.. code-block:: python
+   :caption: Solving the problem of finding the optimal combination of continuous parameters using the Hyperopt framework
+
+   import numpy as np
+   from sklearn.svm import SVC
+   from sklearn.utils import shuffle
+   from sklearn.metrics import f1_score
+   import csv
+   from sklearn.model_selection import StratifiedKFold
+   from hyperopt import fmin, hp, tpe, Trials, space_eval, STATUS_OK
+   from hyperopt.pyll import scope as ho_scope
+   from hyperopt.pyll.stochastic import sample as ho_sample
+
+   def factory_dataset():
+      x = []
+      y = []
+      with open("transformator.csv") as file:
+         file_reader = csv.reader(file, delimiter = ",")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x), np.array(y), random_state=42)
+
+   x, y = factory_dataset()
+
+   cv = StratifiedKFold(shuffle=True, random_state=42)
+   SEED = 21
+   trialsnum = 500
+
+   hp_space = {'C': hp.loguniform('C', np.log(10**5), np.log(10**9)), 
+               'gamma': hp.loguniform('gamma', np.log(10**(-3)), np.log(10**1))}
+   trls = Trials()
+   res_HO = fmin(lambda hps: -cross_val_score(SVC(C=hps['C'], gamma=hps['gamma']), x, y, scoring='f1_macro', cv=cv).mean(), 
+               space=hp_space, algo=tpe.suggest, 
+                  trials=trls, max_evals=trialsnum, rstate=np.random.default_rng(SEED))
+   xy_HO = [np.array([x['misc']['vals']['C'] for x in trls.trials]), 
+            np.array([x['misc']['vals']['gamma'] for x in trls.trials])]
+   best_HO = (-trls.best_trial['result']['loss'], (space_eval(hp_space, res_HO)['C'], space_eval(hp_space, res_HO)['gamma']))
+
+
+.. figure:: images/hyperopt_11.JPG
+    :width: 500
+    :align: center
+
+    Graph of the objective function obtained during optimization of hyperparameters using the Hyperopt framework during 500 iterations
+
+
+The Optuna framework implements a parallel computing mode, which allows you to calculate the value of the objective function at several test points at once with the n_jobs parameter set. During the process of optimizing the hyperparameters C and gamma using the Optuna framework, the value of the objective function was found equal to -0.9491 at the point {C, gamma} = {:math:`4.4831∙10^5`; :math:`2.668∙10^{-2}`}. The experiment took 5262 seconds.
+
+The listing below shows the code for preparing the task to be solved by the Optuna framework. In this case, the algorithm must complete 500 iterations, and the calculation of the objective function values will be carried out in parallel, on 12 threads at once.
+
+.. code-block:: python
+   :caption: Solving the problem of finding the optimal combination of continuous parameters using the Optuna framework
+
+   import numpy as np
+   from sklearn.svm import SVC
+   from sklearn.model_selection import cross_val_score
+   from sklearn.utils import shuffle
+   from sklearn.metrics import f1_score
+   import csv
+   from sklearn.model_selection import cross_val_score, StratifiedKFold, KFold, train_test_split
+   import optuna
+
+   def factory_dataset():
+      x = []
+      y = []
+      with open("transformator.csv") as file:
+         file_reader = csv.reader(file, delimiter = ",")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x), np.array(y), random_state=42)
+
+   x, y = factory_dataset()
+
+   cv = StratifiedKFold(shuffle=True, random_state=42)
+
+   def objective(trial):
+      C = trial.suggest_float('C', 5, 9)
+      gamma = trial.suggest_float('gamma', -3, 1)
+      
+      return -cross_val_score(SVC(C=10**C, gamma=10**gamma), x, y, scoring='f1_macro', cv=cv).mean()
+
+   study = optuna.create_study()
+   study.optimize(objective, n_trials=500, n_jobs=12) 
+
+.. figure:: images/optuna_11.JPG
+    :width: 500
+    :align: center
+    
+    Graph of the objective function obtained during optimization of hyperparameters using the Optuna framework during 500 iterations
+
+
+Tuning hyperparameters using the iOpt framework when working with continuous and discrete values
+______________________________________________________________________________________________________________________________________________________________________________________________________
+
+Let's consider the work of the iOpt framework when searching for the optimal combination of continuous and discrete parameters. Let us specify and consider the following parameters:
+
+* C (regularization parameter), continuous parameter, on the interval [:math:`10^5`, :math:`10^9`];
+* gamma (kernel coefficient), continuous parameter, on the interval [:math:`10^{-3}`, :math:`10^1`];
+* kernel (kernel type), a discrete parameter whose value takes one of three states: 'rbf', 'sigmoid', 'poly'.
+
+Let's prepare an auxiliary class with a description of the problem being solved. An example of such a class is presented in the listing below.
+
+.. code-block:: python
+   :caption: Description of the task for finding the optimal combination of values of continuous and discrete parameters using the iOpt framework
+
+   import numpy as np
+   from iOpt.trial import Point
+   from iOpt.trial import FunctionValue
+   from iOpt.problem import Problem
+   from sklearn.svm import SVC
+   from sklearn.model_selection import cross_val_score
+   from sklearn.model_selection import StratifiedKFold
+   from typing import Dict, List
+
+
+   class SVC_3D(Problem):
+      
+
+      def __init__(self, x_dataset: np.ndarray, y_dataset: np.ndarray,
+                  regularization_bound: Dict[str, float],
+                  kernel_coefficient_bound: Dict[str, float],
+                  kernel_type: Dict[str, List[str]]
+                  ):
+         super(SVC_3D, self).__init__()
+         self.dimension = 3
+         self.number_of_float_variables = 2
+         self.number_of_discrete_variables = 1
+         self.number_of_objectives = 1
+         self.number_of_constraints = 0
+         if x_dataset.shape[0] != y_dataset.shape[0]:
+               raise ValueError('The input and output sample sizes do not match.')
+         self.x = x_dataset
+         self.y = y_dataset
+         self.float_variable_names = np.array(["Regularization parameter", "Kernel coefficient"], dtype=str)
+         self.lower_bound_of_float_variables = np.array([regularization_bound['low'], kernel_coefficient_bound['low']],
+                                                      dtype=np.double)
+         self.upper_bound_of_float_variables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
+                                                      dtype=np.double)
+         self.discrete_variable_names.append('kernel')
+         self.discrete_variable_values.append(kernel_type['kernel'])
+
+         self.cross_validation_strategy = StratifiedKFold(shuffle=True, random_state=42)
+
+
+      def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
+         cs, gammas = point.float_variables[0], point.float_variables[1]
+         kernel_type = point.discrete_variables[0]
+         clf = SVC(C=10 ** cs, gamma=10 ** gammas, kernel=kernel_type)
+         function_value.value = -cross_val_score(clf, self.x, self.y, scoring='f1_macro', cv=self.cross_validation_strategy).mean()
+         return function_value
+
+The Macro F1 metric was chosen as the target criterion, which is optimal for unbalanced classes. For the cross-validation parameter, a strategy was established using the StratifiedKFold method, recommended for unbalanced classes to preserve the class ratio in both the training and test sets. When describing a problem, it is important to indicate the following task parameters:
+
+* dimension - number of analyzed parameters (dimension);
+* number_of_float_variables - number of continuous parameters;
+* number_of_discrete_variables - number of discrete parameters;
+* float_variable_names - list of continuous parameters;
+* discrete_variable_names - list of discrete parameters;
+* lower_bound_of_float_variables and upper_bound_of_float_variables - minimum and maximum values of continuous parameters;
+* discrete_variable_values - values of discrete parameters.
+
+To calculate the value of the objective function at a point, we overload the calculate function. To estimate the value of the target function, we use the cross_val_score method from the sklearn library with the specific values of the cross-validation parameters and the target metric described above.
+
+After generating the optimization problem, you need to run the solver to find the optimal combination of hyperparameters. An example of code running the solver and visualizing the optimization process is presented in Listing 3.28.
+
+.. code-block:: python
+   :caption: Search for the optimal combination of values of continuous and discrete parameters using the iOpt framework
+
+   from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+   from iOpt.output_system.listeners.static_painters import StaticDiscreteListener
+
+   from iOpt.solver import Solver
+   from iOpt.solver_parametrs import SolverParameters
+   from examples.Machine_learning.SVC._3D.Problem import SVC_3D
+   from sklearn.utils import shuffle
+   import numpy as np
+   import csv
+
+
+   def transformator_dataset():
+      x = []
+      y = []
+      with open(r"../Datasets/transformator_state.csv") as file:
+         file_reader = csv.reader(file, delimiter=",")
+         for row in file_reader:
+               x_row = []
+               for i in range(len(row)-1):
+                  x_row.append(row[i])
+               x.append(x_row)
+               y.append(row[len(row)-1])
+      return shuffle(np.array(x), np.array(y), random_state=42)
+
+
+   if __name__ == "__main__":
+      X, Y = transformator_dataset()
+      regularization_value_bound = {'low': 5, 'up': 9}
+      kernel_coefficient_bound = {'low': -3, 'up': 1}
+      kernel_type = {'kernel': ['rbf', 'sigmoid', 'poly']}
+      problem = SVC_3D.SVC_3D(X, Y, regularization_value_bound, kernel_coefficient_bound, kernel_type)
+      method_params = SolverParameters(r=np.double(2.0), iters_limit=500, number_of_parallel_points=12, evolvent_density=12)
+      solver = Solver(problem, parameters=method_params)
+      apl = StaticDiscreteListener("experiment1.png", mode='analysis')
+      solver.add_listener(apl)
+      apl = StaticDiscreteListener("experiment2.png", mode='bestcombination', calc='interpolation', mrkrs=4)
+      solver.add_listener(apl)
+      cfol = ConsoleOutputListener(mode='full')
+      solver.add_listener(cfol)
+      solver_info = solver.solve()
+
+After loading the data, you need to create an optimization task, the description of the fields of which is presented in the listing above. Thus, the problem instance takes as parameters the data under study, the boundaries for changing the values of the regularization parameter, the boundaries for changing the values of the kernel coefficient parameter, and the values of the discrete parameter of the kernel type. To start the search procedure for the optimal combination of hyperparameters, you need an object of the SolverParameters class, in which the following parameters are set:
+
+* reliability parameter r;
+* limit on the number of iterations of the algorithm iters_limit;
+* number of points calculated at a time: number_of_parallel_points.
+
+To demonstrate the parallel calculation of the value of the objective function at several points, we will set the value of the number_of_parallel_points parameter to 12, and also limit ourselves to 500 iterations. Objects of the StaticDiscreteListener class allow you to obtain a graphical representation of the results of the framework. In this case, when setting the mode parameter to analysis, upon completion of the optimization procedure, a research protocol will be displayed, which indicates the dynamics of the search for the optimal value of the objective function, the distribution of test points over the values of the discrete parameter, and the distribution of the values of the objective function over iterations. If the mode parameter is set to bestcombination, a level line plot will be presented for the combination of hyperparameters with the best quality metric.
+
+.. figure:: images/general_info.png
+    :width: 500
+    :align: center
+    
+    General information on the process of searching for the optimal combination of hyperparameters using the iOpt framework
+
+.. figure:: images/ll_infograph.png
+    :width: 500
+    :align: center
+    
+    Line graph of the target function level, built with the parameter kernel='rbf'
+
+During the experiment, over 500 iterations of the algorithm, an optimal quality metric value of -0.9469 was obtained with the following combination of parameters: :math:`C = 1.6474∙10^5`, gamma = 0.0767, kernel = 'rbf'.
+
+
