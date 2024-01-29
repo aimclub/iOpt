@@ -17,7 +17,9 @@ class SolverParameters:
                  start_point: Point = [],
                  number_of_parallel_points: int = 1,
                  timeout: int = -1,
-                 proportion_of_global_iterations: float = 0.95
+                 proportion_of_global_iterations: float = 0.95,
+                 start_lambdas: list = [],
+                 number_of_lambdas: int = 10
                  ):
         r"""
         Конструктор класса SolverParameters
@@ -55,3 +57,6 @@ class SolverParameters:
         self.start_point = start_point
         self.number_of_parallel_points = number_of_parallel_points
         self.timeout = timeout
+
+        self.start_lambdas = start_lambdas # тут бы проверку, что они в сумме дают 1 и что их нужное количество
+        self.number_of_lambdas = number_of_lambdas

@@ -21,8 +21,6 @@ class Convolution(ABC):
                  ):
         self.problem = problem
         self.lambda_param = lambda_param
-        print("Convolution")
-
     # Свертка меняет z у SearchDataItem. Z используется в методе для вычисления характеристик
     @abstractmethod
     def calculate_convolution(self,
@@ -41,8 +39,8 @@ class MinMaxConvolution(Convolution):
                  problem: Problem,
                  lambda_param: np.ndarray(shape=(1), dtype=np.double)
                  ):
-        print("MinMaxConvolution")
         super().__init__(problem, lambda_param)
+        self.is_scaling: bool = True  # от чего он будет приходящим параметром?
 
     # Свертка меняет z у SearchDataItem. Z используется в методе для вычисления характеристик
     def calculate_convolution(self,
@@ -50,15 +48,21 @@ class MinMaxConvolution(Convolution):
                               min_value: np.ndarray(shape=(1), dtype=np.double) = [],
                               max_value: np.ndarray(shape=(1), dtype=np.double) = []
                               ) -> SearchDataItem:
+
         value = 0
 
         for i in range(0, self.problem.number_of_objectives):
-            f_value = data_item.function_values[i].value - min_value[i]
+            dx = 1
+            if self.is_scaling:
+                dx = np.double(max_value[i] - min_value[i])
+                if dx < 0.000001: #написать по-другому
+                    dx = 1
+
+            f_value = (data_item.function_values[i].value - min_value[i]) / dx
             value = max(value, f_value * self.lambda_param[i])
-            # добавить дельту, на которую влияет максимум
+
         data_item.set_z(value)
         return data_item
-
 
 class MultiObjectiveOptimizationTask(OptimizationTask):
     def __init__(self,
@@ -68,8 +72,7 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
                  ):
         super().__init__(problem, perm)
         self.convolution = convolution
-        # !!! реализовать заполнение массива
-        self.min_value = np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double)  # задать нулями
+        self.min_value = np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double)
         self.min_value.fill(0)
         self.max_value = np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double)
         self.max_value.fill(0)
@@ -81,10 +84,7 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
                     if self.min_value[i] > know_optimum.function_values[i]:
                         self.min_value[i] = know_optimum.function_values[i]
 
-
-    def get_name(self):
-        print("MultiObjectiveOptimizationTask")
-
+        # вот сюда можно закинуть часть из update_min_max? Нужно проследить, чтобы этот код был ПОСЛЕ загрузки (что не факт)
 
     def calculate(self,
                   data_item: SearchDataItem,
@@ -95,12 +95,16 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
         if calculation_type == TypeOfCalculation.FUNCTION:
             data_item.function_values[self.perm[function_index]] = self.problem.calculate(data_item.point,
                                                                                           data_item.function_values[
-                                                                                              self.perm[function_index]])
+                                                                                              self.perm[
+                                                                                                  function_index]])
+            print("FUNCTION")
             if not np.isfinite(data_item.function_values[self.perm[function_index]].value):
                 raise Exception("Infinity values")
 
-        else:
-            # Обновить при реализации метода
+        elif calculation_type == TypeOfCalculation.CONVOLUTION:
+            # Обновить при реализации метода (что значит?!)
             data_item = self.convolution.calculate_convolution(data_item, self.min_value, self.max_value)
+            print("point.get_z in calc", data_item.get_z())
+
 
         return data_item
