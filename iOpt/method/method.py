@@ -347,8 +347,6 @@ a new point into the repository
 
         self.search_data.insert_data_item(newpoint, oldpoint)
 
-        #newpoint.creation_time = time()  # перенести в finalize
-
     def update_optimum(self, point: SearchDataItem) -> None:
         r"""
         Update the optimum estimate
