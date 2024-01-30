@@ -1,4 +1,5 @@
 from typing import List
+import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.listener import Listener
@@ -39,7 +40,7 @@ class Solver:
         self.search_data = SearchData(problem)
         self.evolvent = Evolvent(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables,
                                  problem.number_of_float_variables)
-        self.task = OptimizationTask(problem)
+        self.task = SolverFactory.create_task(problem, parameters)
         self.method = SolverFactory.create_method(parameters, self.task, self.evolvent, self.search_data)
         self.process = SolverFactory.create_process(parameters=parameters, task=self.task, evolvent=self.evolvent,
                                                     search_data=self.search_data, method=self.method,
@@ -198,3 +199,19 @@ class Solver:
                                                    parameters.start_point.float_variables):
                 if y < lower_bound or y > upper_bound:
                     raise Exception("Incorrect start point coordinate")
+
+    # def change_lambdas_for_mco(self,
+    #                            lambdas: np.ndarray(shape=(1), dtype=np.double), point=None, iter=0)-> None:
+    #     self.parameters.start_lambdas = lambdas
+    #     if point:
+    #         self.parameters.start_point = point
+    #     self.parameters.iters_limit = iter
+    #     self.parameters.global_method_iteration_count = iter
+    #     # self.process = SolverFactory.create_process(parameters=self.parameters, task=self.task, evolvent=self.evolvent,
+    #     #                                             search_data=self.search_data, method=self.method,
+    #     #                                             listeners=self.__listeners)
+    #
+    #     self.process.parameters = self.parameters
+
+
+

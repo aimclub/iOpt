@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import numpy as np
+import copy
 
 from iOpt.method.optim_task import OptimizationTask, TypeOfCalculation
 from iOpt.method.search_data import SearchDataItem
@@ -40,7 +41,9 @@ class MinMaxConvolution(Convolution):
                  lambda_param: np.ndarray(shape=(1), dtype=np.double)
                  ):
         super().__init__(problem, lambda_param)
-        self.is_scaling: bool = True  # от чего он будет приходящим параметром?
+        self.is_scaling: bool = False  # от чего он будет приходящим параметром?
+        print("lambda in init", self.lambda_param)
+
 
     # Свертка меняет z у SearchDataItem. Z используется в методе для вычисления характеристик
     def calculate_convolution(self,
@@ -50,18 +53,25 @@ class MinMaxConvolution(Convolution):
                               ) -> SearchDataItem:
 
         value = 0
+        print("lambda", self.lambda_param)
+
 
         for i in range(0, self.problem.number_of_objectives):
             dx = 1
             if self.is_scaling:
                 dx = np.double(max_value[i] - min_value[i])
-                if dx < 0.000001: #написать по-другому
+                if dx < 1e-6:
                     dx = 1
 
+            print("data_item.function_values[i].value", data_item.function_values[i].value)
             f_value = (data_item.function_values[i].value - min_value[i]) / dx
+            print("f_value", f_value)
+            print("value before", value)
             value = max(value, f_value * self.lambda_param[i])
+            print("value", value)
 
         data_item.set_z(value)
+        print("data_item.set_z(value)", data_item.get_z())
         return data_item
 
 class MultiObjectiveOptimizationTask(OptimizationTask):
@@ -76,15 +86,12 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
         self.min_value.fill(0)
         self.max_value = np.ndarray(shape=(problem.number_of_objectives,), dtype=np.double)
         self.max_value.fill(0)
-        # есть ли в этом смысл? Проход по всей области парето может занять много времени
-        if self.problem.known_optimum:  # проверка на пустоту
-            self.min_value = self.problem.known_optimum[0].function_values
+        if self.problem.known_optimum:
+            self.min_value = copy.deepcopy(self.problem.known_optimum[0].function_values)
             for know_optimum in self.problem.known_optimum:
                 for i in range(0, self.problem.number_of_objectives):
                     if self.min_value[i] > know_optimum.function_values[i]:
                         self.min_value[i] = know_optimum.function_values[i]
-
-        # вот сюда можно закинуть часть из update_min_max? Нужно проследить, чтобы этот код был ПОСЛЕ загрузки (что не факт)
 
     def calculate(self,
                   data_item: SearchDataItem,
@@ -97,14 +104,10 @@ class MultiObjectiveOptimizationTask(OptimizationTask):
                                                                                           data_item.function_values[
                                                                                               self.perm[
                                                                                                   function_index]])
-            print("FUNCTION")
             if not np.isfinite(data_item.function_values[self.perm[function_index]].value):
                 raise Exception("Infinity values")
 
         elif calculation_type == TypeOfCalculation.CONVOLUTION:
-            # Обновить при реализации метода (что значит?!)
             data_item = self.convolution.calculate_convolution(data_item, self.min_value, self.max_value)
-            print("point.get_z in calc", data_item.get_z())
-
 
         return data_item

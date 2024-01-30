@@ -8,7 +8,8 @@ from iOpt.method.method import Method
 from iOpt.method.mixed_integer_method import MixedIntegerMethod
 from iOpt.method.multi_objective_method import MultiObjectiveMethod
 from iOpt.method.optim_task import OptimizationTask
-from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
+from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask, MinMaxConvolution
+from iOpt.problem import Problem
 from iOpt.method.parallel_process import ParallelProcess
 from iOpt.method.process import Process
 from iOpt.method.search_data import SearchData
@@ -22,6 +23,30 @@ class SolverFactory:
 
     def __init__(self):
         pass
+
+    @staticmethod
+    def create_task(problem: Problem,
+                    parameters: SolverParameters) -> OptimizationTask:
+        """
+        Создает подходящий класс метода решения по заданным параметрам
+
+        :param parameters: параметры решения задачи оптимизации.
+        :param task: обёртка решаемой задачи.
+        :param evolvent: развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
+        :param search_data: структура данных для хранения накопленной поисковой информации.
+
+        :return: созданный метод
+        """
+        if problem.number_of_objectives > 1:
+            # create_method вызывается до create_process... Временное решение: перезатирать task из MCOProcess
+            # TODO: исправить.
+            if parameters.start_lambdas:
+                convolution = MinMaxConvolution(problem, parameters.start_lambdas[0])
+            else:
+                convolution = MinMaxConvolution(problem, [1.0 / problem.number_of_objectives] * problem.number_of_objectives)
+            return MultiObjectiveOptimizationTask(problem, convolution)
+        else:
+            return OptimizationTask(problem)
 
     @staticmethod
     def create_method(parameters: SolverParameters,

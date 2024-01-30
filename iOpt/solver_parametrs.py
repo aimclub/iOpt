@@ -58,5 +58,9 @@ class SolverParameters:
         self.number_of_parallel_points = number_of_parallel_points
         self.timeout = timeout
 
+        # лучше набор лямбд
+        print(start_lambdas)
+        print("len(self.start_lambdas)", len(start_lambdas))
         self.start_lambdas = start_lambdas # тут бы проверку, что они в сумме дают 1 и что их нужное количество
         self.number_of_lambdas = number_of_lambdas
+        print(self.start_lambdas)

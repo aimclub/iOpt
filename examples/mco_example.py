@@ -20,7 +20,7 @@ if __name__ == "__main__":
     problem = Grishagin_mco(2, [2, 3])
 
     # Формируем параметры решателя
-    params = SolverParameters(r=2, eps=0.01, iters_limit=1600, number_of_lambdas=5, start_lambdas=[0, 1])  # , number_of_parallel_points=8) #, start_lambdas=[0.1, 0.9]
+    params = SolverParameters(r=2, eps=0.01, iters_limit=1600, number_of_lambdas=4)#, start_lambdas=[[0, 1]])  # , number_of_parallel_points=8) #, start_lambdas=[0.1, 0.9]
 
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)
@@ -31,6 +31,10 @@ if __name__ == "__main__":
 
     # Решение задачи
     sol = solver.solve()
+
+    print("Grishagin_mco(2, [2, 3])")
+    print("(r=2, eps=0.01, iters_limit=1600, number_of_lambdas=1, start_lambdas=[0, 1])")
+    print("scaling false, new process")
 
     i=0
     x1 = [trial.point.float_variables[0] for trial in sol.best_trials]
