@@ -22,6 +22,4 @@ if __name__ == "__main__":
 
     # visualizate optimization progress
     dashboard = StaticDashboard('log_RastriginInt_5-2_2.1_0.01_1.json')
-    dashboard.setup()
-
-
+    dashboard.launch()

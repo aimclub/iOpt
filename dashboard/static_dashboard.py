@@ -1,7 +1,8 @@
 import dash
 from dash import html
 from dash import dcc
-from dash.dependencies import Input, Output
+from dash import dash_table
+from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
@@ -10,6 +11,8 @@ import numpy as np
 import json
 from scipy.interpolate import griddata
 from sklearn.neural_network import MLPRegressor
+
+import base64
 
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -30,13 +33,11 @@ CONTENT_STYLE = {
 }
 
 def generate_table(dataframe):
-    return html.Div([dbc.Table.from_dataframe(dataframe,
-        bordered=True,
-        dark=False,
-        hover=True,
-        striped=True,
-        # responsive=True,
-    )], style={'maxWidth': '90%', 'maxHeight': '600px', "overflow": "scroll"})
+    return html.Div([dash_table.DataTable(dataframe.to_dict('records'), [{"name": i, "id": i} for i in dataframe.columns],
+        filter_action="native", id='datatable-interactivity', sort_action="native",
+        row_selectable="multi", selected_rows=[],
+        sort_mode="multi", page_size=15)],
+        style={'maxWidth': '95%', 'maxHeight': '800px', "overflow": "scroll"})
 
 class StaticDashboard():
     def __init__(self, data_path):
@@ -44,6 +45,11 @@ class StaticDashboard():
         self.app.config['suppress_callback_exceptions'] = True
 
         self.data_path = data_path
+        with open(self.data_path) as json_data:
+            self.data = json.load(json_data)
+
+        self.init = False
+        self.task_name = None
         self.dfSDI = None
         self.best_value = None
         self.float_parameters_names = None
@@ -98,10 +104,19 @@ class StaticDashboard():
             Input('crossfilter-xaxis-column-3', 'value')
         )(self.update_graph_4)
 
-    def readData(self):
-        with open(self.data_path) as json_data:
-            data = json.load(json_data)
+        self.app.callback(
+            Output('output-data-upload', 'children'),
+            Input('upload-data', 'contents')
+        )(self.update_output)
 
+        self.app.callback(
+            Output('datatable-interactivity-container', "children"),
+            Input('datatable-interactivity', "derived_virtual_data"),
+            Input('datatable-interactivity', "derived_virtual_selected_rows"))(self.update_arhive_graph)
+
+
+    def readData(self, data):
+        self.task_name = "example" # TBD
         self.dfSDI = pd.DataFrame(data['SearchDataItem'])
         dfFV = pd.DataFrame(data['float_variables'])
         dfDV = pd.DataFrame(data['discrete_variables'])
@@ -243,8 +258,10 @@ class StaticDashboard():
     def createContentPage(self):
         self.content = html.Div(id="page-content", children=[], style=CONTENT_STYLE)
 
-    def setup(self):
-        self.readData()
+    def launch(self):
+        self.readData(self.data)
+        del self.data
+        self.data = None
         self.normalizateData()
         self.calculateColors()
         self.calculateLowerEnvelopeValues()
@@ -257,8 +274,38 @@ class StaticDashboard():
             self.sidebar,
             self.content
         ], style={"background-color": "#FBFBFB"})
-        url = "http://127.0.0.1:8050/"
+        #url = "http://127.0.0.1:8050/"
         self.app.run(debug=True)
+
+    def render_task_discription(self):
+        return html.Div(children=[
+            html.H2('PROBLEM DISCRIPTION',
+                    style={'textAlign': 'left'}),
+            html.P(
+                f"Problem name: {self.task_name}"),
+            dcc.Upload(
+                    id='upload-data',
+                    children=html.Div([
+                        'Drag and Drop or ',
+                        html.A('Select Files')
+                    ]),
+                    style={
+                        'width': '95%',
+                        'height': '60px',
+                        'lineHeight': '60px',
+                        'borderWidth': '1px',
+                        'borderStyle': 'dashed',
+                        'borderRadius': '5px',
+                        'textAlign': 'center',
+                        'margin': '10px'
+                    },
+                    # Allow multiple files to be uploaded
+                    multiple=True
+            ),
+            html.Div(id='output-data-upload')
+            ],
+            style={'width': '43%', "background-color": "#F7F7F7", "border": "3px #F7F7F7 outset", }
+        )
 
     def render_solution_discription(self):
         return html.Div(children=[
@@ -568,6 +615,9 @@ class StaticDashboard():
         if pathname == "/":
             return [
                 html.Div([
+                    self.render_task_discription(),
+                ], style={'display': 'flex', 'flexDirection': 'row'}),
+                html.Div([
                     self.render_solution_discription(),
                     html.Div(children=[], style={'width': '2%'}),
                     self.render_optimization_time_plot()
@@ -589,7 +639,8 @@ class StaticDashboard():
             return [
                 html.H1('All Trials Archive',
                         style={'textAlign': 'left'}),
-                generate_table(self.dfSDI)
+                generate_table(self.dfSDI),
+                html.Div(id='datatable-interactivity-container')
 
             ]
         elif pathname == "/page-1":
@@ -735,3 +786,46 @@ class StaticDashboard():
         fig.update_layout(paper_bgcolor='#F7F7F7', plot_bgcolor='#F7F7F7', showlegend=False)
 
         return fig
+
+    def update_output(self, contents):
+        if self.init and contents is not None:
+            content_type, content_string = contents[0].split(',')
+            decoded = base64.b64decode(content_string)
+            self.data = json.loads(decoded)
+            self.launch()
+        else:
+            self.init = True
+        return html.Div(id='hidden-div', style={'display':'none'})
+
+    def update_arhive_graph(self, rows, derived_virtual_selected_rows):
+        if derived_virtual_selected_rows is None:
+            derived_virtual_selected_rows = []
+
+        dff = self.dfSDI if rows is None else pd.DataFrame(rows)
+        colors = ['#31B37C' if i in derived_virtual_selected_rows else '#0D0B93'
+                  for i in range(len(dff))]
+
+        return [
+            dcc.Graph(
+                figure={
+                    "data": [
+                        {
+                            "x": dff['trial'],
+                            "y": dff['__z'],
+                            "type": "bar",
+                            "marker": {"color": colors},
+                        }
+                    ],
+                    "layout": {
+                        "xaxis": {"automargin": True, "title" : "trial"},
+                        "yaxis": {
+                            "automargin": True,
+                            "title": {"text": "objective function value"}
+                        },
+                        "height": 250,
+                        "weight": "95%",
+                        "margin": {"t": 10, "l": 10, "r": 10},
+                    },
+                },
+            )
+        ]
