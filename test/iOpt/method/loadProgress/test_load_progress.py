@@ -181,8 +181,6 @@ class TestLoadProgress(unittest.TestCase):
             if os.path.isfile(path):
                 os.remove(path)
 
-# Executing the tests in the above test case class
-
 
 if __name__ == "__main__":
     unittest.main()
