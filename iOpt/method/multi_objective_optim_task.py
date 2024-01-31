@@ -38,11 +38,11 @@ class MinMaxConvolution(Convolution):
 
     def __init__(self,
                  problem: Problem,
-                 lambda_param: np.ndarray(shape=(1), dtype=np.double)
+                 lambda_param: np.ndarray(shape=(1), dtype=np.double),
+                 is_scaling: False
                  ):
+        self.is_scaling = is_scaling
         super().__init__(problem, lambda_param)
-        self.is_scaling: bool = False  # от чего он будет приходящим параметром?
-        print("lambda in init", self.lambda_param)
 
 
     # Свертка меняет z у SearchDataItem. Z используется в методе для вычисления характеристик
@@ -53,7 +53,6 @@ class MinMaxConvolution(Convolution):
                               ) -> SearchDataItem:
 
         value = 0
-        print("lambda", self.lambda_param)
 
 
         for i in range(0, self.problem.number_of_objectives):
@@ -63,15 +62,10 @@ class MinMaxConvolution(Convolution):
                 if dx < 1e-6:
                     dx = 1
 
-            print("data_item.function_values[i].value", data_item.function_values[i].value)
             f_value = (data_item.function_values[i].value - min_value[i]) / dx
-            print("f_value", f_value)
-            print("value before", value)
             value = max(value, f_value * self.lambda_param[i])
-            print("value", value)
 
         data_item.set_z(value)
-        print("data_item.set_z(value)", data_item.get_z())
         return data_item
 
 class MultiObjectiveOptimizationTask(OptimizationTask):

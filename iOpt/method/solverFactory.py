@@ -39,11 +39,11 @@ class SolverFactory:
         """
         if problem.number_of_objectives > 1:
             # create_method вызывается до create_process... Временное решение: перезатирать task из MCOProcess
-            # TODO: исправить.
+            #TODO: исправить.
             if parameters.start_lambdas:
-                convolution = MinMaxConvolution(problem, parameters.start_lambdas[0])
+                convolution = MinMaxConvolution(problem, parameters.start_lambdas[0], parameters.is_scaling)
             else:
-                convolution = MinMaxConvolution(problem, [1.0 / problem.number_of_objectives] * problem.number_of_objectives)
+                convolution = MinMaxConvolution(problem, [1.0 / problem.number_of_objectives] * problem.number_of_objectives, parameters.is_scaling)
             return MultiObjectiveOptimizationTask(problem, convolution)
         else:
             return OptimizationTask(problem)

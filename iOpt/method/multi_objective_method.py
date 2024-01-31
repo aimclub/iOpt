@@ -119,9 +119,9 @@ class MultiObjectiveMethod(MixedIntegerMethod):
 
         if (point.get_index() == self.task.problem.number_of_constraints):
             self.update_min_max_value(point)
-            self.check_dominance(point)
+            self.pareto_set_update(point)
 
-    def check_dominance(self, point: SearchDataItem) -> None: #pareto_set_update !!!
+    def pareto_set_update(self, point: SearchDataItem) -> None:
         if (self.search_data.get_count() == 0):
             return
 
@@ -261,8 +261,6 @@ class MultiObjectiveMethod(MixedIntegerMethod):
             self.M[index] = m
             self.recalcR = True
 
-        print(f"index={index}, lp.i={left_point.get_index()}, lp.z={left_point.get_z()}, cp.z={curr_point.get_z()}")
-        print("M in calc_m:", self.M)
 
 
 

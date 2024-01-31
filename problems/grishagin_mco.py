@@ -49,20 +49,11 @@ class Grishagin_mco(Problem):
         else:
             for i in range(count_functions):
                 self.function_numbers[i]=i+1 # мб добавить рандомное заполнение?
-        print(self.number_of_objectives, self.function_numbers)
 
         self.functions = np.ndarray(shape=(self.count_functions,), dtype=GrishaginFunction)
         for i in range(count_functions):
             self.functions[i] = GrishaginFunction(self.function_numbers[i])
             self.functions[i].SetFunctionNumber()
-
-        # self.known_optimum = np.ndarray(shape=(1,), dtype=Trial)
-        # pointfv = self.function.GetOptimumPoint()
-        # KOpoint = Point(pointfv, [])
-        # KOfunV = np.ndarray(shape=(1,), dtype=FunctionValue)
-        # KOfunV[0] = FunctionValue()
-        # KOfunV[0] = self.calculate(KOpoint, KOfunV[0])
-        # self.known_optimum[0] = Trial(KOpoint, KOfunV)
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
@@ -73,6 +64,5 @@ class Grishagin_mco(Problem):
         :return: Вычисленное значение функции в точке point
         """
         function_value.value = self.functions[function_value.functionID].Calculate(point.float_variables)
-        #print(function_value.functionID, function_value.value, self.functions[function_value.functionID].fn)
 
         return function_value

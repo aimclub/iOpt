@@ -199,19 +199,19 @@ class Solver:
                                                    parameters.start_point.float_variables):
                 if y < lower_bound or y > upper_bound:
                     raise Exception("Incorrect start point coordinate")
+        if parameters.number_of_lambdas:
+            if parameters.number_of_lambdas < 0:
+                raise Exception("Number of lambda sets is incorrect, parameters.number_of_lambdas <= 0")
+        if parameters.start_lambdas:
+            if len(parameters.start_lambdas)>1 and len(parameters.start_lambdas)<parameters.number_of_lambdas:
+                raise Exception("The number of sets of initial lambdas must match the number of sets of lambdas "
+                                "or be equal to 1")
+            if not all(len(lambdas) == problem.number_of_objectives for lambdas in parameters.start_lambdas):
+                raise Exception("The number of lambdas in the set must match the number of objectives for the problem")
+            if not all(all(lamb >= 0 for lamb in lambdas) for lambdas in parameters.start_lambdas):
+                raise Exception("The lambda parameters must be non-negative")
 
-    # def change_lambdas_for_mco(self,
-    #                            lambdas: np.ndarray(shape=(1), dtype=np.double), point=None, iter=0)-> None:
-    #     self.parameters.start_lambdas = lambdas
-    #     if point:
-    #         self.parameters.start_point = point
-    #     self.parameters.iters_limit = iter
-    #     self.parameters.global_method_iteration_count = iter
-    #     # self.process = SolverFactory.create_process(parameters=self.parameters, task=self.task, evolvent=self.evolvent,
-    #     #                                             search_data=self.search_data, method=self.method,
-    #     #                                             listeners=self.__listeners)
-    #
-    #     self.process.parameters = self.parameters
 
+        # неортицательные и корличество или 1 или совпадет с кол-вом л
 
 
