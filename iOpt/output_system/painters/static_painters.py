@@ -223,6 +223,9 @@ class StaticPainterND(Painter):
         self.values = self.values[1:-1]
 
         self.optimum = solution.best_trials[0].point.float_variables
+        self.optimum_section = [solution.best_trials[0].point.float_variables[parameters[0]],
+                        solution.best_trials[0].point.float_variables[parameters[1]]]
+
         self.optimumValue = solution.best_trials[0].function_values[0].value
 
         self.leftBounds = [float(solution.problem.lower_bound_of_float_variables[parameters[0]]),
@@ -258,7 +261,7 @@ class StaticPainterND(Painter):
         self.plotter.plot_points(self.points, self.values, 'blue', 'o', 4)
 
     def paint_optimum(self, solution: Solution = None):
-        self.plotter.plot_points([self.optimum], [self.optimumValue], 'red', 'o', 4)
+        self.plotter.plot_points([self.optimum_section], [self.optimumValue], 'red', 'o', 4)
 
     def save_image(self):
         if not os.path.isdir(self.path_for_saves):
