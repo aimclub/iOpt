@@ -14,7 +14,7 @@ if __name__ == "__main__":
     problem = Stronginc3()
 
     # Формируем параметры решателя
-    params = SolverParameters(r=2.5, eps=0.01, iters_limit=300)
+    params = SolverParameters(r=2.5, eps=0.01, iters_limit=500)
 
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)
