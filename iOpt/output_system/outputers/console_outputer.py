@@ -13,6 +13,7 @@ class ConsoleOutputer:
         self.__functions = OutputFunctions()
         self.iterNum = 1
         self.ndv = self.problem.number_of_discrete_variables
+        self.number_of_constraints = self.problem.number_of_constraints
 
     def print_init_info(self):
         self.__functions.print_init(
@@ -57,7 +58,7 @@ class ConsoleOutputer:
         else:
             best_trial_point = solution.best_trials[0].point.float_variables
             best_trial_d_point = solution.best_trials[0].point.discrete_variables
-            best_trial_value = solution.best_trials[0].function_values[self.problem.number_of_constraints].value
+            best_trial_value = solution.best_trials[0].function_values[self.number_of_constraints].value
             self.__functions.print_best(
                 solution.number_of_global_trials,
                 solution.number_of_local_trials,
@@ -72,7 +73,7 @@ class ConsoleOutputer:
     def print_final_result_info(self, solution: Solution, status: bool):
         best_trial_point = solution.best_trials[0].point.float_variables
         best_trial_d_point = solution.best_trials[0].point.discrete_variables
-        best_trial_value = solution.best_trials[0].function_values[self.problem.number_of_constraints].value
+        best_trial_value = solution.best_trials[0].function_values[self.number_of_constraints].value
         self.__functions.print_result(
             status,
             solution.number_of_global_trials,
