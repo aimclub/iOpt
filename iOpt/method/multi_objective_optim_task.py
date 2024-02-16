@@ -52,9 +52,7 @@ class MinMaxConvolution(Convolution):
                               max_value: np.ndarray(shape=(1), dtype=np.double) = []
                               ) -> SearchDataItem:
 
-        value = 0
-
-
+        value = -10
         for i in range(0, self.problem.number_of_objectives):
             dx = 1
             if self.is_scaling:

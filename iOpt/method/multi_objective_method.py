@@ -1,7 +1,5 @@
-import copy
 from typing import Tuple
 
-import math
 import sys
 
 import numpy as np
@@ -14,7 +12,6 @@ from iOpt.method.search_data import SearchDataItem, SearchData
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.trial import FunctionValue, FunctionType, Trial
 from iOpt.method.optim_task import TypeOfCalculation
-from iOpt.method.method import Method
 
 class TypeOfParetoRelation(Enum):
     DOMINANT = 1
@@ -56,8 +53,7 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                     return point
 
             for i in range(self.task.problem.number_of_objectives):
-                point.function_values[number_of_constraints+i] = FunctionValue(FunctionType.OBJECTIV,
-                                                                             number_of_constraints+i)
+                point.function_values[number_of_constraints+i] = FunctionValue(FunctionType.OBJECTIV, i)
                 point = self.task.calculate(point, number_of_constraints+i)
 
             point = self.task.calculate(point, -1, TypeOfCalculation.CONVOLUTION)

@@ -38,8 +38,6 @@ class SolverFactory:
         :return: созданный метод
         """
         if problem.number_of_objectives > 1:
-            # create_method вызывается до create_process... Временное решение: перезатирать task из MCOProcess
-            #TODO: исправить.
             if parameters.start_lambdas:
                 convolution = MinMaxConvolution(problem, parameters.start_lambdas[0], parameters.is_scaling)
             else:
@@ -64,8 +62,6 @@ class SolverFactory:
         :return: созданный метод
         """
         if task.problem.number_of_objectives > 1:
-            # create_method вызывается до create_process... Временное решение: перезатирать task из MCOProcess
-            # TODO: исправить.
             return MultiObjectiveMethod(parameters, task, evolvent, search_data)
         elif task.problem.number_of_discrete_variables > 0:
             return MixedIntegerMethod(parameters, task, evolvent, search_data)

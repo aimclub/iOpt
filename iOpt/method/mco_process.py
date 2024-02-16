@@ -1,4 +1,3 @@
-import copy
 from typing import List
 from datetime import datetime
 
@@ -7,11 +6,10 @@ import traceback
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
-from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask, MinMaxConvolution
-from iOpt.method.search_data import SearchData, SearchDataItem
+from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
+from iOpt.method.search_data import SearchData
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
-from iOpt.trial import FunctionValue, FunctionType
 from iOpt.method.process import Process
 
 
@@ -32,17 +30,15 @@ class MCOProcess(Process):
 
         super().__init__(parameters, task, evolvent, search_data, method, listeners)
 
-        self.number_of_lambdas = parameters.number_of_lambdas  # int
+        self.number_of_lambdas = parameters.number_of_lambdas
         if lambdas:
             self.start_lambdas = lambdas
         elif parameters.start_lambdas:
             self.start_lambdas = parameters.start_lambdas
         else:
             self.start_lambdas = []
-        # else:
-        #     self.start_lambdas = [[1.0 / task.problem.number_of_objectives] * task.problem.number_of_objectives]
 
-        self.current_num_lambda = 0  # int
+        self.current_num_lambda = 0
         self.lambdas_list = []  # список всех рассматриваемых
         self.iterations_list = []
 
@@ -85,9 +81,10 @@ class MCOProcess(Process):
 
     def change_lambdas(self) -> None:
         self.method.min_delta = 1
+        self.method.is_recalc_all_convolution = True
         self.current_num_lambda += 1
         if self.current_num_lambda < self.number_of_lambdas:
-            self.current_lambdas = self.lambdas_list[self.current_num_lambda] # вообще излишне знать текущую, если знаем номер
+            self.current_lambdas = self.lambdas_list[self.current_num_lambda]
             self.task.convolution.lambda_param = self.current_lambdas
             self.method.is_recalc_all_convolution = True
 
@@ -104,11 +101,11 @@ class MCOProcess(Process):
                 h = 1
             if not self.start_lambdas:
                 for i in range(self.number_of_lambdas):
-                    l0 = i * h
-                    if l0 > 1:
-                        l0 = l0 - 1
-                    l1 = 1 - l0
-                    lambdas = [l0, l1]
+                    lambda_0 = i * h
+                    if lambda_0 > 1:
+                        lambda_0 = lambda_0 - 1
+                    lambda_1 = 1 - lambda_0
+                    lambdas = [lambda_0, lambda_1]
                     self.lambdas_list.append(lambdas)
             elif len(self.start_lambdas)==self.number_of_lambdas:
                 for i in range(self.number_of_lambdas):
@@ -116,21 +113,17 @@ class MCOProcess(Process):
             elif len(self.start_lambdas)==1:
                 self.lambdas_list.append(self.start_lambdas[0])
                 for i in range(1, self.number_of_lambdas):
-                    l0 = self.start_lambdas[0][0] + i*h
-                    if l0 > 1:
-                        l0 = l0 - 1
-                    l1 = 1 - l0
-                    lambdas = [l0, l1]
+                    lambda_0 = self.start_lambdas[0][0] + i*h
+                    if lambda_0 > 1:
+                        lambda_0 = lambda_0 - 1
+                    lambda_1 = 1 - lambda_0
+                    lambdas = [lambda_0, lambda_1]
                     self.lambdas_list.append(lambdas)
-            #else:
         else: # многомерный случай
             if len(self.start_lambdas)==self.number_of_lambdas:
                 for i in range(self.number_of_lambdas):
                     self.lambdas_list.append(self.start_lambdas[i])
             else:
-                #  пример в методе, точность M - 10
-                # #завести развертку размерности числа критериев, границы от 0 до 1, для формирования 10 лямбда: выбрать равномерно числа на отрезке от 0 до 1, после получения прообраза многомерной области суммировать получившиеся у и поделить каждый у на сумму(чтобы были в сумме 1),
-                # округление не нужно
                 if self.number_of_lambdas > 1:
                     h = 1.0 / (self.number_of_lambdas - 1)
                 else:
