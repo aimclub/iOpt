@@ -80,18 +80,16 @@ class MCOProcess(Process):
         return result
 
     def change_lambdas(self) -> None:
-        self.method.min_delta = 1
-        self.method.is_recalc_all_convolution = True
+        self.method.set_min_delta(1)
         self.current_num_lambda += 1
         if self.current_num_lambda < self.number_of_lambdas:
             self.current_lambdas = self.lambdas_list[self.current_num_lambda]
             self.task.convolution.lambda_param = self.current_lambdas
-            self.method.is_recalc_all_convolution = True
 
             self.iterations_list.append(self.method.iterations_count) # здесь будет накапливаться сумма итераций
-            self.method.max_iter_for_convolution = int((self.parameters.global_method_iteration_count /
-                                                       self.number_of_lambdas)*(self.current_num_lambda+1))
-
+            max_iter_for_convolution = int((self.parameters.global_method_iteration_count /
+                                            self.number_of_lambdas) * (self.current_num_lambda + 1))
+            self.method.set_max_iter_for_convolution(max_iter_for_convolution)
 
     def init_lambdas(self) -> None:
         if self.task.problem.number_of_objectives == 2:  # двумерный случай

@@ -65,6 +65,13 @@ class MultiObjectiveMethod(MixedIntegerMethod):
 
         return point
 
+    def set_max_iter_for_convolution(self, max_iter_for_convolution) -> None:
+        self.max_iter_for_convolution = max_iter_for_convolution
+
+    def set_min_delta(self, min_delta) -> None:
+        self.min_delta = min_delta
+        self.is_recalc_all_convolution = True
+
     def recalc_all_convolution(self) -> None:
         # Флаг используется при
         # 1. Запуске новой задачи (продолжение вычислений с новой сверткой)
