@@ -40,8 +40,10 @@ class StaticDiscreteListener(Listener):
         self.search_dataSorted = []
         self.bestValueSorted = []
         self.number_of_parallel_points = 1
+        self.number_of_constraints = 0
 
     def before_method_start(self, method: Method):
+        self.number_of_constraints = method.task.problem.number_of_constraints
         if method.task.problem.number_of_float_variables > 2 and self.calc == 'interpolation':
             raise Exception(
                 "StaticDiscreteListener with calc 'interpolation' supported with dimension <= 2")
@@ -50,7 +52,7 @@ class StaticDiscreteListener(Listener):
     def on_end_iteration(self, new_points, solution: Solution):
         for newPoint in new_points:
             self.search_dataSorted.append(newPoint)
-            self.bestValueSorted.append(solution.best_trials[0].function_values[0].value)
+            self.bestValueSorted.append(solution.best_trials[0].function_values[self.number_of_constraints].value)
 
     def on_method_stop(self, search_data: SearchData,
                        solution: Solution, status: bool):
@@ -64,8 +66,8 @@ class StaticDiscreteListener(Listener):
                                   solution.problem.lower_bound_of_float_variables,
                                   solution.problem.upper_bound_of_float_variables,
                                   self.file_name, self.path_for_saves, solution.problem.calculate,
-                                  solution.best_trials[0].function_values[0].value,
-                                  search_data, self.number_of_parallel_points)
+                                  solution.best_trials[0].function_values[self.number_of_constraints].value,
+                                  search_data, self.number_of_parallel_points, self.number_of_constraints)
         if self.mode == 'analysis':
             painter.paint_analisys(mrks=2)
         elif self.mode == 'bestcombination':
@@ -105,11 +107,15 @@ class StaticPainterListener(Listener):
         self.parameterInNDProblem = indx
         self.is_points_at_bottom = is_points_at_bottom
         self.mode = mode
+        self.number_of_constraints = 0
+
+    def before_method_start(self, method: Method):
+        self.number_of_constraints = method.task.problem.number_of_constraints
 
     def on_method_stop(self, search_data: SearchData,
                        solution: Solution, status: bool):
         painter = StaticPainter(search_data, solution, self.mode, self.is_points_at_bottom,
-                                self.parameterInNDProblem, self.path_for_saves, self.file_name)
+                                self.parameterInNDProblem, self.path_for_saves, self.file_name, self.number_of_constraints)
         painter.paint_objective_func()
         painter.paint_points()
         painter.paint_optimum()
@@ -149,11 +155,14 @@ class StaticPainterNDListener(Listener):
         self.parameters = vars_indxs
         self.mode = mode
         self.calc = calc
+        self.number_of_constraints = 0
+    def before_method_start(self, method: Method):
+        self.number_of_constraints = method.task.problem.number_of_constraints
 
     def on_method_stop(self, search_data: SearchData,
                        solution: Solution, status: bool, ):
         painter = StaticPainterND(search_data, solution, self.parameters, self.mode, self.calc,
-                                  self.file_name, self.path_for_saves)
+                                  self.file_name, self.path_for_saves, self.number_of_constraints)
         painter.paint_objective_func()
         painter.paint_points()
         painter.paint_optimum()
