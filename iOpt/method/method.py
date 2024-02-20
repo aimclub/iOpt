@@ -47,8 +47,8 @@ class Method:
         self.evolvent = evolvent
         self.search_data = search_data
 
-        self.M = [1.0 for _ in range(task.problem.number_of_objectives + task.problem.number_of_constraints)]
-        self.Z = [np.infty for _ in range(task.problem.number_of_objectives + task.problem.number_of_constraints)]
+        self.M = [1.0 for _ in range(1 + task.problem.number_of_constraints)]
+        self.Z = [np.infty for _ in range(1 + task.problem.number_of_constraints)]
         self.dimension = task.problem.number_of_float_variables
         self.search_data.solution.solution_accuracy = np.infty
         self.numberOfAllFunctions = task.problem.number_of_objectives + task.problem.number_of_constraints

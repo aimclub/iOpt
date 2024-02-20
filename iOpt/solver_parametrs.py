@@ -18,7 +18,10 @@ class SolverParameters:
                  number_of_parallel_points: int = 1,
                  async_scheme: bool = False,
                  timeout: int = -1,
-                 proportion_of_global_iterations: float = 0.95
+                 proportion_of_global_iterations: float = 0.95,
+                 start_lambdas: list = [],
+                 number_of_lambdas: int = 10,
+                 is_scaling: bool = False
                  ):
         r"""
         Constructor of SolverParameters class
@@ -57,6 +60,10 @@ class SolverParameters:
         self.number_of_parallel_points = number_of_parallel_points
         self.async_scheme = async_scheme
         self.timeout = timeout
+
+        self.start_lambdas = start_lambdas # тут бы проверку, что они в сумме дают 1 и что их нужное количество
+        self.number_of_lambdas = number_of_lambdas
+        self.is_scaling = is_scaling
 
     def to_string(self) -> str:
         """
