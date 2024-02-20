@@ -28,12 +28,16 @@ if __name__ == "__main__":
     learning_rate_bound = {'low': 0.2, 'up': 0.4}
     gamma_bound = {'low': 0.2, 'up': 0.3}
     problem = XGBR_2d_Gasturbine(X, Y, learning_rate_bound, gamma_bound)
-    method_params = SolverParameters(r=np.double(2.0), iters_limit=200)
-    solver = Solver(problem, parameters=method_params)
-    apl = AnimatePainterNDListener("XGBR_2d_Gasturbine_anim.png", "output", vars_indxs=[0, 1])
-    solver.add_listener(apl)
-    spl = StaticPainterNDListener("XGBR_2d_Gasturbine_stat.png", "output", vars_indxs=[0, 1], mode="surface", calc="interpolation")
-    solver.add_listener(spl)
+    method_params = SolverParameters(r=np.double(2.0), iters_limit=1000, number_of_parallel_points=12,
+                                     evolvent_density=12)
+    solver = Solver(problem=problem, parameters=method_params)
+    spl1 = StaticPainterNDListener("gas_regr.png", "output", vars_indxs=[0, 1], mode="surface",
+                                  calc="by points")
+    solver.add_listener(spl1)
+    spl2 = StaticPainterNDListener("gas_regr2.png", "output", vars_indxs=[0, 1], mode="lines layers",
+                                  calc="by points")
+    solver.add_listener(spl2)
+
     cfol = ConsoleOutputListener(mode='full')
     solver.add_listener(cfol)
     solver_info = solver.solve()

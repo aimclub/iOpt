@@ -5,8 +5,7 @@ from iOpt.problem import Problem
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
 from typing import Dict
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import StratifiedKFold
 
 class SVC_2D_Transformators_State(Problem):
     """
@@ -43,6 +42,8 @@ class SVC_2D_Transformators_State(Problem):
         self.upper_bound_of_float_variables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
                                                    dtype=np.double)
 
+        self.cv = StratifiedKFold(shuffle=True, random_state=42)
+
 
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
@@ -54,5 +55,5 @@ class SVC_2D_Transformators_State(Problem):
         """
         cs, gammas = point.float_variables[0], point.float_variables[1]
         clf = SVC(C=10 ** cs, gamma=10 ** gammas)
-        function_value.value = -cross_val_score(clf, self.x, self.y, scoring='f1_macro').mean()
+        function_value.value = -cross_val_score(clf, self.x, self.y, cv=self.cv, scoring='f1_macro').mean()
         return function_value
