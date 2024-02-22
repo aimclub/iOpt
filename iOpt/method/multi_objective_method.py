@@ -6,6 +6,7 @@ import numpy as np
 
 from enum import Enum
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.calculator import Calculator
 from iOpt.method.mixed_integer_method import MixedIntegerMethod
 from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
 from iOpt.method.search_data import SearchDataItem, SearchData
@@ -27,8 +28,9 @@ class MultiObjectiveMethod(MixedIntegerMethod):
                  parameters: SolverParameters,
                  task: MultiObjectiveOptimizationTask,
                  evolvent: Evolvent,
-                 search_data: SearchData):
-        super().__init__(parameters, task, evolvent, search_data)
+                 search_data: SearchData,
+                 calculator: Calculator):
+        super().__init__(parameters, task, evolvent, search_data, calculator)
         self.is_recalc_all_convolution = True
         self.max_iter_for_convolution = 0
 

@@ -1,11 +1,11 @@
-from iOpt.method.index_method_calculator import IndexMethodCalculator
+from iOpt.method.index_method_evaluate import IndexMethodEvaluate
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchDataItem
 from iOpt.trial import FunctionValue, FunctionType
 from iOpt.method.optim_task import TypeOfCalculation
 
 
-class MultiObjectiveMethodCalculator(IndexMethodCalculator):
+class MultiObjectiveMethodEvaluate(IndexMethodEvaluate):
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
     """
