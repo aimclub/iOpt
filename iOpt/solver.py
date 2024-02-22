@@ -2,6 +2,8 @@ from typing import List
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.calculator import Calculator
+from iOpt.method.index_method_evaluate import IndexMethodEvaluate
 from iOpt.method.listener import Listener
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
@@ -41,10 +43,14 @@ class Solver:
         self.evolvent = Evolvent(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables,
                                  problem.number_of_float_variables)
         self.task = SolverFactory.create_task(problem, parameters)
-        self.method = SolverFactory.create_method(parameters, self.task, self.evolvent, self.search_data)
+
+        self.calculator = SolverFactory.create_calculator(self.task, self.parameters)
+
+        self.method = SolverFactory.create_method(parameters, self.task, self.evolvent,
+                                                  self.search_data, self.calculator)
         self.process = SolverFactory.create_process(parameters=parameters, task=self.task, evolvent=self.evolvent,
                                                     search_data=self.search_data, method=self.method,
-                                                    listeners=self.__listeners)
+                                                    listeners=self.__listeners, calculator=self.calculator)
 
     def solve(self) -> Solution:
         """

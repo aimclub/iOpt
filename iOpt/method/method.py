@@ -9,6 +9,8 @@ import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.calculator import Calculator
+from iOpt.method.default_calculator import DefaultCalculator
+from iOpt.method.index_method_evaluate import IndexMethodEvaluate
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
@@ -25,7 +27,8 @@ class Method:
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 search_data: SearchData
+                 search_data: SearchData,
+                 calculator: Calculator = None
                  ):
         r"""
         Конструктор класса Method
@@ -34,6 +37,7 @@ class Method:
         :param task: обёртка решаемой задачи.
         :param evolvent: развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
         :param search_data: структура данных для хранения накопленной поисковой информации.
+        :param calculator: класс содержащий методы проведения испытаний (параллельные и\или индуксную схему)
         """
         self.stop: bool = False
         self.recalcR: bool = True
@@ -51,6 +55,11 @@ class Method:
         self.dimension = task.problem.number_of_float_variables
         self.search_data.solution.solution_accuracy = np.infty
         self.numberOfAllFunctions = task.problem.number_of_objectives + task.problem.number_of_constraints
+
+        if calculator is None:
+            self.calculator = DefaultCalculator(IndexMethodEvaluate(self.task), parameters=self.parameters)
+        else:
+            self.calculator = calculator
 
     @property
     def min_delta(self):
@@ -87,7 +96,7 @@ class Method:
         """
         return pow(r_point.get_x() - l_point.get_x(), 1.0 / dimension)
 
-    def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
+    def first_iteration(self) -> list[SearchDataItem]:
         r"""
         Метод выполняет первую итерацию Алгоритма Глобального Поиска.
         """
@@ -139,12 +148,7 @@ class Method:
                                       function_values=[FunctionValue()] * self.numberOfAllFunctions)
                 items.append(item)
 
-        if calculator is None:
-            for item in items:
-                self.calculate_functionals(item)
-                self.update_optimum(item)
-        else:
-            calculator.calculate_functionals_for_items(items)
+        self.calculator.calculate_functionals_for_items(items)
 
         for item in items:
             self.update_optimum(item)
@@ -282,9 +286,7 @@ class Method:
         :return: точка, в которой сохранены результаты испытания.
         """
         try:
-            point = self.task.calculate(point, 0)
-            point.set_z(point.function_values[0].value)
-            point.set_index(0)
+            self.calculator.calculate_functionals_for_items([point])
         except Exception:
             point.set_z(sys.float_info.max)
             point.set_index(-10)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 from pathos.multiprocessing import _ProcessPool
 
+from iOpt.method.default_calculator import DefaultCalculator
 from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
@@ -13,7 +14,7 @@ import sys
 sys.setrecursionlimit(10000)
 
 
-class Calculator:
+class Calculator(DefaultCalculator):
     pool: _ProcessPool = None
     evaluate_method: ICriterionEvaluateMethod = None
 
@@ -34,24 +35,25 @@ class Calculator:
                                        initializer=Calculator.worker_init,
                                        initargs=(self.evaluate_method,))
 
-    r"""
-    Инициализация метода вычислений в каждом процессе из пула процессов Calculator.Pool
 
-    :param evaluate_method: метод вычислений, проводящий поисковые испытания по заданным правилам.
-    """
 
     @staticmethod
     def worker_init(evaluate_method: ICriterionEvaluateMethod):
+        r"""
+        Инициализация метода вычислений в каждом процессе из пула процессов Calculator.Pool
+
+        :param evaluate_method: метод вычислений, проводящий поисковые испытания по заданным правилам.
+        """
         Calculator.evaluate_method = evaluate_method
 
-    r"""
-    Метод проведения испытаний в процессе из пула процессов Calculator.Pool
-
-    :param point: точка проведения испытания
-    """
 
     @staticmethod
     def worker(point: SearchDataItem) -> SearchDataItem:
+        r"""
+        Метод проведения испытаний в процессе из пула процессов Calculator.Pool
+
+        :param point: точка проведения испытания
+        """
         try:
             Calculator.evaluate_method.calculate_functionals(point)
         except Exception:
@@ -59,18 +61,14 @@ class Calculator:
             point.set_index(-10)
         return point
 
-    r"""
-    Метод проведения испытаний для множества точек
-
-    :param points: точки проведения испытаний
-    """
 
     def calculate_functionals_for_items(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
-        # пока оставленно на случай отладки
-        # for point in points:
-        #     self.worker(point, self.method)
+        r"""
+        Метод проведения испытаний для множества точек
 
-        # Ниже реализация цикла через пулл процессов
+        :param points: точки проведения испытаний
+        """
+
         points_copy = []
         for point in points:
             sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.get_x()),

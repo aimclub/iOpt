@@ -4,7 +4,7 @@ from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.calculator import Calculator
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
-from iOpt.method.index_method_calculator import IndexMethodCalculator
+from iOpt.method.index_method_evaluate import IndexMethodEvaluate
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.process import Process
 from iOpt.method.search_data import SearchData, SearchDataItem
@@ -22,7 +22,8 @@ class ParallelProcess(Process):
                  evolvent: Evolvent,
                  search_data: SearchData,
                  method: Method,
-                 listeners: List[Listener]
+                 listeners: List[Listener],
+                 calculator: Calculator = None
                  ):
         """
         Конструктор класса ParallelProcess
@@ -34,10 +35,7 @@ class ParallelProcess(Process):
         :param method: Метод оптимизации, проводящий поисковые испытания по заданным правилам.
         :param listeners: Список "наблюдателей" (используется для вывода текущей информации).
         """
-        super(ParallelProcess, self).__init__(parameters, task, evolvent, search_data, method, listeners)
-
-        self.index_method_calculator = IndexMethodCalculator(task)
-        self.calculator = Calculator(self.index_method_calculator, parameters)
+        super(ParallelProcess, self).__init__(parameters, task, evolvent, search_data, method, listeners, calculator)
 
     def do_global_iteration(self, number: int = 1):
         """
@@ -50,7 +48,7 @@ class ParallelProcess(Process):
         if self._first_iteration is True:
             for listener in self._listeners:
                 listener.before_method_start(self.method)
-            done_trials = self.method.first_iteration(self.calculator)
+            done_trials = self.method.first_iteration()
             self._first_iteration = False
             number -= 1
 
