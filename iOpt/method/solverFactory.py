@@ -12,6 +12,7 @@ from iOpt.method.mco_process import MCOProcess
 from iOpt.method.method import Method
 from iOpt.method.mixed_integer_method import MixedIntegerMethod
 from iOpt.method.multi_objective_method import MultiObjectiveMethod
+from iOpt.method.multi_objective_method_evaluate import MultiObjectiveMethodEvaluate
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask, MinMaxConvolution
 from iOpt.problem import Problem
@@ -51,10 +52,18 @@ class SolverFactory:
         else:
             return OptimizationTask(problem)
 
+
+    @staticmethod
+    def create_evaluate_method(task: OptimizationTask):
+        if task.problem.number_of_objectives > 1:
+            return MultiObjectiveMethodEvaluate(task)
+        else:
+            return IndexMethodEvaluate(task)
+
     @staticmethod
     def create_calculator(task: OptimizationTask,
                           parameters: SolverParameters):
-        index_method_evaluate = IndexMethodEvaluate(task)
+        index_method_evaluate = SolverFactory.create_evaluate_method(task)
         if task.problem.number_of_constraints > 0:
             return Calculator(index_method_evaluate, parameters)
         else:

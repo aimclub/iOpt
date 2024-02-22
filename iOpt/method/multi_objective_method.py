@@ -34,38 +34,6 @@ class MultiObjectiveMethod(MixedIntegerMethod):
         self.is_recalc_all_convolution = True
         self.max_iter_for_convolution = 0
 
-    def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
-        r"""
-        Проведение поискового испытания в заданной точке.
-
-        :param point: точка, в которой надо провести испытание.
-
-        :return: точка, в которой сохранены результаты испытания.
-        """
-
-        # Желательно использовать одну реализацию из MultiObjectiveMethodCalculator и не дублировать код
-        try:
-            number_of_constraints = self.task.problem.number_of_constraints
-            for i in range(number_of_constraints):
-                point.function_values[i] = FunctionValue(FunctionType.CONSTRAINT, i)
-                point = self.task.calculate(point, i)
-                point.set_z(point.function_values[i].value)
-                point.set_index(i)
-                if point.get_z() > 0:
-                    return point
-
-            for i in range(self.task.problem.number_of_objectives):
-                point.function_values[number_of_constraints+i] = FunctionValue(FunctionType.OBJECTIV, i)
-                point = self.task.calculate(point, number_of_constraints+i)
-
-            point = self.task.calculate(point, -1, TypeOfCalculation.CONVOLUTION)
-            point.set_index(number_of_constraints)
-
-        except Exception:
-            point.set_z(sys.float_info.max)
-            point.set_index(-10)
-
-        return point
 
     def set_max_iter_for_convolution(self, max_iter_for_convolution) -> None:
         self.max_iter_for_convolution = max_iter_for_convolution
