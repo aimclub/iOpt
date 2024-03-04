@@ -39,20 +39,20 @@ class Calculator(DefaultCalculator):
 
     @staticmethod
     def worker_init(evaluate_method: ICriterionEvaluateMethod):
-    r"""
-    Сalculation method in each process from the process pool Calculator.Pool
+        r"""
+        Initialize the calculation method in each process from the process pool Calculator.Pool
 
-    :param point: trial point.
-    """
+        :param evaluate_method: a computational method that performs search trials according to specified rules.
+        """
         Calculator.evaluate_method = evaluate_method
 
 
     @staticmethod
     def worker(point: SearchDataItem) -> SearchDataItem:
         r"""
-        Метод проведения испытаний в процессе из пула процессов Calculator.Pool
+        Сalculation method in each process from the process pool Calculator.Pool
 
-        :param point: точка проведения испытания
+        :param point: trial point.
         """
         try:
             Calculator.evaluate_method.calculate_functionals(point)
@@ -64,9 +64,9 @@ class Calculator(DefaultCalculator):
 
     def calculate_functionals_for_items(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
         r"""
-    Сalculation method for multiple points
+        Сalculation method for multiple points
 
-    :param points: trial points.
+        :param points: trial points.
         """
 
         points_copy = []
