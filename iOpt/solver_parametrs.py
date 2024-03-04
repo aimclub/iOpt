@@ -61,7 +61,8 @@ class SolverParameters:
         self.async_scheme = async_scheme
         self.timeout = timeout
 
-        self.start_lambdas = start_lambdas # тут бы проверку, что они в сумме дают 1 и что их нужное количество
+
+        self.start_lambdas = start_lambdas # пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 1 пїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         self.number_of_lambdas = number_of_lambdas
         self.is_scaling = is_scaling
 
