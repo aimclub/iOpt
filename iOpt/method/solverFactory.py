@@ -64,7 +64,7 @@ class SolverFactory:
     def create_calculator(task: OptimizationTask,
                           parameters: SolverParameters):
         index_method_evaluate = SolverFactory.create_evaluate_method(task)
-        if task.problem.number_of_constraints > 0:
+        if parameters.number_of_parallel_points > 1:
             return Calculator(index_method_evaluate, parameters)
         else:
             return DefaultCalculator(index_method_evaluate, parameters)
