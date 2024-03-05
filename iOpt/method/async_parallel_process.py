@@ -3,7 +3,7 @@ from datetime import datetime
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.async_calculator import AsyncCalculator
-from iOpt.method.index_method_calculator import IndexMethodCalculator
+from iOpt.method.index_method_evaluate import  IndexMethodEvaluate
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
 from iOpt.method.optim_task import OptimizationTask
@@ -11,6 +11,7 @@ from iOpt.method.process import Process
 from iOpt.method.search_data import SearchData
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
+from iOpt.method.calculator import Calculator
 
 
 class AsyncParallelProcess(Process):
@@ -22,18 +23,19 @@ class AsyncParallelProcess(Process):
         search_data: SearchData,
         method: Method,
         listeners: list[Listener],
+        calculator: Calculator = None
     ):
         super(AsyncParallelProcess, self).__init__(
-            parameters, task, evolvent, search_data, method, listeners
+            parameters, task, evolvent, search_data, method, listeners, calculator
         )
-        self.calculator = AsyncCalculator(IndexMethodCalculator(task), parameters)
+        self.calculator = AsyncCalculator(IndexMethodEvaluate(task), parameters)
 
     def do_global_iteration(self, number: int = 1) -> None:
         done_trials = []
         if self._first_iteration is True:
             for listener in self._listeners:
                 listener.before_method_start(self.method)
-            done_trials = self.method.first_iteration(self.calculator)
+            done_trials = self.method.first_iteration()
             self._first_iteration = False
             number -= 1
 

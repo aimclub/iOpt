@@ -4,6 +4,7 @@ from datetime import datetime
 import traceback
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.calculator import Calculator
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
 from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
@@ -25,10 +26,11 @@ class MCOProcess(Process):
                  search_data: SearchData,
                  method: Method,
                  listeners: List[Listener],
+                 calculator: Calculator = None,
                  lambdas=[]
                  ):
 
-        super().__init__(parameters, task, evolvent, search_data, method, listeners)
+        super().__init__(parameters, task, evolvent, search_data, method, listeners, calculator)
 
         self.number_of_lambdas = parameters.number_of_lambdas
         if lambdas:

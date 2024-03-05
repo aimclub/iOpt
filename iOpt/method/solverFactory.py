@@ -2,12 +2,17 @@ from typing import List
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.async_parallel_process import AsyncParallelProcess
+
+from iOpt.method.calculator import Calculator
+from iOpt.method.default_calculator import DefaultCalculator
 from iOpt.method.index_method import IndexMethod
+from iOpt.method.index_method_evaluate import IndexMethodEvaluate
 from iOpt.method.listener import Listener
 from iOpt.method.mco_process import MCOProcess
 from iOpt.method.method import Method
 from iOpt.method.mixed_integer_method import MixedIntegerMethod
 from iOpt.method.multi_objective_method import MultiObjectiveMethod
+from iOpt.method.multi_objective_method_evaluate import MultiObjectiveMethodEvaluate
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask, MinMaxConvolution
 from iOpt.problem import Problem
@@ -47,11 +52,29 @@ class SolverFactory:
         else:
             return OptimizationTask(problem)
 
+
+    @staticmethod
+    def create_evaluate_method(task: OptimizationTask):
+        if task.problem.number_of_objectives > 1:
+            return MultiObjectiveMethodEvaluate(task)
+        else:
+            return IndexMethodEvaluate(task)
+
+    @staticmethod
+    def create_calculator(task: OptimizationTask,
+                          parameters: SolverParameters):
+        index_method_evaluate = SolverFactory.create_evaluate_method(task)
+        if parameters.number_of_parallel_points > 1:
+            return Calculator(index_method_evaluate, parameters)
+        else:
+            return DefaultCalculator(index_method_evaluate, parameters)
+
     @staticmethod
     def create_method(parameters: SolverParameters,
                       task: OptimizationTask,
                       evolvent: Evolvent,
-                      search_data: SearchData) -> Method:
+                      search_data: SearchData,
+                      calculator: Calculator) -> Method:
         """
         Create a suitable solution method class based on the given parameters
 
@@ -59,17 +82,18 @@ class SolverFactory:
         :param task: the wrapper of the problem to be solved.
         :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
         :param search_data: data structure for storing accumulated search information.
+        :param calculator: класс содержащий методы проведения испытаний (параллельные и\или индуксную схему)
 
         :return: created method
         """
         if task.problem.number_of_objectives > 1:
-            return MultiObjectiveMethod(parameters, task, evolvent, search_data)
+            return MultiObjectiveMethod(parameters, task, evolvent, search_data, calculator)
         elif task.problem.number_of_discrete_variables > 0:
-            return MixedIntegerMethod(parameters, task, evolvent, search_data)
+            return MixedIntegerMethod(parameters, task, evolvent, search_data, calculator)
         elif task.problem.number_of_constraints > 0:
-            return IndexMethod(parameters, task, evolvent, search_data)
+            return IndexMethod(parameters, task, evolvent, search_data, calculator)
         else:
-            return Method(parameters, task, evolvent, search_data)
+            return Method(parameters, task, evolvent, search_data, calculator)
 
     @staticmethod
     def create_process(parameters: SolverParameters,
@@ -77,7 +101,8 @@ class SolverFactory:
                        evolvent: Evolvent,
                        search_data: SearchData,
                        method: Method,
-                       listeners: List[Listener]) -> Process:
+                       listeners: List[Listener],
+                       calculator: Calculator) -> Process:
         """
         Create a suitable process class based on the specified parameters
 
@@ -93,14 +118,13 @@ class SolverFactory:
         if task.problem.number_of_objectives > 1:
             # А если parameters.number_of_parallel_points > 1???
             return MCOProcess(parameters=parameters, task=task, evolvent=evolvent,
-                              search_data=search_data, method=method, listeners=listeners)
+                              search_data=search_data, method=method, listeners=listeners, calculator=calculator)
         elif parameters.number_of_parallel_points == 1:
             return Process(parameters=parameters, task=task, evolvent=evolvent,
-                           search_data=search_data, method=method, listeners=listeners)
+                           search_data=search_data, method=method, listeners=listeners, calculator=calculator)
         elif parameters.async_scheme:
             return AsyncParallelProcess(parameters=parameters, task=task, evolvent=evolvent,
                                         search_data=search_data, method=method, listeners=listeners)
         else:
             return ParallelProcess(parameters=parameters, task=task, evolvent=evolvent,
-                                   search_data=search_data, method=method, listeners=listeners)
-
+                                   search_data=search_data, method=method, listeners=listeners, calculator=calculator)

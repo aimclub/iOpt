@@ -6,6 +6,7 @@ import traceback
 import json
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.calculator import Calculator
 from iOpt.method.listener import Listener
 from iOpt.method.local_optimizer import local_optimize
 from iOpt.method.method import Method
@@ -28,7 +29,8 @@ class Process:
                  evolvent: Evolvent,
                  search_data: SearchData,
                  method: Method,
-                 listeners: List[Listener]
+                 listeners: List[Listener],
+                 calculator: Calculator = None
                  ):
         """
         Constructor of the Process class
@@ -39,6 +41,7 @@ class Process:
         :param search_data: A data structure for storing accumulated search information.
         :param method: An optimization method that performs search trials according to given rules.
         :param listeners: List of "observers" (used to display current information).
+        :param calculator: class containing trial methods (parallel and/or inductive circuit)
         """
         self.parameters = parameters
         self.task = task
@@ -47,6 +50,10 @@ class Process:
         self.method = method
         self._listeners = listeners
         self._first_iteration = True
+        if calculator is None:
+            self.calculator = method.calculator
+        else:
+            self.calculator = calculator
 
     def solve(self) -> Solution:
         """
