@@ -4,7 +4,7 @@ from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.calculator import Calculator
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
-from iOpt.method.index_method_calculator import IndexMethodCalculator
+
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.process import Process
 from iOpt.method.search_data import SearchData, SearchDataItem
@@ -13,7 +13,7 @@ from iOpt.solver_parametrs import SolverParameters
 
 class ParallelProcess(Process):
     """
-    Класс ParallelProcess реализует распараллеливание на уровне потоков (процессов python).
+    The ParallelProcess class implements parallelization at the level of threads (python processes)
     """
 
     def __init__(self,
@@ -22,35 +22,33 @@ class ParallelProcess(Process):
                  evolvent: Evolvent,
                  search_data: SearchData,
                  method: Method,
-                 listeners: List[Listener]
+                 listeners: List[Listener],
+                 calculator: Calculator = None
                  ):
         """
-        Конструктор класса ParallelProcess
+        Constructor of the ParallelProcess class
 
-        :param parameters: Параметры решения задачи оптимизации.
-        :param task: Обёртка решаемой задачи.
-        :param evolvent: Развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param search_data: Структура данных для хранения накопленной поисковой информации.
-        :param method: Метод оптимизации, проводящий поисковые испытания по заданным правилам.
-        :param listeners: Список "наблюдателей" (используется для вывода текущей информации).
+        :param parameters: Parameters of the solution to the optimization problem.
+        :param task: The wrapper of the problem to be solved.
+        :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
+        :param search_data: A data structure for storing accumulated search information.
+        :param method: An optimization method that performs search trials according to given rules.
+        :param listeners: List of "observers" (used to display current information).
         """
-        super(ParallelProcess, self).__init__(parameters, task, evolvent, search_data, method, listeners)
-
-        self.index_method_calculator = IndexMethodCalculator(task)
-        self.calculator = Calculator(self.index_method_calculator, parameters)
+        super(ParallelProcess, self).__init__(parameters, task, evolvent, search_data, method, listeners, calculator)
 
     def do_global_iteration(self, number: int = 1):
         """
-        Метод позволяет выполнить несколько итераций глобального поиска
+        Perform several iterations of the global search
 
-        :param number: Количество итераций глобального поиска
+        :param number: Number of iterations of global search.
         """
         number_ = number
         done_trials = []
         if self._first_iteration is True:
             for listener in self._listeners:
                 listener.before_method_start(self.method)
-            done_trials = self.method.first_iteration(self.calculator)
+            done_trials = self.method.first_iteration()
             self._first_iteration = False
             number -= 1
 

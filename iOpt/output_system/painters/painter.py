@@ -3,7 +3,7 @@ from iOpt.method.search_data import SearchDataItem
 
 class Painter:
     """
-    Базовый класс рисовальщика.
+    Basic Drawer Class
     """
     def paint_objective_func(self):
         pass

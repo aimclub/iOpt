@@ -5,18 +5,18 @@ from iOpt.trial import Point, FunctionValue, Trial
 
 class GKLS(Problem):
     """
-    GKLS-генератор, позволяет порождать задачи многоэкстремальной оптимизации с заранее известными свойствами: 
-    количеством локальных минимумов, размерами их областей притяжения, точкой глобального минимума, 
-    значением функции в ней и т.п. 
+    GKLS-generator, allows to generate multi-extremal optimization problems with known properties in advance: 
+    The number of local minima, the sizes of their regions of attraction, the point of global minimum, 
+    the value of function in it, etc.
     """
 
     def __init__(self, dimension: int,
                  functionNumber: int = 1) -> None:
         """
-        Конструктор класса GKLS генератора. 
+        Constructor of the GKLS generator class
 
-        :param dimension: Размерность задачи, :math:`2 <= dimension <= 5`
-        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 100`
+        :param dimension: Task dimensionality, :math:`2 <= dimension <= 5`
+        :param functionNumber: set task number, :math:`1 <= functionNumber <= 100`
         """
         super(GKLS, self).__init__()
         self.dimension = dimension
@@ -65,12 +65,12 @@ class GKLS(Problem):
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения функции в заданной точке
+        Calculate the value of a function at a given point
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
+        :param point: coordinates of the trial point where the value of the function will be calculated.
+        :param function_value: object defining the function number in the task and storing the function value.
 
-        :return: Вычисленное значение функции в точке point
+        :return: Calculated value of the function at the point.
         """
         function_value.value = self.function.Calculate(point.float_variables)
         return function_value

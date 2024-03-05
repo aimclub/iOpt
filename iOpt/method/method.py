@@ -4,11 +4,14 @@ import copy
 import math
 import sys
 from typing import Tuple
+from time import time
 
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.calculator import Calculator
+from iOpt.method.default_calculator import DefaultCalculator
+from iOpt.method.index_method_evaluate import IndexMethodEvaluate
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
@@ -18,23 +21,26 @@ from iOpt.trial import Point, FunctionValue
 
 class Method:
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The Method class contains an implementation of the Global Search Algorithm
     """
 
     def __init__(self,
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 search_data: SearchData
+                 search_data: SearchData,
+                 calculator: Calculator = None
                  ):
         r"""
-        Конструктор класса Method
+        Method class constructor
 
         :param parameters: параметры решения задачи оптимизации.
         :param task: обёртка решаемой задачи.
         :param evolvent: развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
         :param search_data: структура данных для хранения накопленной поисковой информации.
+        :param calculator: class containing trial methods (parallel and/or inductive circuit)
         """
+        
         self.stop: bool = False
         self.recalcR: bool = True
         self.recalcM: bool = True
@@ -52,6 +58,11 @@ class Method:
         self.search_data.solution.solution_accuracy = np.infty
         self.numberOfAllFunctions = task.problem.number_of_objectives + task.problem.number_of_constraints
 
+        if calculator is None:
+            self.calculator = DefaultCalculator(IndexMethodEvaluate(self.task), parameters=self.parameters)
+        else:
+            self.calculator = calculator
+
     @property
     def min_delta(self):
         return self.search_data.solution.solution_accuracy
@@ -60,36 +71,22 @@ class Method:
     def min_delta(self, val):
         self.search_data.solution.solution_accuracy = val
 
-    # @staticmethod
-    # def CalculateDelta(lx: float, rx: float, dimension: int) -> float:
-    #     """
-    #     Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
-    #       полученными при редукции размерности.
-    #
-    #     :param lx: левая точка
-    #     :param rx: правая точка
-    #     :param dimension: размерность исходного пространства
-    #
-    #     :return: гельдерово расстояние между lx и rx.
-    #     """
-    #     return pow(rx - lx, 1.0 / dimension)
-
     def calculate_delta(self, l_point: SearchDataItem, r_point: SearchDataItem, dimension: int) -> float:
         """
-        Вычисляет гельдерово расстояние в метрике Гельдера между двумя точками на отрезке [0,1],
-          полученными при редукции размерности.
+        Compute the Gelder distance in the Gelder metric between two points on the segment [0,1],
+          obtained by dimensionality reduction
 
-        :param l_point: левая точка
-        :param r_point: правая точка
-        :param dimension: размерность исходного пространства
+        :param l_point: left point.
+        :param r_point: right point.
+        :param dimension: dimensionality of the original space.
 
-        :return: гельдерово расстояние между lx и rx.
+        :return: helder distance between lx and rx.
         """
         return pow(r_point.get_x() - l_point.get_x(), 1.0 / dimension)
 
-    def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
+    def first_iteration(self) -> list[SearchDataItem]:
         r"""
-        Метод выполняет первую итерацию Алгоритма Глобального Поиска.
+        Perform the first iteration of the Global Search Algorithm
         """
 
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
@@ -139,12 +136,7 @@ class Method:
                                       function_values=[FunctionValue()] * self.numberOfAllFunctions)
                 items.append(item)
 
-        if calculator is None:
-            for item in items:
-                self.calculate_functionals(item)
-                self.update_optimum(item)
-        else:
-            calculator.calculate_functionals_for_items(items)
+        self.calculator.calculate_functionals_for_items(items)
 
         for item in items:
             self.update_optimum(item)
@@ -165,7 +157,6 @@ class Method:
 
         # вставить left  и right, потом middle
         self.search_data.insert_first_data_item(left, right)
-        # self.search_data.InsertDataItem(middle, right)
 
         for item in items:
             self.search_data.insert_data_item(item, right)
@@ -180,10 +171,10 @@ class Method:
 
     def check_stop_condition(self) -> bool:
         r"""
-        Проверка условия остановки.
-        Алгоритм должен завершить работу, когда достигнута точность eps или превышен лимит итераций.
+        Check the stop condition.
+        The algorithm should terminate when eps accuracy is reached or the iteration limit is exceeded
 
-        :return: True, если выполнен критерий остановки; False - в противном случае.
+        :return: True if the stop criterion is met; False otherwise.
         """
         if self.min_delta < self.parameters.eps or self.iterations_count >= self.parameters.global_method_iteration_count:
             self.stop = True
@@ -194,7 +185,7 @@ class Method:
 
     def recalc_m(self) -> None:
         r"""
-        Пересчёт оценки константы Липшица.
+        Recalculate the estimate of the Lipschitz constant
         """
         if self.recalcM is not True:
             return
@@ -204,24 +195,23 @@ class Method:
 
     def recalc_all_characteristics(self) -> None:
         r"""
-        Пересчёт характеристик для всех поисковых интервалов.
+        Recalculate of features for all search intervals
         """
         if self.recalcR is not True:
             return
         self.search_data.clear_queue()
         for item in self.search_data:  # Должно работать...
             self.calculate_global_r(item, item.get_left())
-            # self.CalculateLocalR(item)
         self.search_data.refill_queue()
         self.recalcR = False
 
     def calculate_next_point_coordinate(self, point: SearchDataItem) -> float:
         r"""
-        Вычисление точки нового испытания :math:`x^{k+1}` в заданном интервале :math:`[x_{t-1},x_t]`.
+        Compute the point of a new trial :math:`x^{k+1}` in a given interval :math:`[x_{t-1},x_t]`
 
-        :param point: интервал, заданный его правой точкой :math:`x_t`.
+        :param point: interval given by its right point :math:`x_t`.
 
-        :return: точка нового испытания :math:`x^{k+1}` в этом интервале.
+        :return: the point of a new trial :math:`x^{k+1}` in this interval.
         """
         # https://github.com/MADZEROPIE/ags_nlp_solver/blob/cedcbcc77aa08ef1ba591fc7400c3d558f65a693/solver/src/solver.cpp#L420
         left = point.get_left()
@@ -251,10 +241,10 @@ class Method:
 
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Вычисление точки нового испытания :math:`x^{k+1}`.
+        Calculate the point of a new trial :math:`x^{k+1}`
 
-        :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
-          которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
+        :return: :math:`x^{k+1}` - new trial point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
+          to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
         if self.recalcM is True:
             self.recalc_m()
@@ -275,16 +265,14 @@ class Method:
 
     def calculate_functionals(self, point: SearchDataItem) -> SearchDataItem:
         r"""
-        Проведение поискового испытания в заданной точке.
+        Perform a search trial at a given point
 
-        :param point: точка, в которой надо провести испытание.
+        :param point: the point at which the trial is to be performed.
 
-        :return: точка, в которой сохранены результаты испытания.
+        :return: the point at which the trial results are saved.
         """
         try:
-            point = self.task.calculate(point, 0)
-            point.set_z(point.function_values[0].value)
-            point.set_index(0)
+            self.calculator.calculate_functionals_for_items([point])
         except Exception:
             point.set_z(sys.float_info.max)
             point.set_index(-10)
@@ -293,10 +281,10 @@ class Method:
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление оценки константы Гельдера между между curr_point и left_point.
+        Calculate an estimate of the Gelder constant between curr_point and left_point
 
-        :param curr_point: правая точка интервала
-        :param left_point: левая точка интервала
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         if curr_point is None:
             print("CalculateM: curr_point is None")
@@ -312,10 +300,10 @@ class Method:
 
     def calculate_global_r(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление глобальной характеристики интервала [left_point, curr_point].
+        Calculate the global characteristic of an interval [left_point, curr_point]
 
-        :param curr_point: правая точка интервала.
-        :param left_point: левая точка интервала.
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         if curr_point is None:
             print("calculate_global_r: Curr point is NONE")
@@ -344,15 +332,12 @@ class Method:
 
     def renew_search_data(self, newpoint: SearchDataItem, oldpoint: SearchDataItem) -> None:
         """
-        Метод обновляет всю поисковую информацию: длины интервалов, константы Гёльдера, все характеристики и вставляет
-          новую точку в хранилище.
+        Update all search information: interval lengths, Gölder constants, all characteristics and inserts
+a new point into the repository
 
-        :param newpoint: новая точка
-        :param oldpoint: правая точка интервала, которому принадлежит новая точка
+        :param newpoint: new point.
+        :param oldpoint: right point of the interval to which the new point belongs.
         """
-
-        # oldpoint.delta = Method.CalculateDelta(newpoint.GetX(), oldpoint.GetX(), self.dimension)
-        # newpoint.delta = Method.CalculateDelta(oldpoint.GetLeft().GetX(), newpoint.GetX(), self.dimension)
 
         oldpoint.delta = self.calculate_delta(newpoint, oldpoint, self.dimension)
         newpoint.delta = self.calculate_delta(oldpoint.get_left(), newpoint, self.dimension)
@@ -367,9 +352,9 @@ class Method:
 
     def update_optimum(self, point: SearchDataItem) -> None:
         r"""
-        Обновляет оценку оптимума.
+        Update the optimum estimate
 
-        :param point: точка нового испытания.
+        :param point: point of a new trial.
         """
         if self.best is None or self.best.get_index() < point.get_index():
             self.best = point
@@ -383,22 +368,24 @@ class Method:
 
     def finalize_iteration(self) -> None:
         r"""
-        Заканчивает итерацию, обновляет счётчик итераций.
+        End the iteration, updates the iteration counter
         """
+        self.search_data.get_last_item().creation_time = time()
+        self.search_data.get_last_item().iterationNumber = self.iterations_count #будет ли работать в параллельном случае?
         self.iterations_count += 1
 
     def get_iterations_count(self) -> int:
         r"""
-        Возвращает число выполненных итераций.
+        Return the number of iterations performed
 
-        :return:  число выполненных итераций.
+        :return:  number of iterations performed.
         """
         return self.iterations_count
 
     def get_optimum_estimation(self) -> SearchDataItem:
         r"""
-        Возвращает оценку оптимума.
+        Return an estimate of the optimum
 
-        :return: текущая оценка оптимума.
+        :return: current estimate of the optimum.
         """
         return self.best

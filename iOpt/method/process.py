@@ -3,8 +3,10 @@ from datetime import datetime
 from typing import List
 
 import traceback
+import json
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.calculator import Calculator
 from iOpt.method.listener import Listener
 from iOpt.method.local_optimizer import local_optimize
 from iOpt.method.method import Method
@@ -18,7 +20,7 @@ from iOpt.trial import Point
 
 class Process:
     """
-    Класс Process скрывает внутреннюю имплементацию класса Solver.
+    The Process class hides the internal implementation of the Solver class
     """
 
     def __init__(self,
@@ -27,17 +29,19 @@ class Process:
                  evolvent: Evolvent,
                  search_data: SearchData,
                  method: Method,
-                 listeners: List[Listener]
+                 listeners: List[Listener],
+                 calculator: Calculator = None
                  ):
         """
-        Конструктор класса Process
+        Constructor of the Process class
 
-        :param parameters: Параметры решения задачи оптимизации.
-        :param task: Обёртка решаемой задачи.
-        :param evolvent: Развертка Пеано-Гильберта, отображающая отрезок [0,1] на многомерную область D.
-        :param search_data: Структура данных для хранения накопленной поисковой информации.
-        :param method: Метод оптимизации, проводящий поисковые испытания по заданным правилам.
-        :param listeners: Список "наблюдателей" (используется для вывода текущей информации).
+        :param parameters: Parameters of the solution to the optimization problem.
+        :param task: The wrapper of the problem to be solved.
+        :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
+        :param search_data: A data structure for storing accumulated search information.
+        :param method: An optimization method that performs search trials according to given rules.
+        :param listeners: List of "observers" (used to display current information).
+        :param calculator: class containing trial methods (parallel and/or inductive circuit)
         """
         self.parameters = parameters
         self.task = task
@@ -46,13 +50,17 @@ class Process:
         self.method = method
         self._listeners = listeners
         self._first_iteration = True
+        if calculator is None:
+            self.calculator = method.calculator
+        else:
+            self.calculator = calculator
 
     def solve(self) -> Solution:
         """
-        Метод позволяет решить задачу оптимизации. Остановка поиска выполняется согласно критерию,
-        заданному при создании класса Solver.
+        Solve an optimization problem. The search is stopped according to the criterion,
+        specified when creating the Solver class
 
-        :return: Текущая оценка решения задачи оптимизации
+        :return: Current evaluation of the solution to the optimization problem.
         """
 
         start_time = datetime.now()
@@ -69,7 +77,7 @@ class Process:
             self.do_local_refinement(self.parameters.local_method_iteration_count)
 
         result = self.get_results()
-        result.solving_time = (datetime.now() - start_time).total_seconds()
+        result.solving_time += (datetime.now() - start_time).total_seconds()
 
         for listener in self._listeners:
             status = self.method.check_stop_condition()
@@ -79,9 +87,9 @@ class Process:
 
     def do_global_iteration(self, number: int = 1):
         """
-        Метод позволяет выполнить несколько итераций глобального поиска
+        Perform several iterations of the global search
 
-        :param number: Количество итераций глобального поиска
+        :param number: Number of iterations of global search.
         """
         number_ = number
         done_trials = []
@@ -105,9 +113,9 @@ class Process:
 
     def do_local_refinement(self, number: int = 1):
         """
-        Метод позволяет выполнить несколько итераций локального поиска
+        Perform several iterations of local search
 
-        :param number: Количество итераций локального поиска
+        :param number: Number of iterations of local search.
         """
         try:
             local_method_iteration_count = number
@@ -163,27 +171,41 @@ class Process:
 
     def get_results(self) -> Solution:
         """
-        Метод возвращает лучшее найденное решение задачи оптимизации
+        Return the best solution to the optimization problem
 
-        :return: Решение задачи оптимизации
+        :return: Optimization problem solution.
         """
         return self.search_data.solution
 
-    def save_progress(self, file_name: str) -> None:
+    def save_progress(self, file_name: str, mode = 'full') -> None:
         """
-        Сохранение процесса оптимизации из файла
+        Save the optimization process from a file
 
-        :param file_name: имя файла
+        :param file_name: file name.
         """
-        self.search_data.save_progress(file_name=file_name)
+        data = self.search_data.searchdata_to_json(mode=mode)
+        data['Parameters'] = []
+        data['Parameters'].append({
+                    'eps': self.parameters.eps,
+                    'r': self.parameters.r,
+                    'iters_limit': self.parameters.iters_limit,
+                    'start_point': self.parameters.start_point,
+                    'number_of_parallel_points': self.parameters.number_of_parallel_points
+        })
+        with open(file_name, 'w') as f:
+            json.dump(data, f, indent='\t', separators=(',', ':'))
+            f.write('\n')
 
-    def load_progress(self, file_name: str) -> None:
+    def load_progress(self, file_name: str, mode = 'full') -> None:
         """
-        Загрузка процесса оптимизации из файла
+        Load the optimization process from a file
 
-        :param file_name: имя файла
+        :param file_name: file name.
         """
-        self.search_data.load_progress(file_name=file_name)
+        with open(file_name) as json_file:
+            data = json.load(json_file)
+
+        self.search_data.json_to_searchdata(data=data, mode=mode)
         self.method.iterations_count = self.search_data.get_count() - 2
 
         for ditem in self.search_data:

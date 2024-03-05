@@ -8,18 +8,18 @@ import problems.Shekel.shekel_generation as shekelGen
 
 class Shekel(Problem):
     """
-    Функция Шекеля - это многомерная, мультимодальная, непрерывная, детерминированная функция, задана формулой:
+    The Scheckel function is a multivariate, multimodal, continuous, deterministic function, given by the formula:
        :math:`f(x) = \sum_{i=1}^{m}(c_{i}+(x-a_{i})^{2})^{-1}`,
-       где :math:`m` – количество максимумов функции,
-       :math:`a, c` - параметры, генерируемые случайным образом.
-       В данном генераторе задача является одномерной.
+       where :math:`m` – number of maxima of the function,
+       :math:`a, c` - randomly generated parameters.
+       In this generator, the problem is one-dimensional.
     """
 
     def __init__(self, function_number: int):
         """
-        Конструктор класса Shekel problem.
+        Constructor of the Shekel problem class
 
-        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
+        :param functionNumber: task number in the set, :math:`1 <= functionNumber <= 1000`.
         """
         super(Shekel, self).__init__()
         self.name = "Shekel"
@@ -51,11 +51,11 @@ class Shekel(Problem):
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения выбранной функции в заданной точке.
+        Calculating the value of the selected function at a given point
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
+        :param point: coordinates of the trial point where the value of the function will be calculated. 
+        :param function_value: object defining the function number in the task and storing the function value.
+        :return: Calculated value of the function at point.
         """
         res: np.double = 0
         for i in range(shekelGen.NUM_SHEKEL_COEFF):

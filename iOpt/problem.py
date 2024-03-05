@@ -6,7 +6,7 @@ from iOpt.trial import Trial
 
 
 class Problem(ABC):
-    """Базовый класс для задач оптимизации"""
+    """Base class for optimization problems"""
 
     def __init__(self):
         self.name: str = ''
@@ -28,16 +28,16 @@ class Problem(ABC):
     @abstractmethod
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Метод вычисления функции в заданной точке.
-          Для любой новой постановки задачи, которая наследуется от :class:`Problem`, этот метод следует перегрузить.
+        Calculate a function at a given point.
+          For any new problem statement that inherits from :class:`Problem`, this method should be overloaded
 
-        :return: Вычисленное значение функции."""
+        :return: Calculated value of the function."""
         pass
 
     # @abstractmethod
     def get_name(self):
         """
-        Метод позволяет получить имя задачи
+        Get the name of the problem
 
         :return: self.name."""
         return self.name

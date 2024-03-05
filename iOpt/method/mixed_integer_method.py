@@ -22,16 +22,17 @@ from iOpt.problem import Problem
 
 class MixedIntegerMethod(IndexMethod):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The Method class contains an implementation of the Global Search Algorithm
     """
 
     def __init__(self,
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 search_data: SearchData
+                 search_data: SearchData,
+                 calculator: Calculator = None
                  ):
-        super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, search_data)
+        super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, search_data, calculator)
 
         # u = {i, j, k}, i = {0, 1, 2}, j = {0, 1}, k = {0, 1, 2, 3, 4} -> 3*2*4=24
 
@@ -41,9 +42,9 @@ class MixedIntegerMethod(IndexMethod):
         self.numberOfParameterCombinations = len(self.discreteParameters)
         # 0 0.5 1  1.5 2   2.5  3    3.5 4
 
-    def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
+    def first_iteration(self) -> list[SearchDataItem]:
         r"""
-        Метод выполняет первую итерацию Алгоритма Глобального Поиска.
+        The method performs the first iteration of the Global Search Algorithm
         """
         self.iterations_count = 1
         # Генерация 3х точек 0, 0.5, 1. Значение функции будет вычисляться только в точке 0.5.
@@ -135,12 +136,7 @@ class MixedIntegerMethod(IndexMethod):
                 if not is_init_image_x:
                     is_init_image_x = True
 
-        if calculator is None:
-            for item in items:
-                self.calculate_functionals(item)
-                self.update_optimum(item)
-        else:
-            calculator.calculate_functionals_for_items(items)
+        self.calculator.calculate_functionals_for_items(items)
 
         for item in items:
             self.update_optimum(item)
@@ -189,10 +185,10 @@ class MixedIntegerMethod(IndexMethod):
 
     def calculate_iteration_point(self) -> Tuple[SearchDataItem, SearchDataItem]:  # return  (new, old)
         r"""
-        Вычисление точки нового испытания :math:`x^{k+1}`.
+        Calculate the point of a new trial :math:`x^{k+1}`
 
-        :return: :math:`x^{k+1}` - точка нового испытания, и :math:`x_t` - левая точка интервала :math:`[x_{t-1},x_t]`,
-          которому принадлежит :math:`x^{k+1}`, т.е. :math:`x^{k+1} \in [x_{t-1},x_t]`.
+        :return: :math:`x^{k+1}` - new trial point, и :math:`x_t` - left interval point :math:`[x_{t-1},x_t]`,
+          to which belongs :math:`x^{k+1}`, that is :math:`x^{k+1} \in [x_{t-1},x_t]`.
         """
 
         if self.recalcM is True:
@@ -219,10 +215,10 @@ class MixedIntegerMethod(IndexMethod):
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление оценки константы Гельдера между между curr_point и left_point.
+        Compute an estimate of the Gelder constant between curr_point and left_point
 
-        :param curr_point: правая точка интервала
-        :param left_point: левая точка интервала
+        :param curr_point: right interval point.
+        :param left_point: left interval point.
         """
         # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
         if curr_point is None:

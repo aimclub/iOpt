@@ -9,18 +9,18 @@ import math
 
 class Hill(Problem):
     """
-    Функция Хилла - это мультимодальная, непрерывная, детерминированная функция, задана формулой:
+    The Hill function is a multimodal, continuous, deterministic function, given by the formula:
        :math:`f(x)=a_{0}+\sum_{i=1}^{m}(a_{i}sin(2i\pi x)+b_{i}cos(2i\pi x))`,
-       где :math:`m` – количество максимумов функции,
-       :math:`a, b` - параметры, генерируемые случайным образом.
-       В данном генераторе задача является одномерной.
+       where :math:`m` is the number of maxima of the function,
+       :math:`a, b` - parameters generated randomly.
+       In this generator the problem is one-dimensional.
     """
 
     def __init__(self, function_number: int):
         """
-        Конструктор класса Hill problem.
+        Constructor of the Hill problem class
 
-        :param functionNumber: номер задачи в наборе, :math:`1 <= functionNumber <= 1000`
+        :param functionNumber: task number in the set, :math:`1 <= functionNumber <= 1000`
         """
         super(Hill, self).__init__()
         self.name = "Hill"
@@ -52,11 +52,11 @@ class Hill(Problem):
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
-        Вычисление значения выбранной функции в заданной точке.
+        Calculate the value of the selected function at a given point
 
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
+        :param point: coordinates of the trial point where the value of the function will be calculated.
+        :param function_value: object defining the function number in the task and storing the function value.
+        :return: Calculated value of the function at point.
         """
         res: np.double = 0
         for i in range(hillGen.NUM_HILL_COEFF):

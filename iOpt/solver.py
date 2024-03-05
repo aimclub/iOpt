@@ -1,7 +1,11 @@
+from time import time
 from typing import List
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.grid_search_method import GridSearchMethod
+from iOpt.method.calculator import Calculator
+from iOpt.method.index_method_evaluate import IndexMethodEvaluate
 from iOpt.method.listener import Listener
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.search_data import SearchData
@@ -14,9 +18,9 @@ from iOpt.solver_parametrs import SolverParameters
 
 class Solver:
     """
-    Класс Solver предназначен для выбора оптимальных (в заданной метрике) значений параметров
-    сложных объектов и процессов, например, методов искусственного интеллекта и
-    машинного обучения, а также – методов эвристической оптимизации.
+    The Solver class is designed to select optimal (in a given metric) values of parameters of complex objects and processes
+    Solver class is intended for selecting optimal (in a given metric) values of parameters of complex objects and processes, e.g., methods of artificial intelligence and
+    machine learning and heuristic optimization methods
     """
 
     def __init__(self,
@@ -24,10 +28,10 @@ class Solver:
                  parameters: SolverParameters = SolverParameters()
                  ):
         """
-        Конструктор класса Solver
+        Solver class constructor
 
-        :param problem: Постановка задачи оптимизации
-        :param parameters: Параметры поиска оптимальных решений
+        :param problem: Optimization problem formulation.
+        :param parameters: Parameters of search for optimal solutions.
         """
 
         self.problem = problem
@@ -41,17 +45,21 @@ class Solver:
         self.evolvent = Evolvent(problem.lower_bound_of_float_variables, problem.upper_bound_of_float_variables,
                                  problem.number_of_float_variables)
         self.task = SolverFactory.create_task(problem, parameters)
-        self.method = SolverFactory.create_method(parameters, self.task, self.evolvent, self.search_data)
+
+        self.calculator = SolverFactory.create_calculator(self.task, self.parameters)
+
+        self.method = SolverFactory.create_method(parameters, self.task, self.evolvent,
+                                                  self.search_data, self.calculator)
         self.process = SolverFactory.create_process(parameters=parameters, task=self.task, evolvent=self.evolvent,
                                                     search_data=self.search_data, method=self.method,
-                                                    listeners=self.__listeners)
+                                                    listeners=self.__listeners, calculator=self.calculator)
 
     def solve(self) -> Solution:
         """
-        Метод позволяет решить задачу оптимизации. Остановка поиска выполняется согласно критерию,
-        заданному при создании класса Solver.
+        Solve an optimization problem. The search is stopped according to the criterion,
+        specified when creating the Solver class
 
-        :return: решение задачи оптимизации
+        :return: optimization problem solution.
         """
         Solver.check_parameters(self.problem, self.parameters)
         if self.parameters.timeout < 0:
@@ -64,7 +72,7 @@ class Solver:
             except Exception as exc:
                 print(exc)
                 sol = self.get_results()
-                sol.solving_time = self.parameters.timeout * 60
+                sol.solving_time += self.parameters.timeout * 60
                 self.method.recalcR = True
                 self.method.recalcM = True
                 status = self.method.check_stop_condition()
@@ -74,63 +82,76 @@ class Solver:
 
     def do_global_iteration(self, number: int = 1):
         """
-        Метод позволяет выполнить несколько итераций глобального поиска
+        Perform several iterations of the global search
 
-        :param number: число итераций глобального поиска
+        :param number: number of global search iterations.
         """
         Solver.check_parameters(self.problem, self.parameters)
         self.process.do_global_iteration(number)
 
     def do_local_refinement(self, number: int = 1):
         """
-        Метод позволяет выполнить несколько итераций локального поиска
+        Perform several iterations of local search
 
-        :param number: число итераций локального поиска
+        :param number: number of local search iterations.
         """
         Solver.check_parameters(self.problem, self.parameters)
         self.process.do_local_refinement(number)
 
     def get_results(self) -> Solution:
         """
-        Метод позволяет получить текущую оценку решения задачи оптимизации
+        Provide a current estimate of the solution to the optimization problem
 
-        :return: решение задачи оптимизации
+        :return: Solving the optimization problem.
         """
         return self.process.get_results()
 
-    def save_progress(self, file_name: str) -> None:
+    def save_progress(self, file_name: str = None, mode = 'full') -> str:
         """
-        Сохранение процесса оптимизации в файл
+        Save the optimization process to a file
 
-        :param file_name: имя файла
+        :param file_name: file name.
         """
-        self.process.save_progress(file_name=file_name)
 
-    def load_progress(self, file_name: str) -> None:
+        if file_name is None:
+            file_name = "log_" + self.parameters.to_string() + "_" + str(time())
+
+        self.process.save_progress(file_name=file_name, mode=mode)
+
+        return file_name
+
+    def load_progress(self, file_name: str, mode = 'full') -> None:
         """
-        Загрузка процесса оптимизации из файла
+        Load the optimization process from a file
 
-        :param file_name: имя файла
+        :param file_name: file name.
         """
         Solver.check_parameters(self.problem, self.parameters)
-        self.process.load_progress(file_name=file_name)
+        self.process.load_progress(file_name=file_name, mode=mode)
 
         if (self.problem.number_of_discrete_variables > 0):
-            self.process.method.iterations_count = self.process.search_data.get_count() - (len(self.method.GetDiscreteParameters(self.problem)) + 1 ) #-2
-        else: self.process.method.iterations_count = self.process.search_data.get_count() - 2
+            self.process.method.iterations_count = self.process.search_data.get_count() - (
+                    len(self.method.GetDiscreteParameters(self.problem)) + 1)  # -2
+        else:
+            self.process.method.iterations_count = self.process.search_data.get_count() - 2
+
+        if mode == 'only search_data':
+            self.process.search_data.solution.number_of_global_trials = self.process.method.iterations_count
+
+
 
     def refresh_listener(self) -> None:
         """
-        Метод оповещения наблюдателей о произошедшем событии
+        Notify observers of an event that has occurred
         """
 
         pass
 
     def add_listener(self, listener: Listener) -> None:
         """
-        Добавления наблюдателя за процессом оптимизации
+        Additions of an optimization process observer
 
-        :param listener: объект класса реализующий методы наблюдения
+        :param listener: class object implementing observation methods.
         """
 
         self.__listeners.append(listener)
@@ -139,10 +160,10 @@ class Solver:
     def check_parameters(problem: Problem,
                          parameters: SolverParameters = SolverParameters()) -> None:
         """
-        Проверяет параметры решателя
+        Check the parameters of the solver
 
-        :param problem: Постановка задачи оптимизации
-        :param parameters: Параметры поиска оптимальных решений
+        :param problem: Optimization problem formulation.
+        :param parameters: Parameters of search for optimal solutions.
 
         """
 
@@ -215,3 +236,39 @@ class Solver:
         # неортицательные и корличество или 1 или совпадет с кол-вом л
 
 
+
+
+    def grid_search(self) -> Solution:
+        """
+        Search optimal value using grid search algorithm.
+
+        :return: optimization problem solution.
+        """
+
+        temp_method = self.method
+        temp_process = self.process
+
+        self.method = GridSearchMethod(self.parameters, self.task, self.evolvent, self.search_data)
+        self.process = SolverFactory.create_process(parameters=self.parameters, task=self.task, evolvent=self.evolvent,
+                                                    search_data=self.search_data, method=self.method,
+                                                    listeners=self.__listeners)
+
+        sol = self.solve()
+
+        self.method = temp_method
+        self.process = temp_process
+
+        return sol
+
+    def release_all_listener(self):
+        """
+        Force all listeners to start.
+        """
+
+        for listener in self.__listeners:
+            listener.on_end_iteration(self.search_data.get_last_items(self.search_data.get_count() - 2),
+                                      self.get_results())
+
+        status = self.method.check_stop_condition()
+        for listener in self.__listeners:
+            listener.on_method_stop(self.search_data, self.get_results(), status)

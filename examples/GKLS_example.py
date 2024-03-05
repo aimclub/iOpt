@@ -5,8 +5,7 @@ from iOpt.solver_parametrs import SolverParameters
 from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
-
-def SolveSingleGKLS():
+if __name__ == "__main__":
     """
     Минимизация тестовой функции из GKLS генератора с номером 39
     """
@@ -32,6 +31,3 @@ def SolveSingleGKLS():
     # Решение задачи
     solver.solve()
 
-
-if __name__ == "__main__":
-    SolveSingleGKLS()

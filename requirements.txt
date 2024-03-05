@@ -9,3 +9,4 @@ readthedocs-sphinx-search
 sphinxcontrib-details-directive
 autodocsumm
 pathos
+multiprocess
