@@ -66,7 +66,7 @@ class MinMaxConvolution(Convolution):
         data_item.set_z(value)
         return data_item
 
-class MultiObjectiveOptimizationTask(OptimizationTask):
+class MCOOptimizationTask(OptimizationTask):
     def __init__(self,
                  problem: Problem,
                  convolution: Convolution,

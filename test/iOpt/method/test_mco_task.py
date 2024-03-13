@@ -3,8 +3,8 @@ from problems.grishagin_mco import Grishagin_mco
 from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 import numpy as np
-from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
-from iOpt.method.multi_objective_optim_task import MinMaxConvolution
+from iOpt.method.mco_optim_task import MCOOptimizationTask
+from iOpt.method.mco_optim_task import MinMaxConvolution
 from iOpt.method.optim_task import TypeOfCalculation
 
 if __name__ == "__main__":
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     # 0,70947330123 1,88734524329tel часть решения, полученная методом
     #problem = mco_test3()
     conv = MinMaxConvolution(problem, [0.5, 0.5], False)
-    task = MultiObjectiveOptimizationTask(problem, conv)
+    task = MCOOptimizationTask(problem, conv)
 
     task.min_value = [np.double(-13.51436), np.double(-11.28447)]
 

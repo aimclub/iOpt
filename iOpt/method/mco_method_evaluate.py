@@ -1,3 +1,4 @@
+import copy
 import sys
 
 from iOpt.method.index_method_evaluate import IndexMethodEvaluate
@@ -7,7 +8,7 @@ from iOpt.trial import FunctionValue, FunctionType
 from iOpt.method.optim_task import TypeOfCalculation
 
 
-class MultiObjectiveMethodEvaluate(IndexMethodEvaluate):
+class MCOMethodEvaluate(IndexMethodEvaluate):
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
     """
@@ -39,3 +40,16 @@ class MultiObjectiveMethodEvaluate(IndexMethodEvaluate):
             point.set_index(-10)
 
         return point
+
+    def copy_functionals(self, dist_point: SearchDataItem, src_point: SearchDataItem):
+        r"""
+        Copy the search trial
+
+        :param dist_point: point to which the trial values are copied.
+        :param src_point: point with trial results.
+        """
+
+        dist_point.function_values = copy.deepcopy(src_point.function_values)
+        dist_point.set_index(src_point.get_index())
+        if dist_point.get_index() == self.task.problem.number_of_constraints:
+            dist_point = self.task.calculate(dist_point, -1, TypeOfCalculation.CONVOLUTION)

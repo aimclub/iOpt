@@ -12,7 +12,9 @@ if __name__ == "__main__":
     problem = Grishagin_mco(2, [3, 2])
 
     # Формируем параметры решателя
-    params = SolverParameters(r=2.5, eps=0.01, iters_limit=16000, number_of_lambdas=50, start_lambdas=[[0, 1]], is_scaling=False)
+    params = SolverParameters(r=2.5, eps=0.01, iters_limit=16000,
+                              number_of_lambdas=50, start_lambdas=[[0, 1]],
+                              is_scaling=False, number_of_parallel_points=2)
 
     # Создаем решатель
     solver = Solver(problem=problem, parameters=params)

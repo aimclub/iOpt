@@ -8,7 +8,7 @@ from enum import Enum
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.calculator import Calculator
 from iOpt.method.mixed_integer_method import MixedIntegerMethod
-from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
+from iOpt.method.mco_optim_task import MCOOptimizationTask
 from iOpt.method.search_data import SearchDataItem, SearchData
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.trial import FunctionValue, FunctionType, Trial
@@ -19,14 +19,14 @@ class TypeOfParetoRelation(Enum):
     NONCOMPARABLE = 0
     NONDOMINATED = -1
 
-class MultiObjectiveMethod(MixedIntegerMethod):
+class MCOMethod(MixedIntegerMethod):
     """
     Класс Method содержит реализацию Алгоритма Глобального Поиска
     """
 
     def __init__(self,
                  parameters: SolverParameters,
-                 task: MultiObjectiveOptimizationTask,
+                 task: MCOOptimizationTask,
                  evolvent: Evolvent,
                  search_data: SearchData,
                  calculator: Calculator):
@@ -71,7 +71,7 @@ class MultiObjectiveMethod(MixedIntegerMethod):
         if self.is_recalc_all_convolution is True:
             self.recalc_all_convolution()
 
-        return super(MultiObjectiveMethod, self).calculate_iteration_point()
+        return super(MCOMethod, self).calculate_iteration_point()
 
 
     def update_optimum(self, point: SearchDataItem) -> None:

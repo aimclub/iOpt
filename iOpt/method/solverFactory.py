@@ -8,13 +8,12 @@ from iOpt.method.default_calculator import DefaultCalculator
 from iOpt.method.index_method import IndexMethod
 from iOpt.method.index_method_evaluate import IndexMethodEvaluate
 from iOpt.method.listener import Listener
-from iOpt.method.mco_process import MCOProcess
+from iOpt.method.mco_method_many_lambdas import MCOMethodManyLambdas
 from iOpt.method.method import Method
 from iOpt.method.mixed_integer_method import MixedIntegerMethod
-from iOpt.method.multi_objective_method import MultiObjectiveMethod
-from iOpt.method.multi_objective_method_evaluate import MultiObjectiveMethodEvaluate
+from iOpt.method.mco_method_evaluate import MCOMethodEvaluate
 from iOpt.method.optim_task import OptimizationTask
-from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask, MinMaxConvolution
+from iOpt.method.mco_optim_task import MCOOptimizationTask, MinMaxConvolution
 from iOpt.problem import Problem
 from iOpt.method.parallel_process import ParallelProcess
 from iOpt.method.process import Process
@@ -48,7 +47,7 @@ class SolverFactory:
                 convolution = MinMaxConvolution(problem, parameters.start_lambdas[0], parameters.is_scaling)
             else:
                 convolution = MinMaxConvolution(problem, [1.0 / problem.number_of_objectives] * problem.number_of_objectives, parameters.is_scaling)
-            return MultiObjectiveOptimizationTask(problem, convolution)
+            return MCOOptimizationTask(problem, convolution)
         else:
             return OptimizationTask(problem)
 
@@ -56,7 +55,7 @@ class SolverFactory:
     @staticmethod
     def create_evaluate_method(task: OptimizationTask):
         if task.problem.number_of_objectives > 1:
-            return MultiObjectiveMethodEvaluate(task)
+            return MCOMethodEvaluate(task)
         else:
             return IndexMethodEvaluate(task)
 
@@ -87,7 +86,7 @@ class SolverFactory:
         :return: created method
         """
         if task.problem.number_of_objectives > 1:
-            return MultiObjectiveMethod(parameters, task, evolvent, search_data, calculator)
+            return MCOMethodManyLambdas(parameters, task, evolvent, search_data, calculator)
         elif task.problem.number_of_discrete_variables > 0:
             return MixedIntegerMethod(parameters, task, evolvent, search_data, calculator)
         elif task.problem.number_of_constraints > 0:
@@ -115,11 +114,7 @@ class SolverFactory:
 
         :return: created process.
         """
-        if task.problem.number_of_objectives > 1:
-            # А если parameters.number_of_parallel_points > 1???
-            return MCOProcess(parameters=parameters, task=task, evolvent=evolvent,
-                              search_data=search_data, method=method, listeners=listeners, calculator=calculator)
-        elif parameters.number_of_parallel_points == 1:
+        if parameters.number_of_parallel_points == 1:
             return Process(parameters=parameters, task=task, evolvent=evolvent,
                            search_data=search_data, method=method, listeners=listeners, calculator=calculator)
         elif parameters.async_scheme:
