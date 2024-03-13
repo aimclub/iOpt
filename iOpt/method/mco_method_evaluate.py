@@ -51,5 +51,20 @@ class MCOMethodEvaluate(IndexMethodEvaluate):
 
         dist_point.function_values = copy.deepcopy(src_point.function_values)
         dist_point.set_index(src_point.get_index())
+        self.update_min_max_value(src_point)
         if dist_point.get_index() == self.task.problem.number_of_constraints:
             dist_point = self.task.calculate(dist_point, -1, TypeOfCalculation.CONVOLUTION)
+
+    def update_min_max_value(self,
+                           data_item: SearchDataItem):
+        # If the minimum and maximum values have not yet been changed after initialization
+        if (self.task.min_value[0] == self.task.max_value[0] and self.task.min_value[0] == 0):
+            self.task.min_value = [fv.value for fv in data_item.function_values]
+            self.task.max_value = [fv.value for fv in data_item.function_values]
+        else:
+            # comparing the value of the current min max with the values of the new point
+            for i in range(0, self.task.problem.number_of_objectives):
+                if self.task.min_value[i] > data_item.function_values[i].value:
+                    self.task.min_value[i] = data_item.function_values[i].value
+                if self.task.max_value[i] < data_item.function_values[i].value:
+                    self.task.max_value[i] = data_item.function_values[i].value
