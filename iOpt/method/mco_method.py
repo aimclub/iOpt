@@ -21,7 +21,7 @@ class TypeOfParetoRelation(Enum):
 
 class MCOMethod(MixedIntegerMethod):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The MCOMethod class contains an implementation of the Global Search Algorithm for multi-criteria problems
     """
 
     def __init__(self,
@@ -43,10 +43,6 @@ class MCOMethod(MixedIntegerMethod):
         self.is_recalc_all_convolution = True
 
     def recalc_all_convolution(self) -> None:
-        # Флаг используется при
-        # 1. Запуске новой задачи (продолжение вычислений с новой сверткой)
-        # 2. Обновлении минимума и максимума одного из критериев
-        # По флагу необходимо пересчитать все свертки, затем все R и перрезаполнить очередь
         if self.is_recalc_all_convolution is not True:
             return
 
@@ -76,9 +72,9 @@ class MCOMethod(MixedIntegerMethod):
 
     def update_optimum(self, point: SearchDataItem) -> None:
         r"""
-        Обновляет оценку оптимума.
+        Updates the estimate of the optimum.
 
-        :param point: точка нового испытания.
+        :param point: new trial point.
         """
         if self.best is None or self.best.get_index() < point.get_index() or (
                     self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
@@ -167,10 +163,10 @@ class MCOMethod(MixedIntegerMethod):
 
     def check_stop_condition(self) -> bool:
         r"""
-        Проверка условия остановки.
-        Алгоритм должен завершить работу, когда достигнута точность eps или превышен лимит итераций.
+        Checking the stopping condition.
+        The algorithm must terminate when the eps accuracy is reached or the iteration limit is exceeded.
 
-        :return: True, если выполнен критерий остановки; False - в противном случае.
+        :return: True if the stopping criterion is met; False - otherwise.
         """
         if self.min_delta < self.parameters.eps or self.iterations_count >= self.max_iter_for_convolution:
             self.stop = True
@@ -181,12 +177,11 @@ class MCOMethod(MixedIntegerMethod):
 
     def calculate_m(self, curr_point: SearchDataItem, left_point: SearchDataItem) -> None:
         r"""
-        Вычисление оценки константы Гельдера между между curr_point и left_point.
+        Compute the estimate of the Holder constant between curr_point and left_point.
 
-        :param curr_point: правая точка интервала
-        :param left_point: левая точка интервала
+        :param curr_point: right point of the interval
+        :param left_point: left point of the interval
         """
-        # Обратить внимание на вычисление расстояния, должен использоваться метод CalculateDelta
         if curr_point is None:
             print("CalculateM: curr_point is None")
             raise RuntimeError("CalculateM: curr_point is None")
@@ -196,10 +191,9 @@ class MCOMethod(MixedIntegerMethod):
         if index < 0:
             return
         m = 0.0
-        if left_point.get_index() == index:  # А если не равны, то надо искать ближайший левый/правый с таким индексом
+        if left_point.get_index() == index:
             m = abs(left_point.get_z() - curr_point.get_z()) / curr_point.delta
         else:
-            # Ищем слева
             other_point = left_point
             while (other_point is not None) and (other_point.get_index() < curr_point.get_index()):
                 if other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
@@ -212,9 +206,8 @@ class MCOMethod(MixedIntegerMethod):
                 m = abs(other_point.function_values[index].value - curr_point.get_z()) / \
                     self.calculate_delta(other_point, curr_point, self.dimension)
 
-            # Ищем справа
             other_point = left_point.get_right()
-            if other_point is not None and other_point is curr_point:  # возможно только при пересчёте M
+            if other_point is not None and other_point is curr_point:
                 other_point = other_point.get_right()
             while (other_point is not None) and (other_point.get_index() < curr_point.get_index()):
                 if other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
@@ -225,8 +218,6 @@ class MCOMethod(MixedIntegerMethod):
 
             if other_point is not None and other_point.get_index() >= 0 \
                     and other_point.get_discrete_value_index() == curr_point.get_discrete_value_index():
-                #нужна проверка на индекс, если ограничение - то формула другая
-                # TODO: изменить формулу для задач с ограничениями
                 m = max(m, abs(curr_point.get_z() - other_point.get_z()) / \
                         self.calculate_delta(curr_point, other_point, self.dimension))
 

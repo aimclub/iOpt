@@ -8,7 +8,8 @@ from iOpt.solver_parametrs import SolverParameters
 
 class MCOMethodManyLambdas(MCOMethod):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The MCOMethodManyLambdas class contains an implementation of
+    the Global Search Algorithm in the case of multiple convolutions
     """
 
     def __init__(self,
@@ -29,7 +30,7 @@ class MCOMethodManyLambdas(MCOMethod):
             self.start_lambdas = []
 
         self.current_num_lambda = 0
-        self.lambdas_list = []  # список всех рассматриваемых
+        self.lambdas_list = []
         self.iterations_list = []
 
         self.convolution = task.convolution
@@ -49,13 +50,13 @@ class MCOMethodManyLambdas(MCOMethod):
             self.current_lambdas = self.lambdas_list[self.current_num_lambda]
             self.task.convolution.lambda_param = self.current_lambdas
 
-            self.iterations_list.append(self.iterations_count) # здесь будет накапливаться сумма итераций
+            self.iterations_list.append(self.iterations_count)
             max_iter_for_convolution = int((self.parameters.global_method_iteration_count /
                                             self.number_of_lambdas) * (self.current_num_lambda + 1))
             self.set_max_iter_for_convolution(max_iter_for_convolution)
 
     def init_lambdas(self) -> None:
-        if self.task.problem.number_of_objectives == 2:  # двумерный случай
+        if self.task.problem.number_of_objectives == 2:
             if self.number_of_lambdas > 1:
                 h = 1.0/(self.number_of_lambdas-1)
             else:

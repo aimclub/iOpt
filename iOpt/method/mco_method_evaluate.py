@@ -10,7 +10,8 @@ from iOpt.method.optim_task import TypeOfCalculation
 
 class MCOMethodEvaluate(IndexMethodEvaluate):
     """
-    Класс Method содержит реализацию Алгоритма Глобального Поиска
+    The MCOMethodEvaluate class contains an implementation of the method for evaluate
+    the criterion value of the Global Search Algorithm
     """
 
     def __init__(self, task: OptimizationTask):
