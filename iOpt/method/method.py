@@ -4,6 +4,7 @@ import copy
 import math
 import sys
 from typing import Tuple
+from time import time
 
 import numpy as np
 
@@ -366,6 +367,8 @@ a new point into the repository
         r"""
         End the iteration, updates the iteration counter
         """
+        self.search_data.get_last_item().creation_time = time()
+        self.search_data.get_last_item().iterationNumber = self.iterations_count #будет ли работать в параллельном случае?
         self.iterations_count += 1
 
     def get_iterations_count(self) -> int:

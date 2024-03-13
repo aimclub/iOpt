@@ -30,7 +30,7 @@ class IndexMethodCalculator(ICriterionEvaluateMethod):
             point = self.task.calculate(point, i)
             point.set_z(point.function_values[i].value)
             point.set_index(i)
-            if point.get_z() < 0:
+            if point.get_z() > 0:
                 return point
         point.function_values[number_of_constraints] = FunctionValue(FunctionType.OBJECTIV, 0)
         point = self.task.calculate(point, number_of_constraints)
