@@ -28,7 +28,8 @@ class AsyncParallelProcess(Process):
         super(AsyncParallelProcess, self).__init__(
             parameters, task, evolvent, search_data, method, listeners, calculator
         )
-        self.calculator = AsyncCalculator(IndexMethodEvaluate(task), parameters)
+        from iOpt.method.solverFactory import SolverFactory
+        self.calculator = AsyncCalculator(SolverFactory.create_evaluate_method(task), parameters)
 
     def do_global_iteration(self, number: int = 1) -> None:
         done_trials = []

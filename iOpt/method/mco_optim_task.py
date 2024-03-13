@@ -11,9 +11,9 @@ from iOpt.problem import Problem
 
 class Convolution(ABC):
     """
-    Класс Convolution является базовым классом для различных сверток.
-    Предполагается, что для каждого набора lambda будет порождён отдельный объект свертки.
-    Также возможен вариант, что свертка изменяется по ссылке передаваемой через конструктор класса.
+    The Convolution class is the base class for various convolutions.
+    It is expected that a separate convolution object will be spawned for each set of lambdas.
+    It is also possible that the convolution is changed by a reference passed through the class constructor.
     """
 
     def __init__(self,
@@ -22,7 +22,7 @@ class Convolution(ABC):
                  ):
         self.problem = problem
         self.lambda_param = lambda_param
-    # Свертка меняет z у SearchDataItem. Z используется в методе для вычисления характеристик
+
     @abstractmethod
     def calculate_convolution(self,
                               data_item: SearchDataItem,
@@ -34,6 +34,7 @@ class Convolution(ABC):
 
 class MinMaxConvolution(Convolution):
     """
+    minimax convolution
     """
 
     def __init__(self,
@@ -45,7 +46,6 @@ class MinMaxConvolution(Convolution):
         super().__init__(problem, lambda_param)
 
 
-    # Свертка меняет z у SearchDataItem. Z используется в методе для вычисления характеристик
     def calculate_convolution(self,
                               data_item: SearchDataItem,
                               min_value: np.ndarray(shape=(1), dtype=np.double) = [],
@@ -66,7 +66,7 @@ class MinMaxConvolution(Convolution):
         data_item.set_z(value)
         return data_item
 
-class MultiObjectiveOptimizationTask(OptimizationTask):
+class MCOOptimizationTask(OptimizationTask):
     def __init__(self,
                  problem: Problem,
                  convolution: Convolution,

@@ -3,22 +3,15 @@ from problems.grishagin_mco import Grishagin_mco
 from iOpt.trial import Point
 from iOpt.trial import FunctionValue
 import numpy as np
-from iOpt.method.multi_objective_optim_task import MultiObjectiveOptimizationTask
-from iOpt.method.multi_objective_optim_task import MinMaxConvolution
+from iOpt.method.mco_optim_task import MCOOptimizationTask
+from iOpt.method.mco_optim_task import MinMaxConvolution
 from iOpt.method.optim_task import TypeOfCalculation
 
 if __name__ == "__main__":
-    """
-    Минимизация тестовой функции Хилла c визуализацией
-    """
 
-    # создание объекта задачи
     problem = Grishagin_mco(2, [1, 2])
-    # 1,30373711618 1,32060194666 часть решения, полученная прохоом по сетке
-    # 0,70947330123 1,88734524329tel часть решения, полученная методом
-    #problem = mco_test3()
     conv = MinMaxConvolution(problem, [0.5, 0.5], False)
-    task = MultiObjectiveOptimizationTask(problem, conv)
+    task = MCOOptimizationTask(problem, conv)
 
     task.min_value = [np.double(-13.51436), np.double(-11.28447)]
 
@@ -26,7 +19,6 @@ if __name__ == "__main__":
     min_point = Point([], [])
     min_fun = np.ndarray(shape=(2,), dtype=FunctionValue)
 
-    # проход по сетке 100Х100 и поиск точки с минимальным значением z
     for i in range(0, 100):
         for j in range(0, 100):
             pointfv = [np.double(i/100), np.double(j/100)]
@@ -44,7 +36,6 @@ if __name__ == "__main__":
                 min_z = sditem.get_z()
                 min_point = sditem.point
                 min_fun = funV
-            #funV = self.calculate(KOpoint, KOfunV[0])
 
     print(min_z, min_point.float_variables, [fv.value for fv in min_fun])
     # 1.3206019466549357 [0.63, 0.37] [-10.906885767640356, -8.64326610669013]
@@ -53,7 +44,7 @@ if __name__ == "__main__":
     # 0.11702826509839945 [0.63, 0.37] [-10.906885767640356, -8.64326610669013]
 
     ""
-    # Область парето после 5000 итераций
+    # Pareto set after 5000 iterations
     # [-10.20071994533217, -9.048618851776029][0.62353516 0.36083984]
     # [-8.301130179104787, -10.40551296979958][0.65185547 0.35107422]
     # [-13.144906394676253, -6.072324595007004][0.61181641 0.39404297]

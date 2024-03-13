@@ -4,8 +4,6 @@ from unittest.mock import Mock
 
 import numpy as np
 
-from iOpt.evolvent.evolvent import Evolvent
-
 from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solver import SolverParameters
 from iOpt.method.method import Method
@@ -18,7 +16,7 @@ class TestMethod(unittest.TestCase):
         return x
 
     @mock.patch('iOpt.evolvent.evolvent')
-    @mock.patch('iOpt.method.multi_objective_optim_task.OptimizationTask')
+    @mock.patch('iOpt.method.mco_optim_task.OptimizationTask')
     @mock.patch('iOpt.method.search_data.SearchData')
     def setUp(self, mock_evolvent, mock_task, mock_searchData):
         mock_evolvent.get_image.return_value = Mock(side_effect=self.GetImage)

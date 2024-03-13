@@ -50,6 +50,7 @@ class AsyncCalculator:
         self, block: bool
     ) -> tuple[SearchDataItem, SearchDataItem]:
         newpoint = self.done_queue.get(block=block)
+        self.evaluate_method.copy_functionals(newpoint, newpoint)
         oldpoint = self.waiting_oldpoints.pop(newpoint.get_x())
         oldpoint.blocked = False
         return newpoint, oldpoint
