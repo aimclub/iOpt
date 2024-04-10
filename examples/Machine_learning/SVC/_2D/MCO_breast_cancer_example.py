@@ -1,4 +1,4 @@
-from problems.mco_breast_cancer import mco_breast_cancer
+from Problems.mco_breast_cancer import mco_breast_cancer
 
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
