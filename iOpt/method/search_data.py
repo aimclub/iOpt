@@ -361,6 +361,7 @@ class SearchData:
         """
         Save the optimization process to a file
 
+        :param mode: 'full' - save all optimization information
         :param file_name: file name.
         """
         data = {}

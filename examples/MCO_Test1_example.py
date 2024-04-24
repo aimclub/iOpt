@@ -29,17 +29,17 @@ if __name__ == "__main__":
 
     # вывод множества Парето (координаты - значения функций)
     var = [trial.point.float_variables for trial in sol.best_trials]
-    val = [[trial.function_values[i].value for i in range(2)]for trial in sol.best_trials ]
+    val = [[trial.function_values[i].value for i in range(2)] for trial in sol.best_trials]
     print("size pareto set: ", len(var))
     for fvar, fval in zip(var, val):
         print(fvar, fval)
 
     # Точки для постороения графика множества Парето x[0]-x[1]
-    #x1 = [trial.point.float_variables[0] for trial in sol.best_trials]
-    #x2 = [trial.point.float_variables[1] for trial in sol.best_trials]
+    # x1 = [trial.point.float_variables[0] for trial in sol.best_trials]
+    # x2 = [trial.point.float_variables[1] for trial in sol.best_trials]
 
-    #plt.plot(x1, x2, 'ro')
-    #plt.show()
+    # plt.plot(x1, x2, 'ro')
+    # plt.show()
 
     # Точки для постороения графика множества Парето y[0]-y[1]
     fv1 = [trial.function_values[0].value for trial in sol.best_trials]
@@ -47,5 +47,3 @@ if __name__ == "__main__":
 
     plt.plot(fv1, fv2, 'ro')
     plt.show()
-
-

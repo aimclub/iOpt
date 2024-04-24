@@ -1,7 +1,5 @@
 from typing import Tuple
 
-import sys
-
 import numpy as np
 
 from enum import Enum
@@ -14,10 +12,12 @@ from iOpt.solver_parametrs import SolverParameters
 from iOpt.trial import FunctionValue, FunctionType, Trial
 from iOpt.method.optim_task import TypeOfCalculation
 
+
 class TypeOfParetoRelation(Enum):
     DOMINANT = 1
     NONCOMPARABLE = 0
     NONDOMINATED = -1
+
 
 class MCOMethod(MixedIntegerMethod):
     """
@@ -33,7 +33,6 @@ class MCOMethod(MixedIntegerMethod):
         super().__init__(parameters, task, evolvent, search_data, calculator)
         self.is_recalc_all_convolution = True
         self.max_iter_for_convolution = 0
-
 
     def set_max_iter_for_convolution(self, max_iter_for_convolution) -> None:
         self.max_iter_for_convolution = max_iter_for_convolution
@@ -52,7 +51,7 @@ class MCOMethod(MixedIntegerMethod):
         if self.best:
             self.task.calculate(self.best, -1, TypeOfCalculation.CONVOLUTION)
         for item in self.search_data:
-            if(item.get_z()<self.best.get_z() and item.get_z()>0 and item.get_index()>=self.best.get_index()):
+            if self.best.get_z() > item.get_z() > 0 and item.get_index() >= self.best.get_index():
                 self.best = item
 
         self.is_recalc_all_convolution = False
@@ -69,7 +68,6 @@ class MCOMethod(MixedIntegerMethod):
 
         return super(MCOMethod, self).calculate_iteration_point()
 
-
     def update_optimum(self, point: SearchDataItem) -> None:
         r"""
         Updates the estimate of the optimum.
@@ -77,21 +75,20 @@ class MCOMethod(MixedIntegerMethod):
         :param point: new trial point.
         """
         if self.best is None or self.best.get_index() < point.get_index() or (
-                    self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
+                self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
             self.best = point
             self.recalcR = True
             self.Z[point.get_index()] = point.get_z()
 
-        if not (self.search_data.solution.best_trials[0].point):
+        if not self.search_data.solution.best_trials[0].point:
             self.search_data.solution.best_trials[0] = self.best
 
-
-        if (point.get_index() == self.task.problem.number_of_constraints):
+        if point.get_index() == self.task.problem.number_of_constraints:
             self.update_min_max_value(point)
             self.pareto_set_update(point)
 
     def pareto_set_update(self, point: SearchDataItem) -> None:
-        if (self.search_data.get_count() == 0):
+        if self.search_data.get_count() == 0:
             return
 
         pareto_set: np.ndarray(shape=(1), dtype=Trial) = []
@@ -101,12 +98,12 @@ class MCOMethod(MixedIntegerMethod):
         for trial in self.search_data.solution.best_trials:
             old_point = trial.function_values
             relation = self.type_of_pareto_relation(new_point, old_point)
-            if (relation == TypeOfParetoRelation.NONCOMPARABLE):
+            if relation == TypeOfParetoRelation.NONCOMPARABLE:
                 add_point = True
                 pareto_set = np.append(pareto_set, trial)
-            elif (relation == TypeOfParetoRelation.DOMINANT):
+            elif relation == TypeOfParetoRelation.DOMINANT:
                 add_point = True
-            elif (relation == TypeOfParetoRelation.NONDOMINATED):
+            elif relation == TypeOfParetoRelation.NONDOMINATED:
                 add_point = False
                 break
         if add_point:
@@ -114,16 +111,15 @@ class MCOMethod(MixedIntegerMethod):
             self.search_data.solution.best_trials = pareto_set
         # if we don't add a point, then the pareto set doesn't change.
 
-
     def type_of_pareto_relation(self, p1: np.ndarray(shape=(1), dtype=FunctionValue),
                                 p2: np.ndarray(shape=(1), dtype=FunctionValue)) -> TypeOfParetoRelation:
         count_dom = 0
         count_equal = 0
         number_of_objectives = self.task.problem.number_of_objectives
         for i in range(number_of_objectives):
-            if (p1[i].value<p2[i].value):
+            if p1[i].value < p2[i].value:
                 count_dom += 1
-            elif (p1[i].value == p2[i].value):
+            elif p1[i].value == p2[i].value:
                 count_equal += 1
         if count_dom == 0:
             return TypeOfParetoRelation.NONDOMINATED
@@ -131,12 +127,13 @@ class MCOMethod(MixedIntegerMethod):
             return TypeOfParetoRelation.DOMINANT
         else:
             return TypeOfParetoRelation.NONCOMPARABLE
+
     def update_min_max_value(self,
-                           data_item: SearchDataItem):
+                             data_item: SearchDataItem):
         # If the minimum and maximum values have not yet been changed after initialization
-        if (self.task.min_value[0]==self.task.max_value[0] and self.task.min_value[0]==0):
+        if self.task.min_value[0] == self.task.max_value[0] and self.task.min_value[0] == 0:
             # if the search information has been uploaded
-            if (self.search_data.get_count()>0):
+            if self.search_data.get_count() > 0:
                 self.task.min_value = [fv.value for fv in self.search_data.get_last_item().function_values]
                 self.task.max_value = [fv.value for fv in self.search_data.get_last_item().function_values]
                 for trial in self.search_data:
@@ -224,9 +221,3 @@ class MCOMethod(MixedIntegerMethod):
         if m > self.M[index] or (self.M[index] == 1.0 and m > 1e-12):
             self.M[index] = m
             self.recalcR = True
-
-
-
-
-
-

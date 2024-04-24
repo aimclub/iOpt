@@ -62,7 +62,7 @@ class SolverParameters:
         self.timeout = timeout
 
 
-        self.start_lambdas = start_lambdas # ��� �� ��������, ��� ��� � ����� ���� 1 � ��� �� ������ ����������
+        self.start_lambdas = start_lambdas
         self.number_of_lambdas = number_of_lambdas
         self.is_scaling = is_scaling
 

@@ -251,7 +251,7 @@ class Solver:
         self.method = GridSearchMethod(self.parameters, self.task, self.evolvent, self.search_data)
         self.process = SolverFactory.create_process(parameters=self.parameters, task=self.task, evolvent=self.evolvent,
                                                     search_data=self.search_data, method=self.method,
-                                                    listeners=self.__listeners)
+                                                    listeners=self.__listeners, calculator=self.calculator)
 
         sol = self.solve()
 

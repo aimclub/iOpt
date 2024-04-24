@@ -45,7 +45,6 @@ class MinMaxConvolution(Convolution):
         self.is_scaling = is_scaling
         super().__init__(problem, lambda_param)
 
-
     def calculate_convolution(self,
                               data_item: SearchDataItem,
                               min_value: np.ndarray(shape=(1), dtype=np.double) = [],
@@ -65,6 +64,7 @@ class MinMaxConvolution(Convolution):
 
         data_item.set_z(value)
         return data_item
+
 
 class MCOOptimizationTask(OptimizationTask):
     def __init__(self,

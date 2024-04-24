@@ -3,7 +3,6 @@ from datetime import datetime
 
 from iOpt.evolvent.evolvent import Evolvent
 from iOpt.method.async_calculator import AsyncCalculator
-from iOpt.method.index_method_evaluate import  IndexMethodEvaluate
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
 from iOpt.method.optim_task import OptimizationTask

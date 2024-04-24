@@ -1,5 +1,4 @@
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
-from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 from problems.GKLS import GKLS

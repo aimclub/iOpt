@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import sys
 
 import numpy as np
 
@@ -12,7 +11,6 @@ from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.method import Method
-from iOpt.trial import FunctionValue, FunctionType
 
 
 class IndexMethod(Method):

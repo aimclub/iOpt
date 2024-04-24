@@ -1,7 +1,6 @@
 import numpy as np
 from iOpt.trial import Point
 from iOpt.trial import FunctionValue
-from iOpt.trial import Trial
 from iOpt.problem import Problem
 from sko.GA import GA_TSP
 from typing import Dict

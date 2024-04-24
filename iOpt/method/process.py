@@ -1,4 +1,3 @@
-import sys
 from datetime import datetime
 from typing import List
 
@@ -15,7 +14,6 @@ from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.trial import FunctionValue, FunctionType
-from iOpt.trial import Point
 
 
 class Process:
@@ -177,26 +175,27 @@ class Process:
         """
         return self.search_data.solution
 
-    def save_progress(self, file_name: str, mode = 'full') -> None:
+    def save_progress(self, file_name: str, mode='full') -> None:
         """
         Save the optimization process from a file
 
+        :param mode: 'full' - save all optimization information
         :param file_name: file name.
         """
         data = self.search_data.searchdata_to_json(mode=mode)
         data['Parameters'] = []
         data['Parameters'].append({
-                    'eps': self.parameters.eps,
-                    'r': self.parameters.r,
-                    'iters_limit': self.parameters.iters_limit,
-                    'start_point': self.parameters.start_point,
-                    'number_of_parallel_points': self.parameters.number_of_parallel_points
+            'eps': self.parameters.eps,
+            'r': self.parameters.r,
+            'iters_limit': self.parameters.iters_limit,
+            'start_point': self.parameters.start_point,
+            'number_of_parallel_points': self.parameters.number_of_parallel_points
         })
         with open(file_name, 'w') as f:
             json.dump(data, f, indent='\t', separators=(',', ':'))
             f.write('\n')
 
-    def load_progress(self, file_name: str, mode = 'full') -> None:
+    def load_progress(self, file_name: str, mode='full') -> None:
         """
         Load the optimization process from a file
 

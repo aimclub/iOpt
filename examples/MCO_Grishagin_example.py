@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     # output of the Pareto set (coordinates - function values)
     var = [trial.point.float_variables for trial in sol.best_trials]
-    val = [[trial.function_values[i].value for i in range(2)]for trial in sol.best_trials ]
+    val = [[trial.function_values[i].value for i in range(2)] for trial in sol.best_trials]
     print("size pareto set: ", len(var))
     for fvar, fval in zip(var, val):
         print(fvar, fval)

@@ -40,7 +40,7 @@ class Method:
         :param search_data: data structure for storing accumulated search information.
         :param calculator: class containing trial methods (parallel and/or inductive circuit)
         """
-        
+
         self.stop: bool = False
         self.recalcR: bool = True
         self.recalcM: bool = True
@@ -371,7 +371,7 @@ a new point into the repository
         End the iteration, updates the iteration counter
         """
         self.search_data.get_last_item().creation_time = time()
-        self.search_data.get_last_item().iterationNumber = self.iterations_count #будет ли работать в параллельном случае?
+        self.search_data.get_last_item().iterationNumber = self.iterations_count  # будет ли работать в параллельном случае?
         self.iterations_count += 1
 
     def get_iterations_count(self) -> int:

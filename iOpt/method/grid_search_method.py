@@ -1,9 +1,5 @@
 from __future__ import annotations
 
-import copy
-import math
-import sys
-from typing import Tuple
 import numpy as np
 
 from iOpt.evolvent.evolvent import Evolvent
@@ -12,10 +8,6 @@ from iOpt.method.search_data import SearchData
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.method.method import Method
-from iOpt.trial import FunctionValue, FunctionType
-from iOpt.method.calculator import Calculator
-
-from iOpt.trial import Point, FunctionValue
 
 
 class GridSearchMethod(Method):

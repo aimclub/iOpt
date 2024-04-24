@@ -20,6 +20,7 @@ class MCOMethodManyLambdas(MCOMethod):
                  calculator: Calculator
                  ):
         super().__init__(parameters, task, evolvent, search_data, calculator)
+        self.current_lambdas = None
         self.is_recalc_all_convolution = True
         self.max_iter_for_convolution = 0
         self.number_of_lambdas = parameters.number_of_lambdas
@@ -58,7 +59,7 @@ class MCOMethodManyLambdas(MCOMethod):
     def init_lambdas(self) -> None:
         if self.task.problem.number_of_objectives == 2:
             if self.number_of_lambdas > 1:
-                h = 1.0/(self.number_of_lambdas-1)
+                h = 1.0 / (self.number_of_lambdas - 1)
             else:
                 h = 1
             if not self.start_lambdas:
@@ -75,13 +76,13 @@ class MCOMethodManyLambdas(MCOMethod):
             elif len(self.start_lambdas) == 1:
                 self.lambdas_list.append(self.start_lambdas[0])
                 for i in range(1, self.number_of_lambdas):
-                    lambda_0 = self.start_lambdas[0][0] + i*h
+                    lambda_0 = self.start_lambdas[0][0] + i * h
                     if lambda_0 > 1:
                         lambda_0 = lambda_0 - 1
                     lambda_1 = 1 - lambda_0
                     lambdas = [lambda_0, lambda_1]
                     self.lambdas_list.append(lambdas)
-        else: # многомерный случай
+        else:  # многомерный случай
             if len(self.start_lambdas) == self.number_of_lambdas:
                 for i in range(self.number_of_lambdas):
                     self.lambdas_list.append(self.start_lambdas[i])
