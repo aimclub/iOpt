@@ -2,16 +2,16 @@ import dash
 from dash import html
 from dash import dcc
 from dash import dash_table
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
-import plotly.figure_factory as ff
 import pandas as pd
 import numpy as np
 import json
 from scipy.interpolate import griddata
 from sklearn.neural_network import MLPRegressor
+import dash_daq as daq
 
 import base64
 
@@ -32,12 +32,14 @@ CONTENT_STYLE = {
     "font-size": "1.1em"
 }
 
-def generate_table(dataframe):
-    return html.Div([dash_table.DataTable(dataframe.to_dict('records'), [{"name": i, "id": i} for i in dataframe.columns],
+def create_dash_table_from_dataframe(dataframe):
+    return html.Div([dash_table.DataTable(
+        dataframe.to_dict('records'), [{"name": i, "id": i} for i in dataframe.columns],
         filter_action="native", id='datatable-interactivity', sort_action="native",
         row_selectable="multi", selected_rows=[],
         sort_mode="multi", page_size=12)],
-        style={'maxWidth': '95%', 'maxHeight': '700px', "overflow": "scroll"})
+        style={'maxWidth': '95%', 'maxHeight': '700px', "overflow": "scroll"}
+    )
 
 class StaticDashboard():
     def __init__(self, data_path, mode='Release'):
@@ -47,8 +49,8 @@ class StaticDashboard():
         self.data_path = data_path
         with open(self.data_path) as json_data:
             self.data = json.load(json_data)
-
         self.init = False
+
         self.task_name = None
         self.dfSDI = None
         self.best_value = None
@@ -88,39 +90,41 @@ class StaticDashboard():
         )(self.render_page_content)
 
         self.app.callback(
-            Output('crossfilter-indicator-scatter-2', 'figure'),
+            Output('discrete_scatter_figure', 'figure'),
             Input('crossfilter-xaxis-column-2', 'value')
-        )(self.update_graph_1)
+        )(self.update_discrete_scatter_figure)
 
         self.app.callback(
-            Output('crossfilter-indicator-scatter', 'figure'),
+            Output('continuous_scatter_figure', 'figure'),
             Input('crossfilter-xaxis-column', 'value')
-        )(self.update_graph_2)
+        )(self.update_continuous_scatter_figure)
 
         self.app.callback(
-            Output('crossfilter-indicator-scatter-1', 'figure'),
+            Output('surface_or_lines_level_figure', 'figure'),
             Input('crossfilter-xaxis-column-1', 'value'),
             Input('crossfilter-yaxis-column-1', 'value'),
             Input('crossfilter-type-1', 'value'),
             Input('crossfilter-type-2', 'value'),
-        )(self.update_graph_3)
+            Input('my-boolean-switch', 'on'),
+        )(self.update_surface_or_lines_level_figure)
 
         self.app.callback(
-            Output('crossfilter-indicator-scatter-3', 'figure'),
+            Output('multidimensional_figure', 'figure'),
             Input('crossfilter-xaxis-column-3', 'value')
-        )(self.update_graph_4)
+        )(self.update_multidimensional_figure)
 
         self.app.callback(
-            Output('output-data-upload', 'children'),
+            Output('data_from_json_file', 'children'),
             Input('upload-data', 'contents')
-        )(self.update_output)
+        )(self.read_data_from_json)
 
         self.app.callback(
-            Output('datatable-interactivity-container', "children"),
+            Output('archive_figure', "children"),
             Input('datatable-interactivity', "derived_virtual_data"),
-            Input('datatable-interactivity', "derived_virtual_selected_rows"))(self.update_arhive_graph)
+            Input('datatable-interactivity', "derived_virtual_selected_rows")
+        )(self.update_archive_figure)
 
-    def readData(self, data):
+    def read_and_prepare_data(self, data):
         self.parameter_eps = data['Parameters'][0]['eps']
         self.parameter_r = data['Parameters'][0]['r']
         self.parameter_iters_limit = data['Parameters'][0]['iters_limit']
@@ -129,20 +133,22 @@ class StaticDashboard():
         self.functional_count = len(data['SearchDataItem'][0]["function_values"])
 
         self.dfSDI = pd.DataFrame(data['SearchDataItem'])
+        self.dfSDI = self.dfSDI.rename(columns={'__z': 'objective_func'})
         dfFV = pd.DataFrame(data['Task'][0]['float_variables'])
         dfDV = pd.DataFrame(data['Task'][0]['discrete_variables'])
         dfBT = pd.DataFrame(data['best_trials'])
+        dfBT = dfBT.rename(columns={'__z': 'objective_func'})
         dfS = pd.DataFrame(data['solution'])
 
         self.float_parameters_bounds = data['Task'][0]['float_variables']
         self.discrete_parameters_valid_values = data['Task'][0]['discrete_variables']
 
-        self.float_parameters_names = [f"{x} [fv]" for x in [*dfFV]]
-        self.discrete_parameters_names = [f"{x} [dv]" for x in [*dfDV]]
+        self.float_parameters_names = [f"{x} [c]" for x in [*dfFV]]
+        self.discrete_parameters_names = [f"{x} [d]" for x in [*dfDV]]
 
         self.parameters_names = self.float_parameters_names + self.discrete_parameters_names
 
-        self.best_value = dfBT['__z'][0]
+        self.best_value = dfBT['objective_func'][0]
         self.accuracy = float(dfS['solution_accuracy'])
         self.trial_number = int(dfS['number_of_trials'])
         self.global_iter_number = int(dfS['number_of_global_trials'])
@@ -155,11 +161,11 @@ class StaticDashboard():
         DVs = pd.DataFrame(self.dfSDI['discrete_variables'].to_list(), columns=self.discrete_parameters_names,
                            index=self.dfSDI.index)
 
-        self.dfSDI = self.dfSDI[["__z", "creation_time", "x", "delta", "globalR", "localR"]]
+        self.dfSDI = self.dfSDI[["objective_func", "creation_time", "x", "delta", "globalR", "localR"]]
         self.dfSDI = pd.concat([DVs, self.dfSDI], axis=1, join='inner')
         self.dfSDI = pd.concat([FVs, self.dfSDI], axis=1, join='inner')
 
-        boundary_points_indexes = self.dfSDI[self.dfSDI['__z'] >= 1.797692e+308].index
+        boundary_points_indexes = self.dfSDI[self.dfSDI['objective_func'] >= 1.797692e+308].index
         self.dfSDI.drop(boundary_points_indexes, inplace=True)
         self.dfSDI.insert(loc=0, column='trial', value=np.arange(1, len(self.dfSDI) + 1))
 
@@ -188,23 +194,15 @@ class StaticDashboard():
 
         self.optimization_time = new_times
         self.trial_names = ['trial ' + str(index + 1) for index in range(self.trial_number)]
+        self.calculate_parameters_importance()
 
-    def calculateLowerEnvelopeValues(self):
-        self.values_update_best = []
-        self.points_update_best = []
-        min_value = max(self.dfSDI['__z']) + 1
-        for value, point in zip(self.dfSDI['__z'], self.dfSDI['trial']):
-            if min_value > value:
-                min_value = value
-                self.values_update_best.append(value)
-                self.points_update_best.append(point)
-        self.values_update_best.append(self.best_value)
-        self.points_update_best.append(self.trial_number)
+        del self.data
+        self.data = None
 
 
-    def calculateParametersImportance(self):
-        minZ = min(self.dfSDI['__z'])
-        maxZ = max(self.dfSDI['__z'])
+    def calculate_parameters_importance(self):
+        minZ = min(self.dfSDI['objective_func'])
+        maxZ = max(self.dfSDI['objective_func'])
 
         self.importance = []
         for parameter_name in self.parameters_names:
@@ -212,18 +210,18 @@ class StaticDashboard():
             parameter_importance_value = 0
             for value in uniq_parameter_values:
                 data = self.dfSDI.loc[self.dfSDI[parameter_name] == value]
-                parameter_importance_value += (max(data['__z']) - min(data['__z']))
+                parameter_importance_value += (max(data['objective_func']) - min(data['objective_func']))
             self.importance.append(round(parameter_importance_value / (len(uniq_parameter_values) * (maxZ - minZ)), 2))
 
-    def createSidebar(self):
+    def create_sidebar_navigator(self):
         self.sidebar = html.Div(
             [
                 dbc.Navbar(dbc.Container([dbc.Col([dbc.Nav([
                         dbc.NavItem(html.Img(src=r'assets/iOptdash_light_.png', alt='image', height="50px")),
                         dbc.NavItem(dbc.NavLink("Solution", href="/", active="exact")),
-                        dbc.NavItem(dbc.NavLink("Analytics", href="/page-1", active="exact")),
+                        dbc.NavItem(dbc.NavLink("Analytics", href="/analytics", active="exact")),
                         dbc.NavItem(
-                            dbc.NavLink("Archive", href="/page-2", active="exact"),
+                            dbc.NavLink("Archive", href="/archive", active="exact"),
                             # add an auto margin after page 2 to
                             # push later links to end of nav
                             className="me-auto",
@@ -236,36 +234,33 @@ class StaticDashboard():
                     color="primary",
                     dark=True,
                 ),
-            ], className="sidebar discription"
+            ]
         )
 
-    def createContentPage(self):
-        self.content = html.Div(id="page-content", children=[], style=CONTENT_STYLE)
+    def create_content_page(self):
+        self.content = html.Div(id="page-content", style=CONTENT_STYLE)
 
     def launch(self):
-        self.readData(self.data)
-        del self.data
-        self.data = None
-        self.calculateLowerEnvelopeValues()
-        self.calculateParametersImportance()
+        self.read_and_prepare_data(self.data)
 
-        self.createSidebar()
-        self.createContentPage()
+        self.create_sidebar_navigator()
+        self.create_content_page()
+
         self.app.layout = html.Div([
             dcc.Location(id="url"),
             self.sidebar,
             self.content
         ], style={"background-color": "#FBFBFB"})
-        #url = "http://127.0.0.1:8050/"
+
         self.app.run(debug=True)
 
-    def render_task_discription(self):
+    def render_problem_description(self):
         return html.Div(children=[
-            html.H2('PROBLEM DISCRIPTION',
+            html.H2('PROBLEM DESCRIPTION',
                     style={'textAlign': 'left'}),
             html.P(f"Problem name: {self.task_name}", style={'color': '#212121'}),
-            html.P(f"Functionals count: objective = 1, constraint = {self.functional_count - 1}", style={'color': '#212121'}),
-            html.P(f"Parameters count: float = {len(self.float_parameters_names)}, discrete (categorical) = {len(self.discrete_parameters_names)}", style={'color': '#212121'}),
+            html.P(f"Number of functionalities: objective = 1, constraint = {self.functional_count - 1}", style={'color': '#212121'}),
+            html.P(f"Number of parameters: continuous = {len(self.float_parameters_names)}, discrete = {len(self.discrete_parameters_names)}", style={'color': '#212121'}),
             dcc.Upload(
                     id='upload-data',
                     children=html.Div([
@@ -285,11 +280,11 @@ class StaticDashboard():
                     # Allow multiple files to be uploaded
                     multiple=True
             ),
-            html.Div(id='output-data-upload')
+            html.Div(id='data_from_json_file')
             ],
             style={'width': '55%', "background-color": "#FFFFFF", "border": "20px solid #FFFFFF", }
         )
-    def render_parameters_discription(self):
+    def render_parameters_description(self):
         return html.Div(children=[
             html.H2('PARAMETERS USED',
                     style={'textAlign': 'left'}),
@@ -297,30 +292,30 @@ class StaticDashboard():
                    style={'color': '#212121'}),
             html.P(f"Reliability parameter: r = {self.parameter_r}",
                    style={'color': '#212121'}),
-            html.P(f"Limit on number of iterations: iters_limit = {self.parameter_iters_limit}",
+            html.P(f"Limiting the number of iterations: iters_limit = {self.parameter_iters_limit}",
                    style={'color': '#212121'}),
             ],
             style={'width': '45%', "background-color": "#FFFFFF", "border": "20px solid #FFFFFF", }
         )
     # "border": "3px #FFFFFF outset"
-    def render_solution_discription(self):
+    def render_solution_description(self):
         return html.Div(children=[
             html.H2('Solution',
                     style={'textAlign': 'left'}),
             html.P(
-                f"Total trial number: {self.trial_number} (global trial number - {self.global_iter_number}, local trial number - {self.local_iter_number})",
+                f"Total trials number: {self.trial_number} (global trials number - {self.global_iter_number}, local trials number - {self.local_iter_number})",
                 style={'color': '#212121'}),
             html.P(f"{round(self.best_value, 6)}", style={'font-size': '2.0em', 'color': 'black'}),
             html.P(f"Best point: {self.best_float_point_dictionary}, {self.best_discrete_point_dictionary}",
                    style={'color': '#212121'}),
             html.P(f'Best trial number: {self.best_trial_number}', style={'color': '#212121'}),
             html.P(f"Accuracy: {round(self.accuracy, 6)}", style={'color': '#212121'}),
-            html.P(f"*[fv] - float variables, [dv] - discrete variables",
+            html.P(f"*[c] - continuous variables, [d] - discrete variables",
                    style={'color': '#212121', 'font-size': '0.8em'}),
-        ], className="best trial discription",
+        ], className="best trial description",
             style={'width': '45%', "background-color": "#FFFFFF", "border": "20px solid #FFFFFF", })
 
-    def render_optimization_time_plot(self):
+    def render_optimization_time(self):
         return html.Div(children=[
             html.H2('Optimization Time',
                     style={'textAlign': 'left'}),
@@ -358,7 +353,7 @@ class StaticDashboard():
             html.Div(children=[
                 html.Div(children=[
                     dcc.Graph(
-                        figure=((px.scatter(self.dfSDI, x='trial', y='__z', color_discrete_sequence=['#3E59A5'], marginal_y="histogram", trendline="expanding", trendline_options=dict(function="min"))).update_layout(legend= {'orientation': "h", 'y': -0.25},
+                        figure=((px.scatter(self.dfSDI, x='trial', y='objective_func', color_discrete_sequence=['#3E59A5'], marginal_y="histogram", trendline="expanding", trendline_options=dict(function="min"))).update_layout(legend= {'orientation': "h", 'y': -0.25},
                                 xaxis={'anchor': 'x', 'title': {'text': 'trial number'}},
                                 yaxis={'anchor': 'y', 'title': {'text': 'objective function'}},
                                 paper_bgcolor='#FFFFFF',
@@ -371,13 +366,13 @@ class StaticDashboard():
             ], style={'display': 'flex', 'flexDirection': 'row'}),
         ], style={"background-color": "#FFFFFF", "border": "20px solid #FFFFFF", })
 
-    def getScatterMatrix(self):
-        fig = px.scatter_matrix(self.dfSDI, dimensions=self.parameters_names, color="__z", opacity=0.7,
+    def scatter_matrix_figure(self):
+        fig = px.scatter_matrix(self.dfSDI, dimensions=self.parameters_names, color="objective_func", opacity=0.7,
                                 color_continuous_scale="Ice", width=len(self.parameters_names) * 200,
                                 height=len(self.parameters_names) * 200)
         fig.update_traces(diagonal_visible=False)
         '''
-        fig = ff.create_scatterplotmatrix(self.dfSDI[self.parameters_names+['__z']], diag='histogram', index='__z',
+        fig = ff.create_scatterplotmatrix(self.dfSDI[self.parameters_names+['objective_func']], diag='histogram', index='objective_func',
                                           opacity=0.9, colormap=px.colors.sequential.ice, width=len(self.parameters_names) * 200,
                                           height=len(self.parameters_names) * 200)
         '''
@@ -385,14 +380,14 @@ class StaticDashboard():
         fig.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF')
         return fig
 
-    def render_dependence(self):
+    def render_parameters_dependence(self):
         return html.Div([
             html.H2('Parameters Dependence',
                     style={'textAlign': 'left'}),
             html.Div(children=[
                 html.Div(children=[
                     dcc.Graph(
-                        figure=self.getScatterMatrix(),
+                        figure=self.scatter_matrix_figure(),
                         config={
                             'displayModeBar': True,  # True, False, 'hover'
                         },
@@ -401,7 +396,7 @@ class StaticDashboard():
             ], style={'maxWidth': '90%', 'maxHeight': '650px', "overflow": "scroll"}),
         ], style={'width': '65%', "background-color": "#FFFFFF", "border": "20px solid #FFFFFF", 'height': '750px'})
 
-    def render_importance(self):
+    def render_parameters_importance(self):
         return html.Div([
             html.H2('Parameters Importance',
                     style={'textAlign': 'left'}),
@@ -449,7 +444,7 @@ class StaticDashboard():
             ])
         ], style={'width':'35%', "background-color": "#FFFFFF", "border": "20px solid #FFFFFF"})
 
-    def render_multidimentional_visualization(self):
+    def render_multidimensional_representation(self):
         return html.Div(children=[
             html.H2('Multidimentional Visualization',
                     style={'textAlign': 'left'}),
@@ -466,7 +461,7 @@ class StaticDashboard():
                 ], style={'width': '15%'}),
                 html.Div(children=[
                     dcc.Graph(
-                        id='crossfilter-indicator-scatter-3',
+                        id='multidimensional_figure',
                         config={
                             'displayModeBar': True,  # True, False, 'hover'
                         },
@@ -475,7 +470,7 @@ class StaticDashboard():
             ], style={'display': 'flex', 'flexDirection': 'row', 'height': '90%'})
         ], style={ "background-color": "#FFFFFF", "border": "20px solid #FFFFFF"})
 
-    def render_3D_graph(self):
+    def render_surface_and_level_lines(self):
         return html.Div(children=[
             html.H2('Visualization in cross-section of the best discrete parameters',
                     style={'textAlign': 'left'}),
@@ -506,10 +501,20 @@ class StaticDashboard():
                         self.float_parameters_names[1],
                         id='crossfilter-yaxis-column-1',
                     ),
+                    html.Label('Y-axis parameter'),
+                    dcc.Dropdown(
+                        self.float_parameters_names,
+                        self.float_parameters_names[1],
+                        id='crossfilter-yaxis-column-1',
+                    ),
+                    html.Label('Show parameters bars'),
+                    html.Td(
+                        daq.BooleanSwitch(id='my-boolean-switch', on=True, color="#3E59A5")
+                    )
                 ], style={'width': '20%'}),
                 html.Div(children=[
                     dcc.Graph(
-                        id='crossfilter-indicator-scatter-1',
+                        id='surface_or_lines_level_figure',
                         config={
                             'displayModeBar': True,  # True, False, 'hover'
                         },
@@ -518,7 +523,7 @@ class StaticDashboard():
             ], style={'display': 'flex', 'flexDirection': 'row', 'width': '90%', 'height': '90%'}),
         ], style={"background-color": "#FFFFFF", "border": "20px solid #FFFFFF", })
 
-    def render_objective_function_value_scatter(self):
+    def render_objective_function_values_scatter(self):
         return html.Div(children=[
             html.H2('Scatter of Objective Function Values',
                     style={'textAlign': 'left'}),
@@ -537,7 +542,7 @@ class StaticDashboard():
                         ], style={'width': '20%'}),
                         html.Div(children=[
                             dcc.Graph(
-                                id='crossfilter-indicator-scatter',
+                                id='continuous_scatter_figure',
                                 config={
                                     'displayModeBar': True,  # True, False, 'hover'
                                 },
@@ -558,7 +563,7 @@ class StaticDashboard():
                         ], style={'width': '20%'}),
                         html.Div(children=[
                             dcc.Graph(
-                                id='crossfilter-indicator-scatter-2',
+                                id='discrete_scatter_figure',
                                 config={
                                     'displayModeBar': True,  # True, False, 'hover'
                                 },
@@ -568,46 +573,59 @@ class StaticDashboard():
                 ])
             ], style={'width': '90%'})
         ], style={"background-color": "#FFFFFF", "border": "20px solid #FFFFFF", })
-
+    def render_release_archive(self):
+        return html.Div(children=[
+            html.P(f"*[c] - continuous variables, [d] - discrete variables",
+                   style={'text-align': 'right', 'color': '#212121', 'font-size': '0.8em'}),
+            html.H1('All Trials Archive',
+                    style={'textAlign': 'left'}),
+            create_dash_table_from_dataframe(self.dfSDI[['trial'] + self.parameters_names + ["objective_func", "creation_time"]]),
+            html.Div(id='archive_figure', style={'width': '95%'})
+        ], style = {"background-color": "#FFFFFF", "border": "20px solid #FFFFFF", })
+    def render_debug_archive(self):
+        return html.Div(children=[
+            html.P(f"*[c] - continuous variables, [d] - discrete variables",
+                   style={'text-align': 'right', 'color': '#212121', 'font-size': '0.8em'}),
+            html.H1('All Trials Archive',
+                    style={'textAlign': 'left'}),
+            create_dash_table_from_dataframe(self.dfSDI),
+            html.Div(id='archive_figure', style={'width': '95%'})
+        ], style={"background-color": "#FFFFFF", "border": "20px solid #FFFFFF", })
     def render_page_content(self, pathname):
         if pathname == "/":
             return [
                 html.Div([
-                    self.render_parameters_discription(),
-                    self.render_task_discription(),
+                    self.render_parameters_description(),
+                    self.render_problem_description(),
                 ], style={'display': 'flex', 'flexDirection': 'row'}),
-
                 html.Div([
-                    self.render_solution_discription(),
-                    self.render_optimization_time_plot()
+                    self.render_solution_description(),
+                    self.render_optimization_time()
                 ], style={'display': 'flex', 'flexDirection': 'row'}),
                 self.render_iteration_characteristic(),
             ]
 
-        elif pathname == "/page-2":
+        elif pathname == "/archive":
             if self.mode == 'Release':
-                return html.Div(children=[
-                    html.H1('All Trials Archive',
-                            style={'textAlign': 'left'}),
-                    generate_table(self.dfSDI[['trial'] + self.parameters_names + ["__z", "creation_time"]]),
-                    html.Div(id='datatable-interactivity-container', style={'width': '95%'})
-                ], style = {"background-color": "#FFFFFF", "border": "20px solid #FFFFFF", })
+                return [
+                    self.render_release_archive()
+                ]
             elif self.mode == 'Debug':
-                return html.Div(children=[
-                    html.H1('All Trials Archive',
-                            style={'textAlign': 'left'}),
-                    generate_table(self.dfSDI),
-                    html.Div(id='datatable-interactivity-container', style={'width': '95%'})
-                ], style={"background-color": "#FFFFFF", "border": "20px solid #FFFFFF", })
-        elif pathname == "/page-1":
+                return [
+                    self.render_debug_archive()
+                ]
+        elif pathname == "/analytics":
             return [
-                self.render_multidimentional_visualization(),
-                self.render_3D_graph(),
-                self.render_objective_function_value_scatter(),
-
+                html.Div(children=[
+                    html.P(f"*[c] - continuous variables, [d] - discrete variables",
+                       style={'text-align': 'right', 'color': '#212121', 'font-size': '0.8em'}),
+                ], style={"background-color": "#FFFFFF", "border": "20px solid #FFFFFF"}),
+                self.render_multidimensional_representation(),
+                self.render_surface_and_level_lines(),
+                self.render_objective_function_values_scatter(),
                 html.Div([
-                    self.render_dependence(),
-                    self.render_importance()
+                    self.render_parameters_dependence(),
+                    self.render_parameters_importance()
                 ], style={'display': 'flex', 'flexDirection': 'row'}),
             ]
 
@@ -620,12 +638,12 @@ class StaticDashboard():
             ]
         )
 
-    def update_graph_1(self, xaxis_column_name=None):
+    def update_discrete_scatter_figure(self, xaxis_column_name=None):
         if xaxis_column_name == None:
             xaxis_column_name = self.discrete_parameters_names[0]
 
         fig = px.violin(self.dfSDI,
-                         x=xaxis_column_name, y='__z',
+                         x=xaxis_column_name, y='objective_func',
                          title="Scatter of objective function values by selected parameter",
                          color_discrete_sequence=['#3E59A5']
                          )
@@ -634,13 +652,13 @@ class StaticDashboard():
         fig.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', showlegend=False)
         return fig
 
-    def update_graph_2(self, xaxis_column_name=None):
+    def update_continuous_scatter_figure(self, xaxis_column_name=None):
         if xaxis_column_name == None:
             xaxis_column_name = self.float_parameters_names[0]
 
         fig = px.scatter(self.dfSDI,
                          x=xaxis_column_name,
-                         y='__z',
+                         y='objective_func',
                          color=self.dfSDI['trial'][::-1],
                          color_continuous_scale="Ice",
                          title="Scatter of objective function values by selected parameter",
@@ -651,19 +669,17 @@ class StaticDashboard():
         fig.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', showlegend=False)
         return fig
 
-    def update_graph_3(self, xaxis_column_name=None, yaxis_column_name=None, type='3D Surface', calc='interpolation'):
+    def calculate_data(self, xaxis_column_name, yaxis_column_name, calc):
         if xaxis_column_name == None:
             xaxis_column_name = self.float_parameters_names[0]
         if yaxis_column_name == None:
             xaxis_column_name = self.float_parameters_names[1]
 
-        df = self.dfSDI
-
-        # использовать окрестность лучшего решения
+        df = None
 
         # берем окрестность лучшего сочетания дискретных параметров
         for param in self.discrete_parameters_names:
-            df = df.loc[df[param] == self.best_discrete_point_dictionary[param]]
+            df = self.dfSDI.loc[self.dfSDI[param] == self.best_discrete_point_dictionary[param]]
 
         '''
         # берем окрестность лучших прочих непрерывных параметров
@@ -674,12 +690,14 @@ class StaticDashboard():
 
         x = np.array(df[xaxis_column_name].values)
         y = np.array(df[yaxis_column_name].values)
-        z = np.array(df['__z'].values)
+        z = np.array(df['objective_func'].values)
 
-        bounds_x = list(self.float_parameters_bounds[(self.float_parameters_names).index(xaxis_column_name)].values())[
-            0]
-        bounds_y = list(self.float_parameters_bounds[(self.float_parameters_names).index(yaxis_column_name)].values())[
-            0]
+        xi = None
+        yi = None
+        Z = None
+
+        bounds_x = list(self.float_parameters_bounds[(self.float_parameters_names).index(xaxis_column_name)].values())[0]
+        bounds_y = list(self.float_parameters_bounds[(self.float_parameters_names).index(yaxis_column_name)].values())[0]
 
         if calc == 'interpolation':
             xi = np.linspace(bounds_x[0], bounds_x[1], 150)
@@ -707,48 +725,58 @@ class StaticDashboard():
 
             Z = nn.predict(xy)
             Z = Z.reshape(150, 150)
+
+        return bounds_x, bounds_y, x, y, z, xi, yi, Z
+
+    def surface_figure(self, xaxis_column_name, yaxis_column_name, calc, xi, yi, Z, x, y, z):
+        if calc == 'interpolation' or calc == 'approximation':
+            surface = go.Surface(x=xi, y=yi, z=Z, colorscale="Ice", opacity=1)
+            fig = go.Figure(data=[surface])
+            fig.update_traces(contours_z=dict(show=True, usecolormap=True,
+                                              highlightcolor="limegreen", project_z=True))
         elif calc == 'none (by trials points)':
-            pass
+            surface = go.Mesh3d(x=x, y=y, z=z, showscale=True, intensity=z, colorscale="Ice", opacity=1)
+            fig = go.Figure(data=[surface])
 
-        if type == '3D Surface':
-            if calc == 'interpolation' or calc == 'approximation':
-                surface = go.Surface(x=xi, y=yi, z=Z, colorscale="Ice", opacity=1)
-                fig = go.Figure(data=[surface])
-                fig.update_traces(contours_z=dict(show=True, usecolormap=True,
-                                                  highlightcolor="limegreen", project_z=True))
-            elif calc == 'none (by trials points)':
-                surface = go.Mesh3d(x=x, y=y, z=z, showscale=True, intensity=z, colorscale="Ice", opacity=1)
-                fig = go.Figure(data=[surface])
+        fig.add_scatter3d(x=x, y=y, z=z, mode='markers', name='trials points',
+                          marker=dict(size=2, color='red', opacity=0.7))
+        fig.add_scatter3d(x=[self.best_float_point_dictionary[xaxis_column_name]],
+                          y=[self.best_float_point_dictionary[yaxis_column_name]],
+                          z=[self.best_value], name='best trial point',
+                          mode='markers', marker=dict(size=3, color='green', opacity=1))
+        fig.update_layout(scene=dict(xaxis_title=xaxis_column_name, yaxis_title=yaxis_column_name,
+                          zaxis_title='objective function'), title='', paper_bgcolor='#FFFFFF',
+                          plot_bgcolor='#FFFFFF', showlegend=False, height=700,
+                          template="none")
+        return fig
 
-            fig.add_scatter3d(x=x, y=y, z=z, mode='markers', name='trials points', marker=dict(size=2, color='red', opacity=0.7))
-            fig.add_scatter3d(x=[self.best_float_point_dictionary[xaxis_column_name]],
-                              y=[self.best_float_point_dictionary[yaxis_column_name]],
-                              z=[self.best_value], name='best trial point',
-                              mode='markers', marker=dict(size=3, color='green', opacity=1))
-            fig.update_layout(title='3D Surface', paper_bgcolor='#FFFFFF',
-                              plot_bgcolor='#FFFFFF', showlegend=False, height=700,
-                              template="none")
-        else:
-            if calc == 'interpolation' or calc == 'approximation':
-                fig = go.Figure(data=[go.Contour(x=xi, y=yi, z=Z, colorscale="Ice",
-                                                 colorbar=dict(title='objective function values',
-                                                 titleside='right'))])
-            elif calc == 'none (by trials points)':
-                fig = go.Figure(data=[go.Contour(x=x, y=y, z=z, colorscale="Ice",
-                                                 colorbar=dict(title='objective function values',
-                                                 titleside='right'))])  # , line_smoothing=0.85
+    def lines_level_figure(self, xaxis_column_name, yaxis_column_name, calc, showBars, bounds_x, bounds_y, xi, yi, Z, x, y, z):
+        if calc == 'interpolation' or calc == 'approximation':
+            fig = go.Figure(data=[go.Contour(x=xi, y=yi, z=Z, colorscale="Ice",
+                            colorbar=dict(title='objective function', titleside='right'))])
+        elif calc == 'none (by trials points)':
+            fig = go.Figure(data=[go.Contour(x=x, y=y, z=z, colorscale="Ice",
+                            colorbar=dict(title='objective function', titleside='right'))])
 
-            fig.add_scatter(x=x, y=y, mode='markers', name='trials points', marker=dict(size=2, color='red', opacity=0.7))
-            fig.add_scatter(x=[self.best_float_point_dictionary[xaxis_column_name]],
-                            y=[self.best_float_point_dictionary[yaxis_column_name]],
-                            mode='markers', name='best trial point', marker=dict(size=4, color='green', opacity=1))
+        fig.add_scatter(x=x, y=y, mode='markers', name='trials points', marker=dict(size=2, color='red', opacity=0.7))
+        fig.add_scatter(x=[self.best_float_point_dictionary[xaxis_column_name]],
+                        y=[self.best_float_point_dictionary[yaxis_column_name]],
+                        mode='markers', name='best trial point', marker=dict(size=4, color='green', opacity=1))
+
+        fig.update_layout(title='', paper_bgcolor='#FFFFFF',
+                          plot_bgcolor='#FFFFFF', showlegend=True, height=700,
+                          legend={'orientation': "h"},
+                          xaxis_range=[bounds_x[0], bounds_x[1]], yaxis_range=[bounds_y[0], bounds_y[1]],
+                          xaxis_title=xaxis_column_name,
+                          yaxis_title=yaxis_column_name)
+        if showBars:
             fig.add_trace(go.Histogram(
                 y=y,
                 xaxis='x2',
                 marker=dict(
                     color='#3E59A5'
                 ),
-                name=yaxis_column_name+' values histogram'
+                name=yaxis_column_name + ' values histogram'
             ))
             fig.add_trace(go.Histogram(
                 x=x,
@@ -756,50 +784,37 @@ class StaticDashboard():
                 marker=dict(
                     color='#3E59A5'
                 ),
-                name=xaxis_column_name+' values histogram'
+                name=xaxis_column_name + ' values histogram'
             ))
-            fig.update_layout(title='Levels Lines', paper_bgcolor='#FFFFFF',
-                              plot_bgcolor='#FFFFFF', showlegend=True, height=700,
-                              template="none",legend={'orientation': "h"},
-                              xaxis_showgrid=False, yaxis_showgrid=False,
-                              xaxis_range=[bounds_x[0], bounds_x[1]], yaxis_range=[bounds_y[0], bounds_y[1]],
-                              xaxis_domain=[0, 0.85],
-                              yaxis_domain=[0, 0.85],
-                              xaxis2=dict(
-                                  zeroline=False,
-                                  domain=[0.85, 1],
-                                  showgrid=False
-                              ),
-                              yaxis2=dict(
-                                  zeroline=False,
-                                  domain=[0.85, 1],
-                                  showgrid=False
-                              ),
-                              bargap=0,
-                              hovermode='closest',
+
+            fig.update_layout(
+                xaxis_domain=[0, 0.85],
+                yaxis_domain=[0, 0.85],
+                xaxis2=dict(
+                    zeroline=False,
+                    domain=[0.85, 1],
+                    showgrid=False
+                ),
+                yaxis2=dict(
+                    zeroline=False,
+                    domain=[0.85, 1],
+                    showgrid=False
+                ),
+                bargap=0,
+                hovermode='closest',
             )
-
         return fig
+    def update_surface_or_lines_level_figure(self, xaxis_column_name=None, yaxis_column_name=None, type='3D Surface', calc='interpolation', showBars=True):
+        bounds_x, bounds_y, x, y, z, xi, yi, Z = self.calculate_data(xaxis_column_name, yaxis_column_name, calc)
+        if type == '3D Surface':
+            return self.surface_figure(xaxis_column_name, yaxis_column_name, calc, xi, yi, Z, x, y, z)
+        elif type == 'Heatmap':
+            return self.lines_level_figure(xaxis_column_name, yaxis_column_name, calc, showBars, bounds_x, bounds_y, xi, yi, Z, x, y, z)
 
-    def update_graph_4(self, xaxis_column_name=None):
+    def update_multidimensional_figure(self, xaxis_column_name=None):
         if xaxis_column_name == None:
             xaxis_column_name = self.parameters_names
-        xaxis_column_name = ['__z'] + xaxis_column_name
-
-        '''
-        df = self.normalizate_df[self.normalizate_df['param_name'].isin(xaxis_column_name)]
-
-        fig = px.line(
-            df, x='param_name', y='norm_value', color='trial', hover_data='actual_value',
-            title="Scatter of objective function values by one parameter",
-            markers=True,
-            color_discrete_map=self.value_colors_dictionary
-        )
-
-        fig.update_xaxes(title='parameters')
-        fig.update_yaxes(title='objective function')
-        fig.update_layout(paper_bgcolor='#FFFFFF', plot_bgcolor='#FFFFFF', showlegend=False)
-        '''
+        xaxis_column_name = ['objective_func'] + xaxis_column_name
 
         xaxis_column_name_dict = {}
         for name in xaxis_column_name:
@@ -812,7 +827,7 @@ class StaticDashboard():
             xaxis_column_name_dict[replace] = name
 
 
-        fig = px.parallel_coordinates(self.dfSDI, color="__z",
+        fig = px.parallel_coordinates(self.dfSDI, color="objective_func",
                                       dimensions=xaxis_column_name_dict.keys(),
                                       labels=xaxis_column_name_dict,
                                       color_continuous_scale='ice')
@@ -832,7 +847,7 @@ class StaticDashboard():
 
         return fig
 
-    def update_output(self, contents):
+    def read_data_from_json(self, contents):
         if self.init and contents is not None:
             content_type, content_string = contents[0].split(',')
             decoded = base64.b64decode(content_string)
@@ -842,7 +857,7 @@ class StaticDashboard():
             self.init = True
         return html.Div(id='hidden-div', style={'display':'none'})
 
-    def update_arhive_graph(self, rows, derived_virtual_selected_rows):
+    def update_archive_figure(self, rows, derived_virtual_selected_rows):
         if derived_virtual_selected_rows is None:
             derived_virtual_selected_rows = []
 
@@ -856,7 +871,7 @@ class StaticDashboard():
                     "data": [
                         {
                             "x": dff['trial'],
-                            "y": dff['__z'],
+                            "y": dff['objective_func'],
                             "type": "bar",
                             "marker": {"color": colors},
                         }
