@@ -60,7 +60,7 @@ class Grishagin_mco(Problem):
         Вычисление значения выбранной функции в заданной точке.
 
         :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект определяющий номер функции в задаче и хранящий значение функции
+        :param function_value: объект, определяющий номер функции в задаче и хранящий значение функции
         :return: Вычисленное значение функции в точке point
         """
         function_value.value = self.functions[function_value.functionID].Calculate(point.float_variables)
