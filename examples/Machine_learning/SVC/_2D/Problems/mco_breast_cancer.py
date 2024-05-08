@@ -65,3 +65,29 @@ class mco_breast_cancer(Problem):
 
         function_value.value = result
         return function_value
+
+    def calculateAllFunction(self, point: Point, function_values: np.ndarray(shape=(1), dtype=FunctionValue)) -> \
+            np.ndarray(shape=(1), dtype=FunctionValue):
+        """
+        Вычисление значения выбранной функции в заданной точке.
+
+        :param point: координаты точки испытания, в которой будет вычислено значение функции
+        :param function_values: массив объектов, определяющих номера функций в задаче и хранящий значения функций
+        :return: массив вычисленных значений функций в точке point
+        """
+        x = point.float_variables
+
+        svc_c = 10 ** x[0]
+        gamma = 10 ** x[1]
+
+        classifier_obj = SVC(C=svc_c, gamma=gamma)
+        classifier_obj.fit(self.X_train, self.y_train)
+
+        # OBJECTIV 1
+        function_values[0].value = - cross_val_score(classifier_obj, self.X, self.y, n_jobs=4,
+                                                     scoring='precision').mean()
+        # OBJECTIV 2
+        function_values[1].value = - cross_val_score(classifier_obj, self.X, self.y, n_jobs=4,
+                                                     scoring='recall').mean()
+
+        return function_values

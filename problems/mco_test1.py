@@ -57,4 +57,19 @@ class mco_test1(Problem):
         function_value.value = result
         return function_value
 
+    def calculateAllFunction(self, point: Point, function_values: np.ndarray(shape=(1), dtype=FunctionValue)) -> \
+            np.ndarray(shape=(1), dtype=FunctionValue):
+        """
+        Calculate all function at a given point.
+          For any new problem statement that inherits from :class:`Problem`, this method should be overloaded
+
+        :return: Calculated values of the functions."""
+        x = point.float_variables
+
+        # OBJECTIVE 1
+        function_values[0].value = np.double((x[0]-1)*x[1]*x[1]+1)
+        # OBJECTIVE 2
+        function_values[1].value = np.double(x[1])
+
+        return function_values
 

@@ -92,10 +92,18 @@ class MCOOptimizationTask(OptimizationTask):
                   ) -> SearchDataItem:
         """Compute selected function by number."""
         if calculation_type == TypeOfCalculation.FUNCTION:
-            data_item.function_values[self.perm[function_index]] = \
-                self.problem.calculate(data_item.point, data_item.function_values[self.perm[function_index]])
-            if not np.isfinite(data_item.function_values[self.perm[function_index]].value):
-                raise Exception("Infinity values")
+            if function_index == -1:  # Calculate all criteria
+                data_item.function_values = self.problem.calculateAllFunction(data_item.point,
+                                                                              data_item.function_values)
+                for i in range(self.problem.number_of_objectives):
+                    if not np.isfinite(data_item.function_values[self.perm[self.problem.number_of_constraints +
+                                                                           i]].value):
+                        raise Exception("Infinity values")
+            else:
+                data_item.function_values[self.perm[function_index]] = \
+                    self.problem.calculate(data_item.point, data_item.function_values[self.perm[function_index]])
+                if not np.isfinite(data_item.function_values[self.perm[function_index]].value):
+                    raise Exception("Infinity values")
 
         elif calculation_type == TypeOfCalculation.CONVOLUTION:
             data_item = self.convolution.calculate_convolution(data_item, self.min_value, self.max_value)

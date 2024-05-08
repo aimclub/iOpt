@@ -31,7 +31,7 @@ class MCOMethodEvaluate(IndexMethodEvaluate):
 
             for i in range(self.task.problem.number_of_objectives):
                 point.function_values[number_of_constraints + i] = FunctionValue(FunctionType.OBJECTIV, i)
-                point = self.task.calculate(point, number_of_constraints + i)
+            point = self.task.calculate(point, -1)
 
             point = self.task.calculate(point, -1, TypeOfCalculation.CONVOLUTION)
             point.set_index(number_of_constraints)

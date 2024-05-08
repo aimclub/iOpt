@@ -34,6 +34,19 @@ class Problem(ABC):
         :return: Calculated value of the function."""
         pass
 
+    def calculateAllFunction(self, point: Point, function_values: np.ndarray(shape=(1), dtype=FunctionValue)) -> \
+            np.ndarray(shape=(1), dtype=FunctionValue):
+        """
+        Calculate all functions at a given point.
+          For any new problem statement that inherits from :class:`Problem`, this method should be overloaded
+
+        :return: Calculated values of the functions."""
+        for i in range(self.number_of_objectives):
+            function_values[i].value = self.calculate(point, function_values[i])
+
+        return function_values
+
+
     # @abstractmethod
     def get_name(self):
         """
