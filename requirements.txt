@@ -10,3 +10,8 @@ sphinxcontrib-details-directive
 autodocsumm
 pathos
 multiprocess
+dash
+dash-bootstrap-components
+plotly
+pandas
+scipy
