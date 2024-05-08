@@ -81,7 +81,7 @@ class SolverFactory:
         :param task: the wrapper of the problem to be solved.
         :param evolvent: Peano-Hilbert evolvent mapping the segment [0,1] to the multidimensional region D.
         :param search_data: data structure for storing accumulated search information.
-        :param calculator: класс содержащий методы проведения испытаний (параллельные и\или индуксную схему)
+        :param calculator: класс, содержащий методы проведения испытаний (параллельные и/или индексную схему)
 
         :return: created method
         """

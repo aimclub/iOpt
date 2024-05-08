@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # plt.plot(x1, x2, 'ro')
     # plt.show()
 
-    # Точки для постороения графика множества Парето y[0]-y[1]
+    # Точки для построения графика множества Парето y[0]-y[1]
     fv1 = [trial.function_values[0].value for trial in sol.best_trials]
     fv2 = [trial.function_values[1].value for trial in sol.best_trials]
 
