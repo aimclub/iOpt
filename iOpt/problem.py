@@ -25,14 +25,14 @@ class Problem(ABC):
 
         self.known_optimum: np.ndarray(shape=(1), dtype=Trial) = []
 
-    @abstractmethod
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
         Calculate a function at a given point.
           For any new problem statement that inherits from :class:`Problem`, this method should be overloaded
 
         :return: Calculated value of the function."""
-        pass
+        function_value.value = 0;
+        return function_value
 
     def calculateAllFunction(self, point: Point, function_values: np.ndarray(shape=(1), dtype=FunctionValue)) -> \
             np.ndarray(shape=(1), dtype=FunctionValue):

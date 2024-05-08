@@ -33,29 +33,7 @@ class mco_test1(Problem):
         self.upper_bound_of_float_variables = np.ndarray(shape=(self.number_of_float_variables,), dtype=np.double)
         self.upper_bound_of_float_variables.fill(1)
 
-
         self.known_optimum = np.ndarray(shape=(1,), dtype=Trial)
-
-
-
-    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
-        """
-        Вычисление значения выбранной функции в заданной точке.
-
-        :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект, определяющий номер функции в задаче и хранящий значение функции
-        :return: Вычисленное значение функции в точке point
-        """
-        result: np.double = 0
-        x = point.float_variables
-
-        if function_value.functionID == 0:  # OBJECTIV 1
-            result = np.double((x[0]-1)*x[1]*x[1]+1)
-        elif function_value.functionID == 1:  # OBJECTIV 2
-            result = np.double(x[1])
-
-        function_value.value = result
-        return function_value
 
     def calculateAllFunction(self, point: Point, function_values: np.ndarray(shape=(1), dtype=FunctionValue)) -> \
             np.ndarray(shape=(1), dtype=FunctionValue):
@@ -67,9 +45,8 @@ class mco_test1(Problem):
         x = point.float_variables
 
         # OBJECTIVE 1
-        function_values[0].value = np.double((x[0]-1)*x[1]*x[1]+1)
+        function_values[0].value = np.double((x[0] - 1) * x[1] * x[1] + 1)
         # OBJECTIVE 2
         function_values[1].value = np.double(x[1])
 
         return function_values
-
