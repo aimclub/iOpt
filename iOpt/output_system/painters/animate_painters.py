@@ -23,7 +23,7 @@ class AnimatePainter(Painter):
 
     def set_problem(self, problem: Problem):
         self.objFunc = problem.calculate
-        self.number_of_constraints = self.problem.number_of_constraints
+        self.number_of_constraints = problem.number_of_constraints
 
         for i in range(problem.number_of_float_variables):
             self.section.append(float(problem.upper_bound_of_float_variables[i]) - float(problem.lower_bound_of_float_variables[i]))

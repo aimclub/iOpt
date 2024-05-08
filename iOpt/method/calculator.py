@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 from pathos.multiprocessing import ProcessPool
 
+from iOpt.method.default_calculator import DefaultCalculator
 from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
@@ -13,7 +14,7 @@ import sys
 sys.setrecursionlimit(10000)
 
 
-class Calculator:
+class Calculator(DefaultCalculator):
     evaluate_method: ICriterionEvaluateMethod = None
 
     def __init__(self,
@@ -30,27 +31,25 @@ class Calculator:
         self.parameters = parameters
         Calculator.worker_init(self.evaluate_method)
         self.pool = ProcessPool(parameters.number_of_parallel_points,
-                                       initializer=Calculator.worker_init,
-                                       initargs=(self.evaluate_method,))
-
-    r"""
-    Initialize the calculation method in each process from the process pool Calculator.Pool
-
-    :param evaluate_method: a computational method that performs search trials according to specified rules.
-    """
+                                initializer=Calculator.worker_init,
+                                initargs=(self.evaluate_method,))
 
     @staticmethod
     def worker_init(evaluate_method: ICriterionEvaluateMethod):
+        r"""
+        Initialize the calculation method in each process from the process pool Calculator.Pool
+
+        :param evaluate_method: a computational method that performs search trials according to specified rules.
+        """
         Calculator.evaluate_method = evaluate_method
-
-    r"""
-    Сalculation method in each process from the process pool Calculator.Pool
-
-    :param point: trial point.
-    """
 
     @staticmethod
     def worker(point: SearchDataItem) -> SearchDataItem:
+        r"""
+        Сalculation method in each process from the process pool Calculator.Pool
+
+        :param point: trial point.
+        """
         try:
             Calculator.evaluate_method.calculate_functionals(point)
         except Exception:
@@ -58,18 +57,13 @@ class Calculator:
             point.set_index(-10)
         return point
 
-    r"""
-    Сalculation method for multiple points
-
-    :param points: trial points.
-    """
-
     def calculate_functionals_for_items(self, points: list[SearchDataItem]) -> list[SearchDataItem]:
-        # пока оставленно на случай отладки
-        # for point in points:
-        #     self.worker(point, self.method)
+        r"""
+        Сalculation method for multiple points
 
-        # Ниже реализация цикла через пулл процессов
+        :param points: trial points.
+        """
+
         points_copy = []
         for point in points:
             sd = SearchDataItem(y=copy.deepcopy(point.point), x=copy.deepcopy(point.get_x()),

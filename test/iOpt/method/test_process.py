@@ -112,6 +112,7 @@ class TestProcess(unittest.TestCase):
     def test_DoGlobalIterationAndListener(self, mock_OnEndIteration, mock_BeforeMethodStart):
         self.process.method.evolvent.get_image = Mock(side_effect=self.mock_GetImage)
         self.process.task.calculate = Mock(side_effect=self.mock_CalculateTask)
+
         try:
             self.process.do_global_iteration(1)
             mock_BeforeMethodStart.assert_called_once()

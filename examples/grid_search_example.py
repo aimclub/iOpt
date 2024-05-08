@@ -40,7 +40,6 @@ if __name__ == "__main__":
     cfol = ConsoleOutputListener(mode='full')
     solver2.add_listener(cfol)
 
-
     solver2.load_progress(log)
 
     solver2.release_all_listener()

@@ -58,7 +58,7 @@ class GA_TSP_Vary_Mutation(Problem):
         :param function_value: объект хранения значения целевой функции в точке
         """
         mutation_prob = point.float_variables[0]
-        ga_tsp = GA_TSP(func=self.calc_total_distance,
+        ga_tsp = GA_TSP(func=lambda x: self.calc_total_distance(x),
                         n_dim=self.n_dim, size_pop=self.populationSize,
                         max_iter=self.numberOfIterations, prob_mut=mutation_prob)
         best_points, best_distance = ga_tsp.run()
