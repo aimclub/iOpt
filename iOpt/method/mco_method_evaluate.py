@@ -33,7 +33,7 @@ class MCOMethodEvaluate(IndexMethodEvaluate):
                 point.function_values[number_of_constraints + i] = FunctionValue(FunctionType.OBJECTIV, i)
             point = self.task.calculate(point, -1)
 
-            # Если нужно считать по очереди критерии то заменить цикл выше на следующий код:
+            # Если нужно считать критерии поочередно, то заменить предыдущий цикл на следующий код:
             #for i in range(self.task.problem.number_of_objectives):
             #    point.function_values[number_of_constraints + i] = FunctionValue(FunctionType.OBJECTIV, i)
             #    point = self.task.calculate(point, i)
