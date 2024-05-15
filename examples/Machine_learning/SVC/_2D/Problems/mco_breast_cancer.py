@@ -41,15 +41,15 @@ class mco_breast_cancer(Problem):
 
         self.known_optimum = np.ndarray(shape=(1,), dtype=Trial)
 
-    def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
+    def calculateAllFunction(self, point: Point, function_values: np.ndarray(shape=(1), dtype=FunctionValue)) -> \
+            np.ndarray(shape=(1), dtype=FunctionValue):
         """
         Вычисление значения выбранной функции в заданной точке.
 
         :param point: координаты точки испытания, в которой будет вычислено значение функции
-        :param function_value: объект, определяющий номер функции в задаче и хранящий значение функции
-        :return: вычисленное значение функции в точке point
+        :param function_values: массив объектов, определяющих номера функций в задаче и хранящий значения функций
+        :return: массив вычисленных значений функций в точке point
         """
-        result: np.double = 0
         x = point.float_variables
 
         svc_c = 10 ** x[0]
@@ -58,10 +58,11 @@ class mco_breast_cancer(Problem):
         classifier_obj = SVC(C=svc_c, gamma=gamma)
         classifier_obj.fit(self.X_train, self.y_train)
 
-        if function_value.functionID == 0:  # OBJECTIV 1
-            result = - cross_val_score(classifier_obj, self.X, self.y, n_jobs=4, scoring='precision').mean()
-        elif function_value.functionID == 1:  # OBJECTIV 2
-            result = - cross_val_score(classifier_obj, self.X, self.y, n_jobs=4, scoring='recall').mean()
+        # OBJECTIV 1
+        function_values[0].value = - cross_val_score(classifier_obj, self.X, self.y, n_jobs=4,
+                                                     scoring='precision').mean()
+        # OBJECTIV 2
+        function_values[1].value = - cross_val_score(classifier_obj, self.X, self.y, n_jobs=4,
+                                                     scoring='recall').mean()
 
-        function_value.value = result
-        return function_value
+        return function_values
