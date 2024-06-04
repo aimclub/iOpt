@@ -155,7 +155,7 @@ if __name__ == "__main__":
 
 ```
 
-Let's consider an example of using multi-objective optimisation. We use optimisation of two objectives of float type: **precision** and **recall**. The result of the process is a Pareto set chart. 
+Let's consider an example of using multicriteria optimization. We use optimization for two float objectives: precision and recall. The result of the process is a Pareto set chart.
 
 ```python
 from examples.Machine_learning.SVC._2D.Problems import mco_breast_cancer
