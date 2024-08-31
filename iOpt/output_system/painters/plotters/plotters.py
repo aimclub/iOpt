@@ -434,3 +434,11 @@ class AnimatePlotter3D(Plotter3D):
         self.ax.autoscale_view()
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
+
+
+class PlotterPareto(Plotter2D):
+    def __init__(self):
+        super().__init__(None, None, None)
+
+    def plot_pareto(self, first_criteria_values, second_criteria_values, clr='blue', mrkr='o', mrkrs=4):
+        self.plot_points(first_criteria_values, second_criteria_values, clr, mrkr, mrkrs)
