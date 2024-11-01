@@ -3,6 +3,7 @@ from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+from iOpt.output_system.listeners.static_painters import StaticPainterParetoListener
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
@@ -24,6 +25,10 @@ if __name__ == "__main__":
     cfol = ConsoleOutputListener(mode='full')
     solver.add_listener(cfol)
 
+    # Добавляем построение графика множества Парето y[0]-y[1]
+    sppl = StaticPainterParetoListener("pareto.png")
+    solver.add_listener(sppl)
+
     # Решаем задачу
     sol = solver.solve()
 
@@ -33,17 +38,3 @@ if __name__ == "__main__":
     print("size pareto set: ", len(var))
     for fvar, fval in zip(var, val):
         print(fvar, fval)
-
-    # Точки для построения
-    # x1 = [trial.point.float_variables[0] for trial in sol.best_trials]
-    # x2 = [trial.point.float_variables[1] for trial in sol.best_trials]
-
-    # plt.plot(x1, x2, 'ro')
-    # plt.show()
-
-    # Точки для построения графика множества Парето y[0]-y[1]
-    fv1 = [trial.function_values[0].value for trial in sol.best_trials]
-    fv2 = [trial.function_values[1].value for trial in sol.best_trials]
-
-    plt.plot(fv1, fv2, 'ro')
-    plt.show()

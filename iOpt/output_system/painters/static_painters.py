@@ -3,7 +3,7 @@ import numpy as np
 from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.trial import Point, FunctionValue
 from iOpt.solution import Solution
-from iOpt.output_system.painters.plotters.plotters import Plotter2D, Plotter3D, DisretePlotter
+from iOpt.output_system.painters.plotters.plotters import Plotter2D, Plotter3D, DisretePlotter, PlotterPareto
 from iOpt.output_system.painters.painter import Painter
 
 import matplotlib.pyplot as plt
@@ -283,3 +283,35 @@ class StaticPainterND(Painter):
         fv = FunctionValue()
         fv = self.objFunc(point, fv)
         return fv.value
+
+
+class StaticPainterPareto:
+    def __init__(self,
+                 solution: Solution,
+                 criteria_indxs,
+                 path_for_saves,
+                 file_name
+                 ):
+        self.path_for_saves = path_for_saves
+        self.file_name = file_name
+
+        # values of Pareto-efficient criteria with input indices
+        self.first_criteria_values = [trial.function_values[criteria_indxs[0]].value for trial in solution.best_trials]
+        self.second_criteria_values = [trial.function_values[criteria_indxs[1]].value for trial in solution.best_trials]
+
+        # definition of plotter
+        self.plotter = PlotterPareto()
+
+    def paint_pareto(self):
+        self.plotter.plot_pareto(self.first_criteria_values, self.second_criteria_values)
+
+    def save_image(self):
+        if not os.path.isdir(self.path_for_saves):
+            if self.path_for_saves == "":
+                plt.savefig(self.file_name)
+            else:
+                os.mkdir(self.path_for_saves)
+                plt.savefig(self.path_for_saves + "/" + self.file_name)
+        else:
+            plt.savefig(self.path_for_saves + "/" + self.file_name)
+        plt.show()
