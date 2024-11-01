@@ -1826,12 +1826,12 @@ we will set the number_of_parallel_points parameter to 12, and also limit oursel
     Level lines of the objective function, built with the parameter kernel='rbf'
 
 During the experiment an optimal quality metric value of -0.9469 was obtained with the following combination 
-of parameters: :math:`C = 1.6474∙10^5` `C = 1.6474 \dot 10^5`, gamma = 0.0767, kernel = 'rbf'.
+of parameters: :math:`C = 1.6474∙10^5,  C = 1.6474 \dot 10^5`, gamma = 0.0767, kernel = 'rbf'.
 
 
 
 Example of solving a multi-criteria optimization problem
-____________________________________________________________________________________
+________________________________________________________
 
 
 If optimization is performed using several criteria, then the solution to the problem becomes more complicated. 
@@ -1839,3 +1839,22 @@ The problem is that the criteria are usually contradictory: decreasing the value
 to an increase in the values of others. Let's consider the work of the iOpt framework when solving a multi-criteria problem. 
 To do this, we modify the problem statement in Section Tuning support vector machine hyperparameters for a classification problem in machine learning.
 
+Dataset used
+~~~~~~~~~~~~
+
+We will use the `breast cancer_` dataset. The dataset includes 569 examples, each with 30 
+numerical characteristics. Characteristics are calculated from a digitized fine needle aspiration 
+(FNA) image of the breast mass. They describe the characteristics of the nuclei of the cells present 
+in the image. The distribution by class is as follows: 212 malignant, 357 benign tumors.
+
+.. _`breast cancer`: https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic) 
+
+
+Finding optimal parameters using the iOpt framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Let's launch the iOpt framework to construct the Pareto set.
+We consider two continuous parameters:
+#. regularization parameter **C**: [10\ :sup:`1`, 10\ :sup:`6`];
+#. kernel coefficient **gamma**: [10\ :sup:`-7`, 10\ :sup:`-3`].
+First, we need to formulate the basic problem as a class inherited from Problem.
