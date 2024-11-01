@@ -7,7 +7,7 @@ ________________________________________________________________________________
 
 Traveling Salesman Problem (TSP) is an NP-hard combinatorial optimization problem, important 
 in theoretical computer science and operations research. The essence of the problem statement 
-can be formulated as follows: “For a given list of cities and distances find the shortest route 
+can be formulated as follows: "For a given list of cities and distances find the shortest route 
 between each pair of cities, which passes through each city exactly once and returns to the home 
 city."
 
@@ -16,7 +16,7 @@ Problem statement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Let the numbers :math:`1,2,{\dots},n` correspond to cities, the values :math:`c_{\mathit{ij}}>0` 
-correspond to the distances between the cities :math:`i` и :math:`j`, and the value :math:`x_{\mathit{ij}}=1`,
+correspond to the distances between the cities :math:`i` and :math:`j`, and the value :math:`x_{\mathit{ij}}=1`,
 if there is a path from :math:`i` to :math:`j`, and :math:`x_{\mathit{ij}}=0` otherwise.
 Then the travelling salesman problem can be formulated as follows:
 
@@ -1174,13 +1174,15 @@ Below is a listing with code for tuning parameters of the XGBoost Regression alg
 Tuning mixed hyperparameters using the iOpt framework for the problem of predicting the concentration of nitrogen oxide in the working area of a gas turbine
 ______________________________________________________________________________________________________________________________________________________________________________________________________
 
-Let's demonstrate the work of the iOpt framework when tuning mixed (continuous and discrete) hyperparameters. Let us consider the following hyperparameters:
+Let's demonstrate the work of the iOpt framework when tuning mixed (continuous and discrete) hyperparameters. 
+Let us consider the following hyperparameters:
 
 * learning_rate (learning rate), continuous parameter in the interval [0.2, 0.4];
 * gamma (coefficient that determines the minimum reduction in losses), continuous parameter in the interval [0.2, 0.3];
 * booster (kernel type), a discrete parameter whose value takes one of three states: 'gblinear', 'gbtree', 'dart'.
 
-Let's prepare an auxiliary class describing the problem to be solved. The class example is presented in the following listing.
+Let's prepare an auxiliary class describing the problem to be solved. 
+The class example is presented in the following listing.
 
 .. code-block:: python
    :caption: Description of the problem for finding the optimal combination of values of continuous and discrete parameters using the iOpt framework
@@ -1237,9 +1239,14 @@ Let's prepare an auxiliary class describing the problem to be solved. The class 
 * lower_bound_of_float_variables and upper_bound_of_float_variables – minimum and maximum values of continuous parameters;
 * discrete_variable_values – values of discrete parameters.
 
-To calculate the value of the objective function at a point, we overload the calculate function. To estimate the value of the target function, we use the cross_val_score method from the sklearn library with the specific values of the cross-validation parameters and the target metric described above.
+To calculate the value of the objective function at a point, we overload the calculate function. 
+To estimate the value of the target function, we use the cross_val_score method 
+from the sklearn library with the specific values of the cross-validation parameters 
+and the target metric described above.
 
-After generating the optimization problem, one need to run the solver to find the optimal combination of hyperparameters. An example of code with launching the solver and visualizing the optimization process is presented in the listing.
+After generating the optimization problem, one need to run the solver to find 
+the optimal combination of hyperparameters. An example of code with launching 
+the solver and visualizing the optimization process is presented in the listing.
 
 .. code-block:: python
    :caption: Tuning continuous and discrete parameters using the iOpt framework
@@ -1284,7 +1291,14 @@ After generating the optimization problem, one need to run the solver to find th
       solver.add_listener(cfol)
       solver_info = solver.solve()
 
-After loading the data, one need to create an optimization task, the description of the fields of which is presented in the listing above. Thus, the problem instance takes as parameters the data under study, the boundaries for changing the values of the regularization parameter, the boundaries for changing the values of the kernel coefficient parameter, and the values of the discrete parameter of the kernel type. To start the search procedure for the optimal combination of hyperparameters, one need to create an object of the SolverParameters class, in which the following parameters are set:
+After loading the data, one need to create an optimization task, 
+the description of the fields of which is presented in the listing above. 
+Thus, the problem instance takes as parameters the data under study, 
+the boundaries for changing the values of the regularization parameter, 
+the boundaries for changing the values of the kernel coefficient parameter, 
+and the values of the discrete parameter of the kernel type. 
+To start the search procedure for the optimal combination of hyperparameters, 
+one need to create an object of the SolverParameters class, in which the following parameters are set:
 
 * Reliability parameter r;
 * Limit on the number of iterations of the algorithm iters_limit;
@@ -1310,15 +1324,24 @@ During the experiment, the optimal value of the quality metric was obtained equa
 Tuning hyperparameters in the problem of analyzing and predicting the state of power transformers of nuclear power plants
 ______________________________________________________________________________________________________________________________________________________________________________________________________
 
-Today, a significant number of power transformers at nuclear power plants are operated with an extended service life, sometimes exceeding the established period of 25 years. Taking into account the extended service life of nuclear power plants, there is a need to monitor the technical condition of power transformers.
+Today, a significant number of power transformers at nuclear power plants are operated with 
+an extended service life, sometimes exceeding the established period of 25 years. 
+Taking into account the extended service life of nuclear power plants, 
+there is a need to monitor the technical condition of power transformers.
 
-The transformer control system controls the concentration level of gases dissolved in the transformer oil. The problem is to predict from time series the type of transformer fault.
+The transformer control system controls the concentration level of gases dissolved in the transformer oil. 
+The problem is to predict from time series the type of transformer fault.
 
 Dataset
 ~~~~~~~~
 
-Based on 420 measurements for each of the 4 sensors, a dataset was formed with the number of attributes equal to 1680. The data storage structure in the set is as follows: the first 1680 columns are attributes, the 1681st column is the class to which this example belongs. All examples are written line by line.
-There are no empty cells or cells with an undefined value. The classes are unbalanced with a predominance of the “normal work” class: 1705 examples out of 2100 (81.19%). The listing below shows the code for loading a dataset and then shuffling it.
+Based on 420 measurements for each of the 4 sensors, a dataset was formed with the number 
+of attributes equal to 1680. The data storage structure in the set is as follows: 
+the first 1680 columns are attributes, the 1681st column is the class to which this example belongs. 
+All examples are written line by line.
+There are no empty cells or cells with an undefined value. 
+The classes are unbalanced with a predominance of the "normal work" class: 1705 examples out of 2100 (81.19%). 
+The listing below shows the code for loading a dataset and then shuffling it.
 
 .. code-block:: python
    :caption: Function for loading a data set for the task of analyzing and predicting the state of power transformers of nuclear power plants
@@ -1345,9 +1368,20 @@ There are no empty cells or cells with an undefined value. The classes are unbal
 Solving the problem on a uniform grid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We will solve the problem of data classification using a support vector machine (SVC). The Macro F1 metric, which is optimal for highly unbalanced classes, was chosen as the objective function. Let us determine the values of the parameters at which the value of the quality metric reaches its optimum. During the study, the values of the objective function were calculated on a uniform grid of 50 by 50 points, varying the parameters gamma (kernel coefficient) and C (regularization parameter), in the ranges [:math:`10^{-3}`, :math:`10^1`] and [:math:`10^5`, :math:`10^9``] respectively. The optimal value of the criterion, equal to 0.9487, was found at point :math:`С=1.7575∙10^5`, :math:`gamma = 6.2505∙10^{-2}`.
+We will solve the problem of data classification using a support vector machine (SVC). 
+The Macro F1 metric, which is optimal for highly unbalanced classes, was chosen as the objective function. 
+Let us determine the values of the parameters at which the value of the quality metric reaches its optimum. 
+During the study, the values of the objective function were calculated on a uniform grid of 50 by 50 points, 
+varying the parameters gamma (kernel coefficient) and C (regularization parameter), 
+in the ranges [:math:`10^{-3}`, :math:`10^1`] and [:math:`10^5`, :math:`10^9``] respectively. 
+The optimal value of the criterion, equal to 0.9487, was found 
+at point :math:`С=1.7575∙10^5`, :math:`gamma = 6.2505∙10^{-2}`.
 
-The search was performed using the GridSearchCV method from the sklearn library. The cross-validation parameter was set to a strategy generated using the StratifiedKFold method. This method of cross-validation is recommended for unbalanced classes, since the same ratio of classes is maintained in both the training and test sets. The graph of the objective function is shown in the figure below.
+The search was performed using the GridSearchCV method from the sklearn library. 
+The cross-validation parameter was set to a strategy generated using the StratifiedKFold method. 
+This method of cross-validation is recommended for unbalanced classes, since the same ratio 
+of classes is maintained in both the training and test sets. 
+The graph of the objective function is shown in the figure below.
 
 .. figure:: images/prev2.jpg
     :width: 500
@@ -1355,7 +1389,8 @@ The search was performed using the GridSearchCV method from the sklearn library.
     
     Graph of the objective function on a uniform grid
 
-The listing shows the code for searching the global optimum point over the specified search domain using the GridSearchCV method from the sklearn library.
+The listing shows the code for searching the global optimum point over 
+the specified search domain using the GridSearchCV method from the sklearn library.
 
 .. code-block:: python
    :caption: Search for the optimal metric value on a uniform grid using the GridSearchCV method for the task of analyzing and predicting the state of NPP power transformers
@@ -1382,10 +1417,13 @@ The listing shows the code for searching the global optimum point over the speci
 Tuning parameters using the iOpt framework
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let's tune the hyperparameters using the iOpt framework. Let's prepare an auxiliary class in which we will describe the basic aspects of the problem being solved. An example of such a class is presented in the listing.
+Let's tune the hyperparameters using the iOpt framework. Let's prepare an auxiliary class 
+in which we will describe the basic aspects of the problem being solved. 
+An example of such a class is presented in the listing.
 
 .. code-block:: python
-   :caption: Description of the task for finding the optimal combination of values of continuous parameters using the iOpt framework
+   :caption: Description of the task for finding the optimal combination of values 
+   of continuous parameters using the iOpt framework
    
    import numpy as np
    from iOpt.trial import Point
@@ -1426,8 +1464,11 @@ Let's tune the hyperparameters using the iOpt framework. Let's prepare an auxili
          function_value.value = -cross_val_score(clf, self.x, self.y, cv=self.cv, scoring='f1_macro').mean()
          return function_value
 
-To calculate the value of the objective function at a point, we overload the calculate function. To compute the function value, we use the cross_val_score method from the sklearn library with the specific values of the cross-validation parameters and the target metric described above.
-Let's conduct a series of experiments with different values of the iter_limits parameter: 100, 250, 500, 1000, 2500 and the reliability parameter r=2.
+To calculate the value of the objective function at a point, we overload the calculate function. 
+To compute the function value, we use the cross_val_score method from the sklearn library 
+with the specific values of the cross-validation parameters and the target metric described above.
+Let's conduct a series of experiments with different values of the iter_limits parameter: 
+100, 250, 500, 1000, 2500 and the reliability parameter r=2.
 Below is the code for tuning parameters of the SVC algorithm using the iOpt framework with iters_limit = 500.
 
 .. code-block:: python
@@ -1503,7 +1544,11 @@ The results of the experiments carried out are presented in the table.
      - 0.0591
      - 3144
 
-Each experiment was run under identical conditions using parallel computing system. The results of the experiments show that even with a limit of 500 iterations, the iOpt framework found a better combination of hyperparameters than when searching on a uniform grid of 50 by 50 points. This results in fewer calls to the objective function calculation. The figure shows a graph of the objective function when the optimization process is limited to 500 iterations.
+Each experiment was run under identical conditions using parallel computing system. 
+The results of the experiments show that even with a limit of 500 iterations, 
+the iOpt framework found a better combination of hyperparameters than when searching 
+on a uniform grid of 50 by 50 points. This results in fewer calls to the objective function calculation. 
+The figure shows a graph of the objective function when the optimization process is limited to 500 iterations.
 
 .. figure:: images/iter500_1.PNG
     :width: 500
@@ -1516,7 +1561,10 @@ Comparison with other frameworks
 
 To compare the quality of work, experiments were conducted on the same data set using the Hyperopt and Optuna frameworks.
 
-The Hyperopt framework was launched in sequential mode due to the lack of parallel mode. The execution time of the experiment with a limit of 500 iterations was 6750 seconds. A combination of hyperparameters was found: :math:`C = 1.165∙10^5`, :math:`gamma = 9.3492∙10^{-2}`. The value of the objective function is -0.9487.
+The Hyperopt framework was launched in sequential mode due to the lack of parallel mode. 
+The execution time of the experiment with a limit of 500 iterations was 6750 seconds. 
+A combination of hyperparameters was found: :math:`C = 1.165∙10^5`, :math:`gamma = 9.3492∙10^{-2}`. 
+The value of the objective function is -0.9487.
 
 Below is the code for preparing a problem to be solved by the Hyperopt framework with a limit of 500 iterations.
 
@@ -1570,7 +1618,11 @@ Below is the code for preparing a problem to be solved by the Hyperopt framework
     Graph of the objective function obtained during optimization of hyperparameters using the Hyperopt framework with 500 iterations
 
 
-The Optuna framework implements a parallel computing mode, which allows one to calculate the value of the objective function at several trial points at once, depending on the n_jobs parameter. During the process of tuning the hyperparameters C and gamma using the Optuna framework, the value of the objective function was found equal to -0.9491 at the point {C, gamma} = {:math:`4.4831∙10^5`; :math:`2.668∙10^{-2}`}. The experiment took 5262 seconds.
+The Optuna framework implements a parallel computing mode, which allows one to calculate 
+the value of the objective function at several trial points at once, depending on the n_jobs parameter. 
+During the process of tuning the hyperparameters C and gamma using the Optuna framework, the value 
+of the objective function was found equal to -0.9491 at the point {C, gamma} = {:math:`4.4831∙10^5`; :math:`2.668∙10^{-2}`}. 
+The experiment took 5262 seconds.
 
 The listing below shows the code for preparing the task to be solved by the Optuna framework. In this case, the algorithm completes 500 iterations, and the calculation of the objective function values will be carried out in parallel, on 12 threads at once.
 
@@ -1622,16 +1674,19 @@ The listing below shows the code for preparing the task to be solved by the Optu
 Tuning mixed hyperparameters using the iOpt framework
 ______________________________________________________________________________________________________________________________________________________________________________________________________
 
-Let's consider the work of the iOpt framework when searching for the optimal combination of continuous and discrete hyperparameters. Let us consider the following hyperparameters:
+Let's consider the work of the iOpt framework when searching for the optimal combination 
+of continuous and discrete hyperparameters. Let us consider the following hyperparameters:
 
 * C (regularization parameter), continuous parameter in the interval [:math:`10^5`, :math:`10^9`];
 * gamma (kernel coefficient), continuous parameter in the interval [:math:`10^{-3}`, :math:`10^1`];
 * kernel (kernel type), a discrete parameter whose value takes one of three states: 'rbf', 'sigmoid', 'poly'.
 
-Let's prepare an auxiliary class with a description of the problem being solved. The class example is presented in the listing below.
+Let's prepare an auxiliary class with a description of the problem being solved. 
+The class example is presented in the listing below.
 
 .. code-block:: python
-   :caption: Description of the task for finding the optimal combination of values of continuous and discrete parameters using the iOpt framework
+   :caption: Description of the task for finding the optimal combination of values 
+   of continuous and discrete parameters using the iOpt framework
 
    import numpy as np
    from iOpt.trial import Point
@@ -1679,7 +1734,10 @@ Let's prepare an auxiliary class with a description of the problem being solved.
          function_value.value = -cross_val_score(clf, self.x, self.y, scoring='f1_macro', cv=self.cross_validation_strategy).mean()
          return function_value
 
-The Macro F1 metric was chosen as the objective function, which is optimal for unbalanced classes. . The cross-validation parameter was set to a strategy generated using the StratifiedKFold method. This method is recommended for unbalanced classes to preserve the class ratio in both the training and test sets. When describing a problem, it is important to indicate the following task parameters:
+The Macro F1 metric was chosen as the objective function, which is optimal for unbalanced classes. 
+The cross-validation parameter was set to a strategy generated using the StratifiedKFold method. 
+This method is recommended for unbalanced classes to preserve the class ratio in both the training 
+and test sets. When describing a problem, it is important to indicate the following task parameters:
 
 * dimension - number of analyzed parameters (dimension);
 * number_of_float_variables - number of continuous parameters;
@@ -1689,9 +1747,13 @@ The Macro F1 metric was chosen as the objective function, which is optimal for u
 * lower_bound_of_float_variables and upper_bound_of_float_variables - minimum and maximum values of continuous parameters;
 * discrete_variable_values - values of discrete parameters.
 
-To calculate the value of the objective function at a point, we overload the calculate function. To estimate the value of the target function, we use the cross_val_score method from the sklearn library with the specific values of the cross-validation parameters and the target metric described above.
+To calculate the value of the objective function at a point, we overload the calculate function. 
+To estimate the value of the target function, we use the cross_val_score method from the sklearn 
+library with the specific values of the cross-validation parameters and the target metric described above.
 
-After generating the optimization problem, one need to run the solver to find the optimal combination of hyperparameters. An example of code running the solver and visualizing the optimization process is presented in Listing 3.28.
+After generating the optimization problem, one need to run the solver to find the optimal combination 
+of hyperparameters. An example of code running the solver and visualizing the optimization 
+process is presented in Listing 3.28.
 
 .. code-block:: python
    :caption: Search for the optimal combination of values of continuous and discrete parameters using the iOpt framework
@@ -1737,13 +1799,19 @@ After generating the optimization problem, one need to run the solver to find th
       solver.add_listener(cfol)
       solver_info = solver.solve()
 
-After loading the data, one need to create an optimization task, the description of the fields of which is presented in the listing above. Thus, the problem instance takes as parameters the data under study, the boundaries for changing the values of the regularization parameter, the boundaries for changing the values of the kernel coefficient parameter, and the values of the discrete parameter (the kernel type). To start tuning the hyperparameters, one need to create an object of the SolverParameters class, in which the following parameters are set:
+After loading the data, one need to create an optimization task, the description of the fields 
+of which is presented in the listing above. Thus, the problem instance takes as parameters the data 
+under study, the boundaries for changing the values of the regularization parameter, the boundaries 
+for changing the values of the kernel coefficient parameter, and the values of the discrete parameter 
+(the kernel type). To start tuning the hyperparameters, one need to create an object 
+of the SolverParameters class, in which the following parameters are set:
 
 * reliability parameter r;
 * limit on the number of iterations of the algorithm iters_limit;
 * number of points calculated at a time: number_of_parallel_points.
 
-To demonstrate the parallel calculation of the objective function values at several points, we will set the number_of_parallel_points parameter to 12, and also limit ourselves to 500 iterations. Objects of the StaticDiscreteListener class allow one to obtain a graphical representation of the results. In this case, when setting the mode parameter to analysis upon completion of the optimization procedure, a log will be displayed, which indicates the dynamics of the search, the distribution of trial points over the values of the discrete parameter, and the distribution of the values of the objective function over iterations. If the mode parameter is set to bestcombination, a level line plot will be presented for the combination of hyperparameters with the best quality metric.
+To demonstrate the parallel calculation of the objective function values at several points, 
+we will set the number_of_parallel_points parameter to 12, and also limit ourselves to 500 iterations. Objects of the StaticDiscreteListener class allow one to obtain a graphical representation of the results. In this case, when setting the mode parameter to analysis upon completion of the optimization procedure, a log will be displayed, which indicates the dynamics of the search, the distribution of trial points over the values of the discrete parameter, and the distribution of the values of the objective function over iterations. If the mode parameter is set to bestcombination, a level line plot will be presented for the combination of hyperparameters with the best quality metric.
 
 .. figure:: images/general_info.png
     :width: 500
@@ -1757,6 +1825,17 @@ To demonstrate the parallel calculation of the objective function values at seve
     
     Level lines of the objective function, built with the parameter kernel='rbf'
 
-During the experiment an optimal quality metric value of -0.9469 was obtained with the following combination of parameters: :math:`C = 1.6474∙10^5`, gamma = 0.0767, kernel = 'rbf'.
+During the experiment an optimal quality metric value of -0.9469 was obtained with the following combination 
+of parameters: :math:`C = 1.6474∙10^5` `C = 1.6474 \dot 10^5`, gamma = 0.0767, kernel = 'rbf'.
 
+
+
+Example of solving a multi-criteria optimization problem
+____________________________________________________________________________________
+
+
+If optimization is performed using several criteria, then the solution to the problem becomes more complicated. 
+The problem is that the criteria are usually contradictory: decreasing the value of one of them often leads 
+to an increase in the values of others. Let's consider the work of the iOpt framework when solving a multi-criteria problem. 
+To do this, we modify the problem statement in Section Tuning support vector machine hyperparameters for a classification problem in machine learning.
 
