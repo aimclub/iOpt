@@ -1979,10 +1979,16 @@ Let's consider the precision and recall metrics as the criteria to be optimized.
       for fvar, fval in zip(var, val):
          print(fvar, fval)
 
-      # Plot the Pareto set z[0]-z[1]
-      fv1 = [-trial.function_values[0].value for trial in sol.best_trials]
-      fv2 = [-trial.function_values[1].value for trial in sol.best_trials]
-      plt.plot(fv1, fv2, 'ro')
-      plt.show()
+At the end of the execution of the program presented in the previous listing, we obtain the Pareto set:
 
+[0.9107572752988098, 0.9831768388106417]
 
+[0.9592640468256907, 0.980399061032864]
+
+[0.9647457731704308, 0.9747261345852894]
+
+[0.967120202394175, 0.9719483568075118]
+
+[0.9647147147147146, 0.9747652582159624]
+
+[0.9695575278152937, 0.957942097026604]
