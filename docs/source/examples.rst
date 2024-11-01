@@ -1866,17 +1866,6 @@ First, we need to formulate the basic problem as a class inherited from Problem.
 
    import numpy as np
 
-   cs = np.logspace(1, 6, 20)
-   gamms = np.logspace(-7, -3, 20)
-
-   params = {'C': cs, 'gamma': gamms}
-
-   search = GridSearchCV(SVC(), cv=5, param_grid=params, 
-      scoring=lambda model, x, y: f1_score(y, model.predict(x)))
-   search.fit(x, y)
-
-   import numpy as np
-
    from iOpt.trial import Point
    from iOpt.trial import FunctionValue
    from iOpt.trial import Trial
@@ -1888,7 +1877,7 @@ First, we need to formulate the basic problem as a class inherited from Problem.
 
       def __init__(self, X, y, X_train, y_train):
          """
-         Class constructor breast_cancer problem.
+         Class constructor of the breast_cancer problem.
          """
 
          super(mco_breast_cancer, self).__init__()
@@ -1930,12 +1919,70 @@ First, we need to formulate the basic problem as a class inherited from Problem.
          classifier_obj = SVC(C=svc_c, gamma=gamma)
          classifier_obj.fit(self.X_train, self.y_train)
 
-         # OBJECTIV 1
+         # Objective 1
          function_values[0].value = - cross_val_score(classifier_obj, self.X,
             self.y, n_jobs=4, scoring='precision').mean()
 
-         # OBJECTIV 2
+         # Objective 2
          function_values[1].value = - cross_val_score(classifier_obj, self.X,
             self.y, n_jobs=4, scoring='recall').mean()
 
          return function_values
+
+Let's consider the precision and recall metrics as the criteria to be optimized.
+
+.. code-block::
+   :caption: Solving the problem of multicriteria optimization using the iOpt framework
+
+   from examples.Machine_learning.SVC._2D.Problems import mco_breast_cancer
+
+   from iOpt.solver import Solver
+   from iOpt.solver_parametrs import SolverParameters
+   from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
+   import matplotlib.pyplot as plt
+   from sklearn.datasets import load_breast_cancer
+   from sklearn.model_selection import train_test_split
+
+   import numpy as np
+
+   if __name__ == "__main__":
+
+      # Load dataset
+      X, y = load_breast_cancer(return_X_y=True)
+
+      # Split dataset
+      X_train, X_valid, y_train, y_valid = train_test_split(X, y)
+
+      # Create problem object
+      problem = mco_breast_cancer(X, y, X_train, y_train)
+
+      # Define solver’s parameters
+      params = SolverParameters(r=3.0, eps=0.01, iters_limit=200,
+         number_of_lambdas=50, start_lambdas=[[0, 1]], is_scaling=False)
+
+      # Create solver
+      solver = Solver(problem=problem, parameters=params)
+
+      # Define output device
+      cfol = ConsoleOutputListener(mode='full')
+      solver.add_listener(cfol)
+
+      # Solve the problem
+      sol = solver.solve()
+
+      # Display the Pareto set (coordinates are function values)
+      var = [trial.point.float_variables for trial in sol.best_trials]
+      val = [[-trial.function_values[i].value for i in range(2)] for trial in
+         sol.best_trials]
+
+      print("size pareto set: ", len(var))
+      for fvar, fval in zip(var, val):
+         print(fvar, fval)
+
+      # Plot the Pareto set z[0]-z[1]
+      fv1 = [-trial.function_values[0].value for trial in sol.best_trials]
+      fv2 = [-trial.function_values[1].value for trial in sol.best_trials]
+      plt.plot(fv1, fv2, 'ro')
+      plt.show()
+
+
