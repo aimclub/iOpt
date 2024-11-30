@@ -10,8 +10,8 @@ import numpy as np
 import csv
 
 # Для построения HV индекса
-from pymoo.util.misc import stack
-from pymoo.indicators.hv import HV
+# from pymoo.util.misc import stack
+# from pymoo.indicators.hv import HV
 import numpy as np
 
 def factory_dataset():
@@ -63,15 +63,15 @@ if __name__ == "__main__":
     ########################################################################
 
     ## Вычисляем отраженное Парето множество
-    data = 1-np.array(val)
-    ref_point = np.array([1.0, 1.0])
-    print("reference point:")
-    print(ref_point)
-    print("Pareto set:")
-    print(data)
+    # data = 1-np.array(val)
+    # ref_point = np.array([1.0, 1.0])
+    # print("reference point:")
+    # print(ref_point)
+    # print("Pareto set:")
+    # print(data)
 
     ## Создаем объект для подсчета HV индекса
-    ind = HV(ref_point=ref_point)
+    # ind = HV(ref_point=ref_point)
 
     ## Считаем и выводим HV индекс
-    print("HV", ind(data))
+    # print("HV", ind(data))
