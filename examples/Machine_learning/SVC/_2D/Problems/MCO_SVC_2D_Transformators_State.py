@@ -42,7 +42,7 @@ class MCO_SVC_2D_Transformators_State(Problem):
         self.upper_bound_of_float_variables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
                                                    dtype=np.double)
 
-        self.cv = StratifiedKFold(shuffle=True, random_state=42)
+        #self.cv = StratifiedKFold(shuffle=True, random_state=42)
 
 
 
@@ -59,15 +59,15 @@ class MCO_SVC_2D_Transformators_State(Problem):
 
 
         cs, gammas = point.float_variables[0], point.float_variables[1]
-        clf = SVC(C=10 ** cs, gamma=10 ** gammas)
+        clf = SVC(C=10 ** cs, gamma=10 ** gammas, probability=True)
         clf.fit(self.x, self.y)
 
         # OBJECTIV 1
-        function_values[0].value = - cross_val_score(clf, self.x, self.y, cv=self.cv,
-                                                     scoring='f1_macro').mean()
+        function_values[0].value = - cross_val_score(clf, self.x, self.y, n_jobs=4,
+                                                     scoring='neg_log_loss').mean()
         # OBJECTIV 2
-        function_values[1].value = - cross_val_score(clf, self.x, self.y, cv=self.cv,
-                                                     scoring='f1_weighted').mean()
+        function_values[1].value = - cross_val_score(clf, self.x, self.y, n_jobs=4,
+                                                     scoring='f1_macro').mean()
 
 
         return function_values
