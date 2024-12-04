@@ -303,12 +303,14 @@ class Plotter3D(Plotter):
         xv, yv = np.meshgrid(x1, x2)
         z = []
 
+        fv = section.copy()
+
         for i in range(points_count):
             z_ = []
             for j in range(points_count):
-                section[self.indexes[0]] = xv[i, j]
-                section[self.indexes[1]] = yv[i, j]
-                z_.append(calculate(section))
+                fv[self.indexes[0]] = xv[i, j]
+                fv[self.indexes[1]] = yv[i, j]
+                z_.append(calculate(fv))
             z.append(z_)
 
         self.ax.contour(x1, x2, z, linewidths=1, levels=25, cmap=plt.cm.viridis)

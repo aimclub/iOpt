@@ -30,4 +30,3 @@ if __name__ == "__main__":
 
     # Решение задачи
     solver.solve()
-

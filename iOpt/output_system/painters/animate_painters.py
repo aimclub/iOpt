@@ -16,12 +16,14 @@ class AnimatePainter(Painter):
         self.objFunc = None
         self.parameterInNDProblem = parameter_in_nd_problem
         self.section = []
+        self.number_of_constraints = 0
 
         # настройки графика
         self.plotter = AnimatePlotter2D(parameter_in_nd_problem, 0, 1)
 
     def set_problem(self, problem: Problem):
         self.objFunc = problem.calculate
+        self.number_of_constraints = problem.number_of_constraints
 
         for i in range(problem.number_of_float_variables):
             self.section.append(float(problem.upper_bound_of_float_variables[i]) - float(problem.lower_bound_of_float_variables[i]))
@@ -44,7 +46,7 @@ class AnimatePainter(Painter):
 
     def paint_optimum(self, solution: Solution):
         optimum = solution.best_trials[0].point.float_variables[self.parameterInNDProblem]
-        optimumVal = solution.best_trials[0].function_values[0].value
+        optimumVal = solution.best_trials[0].function_values[self.number_of_constraints].value
 
         value = optimumVal
 
@@ -79,6 +81,7 @@ class AnimatePainterND(Painter):
         self.objFunc = None
         self.parametersInNDProblem = parameters_in_nd_problem
         self.section = []
+        self.number_of_constraints = 0
 
         # настройки графика
         self.plotter = AnimatePlotter3D(parameters_in_nd_problem)
@@ -103,7 +106,7 @@ class AnimatePainterND(Painter):
     def paint_optimum(self, solution: Solution):
         optimum = [solution.best_trials[0].point.float_variables[self.parametersInNDProblem[0]],
                    solution.best_trials[0].point.float_variables[self.parametersInNDProblem[1]]]
-        optimumVal = solution.best_trials[0].function_values[0].value
+        optimumVal = solution.best_trials[0].function_values[self.number_of_constraints].value
 
         self.plotter.plot_points(optimum, [], 'red', 'o', 4)
 

@@ -1,7 +1,6 @@
 import numpy as np
 from iOpt.trial import Point
 from iOpt.trial import FunctionValue
-from iOpt.trial import Trial
 from iOpt.problem import Problem
 from sko.GA import GA_TSP
 from typing import Dict
@@ -73,10 +72,10 @@ class GA_TSP_2D(Problem):
         if num_population % 2 != 0:
             num_population -= 1
 
-        ga_tsp = GA_TSP(func=self.calc_total_distance,
+        ga_tsp = GA_TSP(func=lambda x: self.calc_total_distance(x),
                         n_dim=self.n_dim, size_pop=num_population,
                         max_iter=int(self.numberOfIterations), prob_mut=mutation_prob)
         best_points, best_distance = ga_tsp.run()
         function_value.value = best_distance[0]
-        print(best_distance[0])
+        #print(best_distance[0])
         return function_value

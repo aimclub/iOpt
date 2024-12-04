@@ -7,6 +7,7 @@ from typing import List
 
 from iOpt.method.optim_task import OptimizationTask
 from iOpt.method.calculator import Calculator
+from iOpt.method.solverFactory import SolverFactory
 from iOpt.trial import Point
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
@@ -31,6 +32,7 @@ class TestMixedIntegerMethod(unittest.TestCase):
         mock_problem.number_of_constraints = 0
 
         task = OptimizationTask(mock_problem)
+
         self.mixedIntegerMethod = MixedIntegerMethod(SolverParameters(), task,
                                                      mock_evolvent, SearchData(mock_problem))
         self.globalTrials_RI_d_3 = 132
@@ -59,11 +61,13 @@ class TestMixedIntegerMethod(unittest.TestCase):
         self.assertEqual(dp, [("A", "A"), ("A", "B"), ("B", "A"), ("B", "B")])
 
     def test_FirstIteration(self):
-        self.mixedIntegerMethod.calculate_functionals = Mock(side_effect=self.mock_CalculateFunctionals)
+        calculator = Calculator(None, self.mixedIntegerMethod.parameters)
+        calculator.calculate_functionals_for_items = Mock(side_effect=self.mock_CalculateFunctionalsForItems)
+        self.mixedIntegerMethod.calculator = calculator
         self.mixedIntegerMethod.evolvent.get_image = Mock(side_effect=self.mock_GetImage)
         self.mixedIntegerMethod.first_iteration()
         self.assertEqual(self.mixedIntegerMethod.search_data.get_count(), 9)
-        self.mixedIntegerMethod.calculate_functionals.assert_called()
+        calculator.calculate_functionals_for_items.assert_called()
         self.mixedIntegerMethod.evolvent.get_image.assert_called()
 
     def test_FirstIterationParallel(self):
@@ -71,7 +75,8 @@ class TestMixedIntegerMethod(unittest.TestCase):
         self.mixedIntegerMethod.evolvent.get_image = Mock(side_effect=self.mock_GetImage)
         calculator = Calculator(None, self.mixedIntegerMethod.parameters)
         calculator.calculate_functionals_for_items = Mock(side_effect=self.mock_CalculateFunctionalsForItems)
-        self.mixedIntegerMethod.first_iteration(calculator)
+        self.mixedIntegerMethod.calculator = calculator
+        self.mixedIntegerMethod.first_iteration()
         self.assertEqual(self.mixedIntegerMethod.search_data.get_count(), 13)
         calculator.calculate_functionals_for_items.assert_called()
         self.mixedIntegerMethod.evolvent.get_image.assert_called()

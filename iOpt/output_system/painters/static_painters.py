@@ -12,7 +12,7 @@ import os
 class DiscretePainter(Painter):
     def __init__(self, search_data_sorted, bestsvalues, pcount, floatdim, optimumPoint, discreteValues,
                  discrete_name, mode, calc, subparameters, lb, rb, file_name, path_for_saves, calculate,
-                 optimum_value, search_data, number_of_parallel_points):
+                 optimum_value, search_data, number_of_parallel_points, number_of_constraints):
         self.path_for_saves = path_for_saves
         self.file_name = file_name
         self.calc = calc
@@ -20,6 +20,7 @@ class DiscretePainter(Painter):
         self.optimum = optimumPoint
         self.optimumVal = optimum_value
         self.number_of_parallel_points = number_of_parallel_points
+        self.number_of_constraints = number_of_constraints
 
         self.values = []
         self.points = []
@@ -130,7 +131,8 @@ class StaticPainter(Painter):
                  is_points_at_bottom,
                  parameter_in_nd_problem,
                  path_for_saves,
-                 file_name
+                 file_name,
+                 number_of_constraints
                  ):
         self.path_for_saves = path_for_saves
         self.file_name = file_name
@@ -139,6 +141,7 @@ class StaticPainter(Painter):
         self.is_points_at_bottom = is_points_at_bottom
 
         self.objFunc = solution.problem.calculate
+        self.number_of_constraints = number_of_constraints
 
         # формируем массив точек итераций для графика
         self.points = []
@@ -153,7 +156,7 @@ class StaticPainter(Painter):
 
         self.optimum = solution.best_trials[0].point.float_variables
         self.optimumC = solution.best_trials[0].point.float_variables[parameter_in_nd_problem]
-        self.optimumValue = solution.best_trials[0].function_values[0].value
+        self.optimumValue = solution.best_trials[0].function_values[self.number_of_constraints].value
 
         # настройки графика
         self.plotter = Plotter2D(parameter_in_nd_problem,
@@ -202,7 +205,7 @@ class StaticPainter(Painter):
         return fv.value
 
 class StaticPainterND(Painter):
-    def __init__(self, search_data, solution, parameters, mode, calc, file_name, path_for_saves):
+    def __init__(self, search_data, solution, parameters, mode, calc, file_name, path_for_saves, number_of_constraints):
         self.path_for_saves = path_for_saves
         self.file_name = file_name
 
@@ -210,6 +213,7 @@ class StaticPainterND(Painter):
         self.objectFunctionCalculatorType = calc
 
         self.objFunc = solution.problem.calculate
+        self.number_of_constraints = number_of_constraints
 
         # формируем массив точек итераций для графика
         self.points = []
@@ -223,7 +227,10 @@ class StaticPainterND(Painter):
         self.values = self.values[1:-1]
 
         self.optimum = solution.best_trials[0].point.float_variables
-        self.optimumValue = solution.best_trials[0].function_values[0].value
+        self.optimum_section = [solution.best_trials[0].point.float_variables[parameters[0]],
+                        solution.best_trials[0].point.float_variables[parameters[1]]]
+
+        self.optimumValue = solution.best_trials[0].function_values[self.number_of_constraints].value
 
         self.leftBounds = [float(solution.problem.lower_bound_of_float_variables[parameters[0]]),
                            float(solution.problem.lower_bound_of_float_variables[parameters[1]])]
@@ -258,7 +265,7 @@ class StaticPainterND(Painter):
         self.plotter.plot_points(self.points, self.values, 'blue', 'o', 4)
 
     def paint_optimum(self, solution: Solution = None):
-        self.plotter.plot_points([self.optimum], [self.optimumValue], 'red', 'o', 4)
+        self.plotter.plot_points([self.optimum_section], [self.optimumValue], 'red', 'o', 4)
 
     def save_image(self):
         if not os.path.isdir(self.path_for_saves):

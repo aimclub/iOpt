@@ -1,4 +1,3 @@
-import sys
 from datetime import datetime
 from typing import List
 
@@ -6,6 +5,7 @@ import traceback
 import json
 
 from iOpt.evolvent.evolvent import Evolvent
+from iOpt.method.calculator import Calculator
 from iOpt.method.listener import Listener
 from iOpt.method.local_optimizer import local_optimize
 from iOpt.method.method import Method
@@ -14,7 +14,6 @@ from iOpt.method.search_data import SearchData, SearchDataItem
 from iOpt.solution import Solution
 from iOpt.solver_parametrs import SolverParameters
 from iOpt.trial import FunctionValue, FunctionType
-from iOpt.trial import Point
 
 
 class Process:
@@ -28,7 +27,8 @@ class Process:
                  evolvent: Evolvent,
                  search_data: SearchData,
                  method: Method,
-                 listeners: List[Listener]
+                 listeners: List[Listener],
+                 calculator: Calculator = None
                  ):
         """
         Constructor of the Process class
@@ -39,6 +39,7 @@ class Process:
         :param search_data: A data structure for storing accumulated search information.
         :param method: An optimization method that performs search trials according to given rules.
         :param listeners: List of "observers" (used to display current information).
+        :param calculator: class containing trial methods (parallel and/or inductive circuit)
         """
         self.parameters = parameters
         self.task = task
@@ -47,6 +48,10 @@ class Process:
         self.method = method
         self._listeners = listeners
         self._first_iteration = True
+        if calculator is None:
+            self.calculator = method.calculator
+        else:
+            self.calculator = calculator
 
     def solve(self) -> Solution:
         """
@@ -170,26 +175,27 @@ class Process:
         """
         return self.search_data.solution
 
-    def save_progress(self, file_name: str, mode = 'full') -> None:
+    def save_progress(self, file_name: str, mode='full') -> None:
         """
         Save the optimization process from a file
 
+        :param mode: 'full' - save all optimization information
         :param file_name: file name.
         """
         data = self.search_data.searchdata_to_json(mode=mode)
         data['Parameters'] = []
         data['Parameters'].append({
-                    'eps': self.parameters.eps,
-                    'r': self.parameters.r,
-                    'iters_limit': self.parameters.iters_limit,
-                    'start_point': self.parameters.start_point,
-                    'number_of_parallel_points': self.parameters.number_of_parallel_points
+            'eps': self.parameters.eps,
+            'r': self.parameters.r,
+            'iters_limit': self.parameters.iters_limit,
+            'start_point': self.parameters.start_point,
+            'number_of_parallel_points': self.parameters.number_of_parallel_points
         })
         with open(file_name, 'w') as f:
             json.dump(data, f, indent='\t', separators=(',', ':'))
             f.write('\n')
 
-    def load_progress(self, file_name: str, mode = 'full') -> None:
+    def load_progress(self, file_name: str, mode='full') -> None:
         """
         Load the optimization process from a file
 

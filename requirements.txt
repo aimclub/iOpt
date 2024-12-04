@@ -1,4 +1,4 @@
-numpy>=1.19
+numpy>=1.19,<2.0
 depq
 cycler
 kiwisolver
@@ -10,3 +10,8 @@ sphinxcontrib-details-directive
 autodocsumm
 pathos
 multiprocess
+dash
+dash-bootstrap-components
+plotly
+pandas
+scipy

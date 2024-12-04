@@ -29,9 +29,10 @@ class MixedIntegerMethod(IndexMethod):
                  parameters: SolverParameters,
                  task: OptimizationTask,
                  evolvent: Evolvent,
-                 search_data: SearchData
+                 search_data: SearchData,
+                 calculator: Calculator = None
                  ):
-        super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, search_data)
+        super(MixedIntegerMethod, self).__init__(parameters, task, evolvent, search_data, calculator)
 
         # u = {i, j, k}, i = {0, 1, 2}, j = {0, 1}, k = {0, 1, 2, 3, 4} -> 3*2*4=24
 
@@ -41,7 +42,7 @@ class MixedIntegerMethod(IndexMethod):
         self.numberOfParameterCombinations = len(self.discreteParameters)
         # 0 0.5 1  1.5 2   2.5  3    3.5 4
 
-    def first_iteration(self, calculator: Calculator = None) -> list[SearchDataItem]:
+    def first_iteration(self) -> list[SearchDataItem]:
         r"""
         The method performs the first iteration of the Global Search Algorithm
         """
@@ -135,12 +136,7 @@ class MixedIntegerMethod(IndexMethod):
                 if not is_init_image_x:
                     is_init_image_x = True
 
-        if calculator is None:
-            for item in items:
-                self.calculate_functionals(item)
-                self.update_optimum(item)
-        else:
-            calculator.calculate_functionals_for_items(items)
+        self.calculator.calculate_functionals_for_items(items)
 
         for item in items:
             self.update_optimum(item)

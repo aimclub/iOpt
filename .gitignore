@@ -134,3 +134,7 @@ dmypy.json
 
 # datasets
 benchmarks/data/datasets
+examples/Machine_learning/NeuralNetwork/Segmentation/data
+examples/Machine_learning/NeuralNetwork/Segmentation/models/*
+examples/Machine_learning/NeuralNetwork/Segmentation/lightning_logs
+examples/Machine_learning/NeuralNetwork/Segmentation/data.zip
