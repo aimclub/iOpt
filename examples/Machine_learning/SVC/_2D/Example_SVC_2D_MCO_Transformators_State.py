@@ -34,8 +34,8 @@ if __name__ == "__main__":
     kernel_coefficient_bound = {'low': -3, 'up': 1}
     problem = MCO_SVC_2D_Transformators_State.MCO_SVC_2D_Transformators_State(X, Y, regularization_value_bound,
                                                                       kernel_coefficient_bound)
-    method_params = SolverParameters(r=np.double(2.0), iters_limit=100, number_of_parallel_points=12,
-                                     evolvent_density=12)
+    method_params = SolverParameters(r=np.double(2.0), iters_limit=50, number_of_parallel_points=1,
+                                     evolvent_density=12, number_of_lambdas=5)
     solver = Solver(problem=problem, parameters=method_params)
     # Добавляем вывод результатов в консоль
     cfol = ConsoleOutputListener(mode='full')

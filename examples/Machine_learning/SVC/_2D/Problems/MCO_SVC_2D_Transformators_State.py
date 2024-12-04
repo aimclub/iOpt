@@ -63,7 +63,7 @@ class MCO_SVC_2D_Transformators_State(Problem):
         clf.fit(self.x, self.y)
 
         # OBJECTIV 1
-        function_values[0].value = - cross_val_score(clf, self.x, self.y, n_jobs=4,
+        function_values[0].value = cross_val_score(clf, self.x, self.y, n_jobs=4,
                                                      scoring='neg_log_loss').mean()
         # OBJECTIV 2
         function_values[1].value = - cross_val_score(clf, self.x, self.y, n_jobs=4,
