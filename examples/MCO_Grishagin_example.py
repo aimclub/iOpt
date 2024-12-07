@@ -1,3 +1,4 @@
+from iOpt.output_system.listeners.static_painters import StaticPainterParetoListener
 from problems.grishagin_mco import Grishagin_mco
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
@@ -17,6 +18,9 @@ if __name__ == "__main__":
 
     cfol = ConsoleOutputListener(mode='full')
     solver.add_listener(cfol)
+
+    sppl = StaticPainterParetoListener("Grishagin_mco_pareto.png")
+    solver.add_listener(sppl)
 
     sol = solver.solve()
 

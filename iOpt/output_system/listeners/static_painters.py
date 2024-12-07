@@ -1,7 +1,7 @@
 from iOpt.method.listener import Listener
 from iOpt.method.method import Method
 from iOpt.method.search_data import SearchData
-from iOpt.output_system.painters.static_painters import StaticPainter, StaticPainterND, DiscretePainter
+from iOpt.output_system.painters.static_painters import StaticPainter, StaticPainterND, DiscretePainter, StaticPainterPareto
 from iOpt.solution import Solution
 
 
@@ -89,7 +89,7 @@ class StaticPainterListener(Listener):
         """
         Constructor of the StaticPainterListener class
 
-        :param file_name: File name specifying the format for saving the image. 
+        :param file_name: File name specifying the format for saving the image.
         :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
            is saved in the current working directory.
         :param indx: Index of the variable of the optimization problem. It is used in multivariate optimization.
@@ -133,9 +133,9 @@ class StaticPainterNDListener(Listener):
     def __init__(self, file_name: str, path_for_saves="", vars_indxs=[0, 1], mode='lines layers',
                  calc='objective function'):
         """
-        Конструктор класса StaticPainterNDListener
+        Constructor of the StaticPainterNDListener class
 
-        :param file_name: File name specifying the format for saving the image. 
+        :param file_name: File name specifying the format for saving the image.
         :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
            is saved in the current working directory.
         :param vars_indxs: A pair of indices of the variables of the optimization problem for which the figure will be plotted.
@@ -166,4 +166,31 @@ class StaticPainterNDListener(Listener):
         painter.paint_objective_func()
         painter.paint_points()
         painter.paint_optimum()
+        painter.save_image()
+
+
+class StaticPainterParetoListener(Listener):
+    """
+    The StaticPainterParetoListener class is an event listener. It contains a method handler that produces an image as a
+      image as a reaction to the method completion.
+      It is used for multicriteria optimization
+    """
+
+    def __init__(self, file_name: str, path_for_saves="", criteria_indxs=[0, 1]):
+        """
+        Constructor of the StaticPainterParetoListener class
+
+        :param file_name: File name specifying the format for saving the image.
+        :param path_for_saves: The directory to save the image. If this parameter is not specified, the image is saved in the current working directory.
+           is saved in the current working directory.
+        :param criteria_indxs: A pair of indices of the criteria of the optimization problem for which the figure will be plotted.
+        """
+        self.file_name = file_name
+        self.path_for_saves = path_for_saves
+        self.criteria_indxs = criteria_indxs
+
+    def on_method_stop(self, search_data: SearchData,
+                       solution: Solution, status: bool, ):
+        painter = StaticPainterPareto(solution, self.criteria_indxs, self.path_for_saves, self.file_name)
+        painter.paint_pareto()
         painter.save_image()
