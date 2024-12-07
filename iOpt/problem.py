@@ -42,7 +42,7 @@ class Problem(ABC):
 
         :return: Calculated values of the functions."""
         for i in range(self.number_of_objectives):
-            function_values[i].value = self.calculate(point, function_values[i])
+            function_values[i] = self.calculate(point, function_values[i])
 
         return function_values
 
