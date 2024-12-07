@@ -243,7 +243,8 @@ class Plotter2D(Plotter):
 
         self.fig, self.ax = plt.subplots(1, 1)
         self.ax.tick_params(axis='both', labelsize=8)
-        self.ax.set_xlim([self.leftBound, self.rightBound])
+        if self.leftBound != None and self.rightBound != None:
+            self.ax.set_xlim([self.leftBound, self.rightBound])
 
     def plot_by_grid(self, calculate, section, points_count=100):
         x = np.arange(self.leftBound, self.rightBound, (self.rightBound - self.leftBound) / points_count)
@@ -440,5 +441,8 @@ class PlotterPareto(Plotter2D):
     def __init__(self):
         super().__init__(None, None, None)
 
-    def plot_pareto(self, first_criteria_values, second_criteria_values, clr='blue', mrkr='o', mrkrs=4):
+    def plot_pareto(self, first_criteria_values, second_criteria_values, clr='blue', mrkr='o', mrkrs=8):
         self.plot_points(first_criteria_values, second_criteria_values, clr, mrkr, mrkrs)
+        self.ax.set_title('Pareto set', fontsize=8)
+        self.ax.set_xlabel('First criteria value', fontsize=8)
+        self.ax.set_ylabel('Second criteria value', fontsize=8)
