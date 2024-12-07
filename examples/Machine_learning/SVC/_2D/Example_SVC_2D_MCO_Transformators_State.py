@@ -1,4 +1,4 @@
-from iOpt.output_system.listeners.static_painters import StaticPainterNDListener
+from iOpt.output_system.listeners.static_painters import StaticPainterParetoListener
 from iOpt.output_system.listeners.console_outputers import ConsoleOutputListener
 
 from iOpt.solver import Solver
@@ -12,7 +12,7 @@ import csv
 # Для построения HV индекса
 # from pymoo.util.misc import stack
 # from pymoo.indicators.hv import HV
-import numpy as np
+# import numpy as np
 
 def factory_dataset():
     x = []
@@ -34,12 +34,15 @@ if __name__ == "__main__":
     kernel_coefficient_bound = {'low': -3, 'up': 1}
     problem = MCO_SVC_2D_Transformators_State.MCO_SVC_2D_Transformators_State(X, Y, regularization_value_bound,
                                                                       kernel_coefficient_bound)
-    method_params = SolverParameters(r=np.double(2.0), iters_limit=50, number_of_parallel_points=1,
+    method_params = SolverParameters(r=np.double(2.0), iters_limit=500, number_of_parallel_points=1,
                                      evolvent_density=12, number_of_lambdas=5)
     solver = Solver(problem=problem, parameters=method_params)
     # Добавляем вывод результатов в консоль
     cfol = ConsoleOutputListener(mode='full')
     solver.add_listener(cfol)
+
+    sppl = StaticPainterParetoListener("MCO_SVC_2D_Transformators_pareto.png")
+    solver.add_listener(sppl)
 
     # Решаем задачу
     sol = solver.solve()

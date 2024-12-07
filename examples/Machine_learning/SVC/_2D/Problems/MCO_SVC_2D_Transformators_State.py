@@ -42,11 +42,6 @@ class MCO_SVC_2D_Transformators_State(Problem):
         self.upper_bound_of_float_variables = np.array([regularization_bound['up'], kernel_coefficient_bound['up']],
                                                    dtype=np.double)
 
-        #self.cv = StratifiedKFold(shuffle=True, random_state=42)
-
-
-
-
     def calculateAllFunction(self, point: Point, function_values: np.ndarray(shape=(1), dtype=FunctionValue)) -> \
             np.ndarray(shape=(1), dtype=FunctionValue):
         """
