@@ -85,6 +85,8 @@ class ConsoleOutputer:
             best_trial_value, self.ndv
         )
 
+    def print_pareto_set_info(self, solution: Solution):
+        self.__functions.print_pareto_set(solution.best_trials)
 
 class OutputFunctions:
 
@@ -186,3 +188,21 @@ class OutputFunctions:
         print("|{:>29} {:<{width}.8f}|".format("currant accuracy: ", solution_accuracy,
                                                width=size_max_one_output * dim))
         print("." * (30 + size_max_one_output * dim + 2))
+
+    def print_pareto_set(self, best_trials):
+        size_max_one_output = 15
+        dim = len(best_trials[0].point.float_variables)
+        criteria_count = len(best_trials[0].function_values)
+
+        var = [trial.point.float_variables for trial in best_trials]
+        val = [[trial.function_values[i].value for i in range(len(trial.function_values))] for trial in best_trials]
+
+        string_len = size_max_one_output * (dim + criteria_count) + 6
+        print("| {:^{width}} |".format(f"Size pareto set: {len(var)}", width=string_len))
+        print("-" * (string_len + 4))
+
+        for fvar, fval in zip(var, val):
+            print("| {:>{width_point}}".format(str(fvar), width_point=dim * size_max_one_output), end='  ')
+            print("{:<{width_criteria}} |".format(str(fval), width_criteria=criteria_count * size_max_one_output))
+
+        print("-" * (string_len + 4))

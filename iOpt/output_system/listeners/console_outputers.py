@@ -43,3 +43,5 @@ class ConsoleOutputListener(Listener):
 
     def on_method_stop(self, search_data: SearchData, solution: Solution, status: bool):
         self.__outputer.print_final_result_info(solution, status)
+        if self.mode == 'full' and solution.best_trials.size > 1:
+            self.__outputer.print_pareto_set_info(solution)
