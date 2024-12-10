@@ -441,5 +441,9 @@ class PlotterPareto(Plotter2D):
     def __init__(self):
         super().__init__(None, None, None)
 
-    def plot_pareto(self, first_criteria_values, second_criteria_values, clr='blue', mrkr='o', mrkrs=8):
+    def plot_pareto(self, first_criteria_values, second_criteria_values,
+                    first_criteria_indx, second_criteria_indx, clr='blue', mrkr='o', mrkrs=8):
         self.plot_points(first_criteria_values, second_criteria_values, clr, mrkr, mrkrs)
+        self.ax.set_title('Pareto set', fontsize=8)
+        self.ax.set_xlabel(f'Values of criteria number: {first_criteria_indx}', fontsize=8)
+        self.ax.set_ylabel(f'Values of criteria number: {second_criteria_indx}', fontsize=8)
