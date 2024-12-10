@@ -295,15 +295,20 @@ class StaticPainterPareto:
         self.path_for_saves = path_for_saves
         self.file_name = file_name
 
+        # numbers of criteria selected by user
+        self.first_criteria_indx = criteria_indxs[0]
+        self.second_criteria_indx = criteria_indxs[1]
+
         # values of Pareto-efficient criteria with input indices
-        self.first_criteria_values = [trial.function_values[criteria_indxs[0]].value for trial in solution.best_trials]
-        self.second_criteria_values = [trial.function_values[criteria_indxs[1]].value for trial in solution.best_trials]
+        self.first_criteria_values = [trial.function_values[self.first_criteria_indx].value for trial in solution.best_trials]
+        self.second_criteria_values = [trial.function_values[self.second_criteria_indx].value for trial in solution.best_trials]
 
         # definition of plotter
         self.plotter = PlotterPareto()
 
     def paint_pareto(self):
-        self.plotter.plot_pareto(self.first_criteria_values, self.second_criteria_values)
+        self.plotter.plot_pareto(self.first_criteria_values, self.second_criteria_values,
+                                 self.first_criteria_indx, self.second_criteria_indx)
 
     def save_image(self):
         if not os.path.isdir(self.path_for_saves):
