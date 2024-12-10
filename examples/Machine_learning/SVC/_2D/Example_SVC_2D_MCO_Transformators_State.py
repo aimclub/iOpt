@@ -34,7 +34,7 @@ if __name__ == "__main__":
     kernel_coefficient_bound = {'low': -3, 'up': 1}
     problem = MCO_SVC_2D_Transformators_State.MCO_SVC_2D_Transformators_State(X, Y, regularization_value_bound,
                                                                       kernel_coefficient_bound)
-    method_params = SolverParameters(r=np.double(2.0), iters_limit=500, number_of_parallel_points=1,
+    method_params = SolverParameters(r=np.double(2.0), iters_limit=500, number_of_parallel_points=10,
                                      evolvent_density=12, number_of_lambdas=5)
     solver = Solver(problem=problem, parameters=method_params)
     # Добавляем вывод результатов в консоль
@@ -49,14 +49,14 @@ if __name__ == "__main__":
 
     # Выводим множество Парето (координаты - значения функций)
     var = [trial.point.float_variables for trial in sol.best_trials]
-    val = [[-trial.function_values[i].value for i in range(2)] for trial in sol.best_trials]
+    val = [[trial.function_values[i].value for i in range(2)] for trial in sol.best_trials]
 
     print("size pareto set: ", len(var))
     for fvar, fval in zip(var, val):
         print(fvar, fval)
 
     # Строим график множества Парето z[0]-z[1]
-    fv1 = [-trial.function_values[0].value for trial in sol.best_trials]
+    fv1 = [trial.function_values[0].value for trial in sol.best_trials]
     fv2 = [-trial.function_values[1].value for trial in sol.best_trials]
     plt.plot(fv1, fv2, 'ro')
     plt.show()
