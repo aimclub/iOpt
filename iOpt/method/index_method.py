@@ -121,11 +121,11 @@ class IndexMethod(Method):
 
         :param point: the point of a new trial.
         """
-
-        if self.best is None or self.best.get_index() < point.get_index() or (
-                self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
-            self.best = point
-            self.recalcR = True
-            self.Z[point.get_index()] = point.get_z()
-        # self.UpdateZ(point)
-        self.search_data.solution.best_trials[0] = self.best
+        if point.get_index() >= 0:
+            if self.best is None or self.best.get_index() < point.get_index() or (
+                    self.best.get_index() == point.get_index() and point.get_z() < self.best.get_z()):
+                self.best = point
+                self.recalcR = True
+                self.Z[point.get_index()] = point.get_z()
+            # self.UpdateZ(point)
+            self.search_data.solution.best_trials[0] = self.best
