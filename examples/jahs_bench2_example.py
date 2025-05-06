@@ -34,9 +34,9 @@ if __name__ == "__main__":
     solver.add_listener(cfol)
 
     # Add visualization listener
-    spl = StaticDiscreteListener(file_name="jahs-bench.png", path_for_saves="output", mode="analysis",
+    sdl = StaticDiscreteListener(file_name="jahs-bench.png", path_for_saves="output", mode="analysis",
                                  calc="objective function")
-    solver.add_listener(spl)
+    solver.add_listener(sdl)
 
     # Solve of problem
     solver_info = solver.solve()
