@@ -4,6 +4,8 @@ from iOpt.method.icriterion_evaluate_method import ICriterionEvaluateMethod
 from iOpt.method.search_data import SearchDataItem
 from iOpt.solver_parametrs import SolverParameters
 
+import multiprocess.context as ctx
+import os
 
 class Worker(mp.Process):
     def __init__(
@@ -27,6 +29,10 @@ class AsyncCalculator:
     def __init__(
         self, evaluate_method: ICriterionEvaluateMethod, parameters: SolverParameters
     ):
+
+        if os.name == 'posix':
+            ctx._force_start_method('spawn')
+
         self.evaluate_method = evaluate_method
         self.task_queue = mp.Queue()
         self.done_queue = mp.Queue()
