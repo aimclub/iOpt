@@ -82,7 +82,7 @@ class IndexMethod(Method):
             print("calculate_global_r: Curr point is NONE")
             raise Exception("calculate_global_r: Curr point is NONE")
         if left_point is None:
-            curr_point.globalR = -np.infty
+            curr_point.globalR = -np.inf
             return None
         zl = left_point.get_z()
         zr = curr_point.get_z()
