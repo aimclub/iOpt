@@ -141,6 +141,7 @@ examples/Machine_learning/NeuralNetwork/Segmentation/data.zip
 
 
 # Ignore experements images
-/examples/**/*.jpg
-/examples/**/*.png
-/examples/*.jpg
+examples/**/*.jpg
+examples/**/*.png
+examples/*.jpg
+examples/*.png
