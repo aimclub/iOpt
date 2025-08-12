@@ -101,7 +101,7 @@ class MixedIntegerMethod(IndexMethod):
                 else:
                     for i in range(number_of_points_in_one_interval):
                         x = id_comb + h * (i + 1)
-                        if not is_init_image_x:
+                        if not is_init_image_x or len(image_x) >= i:
                             image_x.append(self.evolvent.get_image(x))
 
                         y = Point(copy.copy(image_x[i]), self.discreteParameters[id_comb])

@@ -136,7 +136,18 @@ class Method:
                                       function_values=[FunctionValue()] * self.numberOfAllFunctions)
                 items.append(item)
 
-        self.calculator.calculate_functionals_for_items(items)
+        # временное решение проблемы падения метода в невычислимой точке первой итерации
+        if self.parameters.number_of_parallel_points == 1:
+            try:
+                self.calculator.calculate_functionals_for_items(items)
+            except Exception:
+                items[0].set_z(sys.float_info.max)
+                items[0].set_index(-10)
+
+            if items[0].get_index() == -10:
+                self.non_computable_iterations_count += 1
+        else:
+            self.calculator.calculate_functionals_for_items(items)
 
         for item in items:
             self.update_optimum(item)
