@@ -138,3 +138,10 @@ examples/Machine_learning/NeuralNetwork/Segmentation/data
 examples/Machine_learning/NeuralNetwork/Segmentation/models/*
 examples/Machine_learning/NeuralNetwork/Segmentation/lightning_logs
 examples/Machine_learning/NeuralNetwork/Segmentation/data.zip
+
+
+# Ignore experements images
+examples/**/*.jpg
+examples/**/*.png
+examples/*.jpg
+examples/*.png
