@@ -16,14 +16,14 @@ class Problem(ABC):
         self.number_of_objectives: int = 0
         self.number_of_constraints: int = 0
 
-        self.float_variable_names: np.ndarray(shape=(1), dtype=str) = []
-        self.discrete_variable_names: np.ndarray(shape=(1), dtype=str) = []
+        self.float_variable_names: list[str] = []
+        self.discrete_variable_names: list[str] = []
 
-        self.lower_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = []
-        self.upper_bound_of_float_variables: np.ndarray(shape=(1), dtype=np.double) = []
-        self.discrete_variable_values: np.ndarray(shape=(1, 1), dtype=str) = []
+        self.lower_bound_of_float_variables: list[float] = []
+        self.upper_bound_of_float_variables: list[float] = []
+        self.discrete_variable_values: list[list[str]] = []
 
-        self.known_optimum: np.ndarray(shape=(1), dtype=Trial) = []
+        self.known_optimum: list[Trial] = []
 
     def calculate(self, point: Point, function_value: FunctionValue) -> FunctionValue:
         """
@@ -34,8 +34,8 @@ class Problem(ABC):
         function_value.value = 0;
         return function_value
 
-    def calculateAllFunction(self, point: Point, function_values: np.ndarray(shape=(1), dtype=FunctionValue)) -> \
-            np.ndarray(shape=(1), dtype=FunctionValue):
+    def calculateAllFunction(self, point: Point, function_values: list[FunctionValue]) -> \
+            list[FunctionValue]:
         """
         Calculate all functions at a given point.
           For any new problem statement that inherits from :class:`Problem`, this method should be overloaded
