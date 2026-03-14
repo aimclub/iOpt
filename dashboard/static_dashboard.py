@@ -183,12 +183,12 @@ class StaticDashboard():
         self.__parameters_names = self.__float_parameters_names + self.__discrete_parameters_names
         self.__float_parameters_bounds = data['Task'][0]['float_variables']
 
-        self.__accuracy = float(pd.DataFrame(data['solution'])['solution_accuracy'])
-        self.__trial_number = int(pd.DataFrame(data['solution'])['number_of_trials'])
-        self.__global_iter_number = int(pd.DataFrame(data['solution'])['number_of_global_trials'])
-        self.__local_iter_number = int(pd.DataFrame(data['solution'])['number_of_local_trials'])
-        self.__solve_time = float(pd.DataFrame(data['solution'])['solving_time'])
-        self.__best_trial_number = int(pd.DataFrame(data['solution'])['num_iteration_best_trial'][0][0])
+        self.__accuracy = pd.DataFrame(data['solution'])['solution_accuracy'][0].astype(float)
+        self.__trial_number = pd.DataFrame(data['solution'])['number_of_trials'].astype(int)
+        self.__global_iter_number = pd.DataFrame(data['solution'])['number_of_global_trials'].astype(int)
+        self.__local_iter_number = pd.DataFrame(data['solution'])['number_of_local_trials'].astype(int)
+        self.__solve_time = pd.DataFrame(data['solution'])['solving_time'].astype(float)
+        self.__best_trial_number = pd.DataFrame(data['solution'])['num_iteration_best_trial'][0][0]
 
         best_trials = pd.DataFrame(data['best_trials']).rename(columns={'__z': 'objective_func'})
 

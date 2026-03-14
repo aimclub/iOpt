@@ -12,6 +12,7 @@ pathos
 multiprocess
 dash
 dash-bootstrap-components
+dash-daq
 plotly
 pandas
 scipy
