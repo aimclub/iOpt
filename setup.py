@@ -32,8 +32,8 @@ setup(
    packages=find_packages(exclude=["*test*", "examples", "benchmarks"]),
    install_requires=_get_requirements('requirements.txt'),
    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python :: 3.9",
+#       "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
 )

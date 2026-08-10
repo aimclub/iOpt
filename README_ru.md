@@ -47,7 +47,7 @@ cd iOpt
 pip install virtualenv
 virtualenv ioptenv
 ioptenv\Scripts\activate.bat
-python setup.py install
+pip install .
 ```
 
 
