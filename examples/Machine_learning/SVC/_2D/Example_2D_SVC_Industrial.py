@@ -9,16 +9,26 @@ from sklearn.utils import shuffle
 import numpy as np
 import pandas as pd
 
-
 def get_SCANIA_dataset():
-    xls = pd.read_excel(r"../Datasets/aps_failure_training_set1.xls", header=None)
-    data = xls.values[1:]
-    row, col = data.shape
-    _x = data[:, 1:col]
-    _y = data[:, 0]
-    y = np.array(_y, dtype=np.double)
-    x = np.array(_x, dtype=np.double)
-    return shuffle(x, y, random_state=42)
+    # Путь к файлу относительно папки _2D
+    # Если скрипт лежит в _2D, а папка Datasets там же, то путь такой:
+    file_path = r"Datasets/aps_failure_training_set.csv"
+    
+    # Читаем CSV, пропуская служебные строки в начале (обычно их 20)
+    # na_values=["na"] — чтобы pandas правильно распознал пропуски
+    df = pd.read_csv(file_path, skiprows=20, na_values=["na"])
+    
+    # Первая колонка — это класс (метка), остальные — признаки
+    # (Проверьте это: в описании сказано "class, then anonymized operational data")
+    y = df.iloc[:, 0].values
+    X = df.iloc[:, 1:].values
+    
+    # Приводим к нужным типам
+    X = np.array(X, dtype=np.double)
+    y = np.array(y, dtype=np.double)
+    
+    # Перемешиваем
+    return shuffle(X, y, random_state=42)
 
 
 if __name__ == "__main__":

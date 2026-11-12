@@ -2,6 +2,11 @@ from problems.rastriginInt import RastriginInt
 from iOpt.solver import Solver
 from iOpt.solver_parametrs import SolverParameters
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from dashboard.static_dashboard import StaticDashboard
 
 if __name__ == "__main__":
