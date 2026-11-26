@@ -9,25 +9,25 @@ from sklearn.utils import shuffle
 import numpy as np
 import pandas as pd
 
+from pathlib import Path
+
+from sklearn.preprocessing import LabelEncoder
+
 def get_SCANIA_dataset():
-    # Путь к файлу относительно папки _2D
-    # Если скрипт лежит в _2D, а папка Datasets там же, то путь такой:
-    file_path = r"Datasets/aps_failure_training_set.csv"
+    script_dir = Path(__file__).resolve().parent
+    file_path = script_dir / "Datasets" / "aps_failure_training_set.csv"
     
-    # Читаем CSV, пропуская служебные строки в начале (обычно их 20)
-    # na_values=["na"] — чтобы pandas правильно распознал пропуски
     df = pd.read_csv(file_path, skiprows=20, na_values=["na"])
     
-    # Первая колонка — это класс (метка), остальные — признаки
-    # (Проверьте это: в описании сказано "class, then anonymized operational data")
-    y = df.iloc[:, 0].values
+    # Метки — первая колонка, признаки — остальные
+    y_raw = df.iloc[:, 0].values
     X = df.iloc[:, 1:].values
     
-    # Приводим к нужным типам
+    # Кодируем 'neg'/'pos' -> 0/1
+    le = LabelEncoder()
+    y = le.fit_transform(y_raw).astype(np.double)
     X = np.array(X, dtype=np.double)
-    y = np.array(y, dtype=np.double)
     
-    # Перемешиваем
     return shuffle(X, y, random_state=42)
 
 
