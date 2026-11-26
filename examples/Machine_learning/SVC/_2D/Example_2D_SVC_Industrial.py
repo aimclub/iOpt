@@ -9,16 +9,26 @@ from sklearn.utils import shuffle
 import numpy as np
 import pandas as pd
 
+from pathlib import Path
+
+from sklearn.preprocessing import LabelEncoder
 
 def get_SCANIA_dataset():
-    xls = pd.read_excel(r"../Datasets/aps_failure_training_set1.xls", header=None)
-    data = xls.values[1:]
-    row, col = data.shape
-    _x = data[:, 1:col]
-    _y = data[:, 0]
-    y = np.array(_y, dtype=np.double)
-    x = np.array(_x, dtype=np.double)
-    return shuffle(x, y, random_state=42)
+    script_dir = Path(__file__).resolve().parent
+    file_path = script_dir / "Datasets" / "aps_failure_training_set.csv"
+    
+    df = pd.read_csv(file_path, skiprows=20, na_values=["na"])
+    
+    # Метки — первая колонка, признаки — остальные
+    y_raw = df.iloc[:, 0].values
+    X = df.iloc[:, 1:].values
+    
+    # Кодируем 'neg'/'pos' -> 0/1
+    le = LabelEncoder()
+    y = le.fit_transform(y_raw).astype(np.double)
+    X = np.array(X, dtype=np.double)
+    
+    return shuffle(X, y, random_state=42)
 
 
 if __name__ == "__main__":

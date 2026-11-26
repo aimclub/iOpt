@@ -1,6 +1,12 @@
 import unittest
 import numpy as np
 
+import sys
+from pathlib import Path
+
+# Добавляем корень iOpt (на уровень выше test) в sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from iOpt.evolvent.evolvent import Evolvent
 
 

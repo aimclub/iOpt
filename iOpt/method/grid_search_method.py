@@ -73,7 +73,7 @@ class GridSearchMethod(Method):
             print("calculate_global_r: Curr point is NONE")
             raise Exception("calculate_global_r: Curr point is NONE")
         if left_point is None:
-            curr_point.globalR = -np.infty
+            curr_point.globalR = -np.inf
             return None
 
         deltax = curr_point.delta
